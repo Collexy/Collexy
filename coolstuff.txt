@@ -1,0 +1,131 @@
+    // columns, _ := rows.Columns()
+    // count := len(columns)
+    // values := make([]interface{}, count)
+    // valuePtrs := make([]interface{}, count)
+
+    // for rows.Next() {
+
+    //     for i, _ := range columns {
+    //         valuePtrs[i] = &values[i]
+    //     }
+
+    //     rows.Scan(valuePtrs...)
+
+    //     for i, col := range columns {
+
+    //         var v interface{}
+
+    //         val := values[i]
+
+    //         b, ok := val.([]byte)
+
+    //         if (ok) {
+    //             v = string(b)
+    //         } else {
+    //             v = val
+    //         }
+
+    //         fmt.Println(col, v)
+    //     }
+    // }
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+//var db = helpers.db()
+
+// func treeHandler(w http.ResponseWriter, r *http.Request) {
+//     switch r.Method {
+//         case "GET":
+//             // r.URL.Query().Get("searchterm")
+//             // Serve the resource.
+//             fmt.Fprintf(w, "GET, %q\n\n", r.URL)
+
+//             u, err := url.Parse(r.URL.String())
+//             if err != nil {
+//                 panic(err)
+//             }
+//             m, _ := url.ParseQuery(u.RawQuery)
+//             // fmt.Println(m)
+//             fmt.Fprintf(w, "this is the whole map: %q\n\n", m)
+
+//             fmt.Fprintf(w, "this is the %q section of the tree\n\n", m["section"][0])
+
+//             fmt.Fprintf(w, "Testing db stuff...\n\n")
+
+//             rows, err := db.Query("SELECT id, path, created_by, label, node_type, created_date FROM node")
+//             PanicIf(err)
+//             defer rows.Close()
+
+//             var id, created_by, node_type int
+//             var path, label string
+//             var created_date time.Time
+//             for rows.Next(){
+//                 err := rows.Scan(&id, &path, &created_by, &label, &node_type, &created_date)
+//                 PanicIf(err)
+//                 fmt.Fprintf(w, "Id: %b, Path: %s, Created by: %b, Label: %s, Type: %b, Created date: %s\n", id, path, created_by, label, node_type, created_date)
+//             }
+
+//         case "POST":
+//             // Create a new record.
+//         case "PUT":
+//             // Update an existing record.
+//         case "DELETE":
+//             // Remove the record.
+//         default:
+//             // Give an error message.
+//     }
+// }
+
+// func sectionHandler(w http.ResponseWriter, r *http.Request) {
+//     switch r.Method {
+//         case "GET":
+//             fmt.Fprintf(w, "kfdhfdsjfhdjs fjsdh sdh")
+//             fmt.Fprintf(w, "GET, %q\n\n", r.URL)
+//             s := controllers.SectionController{}
+//             //s := "lolda"
+//             fmt.Fprintf(w, "lolol %s: ", s.Get())
+//             case "POST":
+//             // Create a new record.
+//             case "PUT":
+//                 // Update an existing record.
+//             case "DELETE":
+//                 // Remove the record.
+//             default:
+//                 // Give an error message.
+//     }
+// }
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+// func ReadFile(_url string) (_bytes []byte, _err error){
+//     fmt.Printf("ReadFile From: %s.\n", _url)
+//     var res *http.Response = nil
+//     res, _err = http.Get(_url)
+//     if _err != nil {
+//             log.Fatal(_err)
+//     }
+//     _bytes, _err = ioutil.ReadAll(res.Body)
+//     defer res.Body.Close()
+//     if _err != nil {
+//             log.Fatal(_err)
+//     }
+//     fmt.Printf("ReadFile: %s", string(_bytes))
+//     fmt.Printf("ReadFile: Size of download: %d\n", len(_bytes))
+//     return
+// }

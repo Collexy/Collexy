@@ -1,0 +1,86 @@
+<!-- Content of admin.html: -->
+{{define "head"}}
+<meta charset='utf8'>
+<meta name="fragment", content="!">
+<base href='/'>
+<title> My Site</title>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic|Open+Sans:400italic,700italic,400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic|Open+Sans:400italic,700italic,400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<link href="public/assets/css/admin.css" rel="stylesheet">
+<link href="public/lib/ngDialog/ngDialog.css" rel="stylesheet">
+<link href="public/lib/ngDialog/ngDialog-default-theme.css" rel="stylesheet">
+
+{{end}}
+{{define "body"}}
+<div id="wrap">
+	<div ng-include src="'public/views/admin/admin-menu.html'"></div>
+	<div id="admin-content" class="column">
+		<div class="container">
+			<!-- <div ng-include src="'public/views/admin/admin-top-user-info.html'"></div> -->
+			
+
+			<div ng-controller="AdminContentCtrl" ui-view></div>
+		</div>
+	</div>
+	<!-- <div id="adminmenucontainer" class="column">
+		<nav id="adminmenu">
+			<ul>
+				{{if .HasUser}}
+					<li><a ui-sref="adminLogout" ui-sref-active="active"><i class="fa fa-sign-out fa-fw"></i><span>Logout</span></a></li>
+				{{else}}
+					<li><a ui-sref="adminLogin" ui-sref-active="active"><i class="fa fa-sign-in fa-fw"></i><span>Login</span></a></li>
+				{{end}}
+				<li><a ui-sref="adminDashboard" ui-sref-active="active"><i class="fa fa-dashboard fa-fw"></i><span>Dashboard</span></a></li>
+				<li><a ui-sref="adminContent" ui-sref-active="active"><i class="fa fa-newspaper-o fa-fw"></i><span>Content</span></a></li>
+				<li><a ui-sref="adminMedia" ui-sref-active="active"><i class="fa fa-file-image-o fa-fw"></i><span>Media</span></a></li>
+				<li><a ui-sref="adminUsers" ui-sref-active="active"><i class="fa fa-users fa-fw"></i><span>Users</span></a></li>
+				<li><a ui-sref="adminSettings" ui-sref-active="active"><i class="fa fa-gear fa-fw"></i><span>Settings</span></a></li>
+			</ul>
+		</nav>
+	</div> -->
+	
+	<div id="admin-footer">
+		<p>Thank you for creating with <a href="https://github.com/codeish/collexy">Collexy</a></p>
+	</div>
+</div>
+
+<script src="public/assets/js/main.js"></script>
+<script src="public/lib/modernizr/modernizr-latest.js"></script>
+<script src="public/lib/jquery/jquery-1.11.1.js"></script>
+<script src="public/lib/angular-1.3.0-rc.4/angular.js"></script>
+<script src="public/lib/angular-1.3.0-rc.4/angular-resource.js"></script>
+<script src="public/lib/angular-1.3.0-rc.4/angular-cookies.js"></script>
+<script src="public/lib/angular-ui/angular-ui-router.js"></script>
+<script src="public/lib/ui-utils-0.1.1/ui-utils.min.js"></script>
+
+<!-- Services -->
+<script src="public/services/user.js"></script>
+<script src="public/services/member.js"></script>
+<script src="public/services/session.js"></script>
+<script src="public/services/authentication.js"></script>
+<script src="public/services/node.js"></script>
+<script src="public/services/entity.js"></script>
+<script src="public/services/misc.js"></script>
+
+<!-- Controllers -->
+<script src="public/app.js"></script>
+<script src="public/controllers/admin.js"></script>
+<script src="public/controllers/user.js"></script>
+<script src="public/controllers/member.js"></script>
+<script src="public/controllers/content.js"></script>
+<script src="public/controllers/media.js"></script>
+<script src="public/controllers/directory.js"></script>
+<script src="public/controllers/content-type.js"></script>
+<script src="public/controllers/member-type.js"></script>
+<script src="public/controllers/media-type.js"></script>
+<script src="public/controllers/data-type.js"></script>
+<script src="public/controllers/template.js"></script>
+
+
+<script src="public/lib/ngDialog/ngDialog.js"></script>
+
+<!-- Directives -->
+<script src="public/directives/checklist-model.js"></script>
+
+{{end}}

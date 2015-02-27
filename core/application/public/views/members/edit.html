@@ -1,0 +1,63 @@
+<div ng-controller="MemberEditCtrl">
+    <form role="form" ng-submit="submit()">
+        <h4>Edit</h4>
+
+        <input type="text" ng-model="data.username">
+        <!-- <pre>
+        {{node}}
+            {{node.ctm.tabs}}
+            {{node.ct.tabs}}
+        </pre>
+        <p>
+            {{node.content}}
+        </p> -->
+        <ul class="admin-tabs">
+            
+            <!-- <li class="active"><a href="">Meta</a></li>
+            <li><a href="#">Properties</a></li> -->
+            <!-- <li ng-repeat="tab in [{name: 'tab1', properties: [{name: 'prop1', order: 1, data_type: 1, help_text: 'help text', description: 'description'}]}, {name: 'tab2', properties: [{name: 'prop2', order: 1, data_type: 1, help_text: 'help text2', description: 'description2'}, {name: 'prop3', order: 2, data_type: 1, help_text: 'help text3', description: 'description3'}]}] track by tab.name">{{tab.name}}</li> -->
+            <li ng-repeat="tab in member_type.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li>
+            <li ng-class="(currentTab=='Properties') ? 'active' : ''"><a href="#Properties" ng-click="toggleTab('Properties')">Properties</a></li>
+        </ul>
+        
+        <div ng-repeat="tab in member_type.tabs  | unique: name" ng-show="currentTab == tab.name">
+            <table>
+                <tr ng-repeat="prop in tab.properties">
+                    <td>{{prop.name}}</td>
+                    <!-- <td><div wrap-input></div><td> -->
+                    <!-- <td><div wrap-input><input type="text" ng-model="node.content.meta[prop.name]"/></div></td> -->
+                    <!-- <td><input type="text" ng-model="prop.name"></td> -->
+                    <td compile ng-bind-html="prop.data_type.html | unsafe"></td>
+                    <td>{{prop.description}}</td>
+                </tr>
+                <!-- <p>{{tab.name}} fields</p>
+                <p>{{tab.properties}}</p> -->
+            </table>
+        </div>
+
+        <table ng-show="currentTab == 'Properties'">
+            <tr>
+                <td>Id:</td>
+                <td>{{data.id}}</td>
+                <td>blabla bla bla</td>
+            </tr>
+            <tr>
+                <td>Created Date:</td>
+                <td>{{data.created_date}}</td>
+                <td>blabla bla bla</td>
+            </tr>
+            <tr>
+                <td>Last Updated:</td>
+                <td>{{data.updated_date}}</td>
+                <td>blabla bla bla</td>
+            </tr>
+            <tr>
+                <td>Member type:</td>
+                <td>{{data.member_type_node_id}}</td>
+                <td>blabla bla bla</td>
+            </tr>
+        </table>
+        <div ui-view></div>
+        <button class="btn" type="submit">Update Member &raquo;</button>
+    </form>
+</div>

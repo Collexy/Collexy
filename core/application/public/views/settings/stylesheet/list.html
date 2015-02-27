@@ -1,0 +1,56 @@
+<script type="text/ng-template"  id="tree_item_renderer.html">
+    <!--<a ui-sref="settings.{{rootdir}}.edit({name:data.name})">{{data.path}}</a>-->
+    <!--<i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-caret-down' : 'fa-caret-right'"></i>-->
+        <i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-folder-open-o' : 'fa-folder-o'"></i>
+        <!--<button ng-click="expand_collapse(data)" ng-show="data.show">collapse</button>
+        <button ng-click="expand_collapse(data)" ng-show="!data.show">expand</button>-->
+        <a ui-sref="settings.{{rootdir}}.edit({name:data.info.name})"  ui-sref-active="active" ng-context-menu="showOptions(data,$event)">{{data.info.name}} </a>
+        <!--<button ng-click="add(data)">Add node</button>-->
+        <!--<button ng-click="delete(data)" ng-show="data.nodes.length > 0">Delete nodes</button>
+        <!--<button ng-click="expand_collapse(data)" ng-show="data.show && data.nodes.length > 0">collapse</button>-->
+        <ul ng-show="data.children">
+            <li ng-repeat="data in data.children" ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+
+</script>
+<div ng-controller="DirectoryTreeCtrl">
+    <h4>{{rootdir | capitalize}}s</h4>
+<!--     {{tree.children}} -->
+    <ul class="admin-tree">
+        <li ng-repeat="data in tree.children" ng-include="'tree_item_renderer.html'"></li>
+    </ul>
+    <div id="overlay">
+        {{currentItem}}
+        <p>Context menu for {{currentItem.info.name}}</p>
+        <ul>
+            <li ng-if="currentItem.info.is_dir">
+                <a>New</a>
+                <ul>
+                    <li >
+                        <a ui-sref="settings.{{rootdir}}.new({type:'file', parent:currentItem.path})">{{rootdir | capitalize}} file</a>
+                    </li>
+                    <li >
+                        <a ui-sref="settings.{{rootdir}}.new({type:'folder', parent:currentItem.path})">Folder</a>
+                    </li>
+                    <!-- <li>
+                        <a ui-sref="settings.contentType.new">Page</a>
+                    </li>
+                    <li>
+                        <a ui-sref="settings.contentType.new">Product</a>
+                    </li> -->
+                </ul>
+            </li>
+            <li>
+                <a>Delete</a>
+                <ul ng-switch="currentItem.info.is_dir">
+                    <li ng-switch-when="true">
+                        <a ui-sref="settings.{{rootdir}}.delete(currentItem.path)">Folder</a>
+                    </li>
+                    <li ng-switch-when="false">
+                        <a ui-sref="settings.{{rootdir}}.delete(currentItem.path)">{{rootdir | capitalize}} file</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

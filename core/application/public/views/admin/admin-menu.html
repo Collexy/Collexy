@@ -1,0 +1,52 @@
+<!-- <div id="adminmenucontainer" class="column">
+	<nav id="adminmenu">
+		<ul>
+			<li><a ui-sref="adminLogout" ui-sref-active="active"><i class="fa fa-sign-in fa-fw"></i><span>Logout</span></a></li>
+			<li><a ui-sref="adminDashboard" ui-sref-active="active"><i class="fa fa-dashboard fa-fw"></i><span>Dashboard</span></a></li>
+			<li><a ui-sref="adminContent" ui-sref-active="active"><i class="fa fa-newspaper-o fa-fw"></i><span>Content</span></a></li>
+			<li><a ui-sref="adminMedia" ui-sref-active="active"><i class="fa fa-file-image-o fa-fw"></i><span>Media</span></a></li>
+			<li><a ui-sref="adminUsers" ui-sref-active="active"><i class="fa fa-users fa-fw"></i><span>Users</span></a></li>
+			<li><a ui-sref="adminSettings" ui-sref-active="active"><i class="fa fa-gear fa-fw"></i><span>Settings</span></a></li>
+		</ul>
+	</nav>
+</div> -->
+
+<div ng-controller="AdminMenuCtrl">
+	<div id="adminmenucontainer" class="column">
+		<nav id="adminmenu">
+		<!-- user: {{userSession}} -->
+			<!-- <ul>
+				<li ng-if="userSession.id != null"><a ui-sref="adminLogout" ui-sref-active="active"><i class="fa fa-power-off fa-fw"></i><span>Logout</span></a></li>
+				<li ng-if="userSession.id == null"><a ui-sref="adminLogin" ui-sref-active="active"><i class="fa fa-sign-in fa-fw"></i><span>Login</span></a></li>
+				<li><a ui-sref="adminDashboard" ui-sref-active="active"><i class="fa fa-dashboard fa-fw"></i><span>Dashboard</span></a></li>
+				<li><a ui-sref="adminContent" ui-sref-active="active"><i class="fa fa-newspaper-o fa-fw"></i><span>Content</span></a></li>
+				<li><a ui-sref="adminMedia" ui-sref-active="active"><i class="fa fa-file-image-o fa-fw"></i><span>Media</span></a></li>
+				<li><a ui-sref="adminUsers" ui-sref-active="active"><i class="fa fa-user fa-fw"></i><span>Users</span></a></li>
+				<li><a ui-sref="adminMembers" ui-sref-active="active"><i class="fa fa-users fa-fw"></i><span>Members</span></a></li>
+				<li><a ui-sref="adminSettings" ui-sref-active="active"><i class="fa fa-gear fa-fw"></i><span>Settings</span></a></li>
+			</ul> -->
+
+			<ul>
+				<li ng-repeat="section in sections">
+					<a ng-if="section.parent_id == null" ng-click="toggleSubMenu(section.id)" ui-sref="{{section.route.path}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a>
+					<!-- <a ng-if="section.id ==6" ng-click="toggleSubMenu(section.id)" ui-sref="{{section.route.path}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a> -->
+					<!-- <a ng-if="section.alias != 'login'" ui-sref="{{section.alias}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a> -->
+
+
+					<!-- <a ng-if="section.alias != 'login' && section.alias != 'logout'" ui-sref="{{section.alias}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a>
+					<a ng-if="userSession.id != null && section.alias == 'login'" ui-sref="{{section.alias}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a>
+					<a ng-if="userSession.id == null && section.alias == 'logout'" ui-sref="{{section.alias}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a> -->
+				</li>
+			</ul>
+		</nav>
+	</div>
+	<div id="adminsubmenucontainer" class="column collapse1">
+		<nav id="admin-sub-menu">
+			<ul>
+				<li ng-repeat="sub in subMenuItems">
+					<a ui-sref="{{sub.route.path}}" ui-sref-active="active"><i ng-class="sub.icon"></i><span>{{sub.name}}</span></a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+</div>

@@ -1,0 +1,17 @@
+<h2>Content</h2>
+<p>Content tree hiearchi nodes goes here1</p>
+
+<script type="text/ng-template"  id="tree_item_renderer.html">
+    {{data.path}}
+    <button ng-click="add(data)">Add node</button>
+    <button ng-click="delete(data)" ng-show="data.nodes.length > 0">Delete nodes</button>
+    <button ng-click="expand_collapse(data)" ng-show="data.show && data.nodes.length > 0">collapse</button>
+    <button ng-click="expand_collapse(data)" ng-show="!data.show">expand</button>
+    <ul ng-show="data.show">
+        <li ng-repeat="data in data.nodes" ng-include="'tree_item_renderer.html'"></li>
+    </ul>
+</script>
+
+<ul ng-app="Application" ng-controller="ContentTreeCtrl">
+    <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
+</ul>

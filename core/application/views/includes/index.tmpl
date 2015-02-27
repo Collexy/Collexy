@@ -1,0 +1,30 @@
+<!-- Content of admin.html: -->
+{{define "head"}}<title>index</title>{{end}}
+{{define "body"}}
+<script>
+var req = new XMLHttpRequest();
+req.onreadystatechange=state_change;
+req.open('GET', document.location, false);
+req.setRequestHeader("Authorization","Bearer " + window.sessionStorage.token);
+req.send(null);
+var headers = req.getAllResponseHeaders().toLowerCase();
+
+// request.setRequestHeader("Referer", "http://www.google.com");
+//request.setRequestHeader("User-Agent", "Mozilla/5.0");
+// request.setRequestHeader("Accept","text/plain");
+// request.setRequestHeader("Content-Type","text/plain");
+
+function state_change()
+{
+	if (req.readyState==4){// 4 = "loaded"
+		if (req.status==200) {// 200 = OK
+			// ...our code here...
+			alert(headers);
+		} else{
+			alert("Problem retrieving XML data");
+		}
+	}
+}
+</script>
+index
+{{end}}

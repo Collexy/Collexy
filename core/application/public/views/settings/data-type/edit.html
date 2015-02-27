@@ -1,0 +1,42 @@
+<div ng-controller="DataTypeTreeCtrlEdit">
+    <form role="form" ng-submit="submit()">
+        <h4>Edit</h4>
+
+        <input type="text" ng-model="node.node.name">
+
+        <ul class="admin-tabs">
+            <li ng-class="(currentTab=='data-type') ? 'active' : ''"><a href="#data-type" ng-click="toggleTab('data-type')">Data Type</a></li>
+            <!-- <li ng-repeat="tab in node.ct.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
+        </ul>
+        <div ng-show="currentTab == 'data-type'">
+            <table>
+                <tr>
+                    <td>Data type alias</td>
+                    <td><input type="text" ng-model="node.alias"></td>
+                    <td>Overrides node title if entered bla bla bla</td>
+                </tr>
+    <!--             <tr>
+                    <td>Template file</td>
+                    <td>
+                        <select ng-model="node.dt.Path" ng-change="readFile()">
+                            <option ng-repeat="tpl in node.tmpl" value="{{tpl.Path}}">{{tpl.Path}}</option>
+                        </select>
+                    </td>
+                    <td>Overrides node title if entered bla bla bla</td>
+                </tr> -->
+                <!-- <tr>
+                    <td>Template path</td>
+                    <td><input id="lol" type="text" ng-model="node.dt.Path" ng-change="readFile()"></td>
+                    <td>Path to template file</td>
+                </tr> -->
+                <tr>
+                    <td>Template HTML</td>
+                    <td><textarea ng-model="node.html"></textarea></td>
+                    <td>Edit the template file HTML</td>
+                </tr>
+            </table>
+        </div>
+        <div ui-view></div>
+        <button class="btn" type="submit">Update Data Type &raquo;</button>
+    </form>
+</div>

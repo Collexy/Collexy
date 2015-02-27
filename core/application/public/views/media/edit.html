@@ -1,0 +1,101 @@
+<div ng-controller="MediaTreeCtrlEdit">
+    <form role="form" ng-submit="submit()">
+        <h4>Edit1</h4>
+
+        <input type="text" ng-model="data.node.name">
+        <!-- <pre>
+        {{node}}
+            {{node.ctm.tabs}}
+            {{node.ct.tabs}}
+        </pre>
+        <p>
+            {{node.media}}
+        </p> -->
+        <ul class="admin-tabs">
+            <!-- <li class="active"><a href="">Meta</a></li>
+            <li><a href="#">Properties</a></li> -->
+            <!-- <li ng-repeat="tab in [{name: 'tab1', properties: [{name: 'prop1', order: 1, data_type: 1, help_text: 'help text', description: 'description'}]}, {name: 'tab2', properties: [{name: 'prop2', order: 1, data_type: 1, help_text: 'help text2', description: 'description2'}, {name: 'prop3', order: 2, data_type: 1, help_text: 'help text3', description: 'description3'}]}] track by tab.name">{{tab.name}}</li> -->
+            <li ng-repeat="tab in tabs | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li>
+        </ul>
+
+        <div ng-repeat="tab in tabs | unique: name" ng-show="currentTab == tab.name">
+            <table>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Id:</td>
+                    <td>{{data.node.id}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Created By:</td>
+                    <td>{{data.node.created_by}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Created Date:</td>
+                    <td>{{data.node.created_date}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Last updated date:</td>
+                    <td>{{data.node.updated_date}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Node Type:</td>
+                    <td>{{data.node.node_type}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Node Path:</td>
+                    <td>{{data.node.path}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Parent Node Id:</td>
+                    <td><input type="number" ng-model="data.node.parent_id"></td>
+                </tr>
+    <!--             <tr ng-if="tab.name=='Properties'">
+                    <td>Publish at:</td>
+                    <td>{{node.media.meta.publish_at}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Unpublish at:</td>
+                    <td>{{node.media.meta.unpublish_at}}</td>
+                    <td></td>
+                </tr> -->
+
+                <tr ng-repeat="prop in tab.properties">
+                    <td>{{prop.name}}</td>
+                    <!-- <td><div wrap-input></div><td> -->
+                    <!-- <td><div wrap-input><input type="text" ng-model="node.media.meta[prop.name]"/></div></td> -->
+                    <!-- <td><input type="text" ng-model="prop.name"></td> -->
+                    <td compile ng-bind-html="prop.data_type.html | unsafe"></td>
+                    <!-- <td>{{prop.description}}</td> -->
+                    <td>
+                        <img ng-if="data.meta[prop.name] === data.meta.path && node.content.meta[prop.name] != '' && data.meta[prop.name] != null" ng-src="{{data.meta.path | pathToUrl}}" width="75" height="75">
+                        <span ng-if="data.meta[prop.name] !== data.meta.path">{{value.description}}</span>
+                    </td>
+                </tr>
+                <!-- <p>{{tab.name}} fields</p>
+                <p>{{tab.properties}}</p> -->
+            </table>
+        </div>
+        
+        <!-- <form role="form" ng-submit="submit()">
+            <label>Id: {{node.id}}</label><br>
+            <label>Created By: {{node.created_by}}</label><br>
+            <label>Created Date: {{node.created_date}}</label><br>
+            <label>Node Type: {{node.node_type}}</label><br>
+            <label>Node Path: {{node.path}}</label><br>
+            <label>Name</label>
+            <input type="text" ng-model="node.name" name="name" class="form-control"><br>
+            
+            <button class="btn" type="submit">Update Node &raquo;</button>
+        </form> -->
+        <div ui-view></div>
+       
+        <!-- <input type="hidden" ng-value="data.node.old_name"> -->
+        <button class="btn" type="submit">Create Content &raquo;</button>
+    </form>
+</div>

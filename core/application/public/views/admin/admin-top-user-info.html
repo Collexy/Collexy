@@ -1,0 +1,51 @@
+
+<div ng-controller="AdminTopUserInfoCtrl">
+	<div ng-if="userSession" >
+		<div id="stuff" style="background: whitesmoke;
+			padding: 0.5em 0.8em;
+			border: 1px solid #ddd;
+			overflow: hidden;" >
+			<p>Welcome <strong>{{userSession.username}}</strong><a style="float:right; color:#333;" href="#" id="toggle-session-data"><i class="fa fa-caret-down fa-fw"></i></a></p>
+			<p>Your user_groups are:<br>
+			<div ng-repeat="user_group in userSession.user_groups">
+				<u style="text-transform: capitalize;">{{user_group.name}}'s</u> permissions are:
+				<ul style="columns: 4;-webkit-columns: 4; -moz-columns: 4; padding-left: 0; font-size: 0.8em; list-style-type:none;">
+					<li ng-repeat="permission in user_group.permissions">{{permission.name}}</li>
+				</ul>
+			</div>
+			</p>
+		</div>
+		<script>
+			(function(){
+				var toggleSessionDataState = localStorage.getItem('toggleSessionDataState');
+				if(toggleSessionDataState== null){
+					toggleSessionDataState = "collapse";
+				}
+
+
+				if(toggleSessionDataState== "collapse"){
+					document.getElementById('stuff').style.height="36px";
+				} else{
+					document.getElementById('stuff').style.height="auto";
+					//document.getElementById('stuff').setAttribute("style","height:auto;");
+				}
+				
+				var toggleSessionDataAhref = document.getElementById('toggle-session-data')
+				toggleSessionDataAhref.onclick = toggleSessionDataStateClickHandler;
+
+				function toggleSessionDataStateClickHandler(){
+					if(toggleSessionDataState== "expanded"){
+						document.getElementById('stuff').style.height="36px";
+						toggleSessionDataState = "collapse"
+						localStorage.setItem('toggleSessionDataState',toggleSessionDataState);
+					} else{
+						document.getElementById('stuff').style.height="auto";
+						//document.getElementById('stuff').setAttribute("style","height:auto;");
+						toggleSessionDataState = "expanded"
+						localStorage.setItem('toggleSessionDataState',toggleSessionDataState);
+					}
+				}
+			})();
+		</script>
+	</div>
+</div>

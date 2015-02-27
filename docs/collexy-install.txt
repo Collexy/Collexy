@@ -1,0 +1,25 @@
+Installation:
+
+Video is here: http://youtu.be/g9bcKSKv6A0
+NB: In the video I forgot step 8, so just remember to do that step as well
+
+    Create the file /etc/apt/sources.list.d/pgdg.list, and add the following 2 lines: deb http://apt.postgresql.org/pub/repos/apt/ YOUR_UBUNTU_VERSION_HERE-pgdg main deb http://download.webmin.com/download/repository sarge contrib
+    wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \ sudo apt-key add -
+    apt-get update
+    apt-get upgrade
+    apt-get install postgresql-9.4 postgresql-contrib-9.4 pgadmin3
+    apt-get install nginx
+    apt-get install memcached
+    apt-get install webmin
+    apt-get install git
+    go to https://[yourip]:10000, login
+    create new postgresql database nameed collexy
+    edit user postgres, set password = the one in your collexy application
+    in pgadmin in webmin, go to "execute SQL", "run sql from file", "From uploaded file" and pick the .sql dump inside collexy/DATABASE DUMPS/13-01-2015-plain.sql
+    Your database is now installed
+    Use mkdir to create a folder where you'd like to store your app. Make a "src" folder and go to it.
+    write "git clone -b master https://github.com/collexy/codeish"
+    chmod +x collexy
+    and finally run the app with ./collexy
+    Go to http://[yourip]:8080/admin and you should now see the login screen

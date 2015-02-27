@@ -1,0 +1,166 @@
+[
+  {
+    "name": "Dashboard",
+    "alias": "dashboard",
+    "icon": "fa fa-dashboard fa-fw",
+    "order": 1,
+    "url": "/admin",
+    "template_url": "public/views/admin/dashboard.html"
+  },
+  {
+    "name": "Content",
+    "alias": "content",
+    "icon": "fa fa-newspaper-o fa-fw",
+    "order": 2,
+    "url": "/admin/content",
+    "template_url": "public/views/content/index.html",
+    "children": [
+        {
+            "name": "Edit",
+            "alias": "edit",
+            "url": "/edit/:nodeId",
+            "template_url": "public/views/content/edit.html",
+        },
+        {
+            "name": "New",
+            "alias": "new",
+            "url": "/new?node_type&content_type_node_id&parent_id",
+            "template_url": "public/views/content/new.html"
+        }
+    ]
+  },
+  {
+    "name": "Media",
+    "alias": "media",
+    "icon": "fa fa-file-image-o fa-fw",
+    "order": 3,
+    "url": "/admin/media",
+    "template_url": "public/views/media/index.html",
+    "children": [
+        {
+            "name": "Edit",
+            "alias": "edit",
+            "url": "/edit/:nodeId",
+            "template_url": "public/views/media/edit.html",
+        },
+        {
+            "name": "New",
+            "alias": "new",
+            "url": "/new?node_type&content_type_node_id&parent_id",
+            "template_url": "public/views/media/new.html"
+        }
+    ]
+  },
+  {
+    "name": "Users",
+    "alias": "users",
+    "icon": "fa fa-user fa-fw",
+    "order": 4,
+    "url": "/admin/users",
+    "template_url": "public/views/users/index.html"
+  },
+  {
+    "name": "Members",
+    "alias": "members",
+    "icon": "fa fa-users fa-fw",
+    "order": 5,
+    "url": "/admin/members",
+    "template_url": "public/views/members/index.html",
+    "children": [
+        {
+            "name": "Edit",
+            "alias": "edit",
+            "url": "/edit/:id",
+            "template_url": "public/views/members/edit.html",
+        },
+        {
+            "name": "New",
+            "alias": "new",
+            "url": "/new?member_type_id",
+            "template_url": "public/views/members/new.html",
+        },
+        {
+            "name": "Types",
+            "alias": "types",
+            "url": "/member-type",
+            "template_url": "public/views/members/member-type/index.html",
+            "children": [
+                {
+                    "name": "Edit",
+                    "alias": "edit",
+                    "url": "/edit/:nodeId",
+                    "template_url": "public/views/members/member-type/edit.html"
+                },
+                {
+                    "name": "New",
+                    "alias": "new",
+                    "url": "/new?member_type_id",
+                    "template_url": "public/views/members/member-type/new.html"
+                }
+            ]
+        },
+        {
+            "name": "Roles",
+            "alias": "roles",
+            "url": "/member-role",
+            "template_url": "public/views/members/member-role/index.html",
+        },
+        {
+            "name": "Permissions",
+            "alias": "permissions",
+            "url": "/member-permission",
+            "template_url": "public/views/members/member-permission/index.html",
+        }
+    ]
+  },
+  {
+    "name": "Settings",
+    "alias": "settings",
+    "icon": "fa fa-gear fa-fw",
+    "order": 6,
+    "children": [
+        {
+            "name": "Data Types",
+            "alias": "data_types",
+            "icon": "fa fa-check-square-o fa-fw",
+            "order": 1
+        },
+        {
+            "name": "Content Types",
+            "alias": "content_types",
+            "icon": "fa fa-newspaper-o fa-fw",
+            "order": 2
+        },
+        {
+            "name": "Media Types",
+            "alias": "media_types",
+            "icon": "fa fa-files-o fa-fw",
+            "order": 3
+        },
+        {
+            "name": "Scripts",
+            "alias": "scripts",
+            "icon": "fa fa-file-code-o fa-fw",
+            "order": 4
+        },
+        {
+            "name": "Stylesheets",
+            "alias": "stylesheets",
+            "icon": "fa fa-desktop fa-fw",
+            "order": 5
+        },
+        {
+            "name": "Templates",
+            "alias": "templates",
+            "icon": "fa fa-eye fa-fw",
+            "order": 6
+        },
+        {
+            "name": "Plugins",
+            "alias": "plugins",
+            "icon": "fa fa-plug fa-fw",
+            "order": 7
+        }
+    ]
+  },
+]

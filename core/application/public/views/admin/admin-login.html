@@ -1,0 +1,9 @@
+<div ng-controller="UserLoginCtrl">
+	<h2>Login</h2>
+	<form role="form" ng-submit="submit(user)">
+		<label>Username</label>
+		<input ng-model="user.username" type="text" name="Username" class="form-control">
+		<input ng-model="user.password" type="text" name="Password" class="form-control">
+		<button class="btn" type="submit" value="login">Log in &raquo;</button>
+	</form>
+</div>
