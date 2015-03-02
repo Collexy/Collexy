@@ -6,7 +6,7 @@ import (
     //"time"
     //"database/sql"
     _ "github.com/lib/pq"
-    "collexy/helpers"
+    corehelpers "collexy/core/helpers"
     "collexy/core/api/models"
     "strconv"
     //"log"
@@ -42,7 +42,7 @@ type MemberTypeApiController struct {}
 
 //     memberTypes := models.GetMemberTypes()
 //     res, err := json.Marshal(memberTypes)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     fmt.Fprintf(w,"%s",res)
 // }
@@ -63,13 +63,13 @@ func (this *MemberTypeApiController) GetMemberTypeByNodeId(w http.ResponseWriter
     if(!extended){
         memberType := models.GetMemberTypeByNodeId(nodeId)
         res, err := json.Marshal(memberType)
-        helpers.PanicIf(err)
+        corehelpers.PanicIf(err)
 
         fmt.Fprintf(w,"%s",res)
     } else {
         memberType := models.GetMemberTypeExtendedByNodeId(nodeId)
         res, err := json.Marshal(memberType)
-        helpers.PanicIf(err)
+        corehelpers.PanicIf(err)
 
         fmt.Fprintf(w,"%s",res)
     }

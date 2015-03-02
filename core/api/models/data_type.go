@@ -2,7 +2,7 @@ package models
 
 import (
   "encoding/json"
-  "collexy/helpers"
+  corehelpers "collexy/core/helpers"
   coreglobals "collexy/core/globals"
   "time"
   "fmt"
@@ -24,14 +24,14 @@ type DataType struct {
 
 func (t *DataType) Post(){
   tm, err := json.Marshal(t)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   fmt.Println("tm:::: ")
   fmt.Println(string(tm))
 
   db := coreglobals.Db
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer tx.Rollback()
   
 
@@ -51,16 +51,16 @@ func (t *DataType) Post(){
     log.Fatal(err.Error())
   } else {
     _, err = tx.Exec("UPDATE node SET path=$1 WHERE id=$2", "1." + strconv.FormatInt(node_id, 10), node_id)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     //println("LastInsertId:", node_id)
   }
   //defer r1.Close()
 
   _, err = tx.Exec("INSERT INTO data_type (node_id, alias, html) VALUES ($1, $2, $3)", node_id, t.Alias, t.Html)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r2.Close()
   err1 := tx.Commit()
-  helpers.PanicIf(err1)
+  corehelpers.PanicIf(err1)
 }
 
 func GetDataTypes() (dataTypes []DataType) {
@@ -86,7 +86,7 @@ func GetDataTypes() (dataTypes []DataType) {
   var data_type_html []byte
 
   rows, err := db.Query(querystr)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     defer rows.Close()
 
     for rows.Next(){
@@ -190,7 +190,7 @@ func GetDataTypeByNodeId(nodeId int) (dt DataType) {
     
     
     // bs, err7 := ioutil.ReadFile(absPath)
-    // helpers.PanicIf(err7)
+    // corehelpers.PanicIf(err7)
     // str := string(bs)
 }
 
@@ -198,15 +198,15 @@ func (dt *DataType) Update(){
   db := coreglobals.Db
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer tx.Rollback()
 
   _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", dt.Node.Name, dt.Node.Id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r1.Close()
 
   _, err = tx.Exec("UPDATE data_type SET alias = $1, html = $2 WHERE node_id = $3", dt.Alias, dt.Html, dt.Node.Id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r2.Close()
   tx.Commit()
 }

@@ -6,7 +6,7 @@ import (
     //"time"
     //"database/sql"
     _ "github.com/lib/pq"
-    "collexy/helpers"
+    //"collexy/helpers"
     "collexy/core/api/models"
     //"strconv"
     //"log"
@@ -192,7 +192,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
             if member := models.GetLoggedInMember(r); member != nil {
                 if(content.PublicAccess != nil){
-                    if(helpers.IntInSlice(member.Id, content.PublicAccess.Members)){
+                    if(corehelpers.IntInSlice(member.Id, content.PublicAccess.Members)){
                         this.RenderTemplate(w, templateName, content, member)
                     } else if(member.Groups2PublicAccess(content.PublicAccess.Groups)){
                         this.RenderTemplate(w, templateName, content, member)

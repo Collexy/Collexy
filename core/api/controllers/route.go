@@ -6,7 +6,7 @@ import
 	"collexy/core/api/models"
 	"encoding/json"
 	"net/http"
-	"collexy/helpers"
+	corehelpers "collexy/core/helpers"
     // "collexy/globals"
 )
 
@@ -16,7 +16,7 @@ type RouteApiController struct {}
 //     w.Header().Set("Content-Type", "application/json")
     
 //     res, err := json.Marshal(globals.Routes)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     fmt.Fprintf(w,"%s",res)
 // }
@@ -26,7 +26,7 @@ func (this *RouteApiController) Get(w http.ResponseWriter, r *http.Request) {
     
     routes := models.GetRoutes()
     res, err := json.Marshal(routes)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 }

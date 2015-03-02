@@ -5,8 +5,8 @@ import (
   "net/url"
   "encoding/json"
   "time"
-  "collexy/helpers"
-  "collexy/globals"
+  corehelpers "collexy/core/helpers"
+  //"collexy/globals"
   coreglobals "collexy/core/globals"
   //"log"
   //"strconv"
@@ -47,7 +47,7 @@ type Node struct {
 // AND (user_group_node_permissions @> '12' OR (user_group_node_permissions IS NULL AND 12 = ANY(my_user_group.default_node_permissions)));`
 
 //   rows, err := db.Query(queryStr)
-//   helpers.PanicIf(err)
+//   corehelpers.PanicIf(err)
 //   defer rows.Close()
 
 //   var id, created_by, node_type int
@@ -57,7 +57,7 @@ type Node struct {
 
 //   for rows.Next(){
 //       err := rows.Scan(&id, &path, &created_by, &name, &node_type, &created_date, &user_group_node_permissions)
-//       helpers.PanicIf(err)
+//       corehelpers.PanicIf(err)
 //       node := Node{id, path, created_by, name, node_type, &created_date, 0, nil,nil,false, "",user_group_node_permissions}
 //       nodes = append(nodes,node)
 //   }
@@ -66,13 +66,13 @@ type Node struct {
 
 type PermissionsContainer struct {
   Id int `json:"id"`
-  Permissions globals.StringSlice `json:"permissions"` //map[string]struct{} `json:"permissions"` 
+  Permissions coreglobals.StringSlice `json:"permissions"` //map[string]struct{} `json:"permissions"` 
 } 
 
 func GetNodes(queryStringParams url.Values, user *User) (nodes []Node){
 
   // test
-  // defer helpers.Un(helpers.Trace("SOME_ARBITRARY_STRING_SO_YOU_CAN_KEEP_TRACK"))
+  // defer corehelpers.Un(helpers.Trace("SOME_ARBITRARY_STRING_SO_YOU_CAN_KEEP_TRACK"))
 
   // test, _ := json.Marshal(user)
   // fmt.Println(string(test))
@@ -92,7 +92,7 @@ func GetNodes(queryStringParams url.Values, user *User) (nodes []Node){
   }
   
   rows, err := db.Query(sql)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   defer rows.Close()
 
   var id, created_by, node_type int
@@ -107,7 +107,7 @@ func GetNodes(queryStringParams url.Values, user *User) (nodes []Node){
   for rows.Next(){
 
       err := rows.Scan(&id, &path, &created_by, &name, &node_type, &created_date, &user_permissions, &user_group_permissions)
-      helpers.PanicIf(err)
+      corehelpers.PanicIf(err)
 
       //fmt.Sprintf("Node id is: %v", id)
       user_perm = nil
@@ -228,7 +228,7 @@ func GetNodes(queryStringParams url.Values, user *User) (nodes []Node){
 //   }
   
 //   rows, err := db.Query(sql)
-//   helpers.PanicIf(err)
+//   corehelpers.PanicIf(err)
 //   defer rows.Close()
 
 //   var id, created_by, node_type int
@@ -237,7 +237,7 @@ func GetNodes(queryStringParams url.Values, user *User) (nodes []Node){
 
 //   for rows.Next(){
 //       err := rows.Scan(&id, &path, &created_by, &name, &node_type, &created_date)
-//       helpers.PanicIf(err)
+//       corehelpers.PanicIf(err)
 //       node := Node{id, path, created_by, name, node_type, &created_date, 0, nil,nil,false, "", nil, nil}
 //       nodes = append(nodes,node)
 //   }
@@ -256,7 +256,7 @@ func GetNodeById(id int) (node Node){
   var created_date time.Time
 
   err := row.Scan(&id, &path, &created_by, &name, &node_type, &created_date)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   node = Node{id, path, created_by, name, node_type, &created_date, 0, nil, nil, false, "", nil, nil}
     
     return
@@ -269,7 +269,7 @@ func GetNodeByIdChildren(id int) (nodes []Node){
   querystr := "SELECT id, path, created_by, name, node_type, created_date FROM node WHERE parent_id=$1"
 
   rows, err := db.Query(querystr, id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   defer rows.Close()
 
   var created_by, node_type int
@@ -278,7 +278,7 @@ func GetNodeByIdChildren(id int) (nodes []Node){
 
   for rows.Next(){
       err := rows.Scan(&id, &path, &created_by, &name, &node_type, &created_date)
-      helpers.PanicIf(err)
+      corehelpers.PanicIf(err)
       node := Node{id,path,created_by, name, node_type, &created_date, 0, nil, nil, false, "", nil, nil}
 
       nodes = append(nodes, node)

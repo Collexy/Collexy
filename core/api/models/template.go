@@ -3,7 +3,7 @@ package models
 import (
   //"fmt"
   "encoding/json"
-  "collexy/helpers"
+  corehelpers "collexy/core/helpers"
   coreglobals "collexy/core/globals"
   "time"
   "strconv"
@@ -34,13 +34,13 @@ type Template struct {
 
 func (t *Template) Post(){
   tm, err := json.Marshal(t)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   fmt.Println("tm:::: ")
   fmt.Println(string(tm))
   db := coreglobals.Db
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer tx.Rollback()
   var parentNode Node
   var id, created_by, node_type int
@@ -73,16 +73,16 @@ func (t *Template) Post(){
     log.Fatal(err.Error())
   } else {
     _, err = tx.Exec("UPDATE node SET path=$1 WHERE id=$2", parentNode.Path + "." + strconv.FormatInt(node_id, 10), node_id)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     //println("LastInsertId:", node_id)
   }
   //defer r1.Close()
 
   _, err = tx.Exec("INSERT INTO template (node_id, alias, is_partial, partial_template_node_ids, parent_template_node_id) VALUES ($1, $2, $3, $4, $5)", node_id, t.Alias, false, t.PartialTemplateNodeIds, t.ParentTemplateNodeId)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r2.Close()
   err1 := tx.Commit()
-  helpers.PanicIf(err1)
+  corehelpers.PanicIf(err1)
 
   tplNodeName := t.Node.Name + ".tmpl"
   absPath, _ := filepath.Abs("/views/" + tplNodeName)
@@ -99,11 +99,11 @@ func (t *Template) Update(){
   db := coreglobals.Db
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer tx.Rollback()
 
   _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", t.Node.Name, t.Node.Id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r1.Close()
 
   fmt.Println("partial template node ids (array): ")
@@ -114,10 +114,10 @@ func (t *Template) Update(){
   fmt.Println(partial_template_node_ids_pgs_format)
 
   _, err = tx.Exec(`UPDATE template SET alias = $1, parent_template_node_id = $2, partial_template_node_ids = $3 WHERE node_id = $4`, t.Alias, t.ParentTemplateNodeId, partial_template_node_ids_pgs_format, t.Node.Id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r2.Close()
   err1 := tx.Commit()
-  helpers.PanicIf(err1)
+  corehelpers.PanicIf(err1)
 
   name := t.Node.Name + ".tmpl"
   absPath, _ := filepath.Abs("/views/" + name)
@@ -223,7 +223,7 @@ func GetTemplates() (templates []Template) {
 
 
   rows, err := db.Query(querystr)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     defer rows.Close()
 
     for rows.Next(){
@@ -252,7 +252,7 @@ func GetTemplates() (templates []Template) {
       //   // use s.String
       //   temp := []byte(partial_template_node_ids.String)
       //   err := json.Unmarshal(temp, &partial_templates_slice)
-      //   helpers.PanicIf(err)
+      //   corehelpers.PanicIf(err)
       // } else {
       //    // NULL value
       // }
@@ -329,7 +329,7 @@ where my_node.id=$1 and template.node_id = my_node.id`
   fmt.Println("FILEPATH:: " + absPath)
   
   bs, err7 := ioutil.ReadFile(absPath)
-  helpers.PanicIf(err7)
+  corehelpers.PanicIf(err7)
   str := string(bs)
 
   //var tplSlice []Template

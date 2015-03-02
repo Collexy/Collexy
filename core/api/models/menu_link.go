@@ -4,10 +4,10 @@ import
 (
 	coreglobals "collexy/core/globals"
 	"database/sql"
-	"collexy/helpers"
+	"collexy/core/helpers"
 	"log"
 	"encoding/json"
-	"collexy/globals"
+	//"collexy/globals"
 	// "fmt"
 )
 
@@ -43,8 +43,8 @@ order by menu_link.path,menu_link.id`
     var atts []byte
     var parent_id, route_id sql.NullInt64
     var icon sql.NullString
-    //var permissions globals.StringSlice
-    var permissions globals.StringSlice
+    //var permissions coreglobals.StringSlice
+    var permissions coreglobals.StringSlice
 
     //var route_route_id int
     var route_path, route_name string

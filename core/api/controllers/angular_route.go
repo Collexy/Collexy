@@ -6,7 +6,7 @@ import
 	"collexy/core/api/models"
 	"encoding/json"
 	"net/http"
-	"collexy/helpers"
+	corehelpers "collexy/core/helpers"
 )
 
 type AngularRouteApiController struct {}
@@ -21,7 +21,7 @@ func (this *AngularRouteApiController) Get(w http.ResponseWriter, r *http.Reques
     angularRoutes := models.GetAngularRoutes(queryStrParams,user)
 
     res, err := json.Marshal(angularRoutes)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 }

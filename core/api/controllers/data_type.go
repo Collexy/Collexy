@@ -3,7 +3,7 @@ package controllers
 import (
     "fmt"
     "net/http"
-    "collexy/helpers"
+    corehelpers "collexy/core/helpers"
     "collexy/core/api/models"
     "strconv"
     "encoding/json"
@@ -18,7 +18,7 @@ func (this *DataTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
     dataTypes := models.GetDataTypes()
 
     res, err := json.Marshal(dataTypes)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 
@@ -35,7 +35,7 @@ func (this *DataTypeApiController) GetByNodeId(w http.ResponseWriter, r *http.Re
     dataType := models.GetDataTypeByNodeId(nodeId)
 
     res, err := json.Marshal(dataType)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 

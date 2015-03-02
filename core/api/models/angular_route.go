@@ -2,7 +2,7 @@ package models
 
 import
 (
-	"collexy/helpers"
+	corehelpers "collexy/core/helpers"
 	coreglobals "collexy/core/globals"
 	"net/url"
 	"database/sql"
@@ -48,7 +48,7 @@ func GetAngularRoutes(queryStringParams url.Values, user *User) (routes []Angula
   queryStr = queryStr + ` ORDER BY path,id asc`
   
   rows, err := db.Query(queryStr)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   defer rows.Close()
 
   var id, ttype int
@@ -68,7 +68,7 @@ func GetAngularRoutes(queryStringParams url.Values, user *User) (routes []Angula
   for rows.Next(){
 
 	  err := rows.Scan(&id, &name, &alias, &path, &parent_id, &ttype, &icon, &url, &components, &parent)
-	  helpers.PanicIf(err)
+	  corehelpers.PanicIf(err)
 
 	  var icon_str, url_str, parent_str string
 	  var parent_id_int int

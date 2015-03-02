@@ -3,9 +3,9 @@ package models
 import (
   //"fmt"
   "encoding/json"
-  "collexy/globals"
+  //"collexy/globals"
   coreglobals "collexy/core/globals"
-  "collexy/helpers"
+  corehelpers "collexy/core/helpers"
   "time"
   "fmt"
   //"net/http"
@@ -52,7 +52,7 @@ WHERE node.path @> subpath($2,$3,nlevel(node.path)-$4)`
         &propertyValue)
 
   /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //helpers.PanicIf(err)
+  //corehelpers.PanicIf(err)
   switch {
     case err == sql.ErrNoRows:
             log.Printf("No property with that name.")
@@ -67,7 +67,7 @@ WHERE node.path @> subpath($2,$3,nlevel(node.path)-$4)`
 
 // Can be useful when we want to generate breadcrumbs and menus
 //
-func (c *Content) GetProperty2(name, ltreeQuery string)(properties globals.StringSlice){
+func (c *Content) GetProperty2(name, ltreeQuery string)(properties coreglobals.StringSlice){
   db := coreglobals.Db
 
 //   queryStr := `SELECT json_agg(props.propertyValue) AS properties
@@ -128,29 +128,29 @@ func DeleteContent(id int){
   db := coreglobals.Db
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
 
   _, err1 := tx.Exec("DELETE FROM content where node_id=$1", id)
-  helpers.PanicIf(err1)
+  corehelpers.PanicIf(err1)
   _, err2 := tx.Exec("DELETE FROM node where id=$1", id)
-  helpers.PanicIf(err2)
+  corehelpers.PanicIf(err2)
   //defer r2.Close()
   err3 := tx.Commit()
-  helpers.PanicIf(err3)
+  corehelpers.PanicIf(err3)
 }
 
 func (t *Content) Post(){
 
 
   tm, err := json.Marshal(t)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   fmt.Println("tm:::: ")
   fmt.Println(string(tm))
   
   db := coreglobals.Db
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer tx.Rollback()
   var parentNode Node
   var id, created_by, node_type int
@@ -175,7 +175,7 @@ func (t *Content) Post(){
   var node_id int64
   err = db.QueryRow(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`, t.Node.Name, t.Node.NodeType, 1, t.Node.ParentId).Scan(&node_id)
   //res, err := tx.Exec(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4)`, t.Node.Name, 3, 1, t.ParentTemplateNodeId)
-  //helpers.PanicIf(err)
+  //corehelpers.PanicIf(err)
   //node_id, err := res.LastInsertId()
   fmt.Println(strconv.FormatInt(node_id, 10))
   if err != nil {
@@ -183,15 +183,15 @@ func (t *Content) Post(){
     log.Fatal(err.Error())
   } else {
     _, err = tx.Exec("UPDATE node SET path=$1 WHERE id=$2", parentNode.Path + "." + strconv.FormatInt(node_id, 10), node_id)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     //println("LastInsertId:", node_id)
   }
   //defer r1.Close()
   meta, errMeta := json.Marshal(t.Meta)
-  helpers.PanicIf(errMeta)
+  corehelpers.PanicIf(errMeta)
 
   _, err = tx.Exec("INSERT INTO content (node_id, content_type_node_id, meta) VALUES ($1, $2, $3)", node_id, t.ContentTypeNodeId, meta)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r2.Close()
 
   if(t.Node.NodeType == 2){
@@ -209,7 +209,7 @@ func (t *Content) Post(){
     // }
   }
   err1 := tx.Commit()
-  helpers.PanicIf(err1)
+  corehelpers.PanicIf(err1)
 
   // // res, _ := json.Marshal(c)
   // // log.Println(string(res))
@@ -219,17 +219,17 @@ func (t *Content) Post(){
   // meta, _ := json.Marshal(c.Meta)
 
   // tx, err := db.Begin()
-  // helpers.PanicIf(err)
+  // corehelpers.PanicIf(err)
   // //defer tx.Rollback()
 
   // _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", c.Node.Name, c.Node.Id)
-  // helpers.PanicIf(err)
+  // corehelpers.PanicIf(err)
   // //defer r1.Close()
 
   // _, err = tx.Exec(`UPDATE content 
   //   SET meta = $1 
   //   WHERE node_id = $2`, meta, c.Node.Id)
-  // helpers.PanicIf(err)
+  // corehelpers.PanicIf(err)
   // //defer r2.Close()
 
   // tx.Commit()
@@ -250,17 +250,17 @@ func (c *Content) Update(){
   meta, _ := json.Marshal(c.Meta)
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer tx.Rollback()
 
   _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", c.Node.Name, c.Node.Id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r1.Close()
 
   _, err = tx.Exec(`UPDATE content 
     SET meta = $1 
     WHERE node_id = $2`, meta, c.Node.Id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r2.Close()
   if(c.Node.NodeType == 2){
     //originalPath := "media\\Another Image Folder"
@@ -316,7 +316,7 @@ func (c *Content) Update(){
         // _, err102 := tx.Exec(`UPDATE content 
         //   SET meta = json_object_update_key(meta::json, 'url', '$1'::text)::jsonb 
         //   WHERE node_id=$2`, newUrl, node_id)
-        // helpers.PanicIf(err102)
+        // corehelpers.PanicIf(err102)
       }
       if err101 := rows.Err(); err101 != nil {
         log.Fatal(err101)
@@ -327,7 +327,7 @@ func (c *Content) Update(){
         _, err102 := tx.Exec(`UPDATE content 
           SET meta = json_object_update_key(meta::json, 'path', $1::text)::jsonb 
           WHERE node_id=$2`, string(res[i].NewPath), res[i].NodeId)
-        helpers.PanicIf(err102)
+        corehelpers.PanicIf(err102)
       }
       
 
@@ -625,7 +625,7 @@ WHERE content_node.id=$1`
       &content_id, &content_node_id, &content_content_type_node_id, &content_meta,
       &ct_id, &ct_node_id, &ct_parent_content_type_node_id, &ct_alias, &ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_parent_content_types)
 
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
 
   var content_type_parent_node_id int
   if ct_parent_content_type_node_id.Valid {
@@ -787,7 +787,7 @@ WHERE content.node_id=$1`
       &template_node_id, &parent_template_nodes, &template_node_name)
 
   /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //helpers.PanicIf(err)
+  //corehelpers.PanicIf(err)
 
   var content_parent_node_id int
   if node_parent_id.Valid {
@@ -805,7 +805,7 @@ WHERE content.node_id=$1`
   json.Unmarshal(parent_template_nodes, &parent_template_nodes_final)
   json.Unmarshal(content_meta, &meta)
   json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
-  //helpers.PanicIf(myerr)
+  //corehelpers.PanicIf(myerr)
 
   //fmt.Println("TEST::: BEGIN ::: ")
   fmt.Println(string(partial_template_nodes))
@@ -836,7 +836,7 @@ WHERE content.node_id=$1`
   
   // byt := []byte(jsonString)
   // var data map[string]interface{}
-  //helpers.PanicIf(err)
+  //corehelpers.PanicIf(err)
   // switch {
   //     case err == queryStr.ErrNoRows:
   //             log.Printf("No node with that ID.")
@@ -942,7 +942,7 @@ WHERE lower(cn.name) = $1;`
   var content_id, content_node_id, content_content_type_node_id int
   var content_meta, content_public_access []byte
   var content_url string
-  var content_domains globals.StringSlice
+  var content_domains coreglobals.StringSlice
 
   // template node
   var template_id, template_node_id int
@@ -969,7 +969,7 @@ WHERE lower(cn.name) = $1;`
       &content_domains)
 
   /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //helpers.PanicIf(err)
+  //corehelpers.PanicIf(err)
   switch {
     case err == sql.ErrNoRows:
             log.Printf("No content with that url.")
@@ -997,7 +997,7 @@ WHERE lower(cn.name) = $1;`
   json.Unmarshal(content_meta, &meta)
   json.Unmarshal(content_public_access, &public_access)
   json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
-  //helpers.PanicIf(myerr)
+  //corehelpers.PanicIf(myerr)
 
   //fmt.Println("TEST::: BEGIN ::: ")
   fmt.Println(string(partial_template_nodes))
@@ -1123,7 +1123,7 @@ WHERE $1 = ANY(heh.domains) and nlevel(cn.path) = 2;`
   var content_id, content_node_id, content_content_type_node_id int
   var content_meta, content_public_access []byte
   
-  var content_domains globals.StringSlice
+  var content_domains coreglobals.StringSlice
 
   // template node
   var template_id, template_node_id int
@@ -1152,7 +1152,7 @@ WHERE $1 = ANY(heh.domains) and nlevel(cn.path) = 2;`
       &content_domains)
 
   /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //helpers.PanicIf(err)
+  //corehelpers.PanicIf(err)
   switch {
     case err == sql.ErrNoRows:
             log.Printf("No content with that url.")
@@ -1188,7 +1188,7 @@ WHERE $1 = ANY(heh.domains) and nlevel(cn.path) = 2;`
   json.Unmarshal(content_meta, &meta)
   json.Unmarshal(content_public_access, &public_access)
   json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
-  //helpers.PanicIf(myerr)
+  //corehelpers.PanicIf(myerr)
 
   //fmt.Println("TEST::: BEGIN ::: ")
   fmt.Println(string(partial_template_nodes))

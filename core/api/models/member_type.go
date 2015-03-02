@@ -3,7 +3,7 @@ package models
 import (
     //"fmt"
   "encoding/json"
-  "collexy/helpers"
+  corehelpers "collexy/core/helpers"
   coreglobals "collexy/core/globals"
   "time"
   //"net/http"
@@ -274,7 +274,7 @@ func GetMemberTypeExtendedByNodeId(nodeId int) (memberType MemberType){
 //     db := coreglobals.Db
 
 //     rows, err := db.Query(querystr)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 //     defer rows.Close()
 
 //     for rows.Next(){
@@ -307,7 +307,7 @@ func GetMemberTypeExtendedByNodeId(nodeId int) (memberType MemberType){
 //       //var tab Tab
 
 //       errlol := json.Unmarshal([]byte(mt_tabs_str), &ctTabs)
-//       helpers.PanicIf(errlol)
+//       corehelpers.PanicIf(errlol)
 
 //       //fmt.Println(":::::::::::::::::::::::::::::::::::2 ")
 //       //lol, _ := json.Marshal(ctTabs)
@@ -387,7 +387,7 @@ func GetMemberTypeByNodeId(nodeId int) (memberType MemberType){
     //var tab Tab
 
     errlol := json.Unmarshal([]byte(mt_tabs_str), &ctTabs)
-    helpers.PanicIf(errlol)
+    corehelpers.PanicIf(errlol)
 
     //fmt.Println(":::::::::::::::::::::::::::::::::::2 ")
     //lol, _ := json.Marshal(ctTabs)
@@ -423,7 +423,7 @@ func GetMemberTypeByNodeId(nodeId int) (memberType MemberType){
 
 //   var testMapSlice []map[string]interface{}
 //   err1 := json.Unmarshal(tabs,&testMapSlice)
-//   helpers.PanicIf(err1)
+//   corehelpers.PanicIf(err1)
   
 //   // //tabs, _ := json.Marshal(ct.Tabs)
 //   // for i := 0; i < len(testMapSlice); i++ {
@@ -454,17 +454,17 @@ func GetMemberTypeByNodeId(nodeId int) (memberType MemberType){
 //   // //fmt.Println(testMapSlice[[`name`])
 
 //   tx, err := db.Begin()
-//   helpers.PanicIf(err)
+//   corehelpers.PanicIf(err)
 //   //defer tx.Rollback()
 
 //   _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", ct.Node.Name, ct.Node.Id)
-//   helpers.PanicIf(err)
+//   corehelpers.PanicIf(err)
 //   //defer r1.Close()
 
 //   _, err = tx.Exec(`UPDATE content_type 
 //     SET alias = $1, description = $2, icon = $3, thumbnail = $4, meta = $5, tabs = $6 
 //     WHERE node_id = $7`, ct.Alias, ct.Description, ct.Icon, meta, tabs, ct.Node.Id)
-//   helpers.PanicIf(err)
+//   corehelpers.PanicIf(err)
 //   //defer r2.Close()
 
 //   tx.Commit()

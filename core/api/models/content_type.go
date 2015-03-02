@@ -3,7 +3,7 @@ package models
 import (
     //"fmt"
   "encoding/json"
-  "collexy/helpers"
+  corehelpers "collexy/core/helpers"
   coreglobals "collexy/core/globals"
   "time"
   "fmt"
@@ -30,14 +30,14 @@ type ContentType struct {
 
 func (t *ContentType) Post(){
   tm, err := json.Marshal(t)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   fmt.Println("tm:::: ")
   fmt.Println(string(tm))
   
   db := coreglobals.Db
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer tx.Rollback()
   var parentNode Node
   var id, created_by, node_type int
@@ -70,21 +70,21 @@ func (t *ContentType) Post(){
     log.Fatal(err.Error())
   } else {
     _, err = tx.Exec("UPDATE node SET path=$1 WHERE id=$2", parentNode.Path + "." + strconv.FormatInt(node_id, 10), node_id)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     //println("LastInsertId:", node_id)
   }
   //defer r1.Close()
   meta, errMeta := json.Marshal(t.Meta)
-  helpers.PanicIf(errMeta)
+  corehelpers.PanicIf(errMeta)
 
   tabs, errTabs := json.Marshal(t.Tabs)
-  helpers.PanicIf(errTabs)
+  corehelpers.PanicIf(errTabs)
 
   _, err = tx.Exec("INSERT INTO content_type (node_id, alias, description, icon, thumbnail, parent_content_type_node_id, meta, tabs) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", node_id, t.Alias, t.Description, t.Icon, t.Thumbnail, t.ParentContentTypeNodeId, meta, tabs)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r2.Close()
   err1 := tx.Commit()
-  helpers.PanicIf(err1)
+  corehelpers.PanicIf(err1)
 
 }
 
@@ -164,7 +164,7 @@ func GetContentTypes() (contentTypes []ContentType){
     db := coreglobals.Db
 
     rows, err := db.Query(querystr)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     defer rows.Close()
 
     for rows.Next(){
@@ -197,7 +197,7 @@ func GetContentTypes() (contentTypes []ContentType){
       //var tab Tab
 
       errlol := json.Unmarshal([]byte(ct_tabs_str), &ctTabs)
-      helpers.PanicIf(errlol)
+      corehelpers.PanicIf(errlol)
 
       //fmt.Println(":::::::::::::::::::::::::::::::::::2 ")
       //lol, _ := json.Marshal(ctTabs)
@@ -512,7 +512,7 @@ func GetContentTypeByNodeId(nodeId int) (contentType ContentType){
     //var tab Tab
 
     errlol := json.Unmarshal([]byte(ct_tabs_str), &ctTabs)
-    helpers.PanicIf(errlol)
+    corehelpers.PanicIf(errlol)
 
     //fmt.Println(":::::::::::::::::::::::::::::::::::2 ")
     //lol, _ := json.Marshal(ctTabs)
@@ -548,7 +548,7 @@ func (ct *ContentType) Update(){
 
   var testMapSlice []map[string]interface{}
   err1 := json.Unmarshal(tabs,&testMapSlice)
-  helpers.PanicIf(err1)
+  corehelpers.PanicIf(err1)
   
   // //tabs, _ := json.Marshal(ct.Tabs)
   // for i := 0; i < len(testMapSlice); i++ {
@@ -579,17 +579,17 @@ func (ct *ContentType) Update(){
   // //fmt.Println(testMapSlice[[`name`])
 
   tx, err := db.Begin()
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer tx.Rollback()
 
   _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", ct.Node.Name, ct.Node.Id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r1.Close()
 
   _, err = tx.Exec(`UPDATE content_type 
     SET alias = $1, description = $2, icon = $3, thumbnail = $4, meta = $5, tabs = $6 
     WHERE node_id = $7`, ct.Alias, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.Node.Id)
-  helpers.PanicIf(err)
+  corehelpers.PanicIf(err)
   //defer r2.Close()
 
   tx.Commit()

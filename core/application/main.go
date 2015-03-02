@@ -9,7 +9,7 @@ import(
     "collexy/core/api/models"
     corehelpers "collexy/core/helpers"
     "github.com/gorilla/mux"
-    "collexy/globals"
+    //"collexy/globals"
     "fmt"
     "os"
     coreglobals "collexy/core/globals"
@@ -21,7 +21,7 @@ import(
 
 func executeDatabaseInstallScript(site_title,username,password,email string,privacy bool) (err error) {
     db := coreglobals.Db
-    _, err1 := db.Exec(globals.DbCreateScriptDML + globals.DbCreateScriptDDL, site_title, username, password, email)
+    _, err1 := db.Exec(coreglobals.DbCreateScriptDML + coreglobals.DbCreateScriptDDL, site_title, username, password, email)
     err = err1
     return
 }
@@ -32,8 +32,8 @@ func installPostHandler(w http.ResponseWriter, r *http.Request){
             // file does not exist
             log.Println("Config file does not exist")
             // create file
-            globals.Conf = globals.Config{r.PostFormValue("db_name"), r.PostFormValue("db_user"), r.PostFormValue("db_password"), "", r.PostFormValue("db_ssl_mode")}
-            res, err3 := json.Marshal(globals.Conf)
+            coreglobals.Conf = coreglobals.Config{r.PostFormValue("db_name"), r.PostFormValue("db_user"), r.PostFormValue("db_password"), "", r.PostFormValue("db_ssl_mode")}
+            res, err3 := json.Marshal(coreglobals.Conf)
             if(err3 != nil){
 
             } else {
@@ -89,15 +89,15 @@ func installHandler(w http.ResponseWriter, r *http.Request){
             }
 
             jsonParser := json.NewDecoder(configFile)
-            if err1 = jsonParser.Decode(&globals.Conf); err1 != nil {
+            if err1 = jsonParser.Decode(&coreglobals.Conf); err1 != nil {
                 log.Println("Error parsing config file")
                 //printError("parsing config file", err1.Error())
             }
-            // log.Println(globals.Conf.DbName)
-            // log.Println(globals.Conf.DbUser)
-            // log.Println(globals.Conf.DbPassword)
-            // log.Println(globals.Conf.DbHost)
-            // log.Println(globals.Conf.SslMode)
+            // log.Println(coreglobals.Conf.DbName)
+            // log.Println(coreglobals.Conf.DbUser)
+            // log.Println(coreglobals.Conf.DbPassword)
+            // log.Println(coreglobals.Conf.DbHost)
+            // log.Println(coreglobals.Conf.SslMode)
             coreglobals.Db = coreglobals.SetupDB()
 
         }
@@ -351,7 +351,7 @@ func test() {
 
     am.AddItem(miSettings)
 
-    globals.Menus = append(globals.Menus, am)
+    coreglobals.Menus = append(coreglobals.Menus, am)
 
     // rSettingsContentTypes.Children = append(rSettingsContentTypes.Children,rSettingsContentTypesNew)
     // rSettingsContentTypes.Children = append(rSettingsContentTypes.Children,rSettingsContentTypesEdit)
@@ -361,8 +361,8 @@ func test() {
     rSettingsContentTypes.AddChildren(&rSettingsContentTypesEdit)
     rSettings.AddChildren(&rSettingsContentTypes)
 
-    globals.Routes = append(globals.Routes, &rDashboard)
-    globals.Routes = append(globals.Routes, &rSettings)
+    coreglobals.Routes = append(coreglobals.Routes, &rDashboard)
+    coreglobals.Routes = append(coreglobals.Routes, &rSettings)
 
     //globals.Routes = routes
 }

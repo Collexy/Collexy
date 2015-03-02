@@ -5,10 +5,10 @@ import
 	"fmt"
 	"encoding/json"
 	"net/http"
-	"collexy/helpers"
+	corehelpers "collexy/core/helpers"
 	"github.com/gorilla/mux"
 	"strconv"
-	"collexy/globals"
+	coreglobals "collexy/core/globals"
 )
 
 type AdminMenu struct {
@@ -42,7 +42,7 @@ type AdminRoute struct {
 	// Ref string `json:"ref,omitempty"`
 }
 
-func (this *AdminRoute) AddChildren (child globals.IRoute){
+func (this *AdminRoute) AddChildren (child coreglobals.IRoute){
 	c := child.(*AdminRoute)
 	this.Children = append(this.Children, c)
 }
@@ -50,7 +50,7 @@ func (this *AdminRoute) AddChildren (child globals.IRoute){
 func Test(w http.ResponseWriter, r *http.Request){
 	 w.Header().Set("Content-Type", "application/json")
 
-	var routes []globals.IRoute 
+	var routes []coreglobals.IRoute 
 	/**
 	* Menu
 	*/
@@ -136,9 +136,9 @@ func Test(w http.ResponseWriter, r *http.Request){
 	routes = append(routes, &rSettings)
 
 	res, err := json.Marshal(am)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
-    //globals.Routes = routes
+    //coreglobals.Routes = routes
 
     fmt.Fprintf(w,"%s",res)
 }
@@ -163,7 +163,7 @@ func CmTest(w http.ResponseWriter, r *http.Request){
 
 	if(nodeType == 1){
 		res, err := json.Marshal(contentTypeItems)
-    	helpers.PanicIf(err)
+    	corehelpers.PanicIf(err)
 
     	fmt.Fprintf(w,"%s",res)
 	} else {

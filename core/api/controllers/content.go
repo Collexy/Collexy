@@ -6,7 +6,7 @@ import (
     //"time"
     //"database/sql"
     _ "github.com/lib/pq"
-    "collexy/helpers"
+    //"collexy/helpers"
     "collexy/core/api/models"
     "strconv"
     //"log"
@@ -256,7 +256,7 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
 
             if member := models.GetLoggedInMember(r); member != nil {
                 if(content.PublicAccess != nil){
-                    if(helpers.IntInSlice(member.Id, content.PublicAccess.Members)){
+                    if(corehelpers.IntInSlice(member.Id, content.PublicAccess.Members)){
                         this.RenderTemplate(w, templateName, content, member)
                     } else if(member.Groups2PublicAccess(content.PublicAccess.Groups)){
                         this.RenderTemplate(w, templateName, content, member)
@@ -300,7 +300,7 @@ func (this *ContentApiController) GetBackendContentByNodeId(w http.ResponseWrite
     content := models.GetBackendContentByNodeId(nodeId)
 
     res, err := json.Marshal(content)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 }
@@ -511,11 +511,11 @@ func (this *ContentApiController) GetBackendContentByNodeId(w http.ResponseWrite
 //     templol := r.URL.Query().Get(":id")
 //     //fmt.Println(templol)
 //     rofl,err1 := strconv.Atoi(templol)
-//     helpers.PanicIf(err1)
+//     corehelpers.PanicIf(err1)
 
 //     parm_id = rofl
 
-//     db := helpers.Db
+//     db := corehelpers.Db
 
 //     row := db.QueryRow(querystr, parm_id)
 
@@ -576,13 +576,13 @@ func (this *ContentApiController) GetBackendContentByNodeId(w http.ResponseWrite
 //                 log.Fatal(err)
 //         default:
 //                 node_str,err := json.Marshal(node)
-//                 helpers.PanicIf(err)
+//                 corehelpers.PanicIf(err)
 //                 content_str,err := json.Marshal(content)
-//                 helpers.PanicIf(err)
+//                 corehelpers.PanicIf(err)
 //                 ct_str,err := json.Marshal(ct)
-//                 helpers.PanicIf(err)
+//                 corehelpers.PanicIf(err)
 //                 ctm_str,err := json.Marshal(ctm)
-//                 helpers.PanicIf(err)
+//                 corehelpers.PanicIf(err)
 //                 combined_res := fmt.Sprintf("{\"node\": %s, \"content\": %s, \"ct\": %s, \"ctm\": %s}",node_str, content_str, ct_str, ctm_str)
 //                 fmt.Fprintf(w, "%s", combined_res)
 //     }
@@ -593,7 +593,7 @@ func (this *ContentApiController) GetBackendContentByNodeId(w http.ResponseWrite
 //     content := models.GetContent()
 
 //     res, err := json.Marshal(content)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     fmt.Fprintf(w,"%s",res)
 // }
@@ -607,7 +607,7 @@ func (this *ContentApiController) GetBackendContentByNodeId(w http.ResponseWrite
 //     content := models.GetContentOfType(id)
 
 //     res, err := json.Marshal(content)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     fmt.Fprintf(w,"%s",res)
 // }

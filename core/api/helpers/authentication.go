@@ -5,7 +5,7 @@ import(
     "net/http"
     "fmt"
     "encoding/json"
-    "collexy/helpers"
+    corehelpers "collexy/core/helpers"
     "collexy/core/api/models"
     coreglobals "collexy/core/globals"
 )
@@ -23,6 +23,6 @@ func AngularAuth(w http.ResponseWriter, r *http.Request){
     
     u, _ := models.GetUser(sid)
     res, err := json.Marshal(u)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     fmt.Fprintf(w,"%s",res)
 }

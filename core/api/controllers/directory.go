@@ -6,7 +6,7 @@ import (
     //"time"
     //"database/sql"
     _ "github.com/lib/pq"
-    "collexy/helpers"
+    corehelpers "collexy/core/helpers"
     "collexy/core/api/models"
     //"strconv"
     //"log"
@@ -115,7 +115,7 @@ func (this *DirectoryApiController) Get(w http.ResponseWriter, r *http.Request) 
     rootdir := params["rootdir"]
 
     tree, err := models.GetFilesystemNodes(rootdir)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     b, err := json.Marshal(tree)
     if err != nil {

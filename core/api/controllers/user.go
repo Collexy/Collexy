@@ -6,7 +6,7 @@ import (
     //"time"
     //"database/sql"
     _ "github.com/lib/pq"
-    "collexy/helpers"
+    corehelpers "collexy/core/helpers"
     coreglobals "collexy/core/globals"
     "strconv"
     "log"
@@ -23,7 +23,7 @@ type UserApiController struct {}
 func (this *UserApiController) Get(w http.ResponseWriter, r *http.Request) {
     db := coreglobals.Db
     rows, err := db.Query("SELECT id, username, first_name, last_name, password FROM \"user\"")
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     defer rows.Close()
 
     // var id, created_by, User_type int
@@ -34,7 +34,7 @@ func (this *UserApiController) Get(w http.ResponseWriter, r *http.Request) {
 
     for rows.Next(){
         err := rows.Scan(&id, &username, &first_name, &last_name, &password)
-        helpers.PanicIf(err)
+        corehelpers.PanicIf(err)
         fmt.Fprintf(w, "Id: %d, Username: %s, First: %s, Last: %s, Password:%s\n", id, username, first_name, last_name, password)
     }
 
@@ -48,7 +48,7 @@ func (this *UserApiController) Get(w http.ResponseWriter, r *http.Request) {
 
 //     templol := r.URL.Query().Get(":id")
 //     rofl,err1 := strconv.Atoi(templol)
-//     helpers.PanicIf(err1)
+//     corehelpers.PanicIf(err1)
 
 //     parm_id = rofl
 
@@ -84,7 +84,7 @@ func (this *UserApiController) Post(w http.ResponseWriter, r *http.Request) {
 
     err := r.ParseForm()
 
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     decoder := schema.NewDecoder()
     // r.PostForm is a map of our POST form values
@@ -109,7 +109,7 @@ func (this *UserApiController) Post(w http.ResponseWriter, r *http.Request) {
     querystr := fmt.Sprintf("INSERT INTO \"user\" (username, first_name, last_name, password) VALUES ('%s','%s','%s','%s')", user.Username, user.FirstName, user.LastName, user.Password)
     fmt.Println("querystring: " + querystr)
     res, err := db.Exec(querystr)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     fmt.Println(res)
     
 }
@@ -123,7 +123,7 @@ func (this *UserApiController) Post(w http.ResponseWriter, r *http.Request) {
 
 //     templol := r.URL.Query().Get(":id")
 //     rofl,err1 := strconv.Atoi(templol)
-//     helpers.PanicIf(err1)
+//     corehelpers.PanicIf(err1)
 
 //     parm_id := rofl
 
@@ -131,7 +131,7 @@ func (this *UserApiController) Post(w http.ResponseWriter, r *http.Request) {
 
 //     err := r.ParseForm()
 
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     decoder := schema.NewDecoder()
 //     // r.PostForm is a map of our POST form values
@@ -149,7 +149,7 @@ func (this *UserApiController) Post(w http.ResponseWriter, r *http.Request) {
 
 //     querystr := fmt.Sprintf("UPDATE User SET (path, created_by, label, User_type) = ('%s', %d, '%s', %d) WHERE id=%d", t.Path, t.Created_by, t.Label, t.User_type, parm_id)
 //     res, err := db.Exec(querystr)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 //     fmt.Println(res)
     
 //     // JSON(w, r.Body)
@@ -168,7 +168,7 @@ func (this *UserApiController) Delete(w http.ResponseWriter, r *http.Request) {
     
     querystr := fmt.Sprintf("DELETE FROM \"user\" WHERE id=%d", parm_id)
     res, err := db.Exec(querystr)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
     fmt.Println(res)
 
 }
@@ -211,7 +211,7 @@ func (this *UserApiController) Login(w http.ResponseWriter, r *http.Request) {
     for rows.Next() {
         // ...
         err := rows.Scan(&id, &username, &first_name, &last_name, &password)
-        helpers.PanicIf(err)
+        corehelpers.PanicIf(err)
     }
 
     user := models.User{Id: id, Username: username, FirstName: first_name, LastName: last_name, Password: password}

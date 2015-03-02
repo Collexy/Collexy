@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 	"encoding/json"
-	"collexy/helpers"
+	corehelpers "collexy/core/helpers"
 	"fmt"
 	"io/ioutil"
 )
@@ -88,10 +88,10 @@ func (t *FileNode) Post(){
 	fmt.Println(t.Info.IsDir)
 	fmt.Println("rgr \n")
 	tm, err := json.Marshal(t)
-	helpers.PanicIf(err)
+	corehelpers.PanicIf(err)
 	fmt.Println("tm:::: ")
 	fmt.Println(string(tm))
-	//db := helpers.Db
+	//db := corehelpers.Db
 
 	//tplNodeName := t.Info.Name + ".tmpl"
 	absPath := t.FullPath
@@ -103,7 +103,7 @@ func (t *FileNode) Post(){
 	} else{
 		// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
 		err = ioutil.WriteFile(absPath, []byte(t.Contents), 0644)
-		helpers.PanicIf(err)
+		corehelpers.PanicIf(err)
 	}
   
 }
@@ -166,7 +166,7 @@ func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode){
             //f, _ := json.Marshal(finfo)
             if(!fi.IsDir()) {
                 bytes, err1 := ioutil.ReadFile(path) // path is the path to the file.
-                helpers.PanicIf(err1)
+                corehelpers.PanicIf(err1)
 
                 fileNode = FileNode{path,path,&finfo,nil,string(bytes),true, ""}
                 return

@@ -10,7 +10,7 @@ import (
     "collexy/core/application"
     "encoding/json"
     "os"
-    "collexy/globals"
+    //"collexy/globals"
     coreglobals "collexy/core/globals"
 )
 
@@ -37,15 +37,15 @@ func init () {
         }
 
         jsonParser := json.NewDecoder(configFile)
-        if err1 = jsonParser.Decode(&globals.Conf); err1 != nil {
+        if err1 = jsonParser.Decode(&coreglobals.Conf); err1 != nil {
             log.Println("Error parsing config file")
             //printError("parsing config file", err1.Error())
         }
-        // log.Println(globals.Conf.DbName)
-        // log.Println(globals.Conf.DbUser)
-        // log.Println(globals.Conf.DbPassword)
-        // log.Println(globals.Conf.DbHost)
-        // log.Println(globals.Conf.SslMode)
+        // log.Println(coreglobals.Conf.DbName)
+        // log.Println(coreglobals.Conf.DbUser)
+        // log.Println(coreglobals.Conf.DbPassword)
+        // log.Println(coreglobals.Conf.DbHost)
+        // log.Println(coreglobals.Conf.SslMode)
         coreglobals.Db = coreglobals.SetupDB()
 
     }

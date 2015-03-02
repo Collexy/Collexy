@@ -6,7 +6,7 @@ import
 	"collexy/core/api/models"
 	"encoding/json"
 	"net/http"
-	"collexy/helpers"
+	corehelpers "collexy/core/helpers"
     //"collexy/globals"
     "github.com/gorilla/mux"
 )
@@ -17,7 +17,7 @@ type MenuLinkApiController struct {}
 //     w.Header().Set("Content-Type", "application/json")
     
 //     res, err := json.Marshal(globals.Routes)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     fmt.Fprintf(w,"%s",res)
 // }
@@ -44,7 +44,7 @@ type MenuLinkApiController struct {}
 //             }     
 //         }
 //         res, err := json.Marshal(allowedMenuLinks)
-//         helpers.PanicIf(err)
+//         corehelpers.PanicIf(err)
 
 //         fmt.Fprintf(w,"%s",res)
 //     }
@@ -112,7 +112,7 @@ func (this *MenuLinkApiController) GetByName(w http.ResponseWriter, r *http.Requ
         // }
 
         res, err := json.Marshal(allowedMenuLinks)
-        helpers.PanicIf(err)
+        corehelpers.PanicIf(err)
 
         fmt.Fprintf(w,"%s",res)
     }

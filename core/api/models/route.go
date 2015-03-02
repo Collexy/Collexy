@@ -4,7 +4,7 @@ import
 (
 	coreglobals "collexy/core/globals"
 	"database/sql"
-	"collexy/helpers"
+	corehelpers "collexy/core/helpers"
 	"log"
 	"encoding/json"
 )
@@ -36,7 +36,7 @@ func GetRoutes() (routes []Route){
     var is_abstract bool
 
 	rows, err := db.Query(querystr)
-	helpers.PanicIf(err)
+	corehelpers.PanicIf(err)
 	defer rows.Close()
 
 	for rows.Next(){
@@ -64,7 +64,7 @@ func GetRoutes() (routes []Route){
 		if(err1 != nil){
 			routeComponents = nil
 		}
-		//helpers.PanicIf(err1)
+		//corehelpers.PanicIf(err1)
 
 		switch {
 			case err == sql.ErrNoRows:

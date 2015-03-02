@@ -6,7 +6,7 @@ import (
     //"time"
     //"database/sql"
     _ "github.com/lib/pq"
-    "collexy/helpers"
+    corehelpers "collexy/core/helpers"
     "collexy/core/api/models"
     "strconv"
     //"log"
@@ -59,7 +59,7 @@ fmt.Println("GETtemplates")
     templates := models.GetTemplates()
     
     res, err := json.Marshal(templates)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 
@@ -76,7 +76,7 @@ func (this *TemplateApiController) GetTemplateByNodeId(w http.ResponseWriter, r 
     template := models.GetTemplateByNodeId(nodeId)
 
     res, err := json.Marshal(template)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 

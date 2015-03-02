@@ -6,7 +6,7 @@ import (
     //"time"
     //"database/sql"
     _ "github.com/lib/pq"
-    "collexy/helpers"
+    corehelpers "collexy/core/helpers"
     "strconv"
     "log"
     "encoding/json"
@@ -23,7 +23,7 @@ func (this *MemberApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	members := models.GetMembers()
     res, err := json.Marshal(members)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 }
@@ -38,7 +38,7 @@ func (this *MemberApiController) GetById(w http.ResponseWriter, r *http.Request)
 
     member := models.GetMemberById(memberId)
     res, err := json.Marshal(member)
-    helpers.PanicIf(err)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 }
@@ -67,7 +67,7 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 
 //     err := r.ParseForm()
 
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     decoder := schema.NewDecoder()
 //     // r.PostForm is a map of our POST form values
@@ -79,7 +79,7 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 //     fmt.Println(user.Password)
 //     fmt.Println(r.FormValue("Password"))
 
-//     db := helpers.Db
+//     db := corehelpers.Db
 
 //     // http://stackoverflow.com/questions/244243/how-to-reset-postgres-primary-key-sequence-when-it-falls-out-of-sync
 //     //fmt.Println(fmt.Sprintf("path: %s, created_by: %d, label: %s, User type: %d", t.Path, t.Created_by, t.Label, t.User_type))
@@ -92,7 +92,7 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 //     querystr := fmt.Sprintf("INSERT INTO \"user\" (username, first_name, last_name, password) VALUES ('%s','%s','%s','%s')", user.Username, user.FirstName, user.LastName, user.Password)
 //     fmt.Println("querystring: " + querystr)
 //     res, err := db.Exec(querystr)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 //     fmt.Println(res)
     
 // }
@@ -106,11 +106,11 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 //     parm_id := id
 
    
-//     db := helpers.Db
+//     db := corehelpers.Db
     
 //     querystr := fmt.Sprintf("DELETE FROM \"user\" WHERE id=%d", parm_id)
 //     res, err := db.Exec(querystr)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 //     fmt.Println(res)
 
 // }

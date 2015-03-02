@@ -6,8 +6,8 @@ import
 	"collexy/core/api/models"
 	"encoding/json"
 	"net/http"
-	"collexy/helpers"
-    "collexy/globals"
+	corehelpers "collexy/core/helpers"
+    coreglobals "collexy/core/globals"
     "github.com/gorilla/mux"
 )
 
@@ -16,8 +16,8 @@ type MenuApiController struct {}
 func (this *MenuApiController) Get(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     
-    res, err := json.Marshal(globals.Menus)
-    helpers.PanicIf(err)
+    res, err := json.Marshal(coreglobals.Menus)
+    corehelpers.PanicIf(err)
 
     fmt.Fprintf(w,"%s",res)
 }
@@ -30,12 +30,12 @@ func (this *MenuApiController) GetByName(w http.ResponseWriter, r *http.Request)
 
     var menu models.AdminMenu
 
-    for i := 0; i <= len(globals.Menus); i++ {
-    	var temp models.AdminMenu = globals.Menus[i].(models.AdminMenu)
+    for i := 0; i <= len(coreglobals.Menus); i++ {
+    	var temp models.AdminMenu = coreglobals.Menus[i].(models.AdminMenu)
 	    if(temp.Name == name){
 	    	menu = temp
 	    	res, err := json.Marshal(menu)
-		    helpers.PanicIf(err)
+		    corehelpers.PanicIf(err)
 
 		    fmt.Fprintf(w,"%s",res)
 		    break
@@ -43,7 +43,7 @@ func (this *MenuApiController) GetByName(w http.ResponseWriter, r *http.Request)
 	}
     
     // res, err := json.Marshal(globals.Menus)
-    // helpers.PanicIf(err)
+    // corehelpers.PanicIf(err)
 
     // fmt.Fprintf(w,"%s",res)
 }

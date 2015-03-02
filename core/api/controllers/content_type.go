@@ -6,7 +6,7 @@ import (
     //"time"
     //"database/sql"
     _ "github.com/lib/pq"
-    "collexy/helpers"
+    corehelpers "collexy/core/helpers"
     "collexy/core/api/models"
     "strconv"
     //"log"
@@ -43,7 +43,7 @@ func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Reques
 //     contentTypes := models.GetContentTypes()
 
 //     res, err := json.Marshal(contentTypes)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     fmt.Fprintf(w,"%s",res)
 
@@ -58,7 +58,7 @@ func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Reques
 //     nodeId, _ := strconv.Atoi(nodeIdStr)
 //     content := models.GetContentTypeExtendedByNodeId(nodeId)
 //     res, err := json.Marshal(content)
-//     helpers.PanicIf(err)
+//     corehelpers.PanicIf(err)
 
 //     fmt.Fprintf(w,"%s",res)
 // }
@@ -79,13 +79,13 @@ func (this *ContentTypeApiController) GetContentTypeByNodeId(w http.ResponseWrit
     if(!extended){
         content := models.GetContentTypeByNodeId(nodeId)
         res, err := json.Marshal(content)
-        helpers.PanicIf(err)
+        corehelpers.PanicIf(err)
 
         fmt.Fprintf(w,"%s",res)
     } else {
         content := models.GetContentTypeExtendedByNodeId(nodeId)
         res, err := json.Marshal(content)
-        helpers.PanicIf(err)
+        corehelpers.PanicIf(err)
 
         fmt.Fprintf(w,"%s",res)
     }
@@ -105,14 +105,14 @@ func (this *ContentTypeApiController) GetContentTypeByNodeId(w http.ResponseWrit
 //         nodeId, _ := strconv.Atoi(nodeIdStr)
 //         content := models.GetContentTypeByNodeId(nodeId)
 //         res, err := json.Marshal(content)
-//         helpers.PanicIf(err)
+//         corehelpers.PanicIf(err)
 
 //         fmt.Fprintf(w,"%s",res)
 //     }else{
 //         fmt.Println("lol2")
 //         contentTypes := models.GetContentTypes()
 //         res, err := json.Marshal(contentTypes)
-//         helpers.PanicIf(err)
+//         corehelpers.PanicIf(err)
 
 //         fmt.Fprintf(w,"%s",res)
 //     }
