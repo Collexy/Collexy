@@ -1,1 +1,0 @@
-cool-script.js contents

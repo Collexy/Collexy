@@ -16,19 +16,19 @@
 <div ng-controller="MediaTreeCtrl">
     <div class="top-search def-pad">
         <input type="search" placeholder="search..."><br>
-        <select>
+        <!-- <select>
             <option>Bulk actions</option>
             <option>Delete selected</option>
         </select>
-        <button>Apply</button>
+        <button>Apply</button> -->
     </div>
     <h4>Media</h4>
-    <ul class="admin-tree" style="padding: 2em 0;" ng-context-menu="showOptions(rootNode,$event)">
+    <ul class="admin-tree" ng-context-menu="showOptions(rootNode,$event)">
         <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
     </ul>
     
     <div id="overlay">
-    {{currentItem.entity.allowedContentTypes}}
+    <!-- {{currentItem.entity.allowedContentTypes}} -->
         <!-- {{currentItem.entity.content_type.meta.allowed_content_types_node_id}} -->
         <!-- <p>Context menu for {{currentItem.name}}</p> -->
         <ul>

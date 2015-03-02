@@ -1,8 +1,9 @@
 var directoryControllers = angular.module('directoryControllers', []);
 
 directoryControllers.controller('DirectoryTreeCtrl', ['$scope', '$stateParams', '$state','Directory', function ($scope, $stateParams, $state, Directory) {
-
-  $scope.rootdir = $state.current.data.rootdir;
+  //$scope.rootdir = $state.current.data.rootdir;
+  $scope.rootdir = $state.current.name.split(".")[1];
+  //alert(rootdir);
   var directoryNodes = Directory.query({ rootdir: $scope.rootdir }, function(node){}); 
   $scope.tree = directoryNodes;
   
@@ -39,7 +40,10 @@ directoryControllers.controller('DirectoryTreeCtrl', ['$scope', '$stateParams', 
 }]);
 
 directoryControllers.controller('DirectoryTreeCtrlEdit', ['$scope', '$stateParams', 'Directory', '$state', function ($scope, $stateParams, Directory, $state) {
-  $scope.rootdir = $state.current.data.rootdir;
+  //console.log($state.current)
+  $scope.rootdir = $state.current.name.split(".")[1];
+  //alert(rootdir);
+  //$scope.rootdir = $state.current.data.rootdir;
   //alert(rootdir)
   //$scope.currentTab = $scope.rootdir
   //$scope.stateParams = $stateParams;
