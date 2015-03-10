@@ -81,7 +81,7 @@ INSERT INTO data_type VALUES (18, 19, '<div>
 	<button type="button">Delete selected</button>
 </div>', 'Collexy.Domains');
 
---INSERT INTO member_type VALUES (1, 20, 'Umbraco.Member', 'Default member type', 'fa fa-user fa-fw', NULL, NULL, '[{"name": "Membership", "properties": [{"name": "comments", "order": 1, "help_text": "Help text for membership comments", "description": "Membership comments description", "data_type_node_id": 4}]}]');
+--INSERT INTO member_type VALUES (1, 20, 'Collexy.Member', 'Default member type', 'fa fa-user fa-fw', NULL, NULL, '[{"name": "Membership", "properties": [{"name": "comments", "order": 1, "help_text": "Help text for membership comments", "description": "Membership comments description", "data_type_node_id": 4}]}]');
 
 INSERT INTO permission VALUES ('node_create');
 INSERT INTO permission VALUES ('node_delete');

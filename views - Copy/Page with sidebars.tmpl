@@ -1,0 +1,48 @@
+<!-- Content of admin.html: -->
+{{define "head"}}<title>{{.Data.Content.Node.Name}}</title>{{end}}
+{{define "body"}}
+<p>
+	{{.Data.Content.GetProperty "page_title" 0 3}}
+</p>
+<p>
+	<ul>
+	{{range $property := .Data.Content.GetProperty2 "page_title" "1.9.*"}}
+		<li>{{$property}}</li>
+	{{end}}
+	</ul>
+</p>
+<p>
+	{{.}}
+</p> 
+{{if .HasMember}}
+<p>You're logged in as: {{.Data.Member}}</p>
+<p>Your groups are: {{.Data.Member.Groups}}<br>
+<div>
+	<ul>
+	{{range $group := .Data.Member.Groups}} 
+		<li>{{printf "%q, " $group.Name}}</li>
+	{{end}}
+	</ul>
+</div>
+</p>
+{{end}}
+<article>
+	<header>
+		<h2>{{.Data.Content.Meta.page_title}}</h2>
+	</header>
+	<div>
+		<p>
+			{{.Data.Content.Meta.page_content}}
+		</p>
+<p style="color: red;">
+<!--{{with .}}-->
+    {{ .Data.Content.TemplateFunctionTest "value1"}}
+<!--{{end}}-->
+</p>
+	</div>
+	{{ template "sidebar 1" }}
+	{{ template "sidebar 2" }}
+
+</article>
+
+{{end}}

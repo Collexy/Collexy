@@ -1,0 +1,40 @@
+{{define "head"}}<title>Posts</title>{{end}}
+{{define "body"}}
+<!-- Main -->
+			<div id="main-wrapper">
+				<div id="main" class="container">
+					<div class="row">
+						<div class="12u">
+							<div class="content">
+								{{range $content := .Data.Content.GetAncestors 0 2}}
+								<!-- Content -->
+									{{if $content.Eq $content.ContentTypeNodeId 37}}
+										{{if $content.Meta.is_featured}}
+										<article class="box page-content">
+
+											<header>
+												<h2>{{$content.Meta.title}}</h2>
+												<!-- <p>Semper amet scelerisque metus faucibus morbi congue mattis</p> -->
+												<ul class="meta">
+													<li class="icon fa-clock-o">{{$content.Node.CreatedDate}}</li>
+													<li class="icon fa-comments"><a href="#">1,024</a></li>
+												</ul>
+											</header>
+
+											<section>
+												<span class="image featured"><img src="{{$content.Meta.image}}" alt="" /></span>
+												<p>
+													{{$content.Meta.content}}
+												</p>
+												<a href="http://{{index $content.Domains 0}}/{{$content.Url}}" class="button">Continue Reading</a>
+											</section>
+											{{end}}
+										{{end}}
+										
+
+									</article>
+									{{end}}
+							</div>
+						</div>
+					</div>
+					{{end}}

@@ -937,58 +937,93 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 -- PostgreSQL database dump complete
 --`
 
-var DbCreateScriptDDL string = `INSERT INTO node VALUES (1, '1', 'root', 5, 1, '2014-10-22 16:51:00.215', NULL, NULL, NULL);
-INSERT INTO node VALUES (2, '1.2', 'Text input', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (3, '1.3', 'Numeric input', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (4, '1.4', 'Textarea', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (5, '1.5', 'Radiobox', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (6, '1.6', 'Radiobox list', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (7, '1.7', 'Dropdown', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (8, '1.8', 'Dropdown multiple', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (9, '1.9', 'Checkbox', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (10, '1.10', 'Checkbox list', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (11, '1.11', 'Label', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (12, '1.12', 'Color picker', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (13, '1.13', 'Date picker', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (14, '1.14', 'Date picker with time', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (15, '1.15', 'Folder browser', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (16, '1.16', 'Upload', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (17, '1.17', 'Richtext editor', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (18, '1.18', 'True/false', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (19, '1.19', 'Domains', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+var DbCreateScriptDDL string = `--
+-- PostgreSQL database dump
+--
 
-INSERT INTO node VALUES (20, '1.20', 'Member', 12, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+-- Dumped from database version 9.4beta3
+-- Dumped by pg_dump version 9.4beta3
+-- Started on 2015-03-03 12:27:46
 
-INSERT INTO node VALUES (21, '1.21', 'Master', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (22, '1.21.22', 'Home', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
-INSERT INTO node VALUES (23, '1.21.23', 'Post', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
-INSERT INTO node VALUES (24, '1.21.24', 'Post Overview', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
-INSERT INTO node VALUES (25, '1.21.25', 'Page', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
-INSERT INTO node VALUES (26, '1.21.26', 'Login', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
-INSERT INTO node VALUES (27, '1.21.27', 'Register', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
-INSERT INTO node VALUES (28, '1.21.28', '404', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
-INSERT INTO node VALUES (29, '1.21.29', 'Unauthorized', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
-INSERT INTO node VALUES (30, '1.30', 'Top Navigation', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (31, '1.31', 'Post Overview Widget', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (32, '1.32', 'Featured Pages Widget', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (33, '1.33', 'Recent Posts Widget', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (34, '1.34', 'Social', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
 
-INSERT INTO template VALUES (1, 21, 'Collexy.Master', false, '{30,34}', NULL);
-INSERT INTO template VALUES (2, 22, 'Collexy.Home', false, '{32,33}', 21);
-INSERT INTO template VALUES (3, 23, 'Collexy.Post', false, '{32,33}', 21);
-INSERT INTO template VALUES (4, 24, 'Collexy.PostOverview', false, '{32}', 21);
-INSERT INTO template VALUES (5, 25, 'Collexy.Page', false, '{32,33}', 21);
-INSERT INTO template VALUES (6, 26, 'Collexy.Login', false, NULL, 21);
-INSERT INTO template VALUES (7, 27, 'Collexy.Register', false, NULL, 21);
-INSERT INTO template VALUES (8, 28, 'Collexy.404', false, NULL, 21);
-INSERT INTO template VALUES (9, 29, 'Collexy.Unauthorized', false, NULL, 21);
-INSERT INTO template VALUES (10, 30, 'Collexy.TopNavigation', true, NULL, NULL);
-INSERT INTO template VALUES (11, 31, 'Collexy.PostOverviewWidget', true, NULL, NULL);
-INSERT INTO template VALUES (12, 32, 'Collexy.FeaturedPagesWidget', true, NULL, NULL);
-INSERT INTO template VALUES (13, 33, 'Collexy.RecentPostsWidget', true, NULL, NULL);
-INSERT INTO template VALUES (14, 34, 'Collexy.Social', true, NULL, NULL);
+SET search_path = public, pg_catalog;
 
+--
+-- TOC entry 2339 (class 0 OID 84013)
+-- Dependencies: 172
+-- Data for Name: content; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO content VALUES (1, 42, 36, '{"is_featured": false, "hide_in_nav": false, "domains": ["localhost:8080", "localhost:8080/test"], "facebook_link": "facebook.com/home", "copyright": "&copy; 2014 codeish.com", "site_name": "%s", "title": "Home page title", "site_tagline": "Test site tagline", "template_node_id": 22, "hide_banner": false, "banner_header": "Banner header goes here", "banner_subheader": "Banner subheader goes here", "banner_link": "http://somelink.test", "banner_link_text": "Click Here!", "banner_background_image": "/media/Sample Images/TXT/banner.jpg", "about_title": "About title here", "about_text": "About text goes here"}', NULL);
+INSERT INTO content VALUES (2, 43, 39, '{"is_featured": true, "hide_in_nav": false, "title": "Welcome", "content": "Welcome content goes here", "template_node_id": 25, "image": "/media/Sample Images/TXT/pic01.jpg"}', NULL);
+INSERT INTO content VALUES (3, 44, 39, '{"is_featured": true, "hide_in_nav": false, "title": "Getting Started", "content": "Getting Started content goes here", "template_node_id": 25, "image": "/media/Sample Images/TXT/pic02.jpg"}', NULL);
+INSERT INTO content VALUES (4, 45, 39, '{"is_featured": true, "hide_in_nav": false, "title": "Documentation", "content": "Documentation content goes here1", "template_node_id": 25, "image": "/media/Sample Images/TXT/pic03.jpg"}', '{"groups": [1], "members": [1]}');
+INSERT INTO content VALUES (5, 46, 39, '{"is_featured": true, "hide_in_nav": false, "title": "Get Involved", "content": "Get Involved content goes here", "template_node_id": 25, "image": "/media/Sample Images/TXT/pic04.jpg"}', NULL);
+INSERT INTO content VALUES (6, 47, 38, '{"is_featured": true, "hide_in_nav": false, "title": "Posts", "template_node_id": 24}', NULL);
+INSERT INTO content VALUES (7, 48, 37, '{"is_featured": true, "hide_in_nav": false, "title": "Hello World", "content": "Welcome to Collexy. This is your first post. Edit or delete it, then start blogging", "template_node_id": 23, "image": "/media/Sample Images/TXT/pic05.jpg", "sub_header": "Subheader for Hello World"}', NULL);
+INSERT INTO content VALUES (8, 49, 37, '{"is_featured": true, "hide_in_nav": false, "title": "TXT Starter Kit For Collexy Released", "content": "The collexy TXT starter kit is just awesome!", "template_node_id": 23}', NULL);
+INSERT INTO content VALUES (9, 50, 37, '{"is_featured": true, "hide_in_nav": false, "title": "You Need To Read This", "content": "See - you really needed to read this post!", "template_node_id": 23}', NULL);
+INSERT INTO content VALUES (10, 51, 37, '{"is_featured": true, "hide_in_nav": false, "title": "Amazing Post", "content": "What an amazing post.", "template_node_id": 23}', NULL);
+
+INSERT INTO content VALUES (11, 52, 40, '{"path": "media\\Sample Images"}', NULL);
+INSERT INTO content VALUES (12, 53, 40, '{"path": "media\\Sample Images\\TXT"}', NULL);
+INSERT INTO content VALUES (13, 54, 41, '{"alt": "pic01.jpg", "path": "media\\Sample Images\\TXT\\pic01.jpg", "title": "pic01.jpg", "caption": "pic01.jpg", "description": "pic01.jpg"}', NULL);
+INSERT INTO content VALUES (14, 55, 41, '{"alt": "pic02.jpg", "path": "media\\Sample Images\\TXT\\pic02.jpg", "title": "pic02.jpg", "caption": "pic02.jpg", "description": "pic02.jpg"}', NULL);
+INSERT INTO content VALUES (15, 56, 41, '{"alt": "pic03.jpg", "path": "media\\Sample Images\\TXT\\pic03.jpg", "title": "pic03.jpg", "caption": "pic03.jpg", "description": "pic03.jpg"}', NULL);
+INSERT INTO content VALUES (16, 57, 41, '{"alt": "pic04.jpg", "path": "media\\Sample Images\\TXT\\pic04.jpg", "title": "pic04.jpg", "caption": "pic04.jpg", "description": "pic04.jpg"}', NULL);
+INSERT INTO content VALUES (17, 58, 41, '{"alt": "pic05.jpg", "path": "media\\Sample Images\\TXT\\pic05.jpg", "title": "pic05.jpg", "caption": "pic05.jpg", "description": "pic05.jpg"}', NULL);
+INSERT INTO content VALUES (18, 59, 41, '{"alt": "banner.jpg", "path": "media\\Sample Images\\TXT\\banner.jpg", "title": "banner.jpg", "caption": "banner.jpg", "description": "banner.jpg"}', NULL);
+
+--
+-- TOC entry 2370 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: content_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('content_id_seq', 1, false);
+
+
+--
+-- TOC entry 2341 (class 0 OID 84021)
+-- Dependencies: 174
+-- Data for Name: content_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO content_type VALUES (1, 35, 'Collexy.Master', 'Some description', 'fa fa-folder-o', 'fa fa-folder-o', NULL, NULL, '[{"name":"Content","properties":[{"name":"title","order":1,"data_type_node_id":2,"help_text":"help text","description":"The page title overrides the name the page has been given."}]},{"name":"Properties","properties":[{"name":"hide_in_nav","order":1,"data_type_node_id":18,"help_text":"help text2","description":"description2"}]}]');
+
+INSERT INTO content_type VALUES (2, 36, 'Collexy.Home', 'Home Some description', 'fa fa-folder-o', 'fa fa-folder-o', 35, '{"template_node_id": 22, "allowed_templates_node_id": [22], "allowed_content_types_node_id": [37, 38, 39]}', '[{"name":"Content","properties":[{"name":"site_name","order":2,"data_type_node_id":2,"help_text":"help text","description":"Site name goes here."},{"name":"site_tagline","order":3,"data_type_node_id":2,"help_text":"help text","description":"Site tagline goes here."},{"name":"copyright","order":4,"data_type_node_id":2,"help_text":"help text","description":"Copyright here."},{"name":"domains","order":5,"data_type_node_id":19,"help_text":"help text","description":"Domains goes here."}]},{"name":"Social","properties":[{"name":"facebook_link","order":1,"data_type_node_id":2,"help_text":"help text","description":"Enter your facebook link here."},{"name":"twitter_link","order":2,"data_type_node_id":2,"help_text":"help text","description":"Enter your twitter link here."},{"name":"linkedin_link","order":3,"data_type_node_id":2,"help_text":"help text","description":"Enter your linkedin link here."},{"name":"google_link","order":4,"data_type_node_id":2,"help_text":"help text","description":"Enter your Google+ profile link here."},{"name":"rss_link","order":5,"data_type_node_id":2,"help_text":"help text","description":"Enter your RSS feed link here."}]},{"name":"Banner","properties":[{"name": "hide_banner", "order": 1, "data_type_node_id": 18, "help_text": "help text2", "description": "description2"},{"name": "banner_header", "order": 2, "data_type_node_id": 2, "help_text": "help text", "description": "Banner header."},{"name": "banner_subheader", "order": 3, "data_type_node_id": 2, "help_text": "help text", "description": "Banner subheader."},{"name": "banner_link_text", "order": 4, "data_type_node_id": 2, "help_text": "help text", "description": "Banner link text."},{"name": "banner_link", "order": 5, "data_type_node_id": 2, "help_text": "help text", "description": "Banner link should ideally use a content picker data type."},{"name": "banner_background_image", "order": 6, "data_type_node_id": 2, "help_text": "help text", "description": "This should ideally use the upload data type."}]},{"name":"About","properties":[{"name": "about_title", "order": 1, "data_type_node_id": 2, "help_text": "help text", "description": "About title."},{"name": "about_text", "order": 2, "data_type_node_id": 4, "help_text": "help text", "description": "About text."}]}]');
+
+INSERT INTO content_type VALUES (3, 37, 'Collexy.Post', 'Post content type desc', 'fa fa-folder-o', 'fa fa-folder-o', 35, '{"template_node_id": 23, "allowed_templates_node_id": [23], "allowed_content_types_node_id": [37]}', '[{"name":"Content","properties":[{"name":"is_featured","order":2,"data_type_node_id":18,"help_text":"help text2","description":"description2"},{"name":"image","order":3,"data_type_node_id":2,"help_text":"Help text for image","description":"Image url"},{"name":"sub_header","order":4,"data_type_node_id":2,"help_text":"Help text for subheader","description":"Subheader description"},{"name":"content","order":5,"data_type_node_id":4,"help_text":"Help text for post content","description":"Post content description"}]}]');
+
+INSERT INTO content_type VALUES (4, 38, 'Collexy.PostOverview', 'Post overview content type desc', 'fa fa-folder-o', 'fa fa-folder-o', 35, '{"template_node_id": 24, "allowed_templates_node_id": [24], "allowed_content_types_node_id": [38]}', NULL);
+INSERT INTO content_type VALUES (5, 39, 'Collexy.Page', 'Page content type desc', 'fa fa-folder-o', 'fa fa-folder-o', 35, '{"template_node_id": 25, "allowed_templates_node_id": [25], "allowed_content_types_node_id": [39]}', '[{"name":"Content","properties":[{"name":"content","order":2,"data_type_node_id":4,"help_text":"Help text for page contentent","description":"Page content description"}]}]');
+
+
+INSERT INTO content_type VALUES (6, 40, 'mtFolder', 'Folder media type description1', 'mt-icon1', 'mt-thumbnail1', NULL, '{"allowed_content_types_node_id": [16, 15]}', '[{"name":"Folder","properties":[{"name":"folder_browser","order":1,"data_type_node_id":34,"help_text":"prop help text","description":"prop description"},{"name":"path","order":1,"data_type_node_id":2,"help_text":"prop help text","description":"prop description"}]},{"name":"Properties"}]');
+
+INSERT INTO content_type VALUES (7, 41, 'Collexy.Image', 'Image content type description', 'fa fa-folder-o', 'fa fa-folder-o', NULL, 'null', '[{"name":"Image","properties":[{"name":"path","order":1,"data_type_node_id":2,"help_text":"help text","description":"URL goes here."},{"name":"title","order":2,"data_type_node_id":2,"help_text":"help text","description":"The title entered here can override the above one."},{"name":"caption","order":3,"data_type_node_id":4,"help_text":"help text","description":"Caption goes here."},{"name":"alt","order":4,"data_type_node_id":4,"help_text":"help text","description":"Alt goes here."},{"name":"description","order":5,"data_type_node_id":4,"help_text":"help text","description":"Description goes here."},{"name":"file_upload","order":1,"data_type_node_id":16,"help_text":"prop help text","description":"prop description"}]},{"name":"Properties","properties":[{"name":"temporary property","order":1,"data_type_node_id":2,"help_text":"help text","description":"Temporary description goes here."}]}]');
+
+
+--
+-- TOC entry 2371 (class 0 OID 0)
+-- Dependencies: 175
+-- Name: content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('content_type_id_seq', 1, false);
+
+
+--
+-- TOC entry 2343 (class 0 OID 84029)
+-- Dependencies: 176
+-- Data for Name: data_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
 
 INSERT INTO data_type VALUES (1, 2, '<input type="text" id="{{prop.name}}" ng-model="data.meta[prop.name]">', 'Collexy.TextField');
 INSERT INTO data_type VALUES (2, 3, '<input type="number" id="{{prop.name}}" ng-model="data.meta[prop.name]">', 'Collexy.NumberField');
@@ -1020,7 +1055,220 @@ INSERT INTO data_type VALUES (18, 19, '<div>
     <button type="button">Delete selected</button>
 </div>', 'Collexy.Domains');
 
---INSERT INTO member_type VALUES (1, 20, 'Umbraco.Member', 'Default member type', 'fa fa-user fa-fw', NULL, NULL, '[{"name": "Membership", "properties": [{"name": "comments", "order": 1, "help_text": "Help text for membership comments", "description": "Membership comments description", "data_type_node_id": 4}]}]');
+
+--
+-- TOC entry 2372 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: data_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('data_type_id_seq', 1, false);
+
+
+--
+-- TOC entry 2345 (class 0 OID 84037)
+-- Dependencies: 178
+-- Data for Name: domain; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 2373 (class 0 OID 0)
+-- Dependencies: 179
+-- Name: domain_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('domain_id_seq', 1, false);
+
+
+--
+-- TOC entry 2347 (class 0 OID 84045)
+-- Dependencies: 180
+-- Data for Name: member; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO member VALUES (1, 'default_member', '$2a$10$f9qZyhrTnjirqK53kY3jRu93AgSXUryUZwwFhOFxhh1R9t7LgHRGa', 'default_member@mail.com', '{"comments": "default user comments"}', '2015-01-22 14:25:38.904', NULL, '2015-02-19 23:46:00.495', NULL, 1, 'GIWES3RHMY5RKC7OZPOQTF5FQFWX32D5VLV3CAKT4HGKP5LZIENA', 20, '{1}');
+
+
+--
+-- TOC entry 2348 (class 0 OID 84053)
+-- Dependencies: 181
+-- Data for Name: member_group; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO member_group VALUES (1, 'authenticated_member', 'All logged in members');
+
+
+--
+-- TOC entry 2374 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: member_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('member_group_id_seq', 1, false);
+
+
+--
+-- TOC entry 2375 (class 0 OID 0)
+-- Dependencies: 183
+-- Name: member_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('member_id_seq', 1, false);
+
+
+--
+-- TOC entry 2351 (class 0 OID 84063)
+-- Dependencies: 184
+-- Data for Name: member_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO member_type VALUES (1, 20, 'Collexy.Member', 'Default member type', 'fa fa-user fa-fw', 1, NULL, '[{"name": "Membership", "properties": [{"name": "comments", "order": 1, "help_text": "Help text for membership comments", "description": "Membership comments description", "data_type_node_id": 4}]}]');
+
+
+--
+-- TOC entry 2376 (class 0 OID 0)
+-- Dependencies: 185
+-- Name: member_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('member_type_id_seq', 1, false);
+
+
+--
+-- TOC entry 2353 (class 0 OID 84071)
+-- Dependencies: 186
+-- Data for Name: menu_link; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO menu_link VALUES (1, '1', 'Content', NULL, 1, 'fa fa-newspaper-o fa-fw', NULL, 1, 'main', '{content_section}');
+INSERT INTO menu_link VALUES (2, '2', 'Media', NULL, 2, 'fa fa-file-image-o fa-fw', NULL, 1, 'main', '{media_section}');
+INSERT INTO menu_link VALUES (3, '3', 'Users', NULL, 3, 'fa fa-user fa-fw', NULL, 1, 'main', '{users_section}');
+INSERT INTO menu_link VALUES (4, '4', 'Members', NULL, 4, 'fa fa-users fa-fw', NULL, 1, 'main', '{members_section}');
+INSERT INTO menu_link VALUES (5, '5', 'Settings', NULL, 5, 'fa fa-gear fa-fw', NULL, 1, 'main', '{settings_section}');
+INSERT INTO menu_link VALUES (6, '5.6', 'Content Types', 5, 10, 'fa fa-newspaper-o fa-fw', NULL, 1, 'main', '{content_types_section}');
+INSERT INTO menu_link VALUES (7, '5.7', 'Media Types', 5, 11, 'fa fa-files-o fa-fw', NULL, 1, 'main', '{media_types_section}');
+INSERT INTO menu_link VALUES (8, '5.8', 'Data Types', 5, 12, 'fa fa-check-square-o fa-fw', NULL, 1, 'main', '{data_types_section}');
+INSERT INTO menu_link VALUES (9, '5.9', 'Templates', 5, 13, 'fa fa-eye fa-fw', NULL, 1, 'main', '{templates_section}');
+INSERT INTO menu_link VALUES (10, '6.10', 'Scripts', 5, 14, 'fa fa-file-code-o fa-fw', NULL, 1, 'main', '{scripts_section}');
+INSERT INTO menu_link VALUES (11, '6.11', 'Stylesheets', 5, 15, 'fa fa-desktop fa-fw', NULL, 1, 'main', '{stylesheets_section}');
+INSERT INTO menu_link VALUES (12, '5.12', 'Member Types', 4, 30, 'fa fa-smile-o fa-fw', NULL, 1, 'main', '{member_types_section}');
+INSERT INTO menu_link VALUES (13, '5.13', 'Member Groups', 4, 33, 'fa fa-smile-o fa-fw', NULL, 1, 'main', '{member_groups_section}');
+
+
+--
+-- TOC entry 2377 (class 0 OID 0)
+-- Dependencies: 187
+-- Name: menu_link_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('menu_link_id_seq', 1, false);
+
+
+--
+-- TOC entry 2355 (class 0 OID 84079)
+-- Dependencies: 188
+-- Data for Name: node; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO node VALUES (1, '1', 'root', 5, 1, '2014-10-22 16:51:00.215', NULL, NULL, NULL);
+INSERT INTO node VALUES (2, '1.2', 'Text input', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (3, '1.3', 'Numeric input', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (4, '1.4', 'Textarea', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (5, '1.5', 'Radiobox', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (6, '1.6', 'Radiobox list', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (7, '1.7', 'Dropdown', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (8, '1.8', 'Dropdown multiple', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (9, '1.9', 'Checkbox', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (10, '1.10', 'Checkbox list', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (11, '1.11', 'Label', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (12, '1.12', 'Color picker', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (13, '1.13', 'Date picker', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (14, '1.14', 'Date picker with time', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (15, '1.15', 'Folder browser', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (16, '1.16', 'Upload', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (17, '1.17', 'Richtext editor', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (18, '1.18', 'True/false', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (19, '1.19', 'Domains', 11, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+
+INSERT INTO node VALUES (20, '1.20', 'Member', 12, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+
+INSERT INTO node VALUES (21, '1.21', 'Layout', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (22, '1.21.22', 'Home', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
+INSERT INTO node VALUES (23, '1.21.23', 'Post', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
+INSERT INTO node VALUES (24, '1.21.24', 'Post Overview', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
+INSERT INTO node VALUES (25, '1.21.25', 'Page', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
+INSERT INTO node VALUES (26, '1.21.26', 'Login', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
+INSERT INTO node VALUES (27, '1.21.27', 'Register', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
+INSERT INTO node VALUES (28, '1.21.28', '404', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
+INSERT INTO node VALUES (29, '1.21.29', 'Unauthorized', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
+
+INSERT INTO node VALUES (30, '1.30', 'Top Navigation', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (31, '1.31', 'Post Overview Widget', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (32, '1.32', 'Featured Pages Widget', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (33, '1.33', 'Recent Posts Widget', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (34, '1.34', 'Social', 3, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+
+INSERT INTO node VALUES (35, '1.35', 'Master', 4, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (36, '1.35.36', 'Home', 4, 1, '2014-10-22 16:51:00.215', 35, NULL, NULL);
+INSERT INTO node VALUES (37, '1.35.37', 'Post', 4, 1, '2014-10-22 16:51:00.215', 35, NULL, NULL);
+INSERT INTO node VALUES (38, '1.35.38', 'Post Overview', 4, 1, '2014-10-22 16:51:00.215', 35, NULL, NULL);
+INSERT INTO node VALUES (39, '1.35.39', 'Page', 4, 1, '2014-10-22 16:51:00.215', 35, NULL, NULL);
+
+INSERT INTO node VALUES (40, '1.40', 'Folder', 7, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (41, '1.41', 'Image', 7, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+
+INSERT INTO node VALUES (42, '1.42', 'Home', 1, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+INSERT INTO node VALUES (43, '1.42.43', 'Welcome', 1, 1, '2014-10-22 16:51:00.215', 42, '[{"id": 2, "permissions": ["node_create", "node_delete", "node_update", "node_move", "node_copy", "node_public_access", "node_permissions", "node_send_to_publish", "node_sort", "node_publish", "node_browse", "node_change_content_type"]}]', NULL);
+INSERT INTO node VALUES (44, '1.42.44', 'Getting Started', 1, 1, '2014-10-26 23:19:44.735', 42, NULL, '[{"id": 1, "permissions": ["node_create", "node_delete", "node_update", "node_move", "node_copy", "node_public_access", "node_permissions", "node_send_to_publish", "node_sort", "node_publish", "node_browse", "node_change_content_type"]}]');
+INSERT INTO node VALUES (45, '1.42.45', 'Documentation', 1, 1, '2014-10-26 23:19:44.735', 42, NULL, NULL);
+INSERT INTO node VALUES (46, '1.42.46', 'Get Involved', 1, 1, '2014-10-26 23:19:44.735', 42, NULL, NULL); -- NEW
+INSERT INTO node VALUES (47, '1.42.47', 'Posts', 1, 1, '2014-10-22 16:51:00.215', 42, NULL, NULL);
+INSERT INTO node VALUES (48, '1.42.47.48', 'Hello World', 1, 1, '2014-10-22 16:51:00.215', 47, NULL, NULL);
+INSERT INTO node VALUES (49, '1.42.47.49', 'TXT Starter Kit For Collexy Released', 1, 1, '2014-10-22 16:51:00.215', 47, NULL, NULL);
+INSERT INTO node VALUES (50, '1.42.47.50', 'You Need To Read This', 1, 1, '2014-10-22 16:51:00.215', 47, NULL, NULL);
+INSERT INTO node VALUES (51, '1.42.47.51', 'Amazing Post', 1, 1, '2014-10-22 16:51:00.215', 47, NULL, NULL);
+
+INSERT INTO node VALUES (52, '1.52', 'Sample Images', 2, 1, '2014-12-02 01:42:09.979', 1, NULL, NULL);
+
+INSERT INTO node VALUES (53, '1.52.53', 'TXT', 2, 1, '2014-12-05 16:18:29.762', 52, NULL, NULL);
+INSERT INTO node VALUES (54, '1.52.53.54', 'pic01.jpg', 2, 1, '2014-12-06 13:07:08.943', 53, NULL, NULL);
+INSERT INTO node VALUES (55, '1.42.53.55', 'pic02.jpg', 2, 1, '2014-12-06 14:28:52.117', 53, NULL, NULL);
+INSERT INTO node VALUES (56, '1.42.53.56', 'pic03.jpg', 2, 1, '2014-12-06 14:28:52.117', 53, NULL, NULL);
+INSERT INTO node VALUES (57, '1.42.53.57', 'pic04.jpg', 2, 1, '2014-12-06 14:28:52.117', 53, NULL, NULL);
+INSERT INTO node VALUES (58, '1.42.53.58', 'pic05.jpg', 2, 1, '2014-12-06 14:28:52.117', 53, NULL, NULL);
+INSERT INTO node VALUES (59, '1.42.53.59', 'banner.jpg', 2, 1, '2014-12-06 14:28:52.117', 53, NULL, NULL);
+
+
+-- INSERT INTO node VALUES (42, '1.42', 'Home', 1, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+-- INSERT INTO node VALUES (43, '1.42.43', 'Sample Page', 1, 1, '2014-10-22 16:51:00.215', 42, '[{"id": 2, "permissions": ["node_create", "node_delete", "node_update", "node_move", "node_copy", "node_public_access", "node_permissions", "node_send_to_publish", "node_sort", "node_publish", "node_browse", "node_change_content_type"]}]', NULL);
+-- INSERT INTO node VALUES (44, '1.42.43.44', 'Child Page Level 1', 1, 1, '2014-10-26 23:19:44.735', 43, NULL, '[{"id": 1, "permissions": ["node_create", "node_delete", "node_update", "node_move", "node_copy", "node_public_access", "node_permissions", "node_send_to_publish", "node_sort", "node_publish", "node_browse", "node_change_content_type"]}]');
+-- INSERT INTO node VALUES (45, '1.42.43.44.45', 'Child Page Level 2', 1, 1, '2014-10-26 23:19:44.735', 44, NULL, NULL);
+-- INSERT INTO node VALUES (46, '1.42.46', 'Posts', 1, 1, '2014-10-22 16:51:00.215', 42, NULL, NULL);
+-- INSERT INTO node VALUES (47, '1.42.46.47', 'Hello World', 1, 1, '2014-10-22 16:51:00.215', 46, NULL, NULL);
+-- INSERT INTO node VALUES (48, '1.48', 'gopher.jpg', 2, 1, '2014-10-28 15:50:47.303', 1, NULL, NULL);
+-- INSERT INTO node VALUES (49, '1.49', '2014', 2, 1, '2014-12-02 01:42:09.979', 1, NULL, NULL);
+-- INSERT INTO node VALUES (50, '1.49.50', '12', 2, 1, '2014-12-05 16:18:29.762', 49, NULL, NULL);
+-- INSERT INTO node VALUES (51, '1.49.50.51', 'cat-prays.jpg', 2, 1, '2014-12-06 13:07:08.943', 50, NULL, NULL);
+-- INSERT INTO node VALUES (52, '1.49.50.52', 'sleeping-kitten.jpg', 2, 1, '2014-12-06 14:28:52.117', 50, NULL, NULL);
+
+
+
+--
+-- TOC entry 2378 (class 0 OID 0)
+-- Dependencies: 189
+-- Name: node_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('node_id_seq', 1, false);
+
+
+--
+-- TOC entry 2357 (class 0 OID 84088)
+-- Dependencies: 190
+-- Data for Name: permission; Type: TABLE DATA; Schema: public; Owner: postgres
+--
 
 INSERT INTO permission VALUES ('node_create');
 INSERT INTO permission VALUES ('node_delete');
@@ -1123,6 +1371,12 @@ INSERT INTO permission VALUES ('data_types_section');
 INSERT INTO permission VALUES ('data_types_browse');
 
 
+--
+-- TOC entry 2358 (class 0 OID 84094)
+-- Dependencies: 191
+-- Data for Name: route; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
 INSERT INTO route VALUES (1, 'content', 'content', NULL, '/admin/content', '[{"single": "public/views/content/index.html"}]', false);
 INSERT INTO route VALUES (2, 'media', 'media', NULL, '/admin/media', '[{"single": "public/views/media/index.html"}]', false);
 INSERT INTO route VALUES (3, 'users', 'users', NULL, '/admin/users', '[{"single": "public/views/users/index.html"}]', false);
@@ -1159,77 +1413,87 @@ INSERT INTO route VALUES (33, 'members.memberGroups', 'memberTypes', 4, '/member
 INSERT INTO route VALUES (34, 'members.memberGroups.edit', 'edit', 33, '/edit/:id', '[{"single": "public/views/members/member-group/edit.html"}]', false);
 INSERT INTO route VALUES (35, 'members.memberGroups.new', 'new', 33, '/new?type&parent', '[{"single": "public/views/members/member-group/new.html"}]', false);
 
-INSERT INTO menu_link VALUES (1, '1', 'Content', NULL, 1, 'fa fa-newspaper-o fa-fw', NULL, 1, 'main', '{content_section}');
-INSERT INTO menu_link VALUES (2, '2', 'Media', NULL, 2, 'fa fa-file-image-o fa-fw', NULL, 1, 'main', '{media_section}');
-INSERT INTO menu_link VALUES (3, '3', 'Users', NULL, 3, 'fa fa-user fa-fw', NULL, 1, 'main', '{users_section}');
-INSERT INTO menu_link VALUES (4, '4', 'Members', NULL, 4, 'fa fa-users fa-fw', NULL, 1, 'main', '{members_section}');
-INSERT INTO menu_link VALUES (5, '5', 'Settings', NULL, 5, 'fa fa-gear fa-fw', NULL, 1, 'main', '{settings_section}');
-INSERT INTO menu_link VALUES (6, '5.6', 'Content Types', 5, 10, 'fa fa-newspaper-o fa-fw', NULL, 1, 'main', '{content_types_section}');
-INSERT INTO menu_link VALUES (7, '5.7', 'Media Types', 5, 11, 'fa fa-files-o fa-fw', NULL, 1, 'main', '{media_types_section}');
-INSERT INTO menu_link VALUES (8, '5.8', 'Data Types', 5, 12, 'fa fa-check-square-o fa-fw', NULL, 1, 'main', '{data_types_section}');
-INSERT INTO menu_link VALUES (9, '5.9', 'Templates', 5, 13, 'fa fa-eye fa-fw', NULL, 1, 'main', '{templates_section}');
-INSERT INTO menu_link VALUES (10, '6.10', 'Scripts', 5, 14, 'fa fa-file-code-o fa-fw', NULL, 1, 'main', '{scripts_section}');
-INSERT INTO menu_link VALUES (11, '6.11', 'Stylesheets', 5, 15, 'fa fa-desktop fa-fw', NULL, 1, 'main', '{stylesheets_section}');
-INSERT INTO menu_link VALUES (12, '5.12', 'Member Types', 4, 30, 'fa fa-smile-o fa-fw', NULL, 1, 'main', '{member_types_section}');
-INSERT INTO menu_link VALUES (13, '5.13', 'Member Groups', 4, 33, 'fa fa-smile-o fa-fw', NULL, 1, 'main', '{member_groups_section}');
+
+--
+-- TOC entry 2379 (class 0 OID 0)
+-- Dependencies: 192
+-- Name: route_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('route_id_seq', 1, false);
 
 
+--
+-- TOC entry 2360 (class 0 OID 84102)
+-- Dependencies: 193
+-- Data for Name: template; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO template VALUES (1, 21, 'Collexy.Layout', false, '{30,34}', NULL);
+INSERT INTO template VALUES (2, 22, 'Collexy.Home', false, '{32,33}', 21);
+INSERT INTO template VALUES (3, 23, 'Collexy.Post', false, '{32,33}', 21);
+INSERT INTO template VALUES (4, 24, 'Collexy.PostOverview', false, '{32}', 21);
+INSERT INTO template VALUES (5, 25, 'Collexy.Page', false, '{32,33}', 21);
+INSERT INTO template VALUES (6, 26, 'Collexy.Login', false, NULL, 21);
+INSERT INTO template VALUES (7, 27, 'Collexy.Register', false, NULL, 21);
+INSERT INTO template VALUES (8, 28, 'Collexy.404', false, NULL, 21);
+INSERT INTO template VALUES (9, 29, 'Collexy.Unauthorized', false, NULL, 21);
+INSERT INTO template VALUES (10, 30, 'Collexy.TopNavigation', true, NULL, NULL);
+INSERT INTO template VALUES (11, 31, 'Collexy.PostOverviewWidget', true, NULL, NULL);
+INSERT INTO template VALUES (12, 32, 'Collexy.FeaturedPagesWidget', true, NULL, NULL);
+INSERT INTO template VALUES (13, 33, 'Collexy.RecentPostsWidget', true, NULL, NULL);
+INSERT INTO template VALUES (14, 34, 'Collexy.Social', true, NULL, NULL);
+
+
+--
+-- TOC entry 2380 (class 0 OID 0)
+-- Dependencies: 194
+-- Name: template_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('template_id_seq', 1, false);
+
+
+--
+-- TOC entry 2362 (class 0 OID 84111)
+-- Dependencies: 195
+-- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO "user" VALUES (1, '%s', 'Admin', 'Demo', '%s', '%s', '2014-11-15 16:51:00.215', NULL, '2015-03-02 13:07:57.994', NULL, 1, 'IF2LJ42JDYHDEH55IXUTCTYMWEFO6PD2VJGYTWVYT353US52LFXQ', '{1}', NULL);
+
+
+--
+-- TOC entry 2363 (class 0 OID 84118)
+-- Dependencies: 196
+-- Data for Name: user_group; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+INSERT INTO user_group VALUES (1, 'Administrator', 'administrator', '{node_create,node_delete,node_update,node_move,node_copy,node_public_access,node_permissions,node_send_to_publish,node_publish,node_browse,node_change_content_type,admin,content_all,content_create,content_delete,content_update,content_section,content_browse,media_all,media_create,media_delete,media_update,media_section,media_browse,users_all,users_create,users_delete,users_update,users_section,users_browse,user_types_all,user_types_create,user_types_delete,user_types_update,user_types_section,user_types_browse,user_groups_all,user_groups_create,user_groups_delete,user_groups_update,user_groups_section,user_groups_browse,members_all,members_create,members_delete,members_update,members_section,members_browse,member_types_all,member_types_create,member_types_delete,member_types_update,member_types_section,member_types_browse,member_groups_all,member_groups_create,member_groups_delete,member_groups_update,member_groups_section,member_groups_browse,templates_all,templates_create,templates_delete,templates_update,templates_section,templates_browse,scripts_all,scripts_create,scripts_delete,scripts_update,scripts_section,scripts_browse,stylesheets_all,stylesheets_create,stylesheets_delete,stylesheets_update,stylesheets_section,stylesheets_browse,settings_section,settings_all,node_sort,content_types_all,content_types_create,content_types_delete,content_types_update,content_types_section,content_types_browse,media_types_all,media_types_create,media_types_delete,media_types_update,media_types_section,media_types_browse,data_types_all,data_types_create,data_types_delete,data_types_update,data_types_section,data_types_browse}');
 INSERT INTO user_group VALUES (2, 'Editor', 'editor', NULL);
 INSERT INTO user_group VALUES (3, 'Writer', 'writer', NULL);
-INSERT INTO user_group VALUES (1, 'Administrator', 'administrator', '{node_create,node_delete,node_update,node_move,node_copy,node_public_access,node_permissions,node_send_to_publish,node_publish,node_browse,node_change_content_type,admin,content_all,content_create,content_delete,content_update,content_section,content_browse,media_all,media_create,media_delete,media_update,media_section,media_browse,users_all,users_create,users_delete,users_update,users_section,users_browse,user_types_all,user_types_create,user_types_delete,user_types_update,user_types_section,user_types_browse,user_groups_all,user_groups_create,user_groups_delete,user_groups_update,user_groups_section,user_groups_browse,members_all,members_create,members_delete,members_update,members_section,members_browse,member_types_all,member_types_create,member_types_delete,member_types_update,member_types_section,member_types_browse,member_groups_all,member_groups_create,member_groups_delete,member_groups_update,member_groups_section,member_groups_browse,templates_all,templates_create,templates_delete,templates_update,templates_section,templates_browse,scripts_all,scripts_create,scripts_delete,scripts_update,scripts_section,scripts_browse,stylesheets_all,stylesheets_create,stylesheets_delete,stylesheets_update,stylesheets_section,stylesheets_browse,settings_section,settings_all,node_sort,content_types_all,content_types_create,content_types_delete,content_types_update,content_types_section,content_types_browse,media_types_all,media_types_create,media_types_delete,media_types_update,media_types_section,media_types_browse,data_types_all,data_types_create,data_types_delete,data_types_update,data_types_section,data_types_browse}');
 
-INSERT INTO "user" VALUES (1, $2, 'Admin', 'Demo', $3, $4, '2014-11-15 16:51:00.215', NULL, '2015-02-27 15:12:12.285', NULL, 1, 'ZMLZCCH7WXTLDCMOXAHV3PMRB3NPR5A33PQUSFLWS2QA5CGH5YPQ', '{1}', NULL);
+--
+-- TOC entry 2381 (class 0 OID 0)
+-- Dependencies: 197
+-- Name: user_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
 
-INSERT INTO member_group VALUES (1, 'authenticated_member', 'All logged in members');
-
-INSERT INTO member VALUES (1, 'default_member', '$2a$10$f9qZyhrTnjirqK53kY3jRu93AgSXUryUZwwFhOFxhh1R9t7LgHRGa', 'default_member@mail.com', '{"comments": "default user comments"}', '2015-01-22 14:25:38.904', NULL, '2015-02-19 23:46:00.495', NULL, 1, 'GIWES3RHMY5RKC7OZPOQTF5FQFWX32D5VLV3CAKT4HGKP5LZIENA', 20, '{1}');
-
-INSERT INTO node VALUES (35, '1.35', 'Master', 4, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (36, '1.35.36', 'Home', 4, 1, '2014-10-22 16:51:00.215', 35, NULL, NULL);
-INSERT INTO node VALUES (37, '1.35.37', 'Post', 4, 1, '2014-10-22 16:51:00.215', 35, NULL, NULL);
-INSERT INTO node VALUES (38, '1.35.38', 'Post Overview', 4, 1, '2014-10-22 16:51:00.215', 35, NULL, NULL);
-INSERT INTO node VALUES (39, '1.35.39', 'Page', 4, 1, '2014-10-22 16:51:00.215', 35, NULL, NULL);
-
-INSERT INTO node VALUES (40, '1.40', 'Folder', 7, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (41, '1.41', 'Image', 7, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
+SELECT pg_catalog.setval('user_group_id_seq', 1, false);
 
 
-INSERT INTO content_type VALUES (1, 35, 'Collexy.Master', 'Some description', 'fa fa-folder-o', 'fa fa-folder-o', NULL, NULL, '[{"name": "Content", "properties": [{"name": "page_title", "order": 1, "data_type_node_id": 2, "help_text": "help text", "description": "The page title overrides the name the page has been given."}]}, {"name": "Properties", "properties": [{"name": "prop2", "order": 1, "data_type_node_id": 2, "help_text": "help text2", "description": "description2"}, {"name": "prop3", "order": 2, "data_type_node_id": 2, "help_text": "help text3", "description": "description3"}]}]');
-INSERT INTO content_type VALUES (2, 36, 'Collexy.Home', 'Home Some description', 'fa fa-folder-o', 'fa fa-folder-o', 35, '{"template_node_id": 22, "allowed_templates_node_id": [22], "allowed_content_types_node_id": [37,38,39]}', '[{"name":"Content","properties":[{"name":"site_name","order":2,"data_type_node_id":2,"help_text":"help text","description":"Site name goes here."},{"name":"site_tagline","order":3,"data_type_node_id":2,"help_text":"help text","description":"Site tagline goes here."},{"name":"copyright","order":4,"data_type_node_id":2,"help_text":"help text","description":"Copyright here."},{"name":"domains","order":5,"data_type_node_id":19,"help_text":"help text","description":"Domains goes here."}]},{"name":"Social","properties":[{"name":"facebook","order":1,"data_type_node_id":2,"help_text":"help text","description":"Enter your facebook link here."},{"name":"twitter","order":1,"data_type_node_id":2,"help_text":"help text","description":"Enter your twitter link here."},{"name":"linkedin","order":1,"data_type_node_id":2,"help_text":"help text","description":"Enter your linkedin link here."}]}]');
-INSERT INTO content_type VALUES (3, 37, 'Collexy.Post', 'Post content type desc', 'fa fa-folder-o', 'fa fa-folder-o', 35, '{"template_node_id": 23, "allowed_templates_node_id": [23], "allowed_content_types_node_id": [37]}', '[{"name":"Content","properties":[{"name":"page_content","order":2,"data_type_node_id":4,"help_text":"Help text for page contentent","description":"Page content description"}]}]');
-INSERT INTO content_type VALUES (4, 38, 'Collexy.PostOverview', 'Post overview content type desc', 'fa fa-folder-o', 'fa fa-folder-o', 35, '{"template_node_id": 24, "allowed_templates_node_id": [24], "allowed_content_types_node_id": [38]}', '[{"name":"Content","properties":[{"name":"page_content","order":2,"data_type_node_id":4,"help_text":"Help text for page contentent","description":"Page content description"}]}]');
-INSERT INTO content_type VALUES (5, 39, 'Collexy.Page', 'Page content type desc', 'fa fa-folder-o', 'fa fa-folder-o', 35, '{"template_node_id": 25, "allowed_templates_node_id": [25], "allowed_content_types_node_id": [39]}', '[{"name":"Content","properties":[{"name":"page_content","order":2,"data_type_node_id":4,"help_text":"Help text for page contentent","description":"Page content description"}]}]');
+--
+-- TOC entry 2382 (class 0 OID 0)
+-- Dependencies: 198
+-- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('user_id_seq', 1, false);
 
 
-INSERT INTO content_type VALUES (6, 40, 'Collexy.Folder', 'Folder media type description1', 'mt-icon1', 'mt-thumbnail1', NULL, '{"allowed_content_types_node_id": [40,41]}', '[{"name":"Folder","properties":[{"name":"folder_browser","order":1,"data_type_node_id":15,"help_text":"prop help text","description":"prop description"},{"name":"path","order":1,"data_type_node_id":2,"help_text":"prop help text","description":"prop description"}]},{"name":"Properties"}]');
-INSERT INTO content_type VALUES (7, 41, 'Collexy.Image', 'Image content type description', 'fa fa-folder-o', 'fa fa-folder-o', NULL, 'null', '[{"name":"Image","properties":[{"name":"path","order":1,"data_type_node_id":2,"help_text":"help text","description":"URL goes here."},{"name":"title","order":2,"data_type_node_id":2,"help_text":"help text","description":"The title entered here can override the above one."},{"name":"caption","order":3,"data_type_node_id":4,"help_text":"help text","description":"Caption goes here."},{"name":"alt","order":4,"data_type_node_id":4,"help_text":"help text","description":"Alt goes here."},{"name":"description","order":5,"data_type_node_id":4,"help_text":"help text","description":"Description goes here."},{"name":"file_upload","order":1,"data_type_node_id":16,"help_text":"prop help text","description":"prop description"}]},{"name":"Properties","properties":[{"name":"temporary property","order":1,"data_type_node_id":2,"help_text":"help text","description":"Temporary description goes here."}]}]');
+-- Completed on 2015-03-03 12:27:47
 
-INSERT INTO node VALUES (42, '1.42', 'Home', 1, 1, '2014-10-22 16:51:00.215', 1, NULL, NULL);
-INSERT INTO node VALUES (43, '1.42.43', 'Sample Page', 1, 1, '2014-10-22 16:51:00.215', 42, '[{"id": 2, "permissions": ["node_create", "node_delete", "node_update", "node_move", "node_copy", "node_public_access", "node_permissions", "node_send_to_publish", "node_sort", "node_publish", "node_browse", "node_change_content_type"]}]', NULL);
-INSERT INTO node VALUES (44, '1.42.43.44', 'Child Page Level 1', 1, 1, '2014-10-26 23:19:44.735', 43, NULL, '[{"id": 1, "permissions": ["node_create", "node_delete", "node_update", "node_move", "node_copy", "node_public_access", "node_permissions", "node_send_to_publish", "node_sort", "node_publish", "node_browse", "node_change_content_type"]}]');
-INSERT INTO node VALUES (45, '1.42.43.44.45', 'Child Page Level 2', 1, 1, '2014-10-26 23:19:44.735', 44, NULL, NULL);
-
-INSERT INTO content VALUES (1, 42, 36, '{"prop2": "Home page prop 2", "domains": ["localhost:8080", "localhost:8080/test"], "facebook": "facebook.com/home", "copyright": "&copy; 2014 codeish.com", "site_name": "$1", "page_title": "Home page title", "site_tagline": "Test site tagline", "template_node_id": 22}', NULL);
-
-INSERT INTO content VALUES (2, 43, 39, '{"prop2": "prop2a", "prop3": "sample page prop 3", "page_title": "Sample page title", "page_content": "Sample page content goes here", "template_node_id": 25}', NULL);
-INSERT INTO content VALUES (3, 44, 39, '{"prop3": "sample child page level 1 page prop 3", "page_title": "Child page level 1 title", "page_content": "Sample page - child page level 1 content goes here", "template_node_id": 25}', NULL);
-INSERT INTO content VALUES (4, 45, 39, '{"prop3": "sample child page level 2 page prop 3", "page_title": "Child page level 2 title", "page_content": "Sample page - child page level 2 content goes here1", "template_node_id": 25}', '{"groups": [1], "members": [1]}');
-
-INSERT INTO node VALUES (46, '1.42.46', 'Posts Overview', 1, 1, '2014-10-22 16:51:00.215', 42, NULL, NULL);
-INSERT INTO node VALUES (47, '1.42.46', 'Hello World', 1, 1, '2014-10-22 16:51:00.215', 42, NULL, NULL);
-
-INSERT INTO content VALUES (5, 46, 38, '{"prop2": "prop2a", "prop3": "Posts overview prop 3", "page_title": "Sample page title", "page_content": "Sample page content goes here", "template_node_id": 24}', NULL);
-INSERT INTO content VALUES (6, 47, 37, '{"prop2": "prop2a", "prop3": "Hello world prop 3", "page_title": "Hello World", "page_content": "Welcome to Collexy. This is your first post. Edit or delete it, then start blogging", "template_node_id": 23}', NULL);
-
-INSERT INTO node VALUES (48, '1.48', 'gopher.jpg', 2, 1, '2014-10-28 15:50:47.303', 1, NULL, NULL);
-INSERT INTO node VALUES (49, '1.49', '2014', 2, 1, '2014-12-02 01:42:09.979', 1, NULL, NULL);
-INSERT INTO node VALUES (50, '1.49.50', '12', 2, 1, '2014-12-05 16:18:29.762', 49, NULL, NULL);
-INSERT INTO node VALUES (51, '1.49.50.51', 'cat-prays.jpg', 2, 1, '2014-12-06 13:07:08.943', 50, NULL, NULL);
-INSERT INTO node VALUES (52, '1.49.50.52', 'sleeping-kitten.jpg', 2, 1, '2014-12-06 14:28:52.117', 50, NULL, NULL);
-
-INSERT INTO content VALUES (7, 48, 41, '{"alt": "Gopher image alt text1", "url": "/media/2014/10/gopher.jpg", "path": "media\\gopher.jpg", "caption": "This is the caption of the gopher image1", "description": "Gopher image description1", "temporary property": "lol"}', NULL);
-INSERT INTO content VALUES (8, 49, 40, '{"path": "media\\2014"}', NULL);
-INSERT INTO content VALUES (9, 50, 40, '{"path": "media\\2014\\12"}', NULL);
-INSERT INTO content VALUES (10, 51, 41, '{"alt": "sleeping-kitten.jpg", "path": "media\\2014\\12\\sleeping-kitten.jpg", "title": "sleeping-kitten.jpg", "caption": "sleeping-kitten.jpg", "description": "sleeping-kitten.jpg"}', NULL);
-INSERT INTO content VALUES (11, 52, 41, '{"alt": "cat-prays.jpg", "path": "media\\2014\\12\\cat-prays.jpg", "title": "cat-prays.jpg", "caption": "cat-prays.jpg", "description": "cat-prays.jpg"}', NULL);
-`
+--
+-- PostgreSQL database dump complete
+--`

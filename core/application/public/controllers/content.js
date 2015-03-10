@@ -201,8 +201,11 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
 
 
 
-function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentType) {
+function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentType, Node) {
   //$scope._ = _;
+
+  $scope.allContentNodes = Node.query({'node-type': '1'},{},function(node){
+    });
 
   var tabs = [];
 

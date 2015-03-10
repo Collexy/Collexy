@@ -1,0 +1,45 @@
+{{define "Post Overview Widget"}}
+
+<!-- Blog -->
+					<section class="box blog">
+						<h2 class="major"><span>Another Major Heading</span></h2>
+						<div>
+							<div class="row">
+								<div class="9u">
+									<div class="content content-left">
+									
+										<!-- Featured Post -->
+											<article class="box post">
+												<header>
+													<h3><a href="#">Here's a really big heading</a></h3>
+													<p>With a smaller subtitle that attempts to elaborate</p>
+													<ul class="meta">
+														<li class="icon fa-clock-o">15 minutes ago</li>
+														<li class="icon fa-comments"><a href="#">8</a></li>
+													</ul>
+												</header>
+												<a href="#" class="image featured"><img src="images/pic05.jpg" alt="" /></a>
+												<p>
+													Phasellus quam turpis, feugiat sit amet ornare in, a hendrerit in lectus. Praesent 
+													semper mod quis eget mi. Etiam sed ante risus aliquam erat et volutpat. Praesent a 
+													dapibus velit. Curabitur sed nisi nunc, accumsan vestibulum lectus. Lorem ipsum 
+													dolor sit non aliquet sed, tempor et dolor.  Praesent a dapibus velit. Curabitur 
+													accumsan.
+												</p>
+												<a href="#" class="button">Continue Reading</a>
+											</article>
+									
+									</div>
+								</div>
+								<div class="3u">
+									<div class="sidebar">
+								
+										{{template "Recent Posts Widget" .}}
+									
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+				
+{{end}}

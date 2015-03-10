@@ -1,6 +1,29 @@
 <!-- Content of admin.html: -->
-{{define "head"}}<title>index</title>{{end}}
+{{define "head"}}<title>Home</title>{{end}}
 {{define "body"}}
-<h2>Home template</h2>
-<p>This is the amazing home page template</p>
+<!-- Banner -->
+<div id="banner-wrapper" style="background-image: url('/stylesheets/TXT/images/overlay.png'), url('/stylesheets/TXT/images/overlay.png'), url('{{.Data.Content.Meta.banner_background_image}}');">
+	<section id="banner">
+		<h2>{{.Data.Content.Meta.banner_header}}</h2>
+		<p>{{.Data.Content.Meta.banner_subheader}}</p>
+		<a href="#" class="button">{{.Data.Content.Meta.banner_link_text}}</a>
+	</section>
+</div>
+<!-- Main -->
+<div id="main-wrapper">
+	<div id="main" class="container">
+		
+		<div class="row 200%">
+			<div class="12u">
+
+				{{template "Featured Pages Widget" .}}
+		</div>
+		<div class="row 200%">
+			<div class="12u">
+				{{template "Post Overview Widget" .}}
+				
+			</div>
+		</div>
+	</div>
+</div>
 {{end}}

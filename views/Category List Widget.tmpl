@@ -1,0 +1,38 @@
+<!-- Content of admin.html: -->
+{{define "Category List Widget"}}
+<!-- Recent Posts -->
+<section>
+	<h2 class="major"><span>Categories</span></h2>
+	<ul class="divided">
+		{{range $content := .Data.Content.GetByContentTypeNodeId 64}}
+			
+				
+				<li>
+					<a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a>
+				</li>
+				
+
+		{{end}}
+		<!-- <li>
+			<article class="box post-summary">
+				<h3><a href="#">Another Subheading</a></h3>
+				<ul class="meta">
+					<li class="icon fa-clock-o">9 hours ago</li>
+					<li class="icon fa-comments"><a href="#">27</a></li>
+				</ul>
+			</article>
+		</li>
+		<li>
+			<article class="box post-summary">
+				<h3><a href="#">And Another</a></h3>
+				<ul class="meta">
+					<li class="icon fa-clock-o">Yesterday</li>
+					<li class="icon fa-comments"><a href="#">184</a></li>
+				</ul>
+			</article>
+		</li> -->
+	</ul>
+	
+</section>
+
+{{end}}

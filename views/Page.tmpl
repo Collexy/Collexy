@@ -1,23 +1,53 @@
-<!-- Content of admin.html: -->
-{{define "head"}}<title>index</title>{{end}}
+{{define "head"}}<title>{{.Data.Content.Node.Name}}</title>{{end}}
 {{define "body"}}
-{{if .HasUser}}
-<p>You're logged in as: {{.Data.User}}</p>
-{{end}}
-<article>
-	<header>
-		<h2>{{.Data.Content.Meta.page_title}}</h2>
-	</header>
-	<div>
-		<p>
-			{{.Data.Content.Meta.page_content}}
-		</p>
-<p style="color: red;">
-<!--{{with .}}-->
-    {{ .Data.Content.TemplateFunctionTest "value1"}}
-<!--{{end}}-->
-</p>
-	</div>
+<!-- Main -->
+			<div id="main-wrapper">
+				<div id="main" class="container">
+					<div class="row">
+						<div class="9u important(collapse)">
+							<div class="content content-left">
+							
+								<!-- Content -->
+						
+									<article class="box page-content">
 
-</article>
+										<header>
+											<h2>{{.Data.Content.Meta.title}}</h2>
+											<!-- <p>Semper amet scelerisque metus faucibus morbi congue mattis</p> -->
+											<!-- <ul class="meta">
+												<li class="icon fa-clock-o">5 days ago</li>
+												<li class="icon fa-comments"><a href="#">1,024</a></li>
+											</ul> -->
+										</header>
+
+										<section>
+											<span class="image featured"><img src="{{.Data.Content.Meta.image}}" alt="" /></span>
+											<p>
+												{{.Data.Content.Meta.content}}
+											</p>
+										</section>
+
+									</article>
+
+							</div>
+						</div>
+						<div class="3u">
+							<div class="sidebar">
+							
+								<!-- Sidebar -->
+							
+									{{template "Recent Posts Widget" .}}
+							</div>
+						</div>
+					</div>
+					<div class="row 200%">
+						<div class="12u">
+
+							{{template "Featured Pages Widget" .}}
+
+
+						</div>
+					</div>
+				</div>
+			</div>
 {{end}}

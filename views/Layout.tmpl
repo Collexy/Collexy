@@ -1,44 +1,88 @@
 <!--Content of base.html:-->
 {{define "base"}}
 <html ng-app="myApp">
-	<head>{{template "head" .}}
-<!-- 		<script>
-//   var req = new XMLHttpRequest();
-//   req.onreadystatechange=state_change;
-//   req.open('GET', document.location, false);
-//   req.setRequestHeader("Authorization","Bearer " + window.sessionStorage.token);
-//   req.send(null);
-//   var headers = req.getAllResponseHeaders().toLowerCase();
+	<head>
+		{{template "head" .}}
+		<title>TXT by HTML5 UP</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+		<script src="/scripts/TXT/jquery.min.js"></script>
+		<script src="/scripts/TXT/jquery.dropotron.min.js"></script>
+		<script src="/scripts/TXT/skel.min.js"></script>
+		<script src="/scripts/TXT/skel-layers.min.js"></script>
+		<script src="/scripts/TXT/init.js"></script>
+		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+		<noscript>
+			<link rel="stylesheet" href="/stylesheets/TXT/skel.css" />
+			<link rel="stylesheet" href="/stylesheets/TXT/style.css" />
+			<link rel="stylesheet" href="/stylesheets/TXT/style-desktop.css" />
+		</noscript>
+		<!--[if lte IE 8]><link rel="stylesheet" href="/stylesheets/TXT/ie/v8.css" /><![endif]-->
+	</head>
+	<body class="homepage">
+		<!-- Header -->
+		<header id="header">
+			<div class="logo container">
+				<div>
+					<h1><a href="index.html" id="logo">{{.Data.Content.GetProperty "site_name" 0 2}}</a></h1>
+					<p>{{.Data.Content.GetProperty "site_tagline" 0 2}}</p>
+				</div>
+			</div>
+		</header>
+		<!-- Navigation -->
+		<nav id="nav" class="skel-layers-fixed">
+			<ul>
+				<li class="current"><a href="index.html">Home</a></li>
+				<li>
+					<a href="">Dropdown</a>
+					<ul>
+						<li><a href="#">Lorem ipsum dolor</a></li>
+						<li><a href="#">Magna phasellus</a></li>
+						<li>
+							<a href="">Phasellus consequat</a>
+							<ul>
+								<li><a href="#">Lorem ipsum dolor</a></li>
+								<li><a href="#">Phasellus consequat</a></li>
+								<li><a href="#">Magna phasellus</a></li>
+								<li><a href="#">Etiam dolore nisl</a></li>
+							</ul>
+						</li>
+						<li><a href="#">Veroeros feugiat</a></li>
+					</ul>
+				</li>
+				<li><a href="left-sidebar.html">Left Sidebar</a></li>
+				<li><a href="right-sidebar.html">Right Sidebar</a></li>
+				<li><a href="no-sidebar.html">No Sidebar</a></li>
+			</ul>
+		</nav>
+		{{template "body" .}}
+		<!-- Footer -->
+		<footer id="footer" class="container">
+			<div class="row 200%">
+				<div class="12u">
 
-//   // request.setRequestHeader("Referer", "http://www.google.com");
-//   //request.setRequestHeader("User-Agent", "Mozilla/5.0");
-//   //request.setRequestHeader("Accept","text/html");
-//   //request.setRequestHeader("Content-Type","text/html");
+					{{template "About Widget" .}}
 
-//   function state_change()
-//   {
-//   	if (req.readyState==4){// 4 = "loaded"
-//   		if (req.status==200) {// 200 = OK
-//   			// ...our code here...
-//   			//alert(headers);
-//   		} else{
-//   			alert("Problem retrieving XML data");
-//   		}
-//   	}
-//   }
-// </script>-->
-</head>
+				</div>
+			</div>
+			<div class="row 200%">
+				<div class="12u">
 
-	<body>
-		<div id="wrapper">
-			<header id="site-header">
-				<p>header area</p>
-			</header>
-			{{template "body" .}}
-			<footer id="site-footer">
-				<small>Footer &copy; 2014 collexy.com</small>
-			</footer>
-		</div>
+					{{template "Social" .}}
+				
+				</div>
+			</div>
+
+			<!-- Copyright -->
+				<div id="copyright">
+					<ul class="menu">
+						<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+
+		</footer>
 	</body>
 </html>
 {{end}}

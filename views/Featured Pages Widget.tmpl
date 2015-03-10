@@ -1,0 +1,39 @@
+<!-- Content of admin.html: -->
+{{define "Featured Pages Widget"}}
+<!-- Features -->
+<section class="box features">
+	<h2 class="major"><span>Featured Pages</span></h2>
+	<div>
+		<div class="row">
+		{{range $content := .Data.Content.GetAncestors 0 2}}
+
+			{{if $content.Eq $content.ContentTypeNodeId 39}}
+				{{if $content.Meta.is_featured}}
+				<div class="3u">
+					<!-- Feature -->
+						<section class="box feature">
+							<a href="http://{{index $content.Domains 0}}/{{$content.Url}}" class="image featured"><img src="{{$content.Meta.image}}" alt="" /></a>
+							<h3><a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a></h3>
+							<p>
+								{{$content.Meta.content}}
+							</p>
+						</section>
+					
+				</div>
+				{{end}}
+			{{end}}
+		{{end}}
+			
+		</div>
+		<div class="row">
+			<div class="12u">
+				<ul class="actions">
+					<li><a href="#" class="button big">Do Something</a></li>
+					<li><a href="#" class="button alt big">Think About It</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+
+{{end}}
