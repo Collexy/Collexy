@@ -34,7 +34,7 @@
 		<!-- Navigation -->
 		<nav id="nav" class="skel-layers-fixed">
 			<ul>
-				<li class="current"><a href="index.html">Home</a></li>
+				<!-- <li class="current"><a href="http://{{index .Data.Content.Domains 0}}">Home</a></li>
 				<li>
 					<a href="">Dropdown</a>
 					<ul>
@@ -54,7 +54,20 @@
 				</li>
 				<li><a href="left-sidebar.html">Left Sidebar</a></li>
 				<li><a href="right-sidebar.html">Right Sidebar</a></li>
-				<li><a href="no-sidebar.html">No Sidebar</a></li>
+				<li><a href="no-sidebar.html">No Sidebar</a></li> -->
+				{{$currentPage := .Data.Content}}
+				{{range $content := .Data.Content.GetContentByDepth 0 2 1 }}
+					{{if $content.Eq $content.Meta.hide_in_nav false }}
+						{{$classes := ""}}
+						{{if $content.Eq $content.Url $currentPage.Url }}
+							{{$classes := "current"}}
+						
+							<li class="{{$classes}}"><a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a></li>
+						{{else}}
+							<li><a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a></li>
+						{{end}}
+					{{end}}
+				{{end}}
 			</ul>
 		</nav>
 		{{template "body" .}}
