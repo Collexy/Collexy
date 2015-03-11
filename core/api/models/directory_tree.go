@@ -158,9 +158,9 @@ func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode){
     filepath.Walk(rootdir, func (path string, fi os.FileInfo, err error) (e error) {
         //if !fi.IsDir() {
         if(fi.Name()==filename){
-            fmt.Println("AWESOME... WORKS!!!")
-            fmt.Println(fi.Name())
-            fmt.Println("AWESOME... WORKS!!!")
+            //fmt.Println("AWESOME... WORKS!!!")
+            //fmt.Println(fi.Name())
+            //fmt.Println("AWESOME... WORKS!!!")
             finfo := FileInfo{fi.Name(),fi.Size(), fi.Mode(), fi.ModTime(), fi.IsDir()}
             //finfoInterface := *FileInfo
             //f, _ := json.Marshal(finfo)

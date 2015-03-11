@@ -1,5 +1,11 @@
 {{define "Post Overview Widget"}}
 
+{{$homePage := .Data.Content.GetHomeNode}}
+
+{{$posts := $homePage.GetByContentTypeNodeId 37}}
+{{$firstPost := index $posts 0}}
+
+
 <!-- Blog -->
 					<section class="box blog">
 						<h2 class="major"><span>Another Major Heading</span></h2>
@@ -7,25 +13,23 @@
 							<div class="row">
 								<div class="9u">
 									<div class="content content-left">
-									
 										<!-- Featured Post -->
 											<article class="box post">
 												<header>
-													<h3><a href="#">Here's a really big heading</a></h3>
-													<p>With a smaller subtitle that attempts to elaborate</p>
+													<h3><a href="#">{{$firstPost.Meta.title}}</a></h3>
+													{{if $firstPost.Meta.sub_header}}
+														<p>{{$firstPost.Meta.sub_header}}</p>
+													{{end}}
 													<ul class="meta">
 														<li class="icon fa-clock-o">15 minutes ago</li>
 														<li class="icon fa-comments"><a href="#">8</a></li>
 													</ul>
 												</header>
-												<a href="#" class="image featured"><img src="images/pic05.jpg" alt="" /></a>
-												<p>
-													Phasellus quam turpis, feugiat sit amet ornare in, a hendrerit in lectus. Praesent 
-													semper mod quis eget mi. Etiam sed ante risus aliquam erat et volutpat. Praesent a 
-													dapibus velit. Curabitur sed nisi nunc, accumsan vestibulum lectus. Lorem ipsum 
-													dolor sit non aliquet sed, tempor et dolor.  Praesent a dapibus velit. Curabitur 
-													accumsan.
-												</p>
+												{{if $firstPost.Meta.image}}
+													<a href="#" class="image featured"><img src="{{$firstPost.Meta.image}}" alt="" /></a>
+												{{end}}
+												{{$post_content := $firstPost.Meta.content}}
+												{{$firstPost.HTML $post_content}}
 												<a href="#" class="button">Continue Reading</a>
 											</article>
 									
@@ -33,9 +37,30 @@
 								</div>
 								<div class="3u">
 									<div class="sidebar">
-								
-										{{template "Recent Posts Widget" .}}
-									
+
+										<!-- Recent Posts -->
+										<section>
+											<h2 class="major"><span>Recent Posts</span></h2>
+											<ul class="divided">
+												{{range $content := $posts}}
+													
+														{{$is_not_first := ne $content.Node.Id $firstPost.Node.Id}}
+														{{if and $content.Meta.is_featured $is_not_first}}
+															<li>
+																<article class="box post-summary">
+																	<h3><a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a></h3>
+																	<ul class="meta">
+																		<li class="icon fa-clock-o">{{$content.Node.CreatedDate}}</li>
+																		<!-- <li class="icon fa-comments"><a href="#">34</a></li> -->
+																	</ul>
+																</article>
+															</li>
+														{{end}}
+
+												{{end}}
+											</ul>
+											<a href="#" class="button alt">Browse Archives</a>
+										</section>
 									</div>
 								</div>
 							</div>

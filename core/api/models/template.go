@@ -172,8 +172,8 @@ func (b IntArray) Value() (driver.Value, error) {
     }
   }
   str = str + "}"
-  fmt.Println("driver.Value 2: ")
-  fmt.Println(str)
+  //fmt.Println("driver.Value 2: ")
+  //fmt.Println(str)
   return str, nil
   //return "{23,24}", nil
   //return "20,21", nil
@@ -326,7 +326,7 @@ where my_node.id=$1 and template.node_id = my_node.id`
   name := node_name + ".tmpl"
   //absPath, _ := filepath.Abs("/views/" + name)
   absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + name)
-  fmt.Println("FILEPATH:: " + absPath)
+  //fmt.Println("FILEPATH:: " + absPath)
   
   bs, err7 := ioutil.ReadFile(absPath)
   corehelpers.PanicIf(err7)

@@ -49,12 +49,13 @@ type TestStructMember struct {
 //var Templates map[string]*template.Template
 
 func (this *ContentController) RenderTemplate(w http.ResponseWriter, name string, content *models.Content, member *models.Member) error {
+    defer fmt.Println("RenderTemplate finished!")
     // Ensure the template exists in the map.
     tmpl, ok := applicationglobals.Templates[name]
     if !ok {
         return fmt.Errorf("The template %s does not exist.", name)
     }
-    fmt.Print(applicationglobals.Templates)
+    // fmt.Print(applicationglobals.Templates)
     w.Header().Set("Content-Type", "text/html; charset=utf-8")
     if(member == nil){
         fmt.Println("controller.content.RenderTemplate(): user is nil")
@@ -107,7 +108,7 @@ func (this *ContentController) RenderAdminTemplate(w http.ResponseWriter, name s
 
 
 func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Request) {
-
+    defer corehelpers.Un(corehelpers.Trace("SOME_ARBITRARY_STRING_SO_YOU_CAN_KEEP_TRACK"))
     sid := corehelpers.CheckMemberCookie(w,r)
     m, _ := models.GetMember(sid)
 
@@ -161,8 +162,8 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
                         lol := rp1.FindAllString(tplFile.Contents, -1) // ["abc", "def"]
                         // fmt.Println(tplFile.Contents)
-                        fmt.Println("regex return")
-                        fmt.Println(lol)
+                        //fmt.Println("regex return")
+                        //fmt.Println(lol)
 
                         for _, value := range lol {
                             concatStr := "views/" + value + ".tmpl"
@@ -210,8 +211,8 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
                                     lol := rp1.FindAllString(tplFile.Contents, -1) // ["abc", "def"]
                                     // fmt.Println(tplFile.Contents)
-                                    fmt.Println("regex return")
-                                    fmt.Println(lol)
+                                    //fmt.Println("regex return")
+                                    //fmt.Println(lol)
 
                                     for _, value1 := range lol {
                                         //
@@ -223,7 +224,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
                                             fmt.Println("character is numric")
                                         }else{
                                             if (corehelpers.IsFirstUpper(concatStr)) {
-                                                fmt.Println("upper case true")
+                                                //fmt.Println("upper case true")
                                                 
                                                 
                                                 concatStr = "views/" + concatStr + ".tmpl"
