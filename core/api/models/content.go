@@ -17,6 +17,7 @@ import (
   "github.com/dgrijalva/jwt-go"
   "reflect"
   //"errors"
+  "github.com/kennygrant/sanitize"
 )
 
 type Content struct {
@@ -31,6 +32,20 @@ type Content struct {
   Url string `json:"url,omitempty"`
   Domains []string `json:"domains,omitempty"`
   PublicAccess *PublicAccess `json:"public_access,omitempty"`
+}
+
+func (c *Content) StripHtmlTags(str string) (strippedStr string){
+  strippedStr = sanitize.HTML(str)
+  return
+}
+
+func (c *Content) GetSubstring(s string, start, offset int) (str string){
+  if(offset < len(s)){
+    str = s[start:offset]
+  } else {
+    str = s
+  }
+  return
 }
 
 func (c *Content) GetContentByDepth(start, offset, length int) (contentSlice []*Content){

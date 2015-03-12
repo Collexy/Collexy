@@ -24,9 +24,14 @@
 											</header>
 
 											<section>
+												{{if $content.Meta.image}}
 												<span class="image featured"><img src="{{$content.Meta.image}}" alt="" /></span>
-												{{$post_content := $content.Meta.content}}
-												{{$content.HTML $post_content}}
+												{{end}}
+												<p>
+													{{$excerpt := $content.GetSubstring $content.Meta.content 0 150}}
+
+													<p>{{$content.StripHtmlTags $excerpt}}</p>
+												</p>
 												<a href="http://{{index $content.Domains 0}}/{{$content.Url}}" class="button">Continue Reading</a>
 
 

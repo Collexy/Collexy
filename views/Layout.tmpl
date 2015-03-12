@@ -1,5 +1,8 @@
-<!--Content of base.html:-->
+
 {{define "base"}}
+{{$currentPage := .Data.Content}}
+{{$homePage := .Data.Content.GetHomeNode}}
+<!DOCTYPE HTML>
 <html ng-app="myApp">
 	<head>
 		{{template "head" .}}
@@ -55,11 +58,22 @@
 				<li><a href="left-sidebar.html">Left Sidebar</a></li>
 				<li><a href="right-sidebar.html">Right Sidebar</a></li>
 				<li><a href="no-sidebar.html">No Sidebar</a></li> -->
-				{{$currentPage := .Data.Content}}
+				
+				{{$classes := ""}}
+				{{if eq $homePage.Url $currentPage.Url }}
+					{{$classes := "current"}}
+				
+					<li class="{{$classes}}"><a href="http://{{index $homePage.Domains 0}}/{{$homePage.Url}}">{{$homePage.Meta.title}}</a></li>
+				{{else}}
+					<li><a href="http://{{index $homePage.Domains 0}}/{{$homePage.Url}}">{{$homePage.Meta.title}}</a></li>
+				{{end}}
 				{{range $content := .Data.Content.GetContentByDepth 0 2 1 }}
-					{{if $content.Eq $content.Meta.hide_in_nav false }}
+					{{$is_not_home := ne $content.Node.Id $homePage.Node.Id}}
+					{{$hide_in_nav := eq $content.Meta.hide_in_nav false}}
+					{{if and $hide_in_nav $is_not_home}}
 						{{$classes := ""}}
-						{{if $content.Eq $content.Url $currentPage.Url }}
+						{{$is_current_url := eq $content.Url $currentPage.Url}}
+						{{if $is_current_url}}
 							{{$classes := "current"}}
 						
 							<li class="{{$classes}}"><a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a></li>
@@ -90,8 +104,7 @@
 
 			<!-- Copyright -->
 				<div id="copyright">
-					<ul class="menu">
-						<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					<ul class="menu"><li>{{.Data.Content.HTML $homePage.Meta.copyright}}</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
 					</ul>
 				</div>
 

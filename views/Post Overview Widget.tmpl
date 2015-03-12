@@ -28,8 +28,11 @@
 												{{if $firstPost.Meta.image}}
 													<a href="#" class="image featured"><img src="{{$firstPost.Meta.image}}" alt="" /></a>
 												{{end}}
-												{{$post_content := $firstPost.Meta.content}}
-												{{$firstPost.HTML $post_content}}
+												{{$excerpt := $firstPost.GetSubstring $firstPost.Meta.content 0 150}}
+
+												<p>{{$firstPost.StripHtmlTags $excerpt}}</p>
+
+												
 												<a href="#" class="button">Continue Reading</a>
 											</article>
 									
