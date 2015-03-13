@@ -21,7 +21,9 @@
 														<p>{{$firstPost.Meta.sub_header}}</p>
 													{{end}}
 													<ul class="meta">
-														<li class="icon fa-clock-o">15 minutes ago</li>
+														<!-- <li class="icon fa-clock-o">15 minutes ago</li> -->
+														
+														<li class="icon fa-clock-o">{{$firstPost.TimeAgo}}</li>
 														<li class="icon fa-comments"><a href="#">8</a></li>
 													</ul>
 												</header>
@@ -53,7 +55,7 @@
 																<article class="box post-summary">
 																	<h3><a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a></h3>
 																	<ul class="meta">
-																		<li class="icon fa-clock-o">{{$content.Node.CreatedDate}}</li>
+																		<li class="icon fa-clock-o">{{$content.TimeAgo}}</li>
 																		<!-- <li class="icon fa-comments"><a href="#">34</a></li> -->
 																	</ul>
 																</article>

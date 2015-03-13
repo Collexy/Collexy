@@ -34,6 +34,43 @@ type Content struct {
   PublicAccess *PublicAccess `json:"public_access,omitempty"`
 }
 
+//func (c *Content) TimeAgo(ti *time.Time) (t interface{}){
+func (c *Content) TimeAgo() (t interface{}){
+  // See http://golang.org/pkg/time/#Parse
+  //timeFormat := "2006-01-02 15:04 MST"
+
+  var then time.Time = *c.Node.CreatedDate
+  //var then time.Time = *ti
+
+  //fmt.Println(then.Format(time.RFC3339))
+  // then, err := time.Parse(timeFormat, v)
+  // if err != nil {
+  //     fmt.Println(err)
+  //     return
+  // }
+
+    duration := time.Since(then)
+    if(duration.Seconds() > 59){
+      fmt.Println("time >59 seconds")
+      if(duration.Minutes() > 59){
+        fmt.Println("time >59 minutes")
+        if(duration.Hours() > 72) {
+          fmt.Println("time >72 hours")
+          rofl := then.Format("Mon Jan _2, 2006")
+          t = rofl
+        } else {
+          t = strconv.FormatFloat(duration.Hours(), 'f', 0, 64) + " hours ago"
+        }
+      } else {
+        t = strconv.FormatFloat(duration.Minutes(), 'f', 0, 64) + " minutes ago"
+      }
+    } else {
+      t = strconv.FormatFloat(duration.Seconds(), 'f', 0, 64) + " seconds ago"
+    }
+
+  return
+}
+
 func (c *Content) StripHtmlTags(str string) (strippedStr string){
   strippedStr = sanitize.HTML(str)
   return
@@ -124,7 +161,15 @@ ON heh.id = cn.id
 --WHERE cn.path= subpath('1.42.46.47',0,nlevel(cn.path));
 WHERE cn.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lquery`
 
-  // node
+  
+
+  rows, err := db.Query(queryStr, c.Node.Path, start, offset, length)
+  corehelpers.PanicIf(err)
+  defer rows.Close()
+
+  //row := db.QueryRow(queryStr, nodeParamId)
+  for rows.Next(){
+// node
   var node_id, node_created_by, node_type int
   var node_path, node_name string
   var node_created_date time.Time
@@ -151,14 +196,6 @@ WHERE cn.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lquery`
 
   // master template
   //var master_template_name string
-
-  rows, err := db.Query(queryStr, c.Node.Path, start, offset, length)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
-
-  //row := db.QueryRow(queryStr, nodeParamId)
-  for rows.Next(){
-
     rows.Scan(
         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
@@ -293,7 +330,15 @@ ON heh.id = cn.id
 --WHERE cn.path= subpath('1.42.46.47',0,nlevel(cn.path));
 WHERE content.meta->$1 @> $2`
 
-  // node
+ 
+
+  rows, err := db.Query(queryStr, metaKey, metaValueStr)
+  corehelpers.PanicIf(err)
+  defer rows.Close()
+
+  //row := db.QueryRow(queryStr, nodeParamId)
+  for rows.Next(){
+ // node
   var node_id, node_created_by, node_type int
   var node_path, node_name string
   var node_created_date time.Time
@@ -320,14 +365,6 @@ WHERE content.meta->$1 @> $2`
 
   // master template
   //var master_template_name string
-
-  rows, err := db.Query(queryStr, metaKey, metaValueStr)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
-
-  //row := db.QueryRow(queryStr, nodeParamId)
-  for rows.Next(){
-
     rows.Scan(
         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
@@ -393,7 +430,7 @@ func (c *Content) GetByContentTypeNodeId(contentTypeNodeId int) (contentSlice []
   cn.created_date AS node_created_date, cn.parent_id AS node_parent_id,
   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta,
   okidoki.content_url as content_url, 
-  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias, tpl.partial_template_nodes,
+  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias,
   tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name,
   heh.domains
 FROM content
@@ -416,16 +453,8 @@ JOIN
 ON (content.meta->>'template_node_id')::int = tn.id
 JOIN 
 (
-  SELECT template.*, res2.* 
-  FROM template,
-  LATERAL
-  (
-    SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS partial_template_nodes
-    FROM node
-    WHERE node.id = ANY(template.partial_template_node_ids)
-    --WHERE node.id IN (SELECT unnest(template.partial_template_node_ids))
-    ORDER BY template.node_id ASC
-  ) res2 
+  SELECT template.* 
+  FROM template
 ) AS tpl
 ON tpl.node_id = tn.id
 JOIN 
@@ -463,6 +492,17 @@ ON heh.id = cn.id
 --WHERE cn.path= subpath('1.42.46.47',0,nlevel(cn.path));
 WHERE content.content_type_node_id = $1;`
 
+
+
+  // master template
+  //var master_template_name string
+
+  rows, err := db.Query(queryStr, contentTypeNodeId)
+  corehelpers.PanicIf(err)
+  defer rows.Close()
+
+  //row := db.QueryRow(queryStr, nodeParamId)
+  for rows.Next(){
   // node
   var node_id, node_created_by, node_type int
   var node_path, node_name string
@@ -482,26 +522,15 @@ WHERE content.content_type_node_id = $1;`
   // template
   var parent_template_node_id int
   var template_alias string
-  var partial_template_nodes []byte
+  //var partial_template_nodes []byte
 
   //
   var content_domains coreglobals.StringSlice
   var content_url sql.NullString
-
-  // master template
-  //var master_template_name string
-
-  rows, err := db.Query(queryStr, contentTypeNodeId)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
-
-  //row := db.QueryRow(queryStr, nodeParamId)
-  for rows.Next(){
-
     rows.Scan(
         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
-        &parent_template_node_id, &template_alias, &partial_template_nodes,
+        &parent_template_node_id, &template_alias,
         &template_node_id, &parent_template_nodes, &template_node_name, &content_domains)
 
     /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
@@ -525,12 +554,12 @@ WHERE content.content_type_node_id = $1;`
     }
 
     var parent_template_nodes_final []Node
-    var partial_template_nodes_slice []Node
+    //var partial_template_nodes_slice []Node
     var meta map[string]interface{}
 
     json.Unmarshal(parent_template_nodes, &parent_template_nodes_final)
     json.Unmarshal(content_meta, &meta)
-    json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
+    //json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
     //corehelpers.PanicIf(myerr)
 
     //fmt.Println("TEST::: BEGIN ::: ")
@@ -551,7 +580,7 @@ WHERE content.content_type_node_id = $1;`
 
     contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
     templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
-    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, partial_template_nodes_slice, nil, template_is_partial, &templateNode}
+    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
     content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, ContentType{}, &template, nil, content_url_str, content_domains,nil}
@@ -868,6 +897,14 @@ ON heh.id = cn.id
 --WHERE cn.path= subpath('1.42.46.47',0,nlevel(cn.path));
 WHERE cn.path <@ subltree($1,$2,$3)`
 
+
+  rows, err := db.Query(queryStr, c.Node.Path, offset, length)
+  corehelpers.PanicIf(err)
+  defer rows.Close()
+
+  //row := db.QueryRow(queryStr, nodeParamId)
+  for rows.Next(){
+
   // node
   var node_id, node_created_by, node_type int
   var node_path, node_name string
@@ -895,14 +932,6 @@ WHERE cn.path <@ subltree($1,$2,$3)`
 
   // master template
   //var master_template_name string
-
-  rows, err := db.Query(queryStr, c.Node.Path, offset, length)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
-
-  //row := db.QueryRow(queryStr, nodeParamId)
-  for rows.Next(){
-
     rows.Scan(
         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
@@ -1591,14 +1620,15 @@ WHERE content_node.id=$1`
   return
 }
 
-func GetFrontendContentByNodeId(nodeParamId int) (content Content) {
+func GetFrontendContentByNodeId(nodeParamId int) (content *Content) {
   db := coreglobals.Db
 
-  queryStr := `SELECT cn.id AS node_id, cn.path AS node_path, cn.created_by AS node_created_by, cn.name AS node_name, cn.node_type AS node_type, 
+  queryStr := `SELECT cn.id AS node_id, cn.path AS node_path, cn.created_by AS node_created_by, cn.name AS node_name, cn.node_type AS node_type,
   cn.created_date AS node_created_date, cn.parent_id AS node_parent_id,
-  content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta,  
-  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias, tpl.partial_template_nodes,
-  tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name
+  content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta, okidoki.content_url as content_url, content.public_access as content_public_access, 
+  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias,
+  tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name,
+  heh.domains
 FROM content
 JOIN node AS cn
 ON content.node_id = cn.id
@@ -1619,60 +1649,42 @@ JOIN
 ON (content.meta->>'template_node_id')::int = tn.id
 JOIN 
 (
-  SELECT template.*, res2.* 
-  FROM template,
-  LATERAL
-  (
-    SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS partial_template_nodes
-    FROM node
-    WHERE node.id = ANY(template.partial_template_node_ids)
-    --WHERE node.id IN (SELECT unnest(template.partial_template_node_ids))
-    ORDER BY template.node_id ASC
-  ) res2 
+  SELECT template.*
+  FROM template
 ) AS tpl
 ON tpl.node_id = tn.id
-WHERE content.node_id=$1`
-
-//   queryStr := `SELECT cn.id as node_id, cn.path as node_path, cn.created_by as node_created_by, cn.name as node_name, cn.node_type as node_type, cn.created_date as node_created_date, cn.parent_id as node_parent_id,
-//   content.id as content_id, content.node_id as content_node_id, content.content_type_node_id as content_content_type_node_id, content.meta as content_meta,
-//   bummelum.parent_template_node_id as parent_template_node_id, bummelum.alias as template_alias, bummelum.partial_template_nodes,
-//   tn.id as template_node_id, tn.parent_template_nodes as parent_template_nodes, tn.name as template_node_name
-//   FROM content
-//   JOIN node as cn
-//   ON content.node_id = cn.id
-//   JOIN 
-//   (
-//   SELECT my_node.*, ffgd.*
-//   from node as my_node,
-//   LATERAL 
-//   (
-//       --SELECT array_to_json(array_agg(node)) as parent_template_nodes
-//       SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) as parent_template_nodes
-//       from node
-//       where path @> subpath(my_node.path,0,nlevel(my_node.path)-1) and node_type=3 
-//       order by my_node.path asc
-//   ) ffgd
-//   where my_node.node_type = 3
-//   )as tn
-//   ON (content.meta->>'template_node_id')::int = tn.id
-//   JOIN 
-//   LATERAL 
-//   (SELECT template.*, rofl.* 
-//   FROM template,
-//   LATERAL
-//     (
-//         SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) as partial_template_nodes
-//         from node
-//         where node.id = ANY(template.partial_template_node_ids)
-//         order by template.node_id asc
-//     ) rofl 
-//     --where template.node_id = tn.id
-//   )bummelum
-//     ON bummelum.node_id = tn.id
-//   -- template
-// --   ON tn.id = template.node_id
-//   WHERE content.node_id=$1`
-
+JOIN 
+(
+  SELECT * 
+  FROM node as mynode,
+  LATERAL
+  (
+    SELECT string_agg(replace(lower(name), ' ', '-'), '/' ORDER BY path)content_url
+    FROM node
+--    JOIN "domain"
+--    ON "domain".node_id = node.id
+    WHERE path @> mynode.path AND nlevel(path)>2
+  ) ok
+)okidoki
+ON okidoki.id = cn.id
+-- JOIN domain
+-- ON ltree2text(subpath(cn.path,1,1)) = domain.node_id::text
+JOIN
+(
+  SELECT mynode.*, oki1.*
+  FROM node as mynode,
+  LATERAL
+  (
+    SELECT string_to_array(string_agg(elem,', '),', ')::varchar[] as domains
+    FROM content, jsonb_array_elements_text(meta->'domains') elem
+    WHERE ltree2text(subpath(mynode.path,1,1)) = content.node_id::text and nlevel(mynode.path) > 1
+    -- SELECT array_agg(name)domains
+--    FROM domain
+--    WHERE ltree2text(subpath(mynode.path,1,1)) = domain.node_id::text and nlevel(mynode.path) > 1
+  )oki1
+) heh
+ON heh.id = cn.id 
+WHERE cn.id = $1;`
 
   // node
   var node_id, node_created_by, node_type int
@@ -1682,7 +1694,9 @@ WHERE content.node_id=$1`
 
   // content
   var content_id, content_node_id, content_content_type_node_id int
-  var content_meta []byte
+  var content_meta, content_public_access []byte
+  var content_url string
+  var content_domains coreglobals.StringSlice
 
   // template node
   var template_id, template_node_id int
@@ -1691,24 +1705,43 @@ WHERE content.node_id=$1`
   var template_is_partial bool
 
   // template
-  var parent_template_node_id int
+  var parent_template_node_id sql.NullString
   var template_alias string
-  var partial_template_nodes []byte
+  //var partial_template_nodes []byte
 
   // master template
   //var master_template_name string
 
+  //fmt.Println("Name is: " + name)
+  //fmt.Println("Url is: " + url)
 
-  row := db.QueryRow(queryStr, nodeParamId)
-
-  row.Scan(
+  err := db.QueryRow(queryStr, nodeParamId).Scan(
       &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
-      &content_id, &content_node_id, &content_content_type_node_id, &content_meta,
-      &parent_template_node_id, &template_alias, &partial_template_nodes,
-      &template_node_id, &parent_template_nodes, &template_node_name)
+      &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url, &content_public_access,
+      &parent_template_node_id, &template_alias,
+      &template_node_id, &parent_template_nodes, &template_node_name,
+      &content_domains)
 
   /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
   //corehelpers.PanicIf(err)
+  switch {
+    case err == sql.ErrNoRows:
+            log.Printf("No content with that url.")
+    case err != nil:
+            log.Fatal(err)
+    default:
+            fmt.Printf("content domains is %v\n", content_domains)
+    }
+
+
+  var parent_template_node_id_int int
+  if parent_template_node_id.Valid {
+    // use s.String
+    id, _ := strconv.Atoi(parent_template_node_id.String)
+    parent_template_node_id_int = id
+  } else {
+     // NULL value
+  }
 
   var content_parent_node_id int
   if node_parent_id.Valid {
@@ -1720,63 +1753,54 @@ WHERE content.node_id=$1`
   }
 
   var parent_template_nodes_final []Node
-  var partial_template_nodes_slice []Node
+  //var partial_template_nodes_slice []Node
   var meta map[string]interface{}
+  var public_access *PublicAccess
 
   json.Unmarshal(parent_template_nodes, &parent_template_nodes_final)
   json.Unmarshal(content_meta, &meta)
-  json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
+  json.Unmarshal(content_public_access, &public_access)
+  //json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
   //corehelpers.PanicIf(myerr)
 
   //fmt.Println("TEST::: BEGIN ::: ")
-  fmt.Println(string(partial_template_nodes))
+  //fmt.Println(string(partial_template_nodes))
   //fmt.Println("THIS IS::: WEIRD!!!! ::: ")
-  fmt.Println(partial_template_nodes_slice)
+  //fmt.Println(partial_template_nodes_slice)
   //fmt.Println("TEST::: END :::")
 
   contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
   templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
-  template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, partial_template_nodes_slice, nil, template_is_partial, &templateNode}
+  template := Template{template_id, template_node_id, template_alias, parent_template_node_id_int, "", nil, nil, nil, template_is_partial, &templateNode}
   //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
   //template := &Template{}
-  content = Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, ContentType{}, &template, nil, "", nil,nil}
+  content = &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, ContentType{}, &template, nil, content_url, content_domains, public_access}
+  //fmt.Println(content_domains)
+  //fmt.Println("Content URL is: " + content_url)
+  //fmt.Printf("dsfdjkshf %v", content.Domains)
 
   return
 
-  // var jsonString string = ""
-  // if(template_partial_templates == nil && parent_template_nodes == nil){
-  //     jsonString = fmt.Sprintf(`{"node_id":%d, "node_path": "%s", "node_created_by":%d, "node_name": "%s", "node_type":%d, "node_created_date": "%s", "content_id":%d, "content_node_id":%d, "content_meta":%v, "template_node_id":%d, "parent_template_node_id":%d, "template_alias": "%s"}`, node_id, node_path, node_created_by, node_name, node_type, node_created_date, content_id, content_node_id, string(content_meta), template_node_id, parent_template_node_id, template_alias)
-  // }else if(template_partial_templates == nil){
-  //     jsonString = fmt.Sprintf(`{"node_id":%d, "node_path": "%s", "node_created_by":%d, "node_name": "%s", "node_type":%d, "node_created_date": "%s", "content_id":%d, "content_node_id":%d, "content_meta":%v, "template_node_id":%d, "parent_template_node_id":%d, "template_alias": "%s", "parent_template_nodes": %v}`, node_id, node_path, node_created_by, node_name, node_type, node_created_date, content_id, content_node_id, string(content_meta), template_node_id, parent_template_node_id, template_alias, string(parent_template_nodes))
-  // }else if(parent_template_nodes == nil){
-  //     jsonString = fmt.Sprintf(`{"node_id":%d, "node_path": "%s", "node_created_by":%d, "node_name": "%s", "node_type":%d, "node_created_date": "%s", "content_id":%d, "content_node_id":%d, "content_meta":%v, "template_node_id":%d, "parent_template_node_id":%d, "template_alias": "%s", "partial_templates": %v}`, node_id, node_path, node_created_by, node_name, node_type, node_created_date, content_id, content_node_id, string(content_meta), template_node_id, parent_template_node_id, template_alias, string(template_partial_templates))
-  // } else{
-  //     jsonString = fmt.Sprintf(`{"node_id":%d, "node_path": "%s", "node_created_by":%d, "node_name": "%s", "node_type":%d, "node_created_date": "%s", "content_id":%d, "content_node_id":%d, "content_meta":%v, "template_node_id":%d, "parent_template_node_id":%d, "template_alias": "%s", "partial_templates": %v, "parent_template_nodes": %v}`, node_id, node_path, node_created_by, node_name, node_type, node_created_date, content_id, content_node_id, string(content_meta), template_node_id, parent_template_node_id, template_alias, string(template_partial_templates), string(parent_template_nodes))
+  // for i := 0; i < len(content.Domains); i++ {
+  //   //fmt.Println("lol: " + content.Domains[i])
+  //   fullUrl := content.Domains[i] + "/" + content.Url
+  //   fmt.Println("Fullurl: " + fullUrl)
+  //   if(url == fullUrl){
+  //     return
+  //   }
   // }
+  // // for _, value := range content.Domains{
+  // //   fmt.Println("lol: " + value)
+  // //     fullUrl := value + "/" + content.Url
+  // //     fmt.Println("Fullurl: " + fullUrl)
+  // //     if(url == fullUrl){
+  // //       return
+  // //     }
+  // // }
+  // fmt.Println("YOU SHOULDN't SEE THIS IF THE URL IS RIGHT1")
+  // fmt.Println("url: " + url)
 
-  
-  // byt := []byte(jsonString)
-  // var data map[string]interface{}
-  //corehelpers.PanicIf(err)
-  // switch {
-  //     case err == queryStr.ErrNoRows:
-  //             log.Printf("No node with that ID.")
-  //     case err != nil:
-  //             log.Fatal(err)
-  //     default:
-  //             // fmt.Println("byt tostring: ")
-  //             // fmt.Println(string(byt))
-
-  //             // if err := json.Unmarshal(byt, &data); err != nil {
-  //             //     fmt.Println("unmarshal error")
-  //             //     panic(err)
-  //             // }
-
-  //             // fmt.Println("data unmarshal: ")
-  //             // fmt.Println(data)
-  // }
-  //fmt.Println("just before return! ")
-  //return data
+  // return nil
 }
 
 func GetFrontendContentByUrl(name, url string) (content *Content) {

@@ -1,6 +1,20 @@
-<!-- Content of admin.html: -->
-{{define "head"}}<title>Unauthorized</title>{{end}}
-{{define "body"}}
-<h2>Unauthorized Access</h2>
-<p>Please login to access this page</p>
+{{define "base"}}
+	<title>Unauthorized</title>
+
+	<div id="main-wrapper">
+		<div id="main" class="container">
+			<div class="row">
+				<div class="12u">
+					<div class="content">
+						<article>
+							<h2>Unauthorized</h2>
+								<span class="image featured"><img src="http://talks.golang.org/2013/highperf/appenginegophercolor.jpg" width="715" height="450" alt="" /></span>
+								<p>Please login to access this page</p>
+						</article>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 {{end}}

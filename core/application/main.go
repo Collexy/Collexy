@@ -58,7 +58,7 @@ func installPostHandler(w http.ResponseWriter, r *http.Request){
             // file does not exist
             log.Println("Config file does not exist")
             // create file
-            coreglobals.Conf = coreglobals.Config{r.PostFormValue("db_name"), r.PostFormValue("db_user"), r.PostFormValue("db_password"), "", r.PostFormValue("db_ssl_mode")}
+            coreglobals.Conf = coreglobals.Config{r.PostFormValue("db_name"), r.PostFormValue("db_user"), r.PostFormValue("db_password"), "", r.PostFormValue("db_ssl_mode"),0}
             res, err3 := json.Marshal(coreglobals.Conf)
             if(err3 != nil){
 

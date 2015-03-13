@@ -1,6 +1,55 @@
-<!-- Content of admin.html: -->
-{{define "head"}}<title>404</title>{{end}}
+{{define "head"}}<title>{{.Data.Content.Node.Name}}</title>{{end}}
 {{define "body"}}
-<h2>404</h2>
-<p>404: Page not found</p>
+<!-- Main -->
+			<div id="main-wrapper">
+				<div id="main" class="container">
+					<div class="row">
+						<div class="9u important(collapse)">
+							<div class="content content-left">
+							
+								<!-- Content -->
+						
+									<article class="box page-content">
+
+										<header>
+											<h2>{{.Data.Content.Meta.title}}</h2>
+											<!-- <p>Semper amet scelerisque metus faucibus morbi congue mattis</p> -->
+											<!-- <ul class="meta">
+												<li class="icon fa-clock-o">5 days ago</li>
+												<li class="icon fa-comments"><a href="#">1,024</a></li>
+											</ul> -->
+										</header>
+
+										<section>
+											{{if .Data.Content.Meta.image}}
+												<span class="image featured"><img src="{{.Data.Content.Meta.image}}" alt="" /></span>
+											{{end}}
+											<p>
+												{{.Data.Content.Meta.content}}
+											</p>
+										</section>
+
+									</article>
+
+							</div>
+						</div>
+						<div class="3u">
+							<div class="sidebar">
+							
+								<!-- Sidebar -->
+							
+									{{template "Recent Posts Widget" .}}
+							</div>
+						</div>
+					</div>
+					<div class="row 200%">
+						<div class="12u">
+
+							{{template "Featured Pages Widget" .}}
+
+
+						</div>
+					</div>
+				</div>
+			</div>
 {{end}}
