@@ -1,0 +1,26 @@
+
+{{define "Login Widget"}}
+<!-- Login Widget-->
+<section>
+	<h2 class="major"><span>Login</span></h2>
+	<!-- <ul class="divided">				
+		<li> -->
+			
+				{{if .HasMember}}
+					<p>You're logged in as:<br><strong>{{.Data.Member.Username}}</strong></p>
+				{{else}}
+					
+					<form action="http://localhost:8080/api/public/member/login" method="POST">
+						<input type="text" name="username" id="username" style="margin-bottom: 0.3em;">
+						<input type="text" name="password" id="password" style="margin-bottom: 0.3em;">
+						<button type="submit" class="button medium">Login</button>
+					</form>
+					
+				{{end}}
+				
+			
+		<!-- </li>
+	</ul> -->
+</section>
+
+{{end}}

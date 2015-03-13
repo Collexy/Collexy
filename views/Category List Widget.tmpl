@@ -4,7 +4,9 @@
 <section>
 	<h2 class="major"><span>Categories</span></h2>
 	<ul class="divided">
-		{{range $content := .Data.Content.GetByContentTypeNodeId 64}}
+		{{$catArr := .Data.Content.GetByContentTypeNodeId 64}}
+
+		{{range $content := $catArr}}
 			
 				
 				<li>

@@ -465,7 +465,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
 
                         //applicationglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl","views/Unauthorized.tmpl"))
-                        applicationglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Unauthorized.tmpl"))
+                        applicationglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Unauthorized.tmpl", "views/Login Widget.tmpl"))
                         this.RenderTemplate(w, templateName, nil, nil)
                     } else{
                         this.RenderTemplate(w, templateName, content, nil)

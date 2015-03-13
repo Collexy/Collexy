@@ -92,7 +92,7 @@ func (c *Content) GetContentByDepth(start, offset, length int) (contentSlice []*
   cn.created_date AS node_created_date, cn.parent_id AS node_parent_id,
   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta,
   okidoki.content_url as content_url, 
-  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias, tpl.partial_template_nodes,
+  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias,
   tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name,
   heh.domains
 FROM content
@@ -115,16 +115,8 @@ JOIN
 ON (content.meta->>'template_node_id')::int = tn.id
 JOIN 
 (
-  SELECT template.*, res2.* 
-  FROM template,
-  LATERAL
-  (
-    SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS partial_template_nodes
-    FROM node
-    WHERE node.id = ANY(template.partial_template_node_ids)
-    --WHERE node.id IN (SELECT unnest(template.partial_template_node_ids))
-    ORDER BY template.node_id ASC
-  ) res2 
+  SELECT template.* 
+  FROM template
 ) AS tpl
 ON tpl.node_id = tn.id
 JOIN 
@@ -188,7 +180,7 @@ WHERE cn.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lquery`
   // template
   var parent_template_node_id int
   var template_alias string
-  var partial_template_nodes []byte
+  //var partial_template_nodes []byte
 
   //
   var content_domains coreglobals.StringSlice
@@ -199,7 +191,7 @@ WHERE cn.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lquery`
     rows.Scan(
         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
-        &parent_template_node_id, &template_alias, &partial_template_nodes,
+        &parent_template_node_id, &template_alias,
         &template_node_id, &parent_template_nodes, &template_node_name, &content_domains)
 
     /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
@@ -223,12 +215,12 @@ WHERE cn.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lquery`
     }
 
     var parent_template_nodes_final []Node
-    var partial_template_nodes_slice []Node
+    //var partial_template_nodes_slice []Node
     var meta map[string]interface{}
 
     json.Unmarshal(parent_template_nodes, &parent_template_nodes_final)
     json.Unmarshal(content_meta, &meta)
-    json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
+    //json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
     //corehelpers.PanicIf(myerr)
 
     //fmt.Println("TEST::: BEGIN ::: ")
@@ -239,7 +231,7 @@ WHERE cn.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lquery`
 
     contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
     templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
-    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, partial_template_nodes_slice, nil, template_is_partial, &templateNode}
+    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
     content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, ContentType{}, &template, nil, content_url_str, content_domains,nil}
@@ -261,7 +253,7 @@ func (c *Content) GetLinkedContent(metaKey string, metaValue int) (contentSlice 
   cn.created_date AS node_created_date, cn.parent_id AS node_parent_id,
   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta,
   okidoki.content_url as content_url, 
-  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias, tpl.partial_template_nodes,
+  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias,
   tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name,
   heh.domains
 FROM content
@@ -284,16 +276,8 @@ JOIN
 ON (content.meta->>'template_node_id')::int = tn.id
 JOIN 
 (
-  SELECT template.*, res2.* 
-  FROM template,
-  LATERAL
-  (
-    SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS partial_template_nodes
-    FROM node
-    WHERE node.id = ANY(template.partial_template_node_ids)
-    --WHERE node.id IN (SELECT unnest(template.partial_template_node_ids))
-    ORDER BY template.node_id ASC
-  ) res2 
+  SELECT template.*
+  FROM template
 ) AS tpl
 ON tpl.node_id = tn.id
 JOIN 
@@ -357,7 +341,7 @@ WHERE content.meta->$1 @> $2`
   // template
   var parent_template_node_id int
   var template_alias string
-  var partial_template_nodes []byte
+  //var partial_template_nodes []byte
 
   //
   var content_domains coreglobals.StringSlice
@@ -368,7 +352,7 @@ WHERE content.meta->$1 @> $2`
     rows.Scan(
         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
-        &parent_template_node_id, &template_alias, &partial_template_nodes,
+        &parent_template_node_id, &template_alias,
         &template_node_id, &parent_template_nodes, &template_node_name, &content_domains)
 
     /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
@@ -392,12 +376,12 @@ WHERE content.meta->$1 @> $2`
     }
 
     var parent_template_nodes_final []Node
-    var partial_template_nodes_slice []Node
+    //var partial_template_nodes_slice []Node
     var meta map[string]interface{}
 
     json.Unmarshal(parent_template_nodes, &parent_template_nodes_final)
     json.Unmarshal(content_meta, &meta)
-    json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
+    //json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
     //corehelpers.PanicIf(myerr)
 
     //fmt.Println("TEST::: BEGIN ::: ")
@@ -408,7 +392,7 @@ WHERE content.meta->$1 @> $2`
 
     contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
     templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
-    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, partial_template_nodes_slice, nil, template_is_partial, &templateNode}
+    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
     content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, ContentType{}, &template, nil, content_url_str, content_domains,nil}
@@ -660,7 +644,7 @@ func (c *Content) GetHomeNode() (content *Content){
   cn.created_date AS node_created_date, cn.parent_id AS node_parent_id,
   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta,
   okidoki.content_url as content_url, 
-  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias, tpl.partial_template_nodes,
+  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias,
   tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name,
   heh.domains
 FROM content
@@ -683,16 +667,8 @@ JOIN
 ON (content.meta->>'template_node_id')::int = tn.id
 JOIN 
 (
-  SELECT template.*, res2.* 
-  FROM template,
-  LATERAL
-  (
-    SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS partial_template_nodes
-    FROM node
-    WHERE node.id = ANY(template.partial_template_node_ids)
-    --WHERE node.id IN (SELECT unnest(template.partial_template_node_ids))
-    ORDER BY template.node_id ASC
-  ) res2 
+  SELECT template.* 
+  FROM template
 ) AS tpl
 ON tpl.node_id = tn.id
 JOIN 
@@ -749,7 +725,7 @@ ON heh.id = cn.id
   // template
   var parent_template_node_id int
   var template_alias string
-  var partial_template_nodes []byte
+  //var partial_template_nodes []byte
 
   //
   var content_domains coreglobals.StringSlice
@@ -761,7 +737,7 @@ ON heh.id = cn.id
  err := db.QueryRow(queryStr, c.Node.Path, 0, 2).Scan(
         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
-        &parent_template_node_id, &template_alias, &partial_template_nodes,
+        &parent_template_node_id, &template_alias,
         &template_node_id, &parent_template_nodes, &template_node_name, &content_domains)
 
     /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
@@ -793,12 +769,12 @@ ON heh.id = cn.id
     }
 
     var parent_template_nodes_final []Node
-    var partial_template_nodes_slice []Node
+    //var partial_template_nodes_slice []Node
     var meta map[string]interface{}
 
     json.Unmarshal(parent_template_nodes, &parent_template_nodes_final)
     json.Unmarshal(content_meta, &meta)
-    json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
+    //json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
     //corehelpers.PanicIf(myerr)
 
     //fmt.Println("TEST::: BEGIN ::: ")
@@ -809,7 +785,7 @@ ON heh.id = cn.id
 
     contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
     templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
-    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, partial_template_nodes_slice, nil, template_is_partial, &templateNode}
+    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
     content = &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, ContentType{}, &template, nil, content_url_str, content_domains,nil}
@@ -828,7 +804,7 @@ func (c *Content) GetAncestors(offset, length int) (contentSlice []*Content){
   cn.created_date AS node_created_date, cn.parent_id AS node_parent_id,
   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta,
   okidoki.content_url as content_url, 
-  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias, tpl.partial_template_nodes,
+  tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias,
   tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name,
   heh.domains
 FROM content
@@ -851,16 +827,8 @@ JOIN
 ON (content.meta->>'template_node_id')::int = tn.id
 JOIN 
 (
-  SELECT template.*, res2.* 
-  FROM template,
-  LATERAL
-  (
-    SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS partial_template_nodes
-    FROM node
-    WHERE node.id = ANY(template.partial_template_node_ids)
-    --WHERE node.id IN (SELECT unnest(template.partial_template_node_ids))
-    ORDER BY template.node_id ASC
-  ) res2 
+  SELECT template.* 
+  FROM template
 ) AS tpl
 ON tpl.node_id = tn.id
 JOIN 
@@ -924,7 +892,7 @@ WHERE cn.path <@ subltree($1,$2,$3)`
   // template
   var parent_template_node_id int
   var template_alias string
-  var partial_template_nodes []byte
+  //var partial_template_nodes []byte
 
   //
   var content_domains coreglobals.StringSlice
@@ -935,7 +903,7 @@ WHERE cn.path <@ subltree($1,$2,$3)`
     rows.Scan(
         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &node_parent_id,
         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
-        &parent_template_node_id, &template_alias, &partial_template_nodes,
+        &parent_template_node_id, &template_alias,
         &template_node_id, &parent_template_nodes, &template_node_name, &content_domains)
 
     /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
@@ -959,12 +927,12 @@ WHERE cn.path <@ subltree($1,$2,$3)`
     }
 
     var parent_template_nodes_final []Node
-    var partial_template_nodes_slice []Node
+    //var partial_template_nodes_slice []Node
     var meta map[string]interface{}
 
     json.Unmarshal(parent_template_nodes, &parent_template_nodes_final)
     json.Unmarshal(content_meta, &meta)
-    json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
+    //json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
     //corehelpers.PanicIf(myerr)
 
     //fmt.Println("TEST::: BEGIN ::: ")
@@ -975,7 +943,7 @@ WHERE cn.path <@ subltree($1,$2,$3)`
 
     contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
     templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
-    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, partial_template_nodes_slice, nil, template_is_partial, &templateNode}
+    template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
     content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, ContentType{}, &template, nil, content_url_str, content_domains,nil}
