@@ -201,11 +201,11 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
 
 
 
-function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentType, Node) {
+function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentType, Node, $interpolate) {
   //$scope._ = _;
 
-  $scope.allContentNodes = Node.query({'node-type': '1'},{},function(node){
-    });
+  // $scope.allContentNodes = Node.query({'node-type': '1'},{},function(node){
+  //   });
 
   var tabs = [];
 
@@ -347,6 +347,14 @@ function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentTyp
     }
 
   }
+
+  $scope.interpolate = function (value) {
+        //alert(value)
+        return $interpolate(value)($scope);
+    };
+
+    $scope.contentNodes = $scope.contentNodes = Node.query({'node-type': '1', 'content-type':'64'},{},function(node){});
+
   
 }
 

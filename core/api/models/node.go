@@ -78,8 +78,10 @@ func GetNodes(queryStringParams url.Values, user *User) (nodes []Node){
   // fmt.Println(string(test))
 
 	db := coreglobals.Db
-  sql := `SELECT id, path, created_by, name, node_type, created_date, user_permissions, user_group_permissions FROM node`
-
+  sql := `SELECT node.id, node.path, node.created_by, node.name, node.node_type, node.created_date, node.user_permissions, node.user_group_permissions FROM node`
+  if(queryStringParams.Get("node-type")=="1" && queryStringParams.Get("content-type")!=""){
+    sql = sql + ` JOIN content ON node.id = content.node_id`
+  }
   // if ?node-type=x&levels=x(,x..)
   // else if ?node-type=x
   // else if ?levels=x(,x..)
@@ -89,6 +91,10 @@ func GetNodes(queryStringParams url.Values, user *User) (nodes []Node){
       sql = sql + ` WHERE node_type=` + queryStringParams.Get("node-type")
   } else if(queryStringParams.Get("node-type") == "" && queryStringParams.Get("levels") != ""){
       sql = sql + ` WHERE node.path ~ '1.*{`+queryStringParams.Get("levels") +`}'`
+  }
+
+  if(queryStringParams.Get("node-type")=="1" && queryStringParams.Get("content-type")!=""){
+    sql = sql + ` and content_type_node_id=` + queryStringParams.Get("content-type")
   }
   
   rows, err := db.Query(sql)

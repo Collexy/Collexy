@@ -70,10 +70,14 @@ adminControllers.controller('AdminContentCtrl', ['$scope', '$interpolate', 'sess
         }
 
         hasPermissions = permFound;
-        console.log(hasPermissions)
+        //console.log(hasPermissions)
         //alert(hasPermissions)
         return hasPermissions;
     }
+
+
+
+    // $scope.getContentByContentTypeId = function(id){}
 }]);
 
 adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute', 'MenuLink', function ($scope, $state, AngularRoute, MenuLink) {

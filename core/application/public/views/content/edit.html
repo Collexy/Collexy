@@ -74,12 +74,11 @@
                     <td></td>
                 </tr> -->
                 <tr ng-repeat="prop in tab.properties">
-                    <td>{{prop.name}}</td>
+                    <td>{{prop.name}}<br><small>{{prop.description}}<small></td>
                     <!-- <td><div wrap-input></div><td> -->
                     <!-- <td><div wrap-input><input type="text" ng-model="node.content.meta[prop.name]"/></div></td> -->
                     <!-- <td><input type="text" ng-model="prop.name"></td> -->
-                    <td compile ng-bind-html="prop.data_type.html | unsafe"></td>
-                    <td>{{prop.description}}</td>
+                    <td compile ng-bind-html="prop.data_type.html | unsafe" style="width:70%;"></td>
                 </tr>
                 <!-- <p>{{tab.name}} fields</p>
                 <p>{{tab.properties}}</p> -->
