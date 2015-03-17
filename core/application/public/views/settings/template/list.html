@@ -15,10 +15,11 @@
 </script>
 <div ng-controller="TemplateTreeCtrl">
     <h4>Templates</h4>
-    <ul class="admin-tree">
-        <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
-    </ul>
-    
+    <div class="admin-tree-container">
+        <ul class="admin-tree">
+            <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+    </div>
     <div id="overlay">
     {{currentItem}}
         <!-- <p>Context menu for {{currentItem.name}}</p> -->

@@ -13,8 +13,10 @@
 	        <button>Apply</button> -->
 	    </div>
     <h4>Members</h4>
-	<ul class="admin-tree">
-		<li ng-repeat="member in members" ng-include="'tree_item_renderer.html'"></li>
-		<!-- <li><a href="">Link 1</a></li> -->
-	</ul>
+    <div class="admin-tree-container">
+		<ul class="admin-tree">
+			<li ng-repeat="member in members" ng-include="'tree_item_renderer.html'"></li>
+			<!-- <li><a href="">Link 1</a></li> -->
+		</ul>
+	</div>
 </div>

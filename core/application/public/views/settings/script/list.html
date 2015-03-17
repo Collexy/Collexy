@@ -16,9 +16,11 @@
 <div ng-controller="DirectoryTreeCtrl">
     <h4>{{rootdir | capitalize}}s</h4>
 <!--     {{tree.children}} -->
-    <ul class="admin-tree">
-        <li ng-repeat="data in tree.children" ng-include="'tree_item_renderer.html'"></li>
-    </ul>
+    <div class="admin-tree-container">
+        <ul class="admin-tree">
+            <li ng-repeat="data in tree.children" ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+    </div>
     <div id="overlay">
         {{currentItem}}
         <p>Context menu for {{currentItem.info.name}}</p>

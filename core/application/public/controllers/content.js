@@ -128,7 +128,7 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
         // left: 40,
         // top: -80
         left: -15,
-        top: -76
+        top: 0
   }
 
   var $oLay = angular.element(document.getElementById('overlay'))
