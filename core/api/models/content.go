@@ -229,8 +229,8 @@ WHERE cn.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lquery`
     //fmt.Println(partial_template_nodes_slice)
     //fmt.Println("TEST::: END :::")
 
-    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
-    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
+    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
     template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
@@ -390,8 +390,8 @@ WHERE content.meta->$1 @> $2`
     //fmt.Println(partial_template_nodes_slice)
     //fmt.Println("TEST::: END :::")
 
-    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
-    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
+    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
     template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
@@ -562,8 +562,8 @@ WHERE content.content_type_node_id = $1;`
 
     //fmt.Println("TEST::: END :::")
 
-    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
-    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
+    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
     template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
@@ -783,8 +783,8 @@ ON heh.id = cn.id
     //fmt.Println(partial_template_nodes_slice)
     //fmt.Println("TEST::: END :::")
 
-    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
-    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
+    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
     template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
@@ -941,8 +941,8 @@ WHERE cn.path <@ subltree($1,$2,$3)`
     //fmt.Println(partial_template_nodes_slice)
     //fmt.Println("TEST::: END :::")
 
-    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
-    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
+    contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+    templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
     template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
     //template := &Template{}
@@ -1081,7 +1081,7 @@ func (t *Content) Post(){
     case err != nil:
       log.Fatal(err)
     default:
-      parentNode = Node{id, path, created_by, name, node_type, created_date, 0, nil,nil, false, "", nil, nil}
+      parentNode = Node{id, path, created_by, name, node_type, created_date, 0, nil,nil, false, "", nil, nil, ""}
       //fmt.Printf("Username is %s\n", username)
   }
 
@@ -1569,7 +1569,7 @@ WHERE content_node.id=$1`
       json.Unmarshal(node_user_permissions, &user_perm)
       json.Unmarshal(node_user_group_permissions, &user_group_perm)
 
-  node := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", user_perm, user_group_perm}
+  node := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", user_perm, user_group_perm, ""}
 
   var parent_content_types []ContentType
   var tabs []Tab
@@ -1737,8 +1737,8 @@ WHERE cn.id = $1;`
   //fmt.Println(partial_template_nodes_slice)
   //fmt.Println("TEST::: END :::")
 
-  contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
-  templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
+  contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+  templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
   template := Template{template_id, template_node_id, template_alias, parent_template_node_id_int, "", nil, nil, nil, template_is_partial, &templateNode}
   //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
   //template := &Template{}
@@ -1980,8 +1980,8 @@ WHERE lower(cn.name) = $1;`
   //fmt.Println(partial_template_nodes_slice)
   //fmt.Println("TEST::: END :::")
 
-  contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
-  templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
+  contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+  templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
   template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
   //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
   //template := &Template{}
@@ -2163,8 +2163,8 @@ WHERE $1 = ANY(heh.domains) and nlevel(cn.path) = 2;`
   //fmt.Println(partial_template_nodes_slice)
   //fmt.Println("TEST::: END :::")
 
-  contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil}
-  templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil}
+  contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+  templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
   template := Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
   //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
   //template := &Template{}

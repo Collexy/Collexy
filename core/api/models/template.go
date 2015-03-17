@@ -53,7 +53,7 @@ func (t *Template) Post(){
     case err != nil:
       log.Fatal(err)
     default:
-      parentNode = Node{id, path, created_by, name, node_type, created_date, 0, nil,nil, false, "", nil, nil}
+      parentNode = Node{id, path, created_by, name, node_type, created_date, 0, nil,nil, false, "", nil, nil, ""}
       //fmt.Printf("Username is %s\n", username)
   }
 
@@ -268,7 +268,7 @@ func GetTemplates() (templates []Template) {
           case err != nil:
               log.Fatal(err)
           default:
-            node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil}
+            node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
             template := Template{template_id, node_id, template_alias_string, parent_template_node_id_int, "", nil, nil, partial_template_node_ids, template_is_partial, &node}
             templates = append(templates,template)
       }
@@ -344,7 +344,7 @@ where my_node.id=$1 and template.node_id = my_node.id`
     case err != nil:
       log.Fatal(err)
     default:
-      node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, parentTemplateNodesSlice, nil, false, "", nil, nil}
+      node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, parentTemplateNodesSlice, nil, false, "", nil, nil, ""}
       template = Template{template_id, template_node_id, template_alias, template_parent_template_node_id, str, nil, nil, template_partial_templates, template_is_partial, &node}
   }
 

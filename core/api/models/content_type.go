@@ -50,7 +50,7 @@ func (t *ContentType) Post(){
     case err != nil:
       log.Fatal(err)
     default:
-      parentNode = Node{id, path, created_by, name, node_type, created_date, 0, nil,nil, false, "", nil, nil}
+      parentNode = Node{id, path, created_by, name, node_type, created_date, 0, nil,nil, false, "", nil, nil, ""}
       //fmt.Printf("Username is %s\n", username)
   }
 
@@ -215,7 +215,7 @@ func GetContentTypes() (contentTypes []ContentType){
           case err != nil:
                   log.Fatal(err)
           default:
-                  node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil}
+                  node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
                   contentType := ContentType{ct_id, ct_node_id, ct_alias, ct_description, ct_icon, ct_thumbnail, parent_content_type_node_id, ctTabs, x, nil, &node}
                   contentTypes = append(contentTypes,contentType)
       }
@@ -388,7 +388,7 @@ func GetContentTypeExtendedByNodeId(nodeId int) (contentType ContentType){
         case err != nil:
                 log.Fatal(err)
         default:
-                node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil}
+                node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
                 
   
 
@@ -530,7 +530,7 @@ func GetContentTypeByNodeId(nodeId int) (contentType ContentType){
         case err != nil:
                 log.Fatal(err)
         default:
-                node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil}
+                node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
                 contentType = ContentType{ct_id, ct_node_id, ct_alias, ct_description, ct_icon, ct_thumbnail, parent_content_type_node_id, ctTabs, x, nil, &node}
     }
 

@@ -189,7 +189,7 @@ func GetMemberTypeExtendedByNodeId(nodeId int) (memberType MemberType){
         case err != nil:
                 log.Fatal(err)
         default:
-                node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil}
+                node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
 
                 memberType = MemberType{mt_id, node_id, mt_alias, mt_description, mt_icon, parent_member_type_node_id, tabs, mt_metaMap, parent_member_types, &node}
                 //memberType = MemberType{mt_id, mt_node_id, mt_alias, mt_description, mt_icon, mt_thumbnail, parent_member_type_node_id, ctTabs, x, nil, &node}
@@ -405,7 +405,7 @@ func GetMemberTypeByNodeId(nodeId int) (memberType MemberType){
         case err != nil:
                 log.Fatal(err)
         default:
-                node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil}
+                node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
                 memberType = MemberType{mt_id, mt_node_id, mt_alias, mt_description, mt_icon, parent_member_type_node_id, ctTabs, x, nil, &node}
     }
 

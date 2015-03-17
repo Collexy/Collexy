@@ -108,7 +108,7 @@ func GetDataTypes() (dataTypes []DataType) {
           case err != nil:
               log.Fatal(err)
           default:
-            node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil}
+            node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
             dataType := DataType{data_type_id, node_id, data_type_alias_string, string(data_type_html), &node}
             dataTypes = append(dataTypes,dataType)
       }
@@ -158,7 +158,7 @@ func GetDataTypeByNodeId(nodeId int) (dt DataType) {
       case err != nil:
           log.Fatal(err)
       default:
-      	node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil}
+      	node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
   		  dt = DataType{data_type_id, node_id, data_type_alias_string, string(data_type_html), &node}
   }
 
