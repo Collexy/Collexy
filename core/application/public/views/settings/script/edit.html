@@ -13,9 +13,18 @@
 <!--         type: {{type}} -->
             <table>
                 <tr ng-if="type!='folder'">
-                    <td>File contents</td>
-                    <td><textarea ng-model="data.contents"></textarea></td>
-                    <td>File contents here.</td>
+                    <td>
+                        File contents<br>
+                        <small>File contents here.</small>
+                    </td>
+                    <td style="width:70%;"><div ui-codemirror ui-codemirror-opts="editorOptions" ng-model="data.contents"></div></td>
+                    <style>
+                        .CodeMirror { 
+                            height: 600px;
+                            border: 1px solid #ddd;
+                        }
+                    </style>
+                    
                 </tr>
                 <!-- <tr>
                     <td>Parent folder</td>
@@ -23,9 +32,12 @@
                     <td>Parent folder path here.</td>
                 </tr> -->
                 <tr>
-                    <td>Link to {{type}}</td>
+                    <td>
+                        Link to {{type}}
+                        <small>Parent folder path here + this {{type}}'s name.</small>
+                    </td>
                     <td><input type="text" ng-model="data.path" readonly style="border:none; background: #ddd; padding: 0.3em, 0.5em;" /></td>
-                    <td>Parent folder path here + this {{type}}'s name.</td>
+                    
                 </tr>
             </table>
         </div>

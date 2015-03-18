@@ -40,8 +40,24 @@ directoryControllers.controller('DirectoryTreeCtrl', ['$scope', '$stateParams', 
 }]);
 
 directoryControllers.controller('DirectoryTreeCtrlEdit', ['$scope', '$stateParams', 'Directory', '$state', function ($scope, $stateParams, Directory, $state) {
+  
   //console.log($state.current)
   $scope.rootdir = $state.current.name.split(".")[1];
+  if($scope.rootdir == 'stylesheets'){
+    $scope.editorOptions = {
+        lineWrapping : true,
+        lineNumbers: true,
+        readOnly: 'nocursor',
+        mode: 'css',
+    };
+  } else {
+    $scope.editorOptions = {
+        lineWrapping : true,
+        lineNumbers: true,
+        readOnly: 'nocursor',
+        mode: 'javascript',
+    };
+  }
   //alert(rootdir);
   //$scope.rootdir = $state.current.data.rootdir;
   //alert(rootdir)

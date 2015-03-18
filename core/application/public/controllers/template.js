@@ -186,6 +186,13 @@ templateControllers.controller('TemplateTreeCtrl', ['$scope', '$stateParams', 'N
 }]);
 
 templateControllers.controller('TemplateTreeCtrlEdit', ['$scope', '$stateParams', 'Template', 'Node', function ($scope, $stateParams, Template, Node) {
+  $scope.editorOptions = {
+        lineWrapping : true,
+        lineNumbers: true,
+        readOnly: 'nocursor',
+        mode: 'htmlmixed',
+    };
+
   $scope.currentTab = 'template';
 
   $scope.stateParams = $stateParams;

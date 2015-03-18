@@ -321,7 +321,7 @@ div[class*='col-'] + div[class*='col-'] {
 }
 
 #overlay a {
-
+	text-decoration: none;
 	color: #333;
 	margin-left: 2em;
 }
@@ -343,6 +343,15 @@ div[class*='col-'] + div[class*='col-'] {
 	padding-bottom: 0px;
 	display: inline-block;
 	/*padding-left: 0.3em;*/
+}
+
+.context-menu .icon-container {
+	position: relative;
+	width: 2em;
+}
+
+#overlay .context-menu .icon-container + a {
+	margin-left: none !important;
 }
 
 /*#overlay ul > li > span{

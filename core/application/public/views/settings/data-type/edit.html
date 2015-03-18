@@ -11,9 +11,11 @@
         <div ng-show="currentTab == 'data-type'">
             <table>
                 <tr>
-                    <td>Data type alias</td>
-                    <td><input type="text" ng-model="node.alias"></td>
-                    <td>Overrides node title if entered bla bla bla</td>
+                    <td>Data type alias<br>
+                        <small>Overrides node title if entered bla bla bla</small>
+                    </td>
+                    <td style="width:70%;"><input type="text" ng-model="node.alias"></td>
+                    
                 </tr>
     <!--             <tr>
                     <td>Template file</td>
@@ -30,9 +32,13 @@
                     <td>Path to template file</td>
                 </tr> -->
                 <tr>
-                    <td>Template HTML</td>
-                    <td><textarea ng-model="node.html"></textarea></td>
-                    <td>Edit the template file HTML</td>
+                    <td>Template HTML<br>
+                        <small>Edit the template file HTML</small>
+                    </td>
+                    <td style="width:70%;"><div ui-codemirror ui-codemirror-opts="editorOptions" ng-model="node.html"></div></td>
+                    <style>
+                        .CodeMirror { border: 1px solid #ddd; }
+                    </style>
                 </tr>
             </table>
         </div>

@@ -45,6 +45,7 @@
                     <a>{{item.name}}</a>
                      <ul showonhoverparent>
                         <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
+                            <span class="icon-container"><i ng-class="ct.icon"></i></span>
                             <a ui-sref="content.new({node_type:1, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})">{{ct.alias}}</a>
                         </li>
                     </ul>

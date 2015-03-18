@@ -30,7 +30,8 @@ angular.module('myApp', [
   'checklist-model',
   'memberTypeControllers',
   'angularRouteService',
-  'ngDialog'
+  'ngDialog',
+  'ui.codemirror'
   // 'underscoreServices'
 ])
 .config(function($stateProvider,$urlRouterProvider,$locationProvider, $httpProvider, $provide) {

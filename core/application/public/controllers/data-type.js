@@ -169,6 +169,14 @@ dataTypeControllers.controller('DataTypeTreeCtrl', ['$scope', '$stateParams', 'N
 }]);
 
 dataTypeControllers.controller('DataTypeTreeCtrlEdit', ['$scope', '$stateParams', 'DataType', 'Node', function ($scope, $stateParams, DataType) {
+
+  $scope.editorOptions = {
+        lineWrapping : true,
+        lineNumbers: true,
+        readOnly: 'nocursor',
+        mode: 'htmlmixed',
+    };
+    
   $scope.currentTab = 'data-type';
 
   $scope.stateParams = $stateParams;

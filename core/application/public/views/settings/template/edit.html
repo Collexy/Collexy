@@ -12,9 +12,18 @@
         <div ng-show="currentTab == 'template'">
             <table>
                 <tr>
-                    <td>Template file HTML</td>
-                    <td><textarea ng-model="node.html"></textarea></td>
-                    <td>Edit the template file HTML</td>
+                    <td>
+                        Template file HTML<br>
+                        <small>Edit the template file HTML</small>
+                    </td>
+                    <!-- <td><textarea ng-model="node.html"></textarea></td> -->
+                    <td style="width:70%;"><div ui-codemirror ui-codemirror-opts="editorOptions" ng-model="node.html"></div></td>
+                    <style>
+                        .CodeMirror { 
+                            height: 600px;
+                            border: 1px solid #ddd;
+                        }
+                    </style>
                 </tr>
             </table>
         </div>
