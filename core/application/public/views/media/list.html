@@ -14,7 +14,7 @@
         </ul>
 
 </script>
-<div ng-controller="MediaTreeCtrl">
+
     <div class="top-search def-pad">
         <input type="search" placeholder="search..."><br>
         <!-- <select>
@@ -29,88 +29,5 @@
             <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
         </ul>
     </div>
-    <div id="overlay">
-    <!-- {{currentItem.entity.allowedContentTypes}} -->
-        <!-- {{currentItem.entity.content_type.meta.allowed_content_types_node_id}} -->
-        <!-- <p>Context menu for {{currentItem.name}}</p> -->
-        <ul>
-            <li>
-                <a>New</a>
-                <ul ng-if="currentItem.entity.allowedContentTypes[0].node_id">
-                    <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
-                        <a ui-sref="media.new({node_type:2, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})">{{ct.alias}}</a>
-                    </li>
-<!--                     <li>
-                        <a ui-sref="adminContent.new">Page</a>
-                    </li>
-                    <li>
-                        <a ui-sref="adminContent.new">Product</a>
-                    </li> -->
-                </ul>
-                <ul ng-if="!currentItem.entity.allowedContentTypes[0].node_id">
-                    <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
-                        <a ui-sref="media.new({node_type:2, content_type_node_id: ct.id, parent_id:{{currentItem.id}}})">{{ct.name}}</a>
-                    </li>
-<!--                     <li>
-                        <a ui-sref="adminContent.new">Page</a>
-                    </li>
-                    <li>
-                        <a ui-sref="adminContent.new">Product</a>
-                    </li> -->
-                </ul>
-            </li>
-            <li>
-                <a>Delete</a>
-            </li>
-        </ul>
-        <!-- <p>{{currentItem}}</p>
-        <ul>
-            <li ng-switch on="currentItem.node_type">
-                <a>New</a>
-                <ul ng-switch-when="2">
-                    <li>
-                        <a ui-sref="adminMedia.new({node_type:2, parent_id:{{currentItem.id}}})">Item</a>
-                    </li>
+    
 
-                </ul>
-                <ul ng-switch-when="5">
-                    <li>
-                        <a ui-sref="adminMedia.new({node_type:2, parent_id:{{currentItem.id}}})">Item</a>
-                    </li>
-                </ul>
-
-            </li>
-            <li>
-                <a>Delete</a>
-            </li> -->
-        </ul>
-        <!-- <ul>
-            <li ng-repeat="option in currentItem.nodes">
-                <a>
-                    {{ option.name }}
-                    <ul ng-if="option.nodes">
-                        <li ng-repeat="child in option.nodes">
-                            <a>{{ child.name }} </a>
-                        </li>
-                    </ul>
-                </a>
-            </li>
-        </ul> -->
-    </div>
-
-    <!-- <div class="dropdown position-fixed" id="ng-context-menu">
-      <ul class="dropdown-menu" role="menu">
-        <li ng-repeat="option in menuOptions">
-          <a class="pointer" role="menuitem" tabindex="1"
-             ng-click="panel.highlight = true">
-             {{ option.name }}
-             <ul ng-if="option.children" style="padding: 1em 0; list-style-type: none;">
-                 <li ng-repeat="child in option.children">
-                    <a>{{ child.name }} </a>
-                 </li>
-             </ul>
-          </a>
-        </li>
-      </ul>
-    </div> -->
-</div>

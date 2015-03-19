@@ -32,6 +32,7 @@ angular.module('myApp', [
   'angularRouteService',
   'ngDialog',
   'ui.codemirror'
+  // 'ng-context-menu'
   // 'underscoreServices'
 ])
 .config(function($stateProvider,$urlRouterProvider,$locationProvider, $httpProvider, $provide) {
@@ -351,7 +352,7 @@ angular.module('myApp', [
 
 .constant('_', window._)
 
-.run(['$rootScope', '$state', '$stateParams', 'authenticationService', '$location', '$window', '$q', '$cookies', 'sessionService', 'AngularRoute', 'Route', function ($rootScope, $state,$stateParams, authenticationService, $location, $window, $q, $cookies, sessionService, AngularRoute, Route) {
+.run(['$rootScope', '$state', '$stateParams', 'authenticationService', '$location', '$window', '$q', '$cookies', 'sessionService', 'AngularRoute', 'Route', '$timeout', function ($rootScope, $state,$stateParams, authenticationService, $location, $window, $q, $cookies, sessionService, AngularRoute, Route, $timeout) {
 	//console.log(JSON.parse(localStorage["lastStateParams"]));
 	var routes = Route.query({}, function(routes){
 		//console.log(routes)
@@ -502,17 +503,27 @@ angular.module('myApp', [
 
  //          $stateProviderRef.state(value.name, state);
  //      });
-
+	$rootScope.$on("$viewContentLoading",function(event, viewConfig){
+		// HACK ISH with the timeout - DOM manipulation should be done in a directive!
+		// $timeout(function() {
+			
+	        
+	 //      },0);
+		
+	});
 
 	$rootScope.$on("$stateChangeSuccess",function (event, toState, toParams, fromState, fromParams) {
 		$rootScope.state = toState;
 		localStorage.setItem("lastState", JSON.stringify(toState));
 		localStorage.setItem("lastStateParams", JSON.stringify(toParams))
+		
 	});
 	$rootScope.$on("$stateChangeStart",function (event, toState, toParams, fromState, fromParams) {
 		//alert("stateChangeStart")
 		// if (toState != null && toState.data.access != null && toState.data.access.requiredAuthentication) {
 			if($cookies.sessionauth != null){
+
+				
 		// 		if("permissions" in toState.data){
 					var user = authenticationService.get({sid:$cookies.sessionauth}, function(user){
 		// 				console.log(user)
@@ -628,7 +639,7 @@ angular.module('myApp', [
     };
 })
 
-.directive('ngContextMenu', function($parse, $compile) {
+.directive('ngContextMenu', function($parse, $compile, $document) {
 	var offset = {
         left: 40,
         top: -20
@@ -691,6 +702,11 @@ angular.module('myApp', [
 	        			// console.log(scope.currentItem.nodes)
             });
         });
+        function handleClickEvent(event){
+        	//scope.currentItem = null;
+        	$oLay.css({display:'none'})
+        }
+        $document.bind('click', handleClickEvent);
     };
 })
 
@@ -756,6 +772,28 @@ angular.module('myApp', [
       ngModel.$render = function(value) {
         ck.setData(ngModel.$viewValue);
       };
+    }
+  };
+})
+
+.directive('topNavMargin', function($timeout) {
+  return {
+    link: function(scope, element, attrs) {
+    	$timeout(function(){
+	        if(angular.element('#adminsubmenucontainer').hasClass("collapse1")){
+				if(element.hasClass("submenu-margin-top")){
+					element.removeClass('submenu-margin-top');
+	                element.addClass('nosubmenu-margin-top');
+				}
+			} else {
+				if(element.hasClass("nosubmenu-margin-top")){
+					element.removeClass('nosubmenu-margin-top');
+	                 element.addClass('submenu-margin-top');
+				}
+				
+			}
+	    });
+      
     }
   };
 });

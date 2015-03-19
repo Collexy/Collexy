@@ -1,11 +1,37 @@
-<div id="list" class="column col-6">
-<!-- 	<div context-menu class="panel panel-default position-fixed" 
-	     data-target="menu-{{index }}"
-	     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
-	</div> -->
-	<div ng-include src="'public/views/content/list.html'"></div>
+<div id="list-container" ng-controller="ContentTreeCtrl" class="column col-6">
+	<div id="list" class="nosubmenu-margin-top" top-nav-margin>
+	<!-- 	<div context-menu class="panel panel-default position-fixed" 
+		     data-target="menu-{{index }}"
+		     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
+		</div> -->
+		<div ng-include src="'public/views/content/list.html'"></div>
+	</div>
+	<div id="overlay">
+	    <!-- {{currentItem.allowedPermissions}} -->
+	    <!-- {{contextMenu}} -->
+	    <!-- {{currentItem.entity.content_type.meta.allowed_content_types_node_id}} -->
+	    <!-- <p>Context menu for {{currentItem.name}}</p> -->
+	    <ul class="context-menu">
+	        <li ng-repeat="item in contextMenu" class="context-sub-menu">
+	            <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && !isDefined(item, 'sub_menu')">
+	                <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.url)}}">{{item.name}}</a>
+	                <a ng-if="item.is_dialog == true" ng-click="clickToOpen(item)">{{item.name}}</a>
+	            </span>
+	            <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && isDefined(item, 'sub_menu')">
+	                <a>{{item.name}}</a>
+	                 <ul showonhoverparent>
+	                    <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
+	                        <span class="icon-container"><i ng-class="ct.icon"></i></span>
+	                        <a ui-sref="content.new({node_type:1, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})">{{ct.alias}}</a>
+	                    </li>
+	                </ul>
+	            </span>
+	        </li>
+	    </ul>
+	</div>
 </div>
-<div id="content-details" class="column col-6">
+
+<div id="content-details" class="column col-6 nosubmenu-margin-top" top-nav-margin>
 	<div ng-if="state.current.name == 'content.edit' || state.current.name == 'content.new'" ui-view></div>
 	<div ng-if="state.current.name == 'content'">
 		<div>

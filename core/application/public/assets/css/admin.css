@@ -18,11 +18,18 @@ html{
   box-sizing: border-box;
 }
 
+
+
+#header {
+	position: fixed;
+	height: 76px;
+	width: 100%;
+}
+
 #wrap{ 
-	/*overflow: hidden;*/
-	/*padding-left: 100px;*/   /* LC width */
-	min-height: 100%;
-	position: relative;
+	
+	height: 100%;
+	width: 100%;
 }
 
 #wrap .column {
@@ -182,12 +189,10 @@ html{
 }
 
 #admin-content{
-	/*margin-left: 100px;
-	float: left;
-	padding-right: 100px;*/
+	position: fixed;
+	
+	bottom: 0;
 	width: 100%;
-	float: left;
-	clear: both;
 }
 
 #admin-content .container { 
@@ -195,7 +200,8 @@ html{
 	/*padding-bottom: 2em;*/
 	width: 100%;
 	padding-right: 1em; 
-	overflow: hidden;
+	/*display: table-cell;*/
+	height: 100%;
 }
 
 #admin-footer {
@@ -223,7 +229,7 @@ div[class*='col-'] + div[class*='col-'] {
 	padding-left: 1em;
 }
 
-.admin-tree-container { overflow-x: auto; }
+/*.admin-tree-container { overflow-x: auto; }*/
 
 .admin-tree { 
 	padding-left: 0;
@@ -323,7 +329,7 @@ div[class*='col-'] + div[class*='col-'] {
 #overlay a {
 	text-decoration: none;
 	color: #333;
-	margin-left: 2em;
+	margin-left: 2.1em;
 }
 
 #overlay ul > li > span > a,
@@ -347,11 +353,13 @@ div[class*='col-'] + div[class*='col-'] {
 
 .context-menu .icon-container {
 	position: relative;
-	width: 2em;
+	width: 2.1em;
+	text-align: center;
+	display: inline-block;
 }
 
 #overlay .context-menu .icon-container + a {
-	margin-left: none !important;
+	margin-left: 0;
 }
 
 /*#overlay ul > li > span{
@@ -509,8 +517,18 @@ div[class*='col-'] + div[class*='col-'] {
 	/*list-style-position: inside*/
 }
 
+#admin-content #list-container{
+	
+}
+
 #admin-content #list {
 	width: 20%;
+	position: fixed;
+	left: 0;
+	
+	bottom: 0;
+	overflow: auto;
+	
 	/*min-width: 300px;*/
 	max-width: none;
 	/*height: 100%;
@@ -530,6 +548,11 @@ div[class*='col-'] + div[class*='col-'] {
 }
 
 #admin-content #content-details {
+	position: fixed;
+	overflow: auto;
+	left: 20%;
+
+	bottom: 0;
 	width: 80%;
 	max-width: none;
 		border-left: 1px solid #ddd;
@@ -544,3 +567,6 @@ div[class*='col-'] + div[class*='col-'] {
 
 #admin-content #content-details table td { text-align: left; }
 #admin-content #content-details table { table-layout: fixed; }
+
+.submenu-margin-top { top: 121px; }
+.nosubmenu-margin-top { top: 76px; }

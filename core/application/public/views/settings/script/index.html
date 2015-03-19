@@ -1,11 +1,47 @@
-<div id="list" class="column col-6">
-<!-- 	<div context-menu class="panel panel-default position-fixed" 
-	     data-target="menu-{{index }}"
-	     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
-	</div> -->
-	<div ng-include src="'public/views/settings/script/list.html'"></div>
+<div id="list-container" ng-controller="DirectoryTreeCtrl" class="column col-6">
+	<div id="list" class="nosubmenu-margin-top" top-nav-margin>
+	<!-- 	<div context-menu class="panel panel-default position-fixed" 
+		     data-target="menu-{{index }}"
+		     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
+		</div> -->
+		<div ng-include src="'public/views/settings/script/list.html'"></div>
+	</div>
+	<div id="overlay">
+	    {{currentItem}}
+	    <p>Context menu for {{currentItem.info.name}}</p>
+	    <ul>
+	        <li ng-if="currentItem.info.is_dir">
+	            <a>New</a>
+	            <ul>
+	                <li >
+	                    <a ui-sref="settings.{{rootdir}}.new({type:'file', parent:currentItem.path})">{{rootdir | capitalize}} file</a>
+	                </li>
+	                <li >
+	                    <a ui-sref="settings.{{rootdir}}.new({type:'folder', parent:currentItem.path})">Folder</a>
+	                </li>
+	                <!-- <li>
+	                    <a ui-sref="settings.contentType.new">Page</a>
+	                </li>
+	                <li>
+	                    <a ui-sref="settings.contentType.new">Product</a>
+	                </li> -->
+	            </ul>
+	        </li>
+	        <li>
+	            <a>Delete</a>
+	            <ul ng-switch="currentItem.info.is_dir">
+	                <li ng-switch-when="true">
+	                    <a ui-sref="settings.{{rootdir}}.delete(currentItem.path)">Folder</a>
+	                </li>
+	                <li ng-switch-when="false">
+	                    <a ui-sref="settings.{{rootdir}}.delete(currentItem.path)">{{rootdir | capitalize}} file</a>
+	                </li>
+	            </ul>
+	        </li>
+	    </ul>
+	</div>
 </div>
-<div id="content-details" class="column col-6">
+<div id="content-details" class="column col-6 nosubmenu-margin-top" top-nav-margin>
 
 	<div ui-view></div>
 </div>

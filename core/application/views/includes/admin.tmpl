@@ -17,14 +17,20 @@
 {{end}}
 {{define "body"}}
 <div id="wrap">
-	<div ng-include src="'public/views/admin/admin-menu.html'"></div>
-	<div id="admin-content" class="column">
+	<div id="header">
+		<div ng-include src="'public/views/admin/admin-menu.html'"></div>
+	</div>
+	
+	<div id="admin-content" class="">
 		<div class="container">
 			<!-- <div ng-include src="'public/views/admin/admin-top-user-info.html'"></div> -->
 			
 
 			<div ng-controller="AdminContentCtrl" ui-view></div>
 		</div>
+		<!-- <div id="admin-footer">
+			<p>Thank you for creating with <a href="https://github.com/codeish/collexy">Collexy</a></p>
+		</div> -->
 	</div>
 	<!-- <div id="adminmenucontainer" class="column">
 		<nav id="adminmenu">
@@ -43,9 +49,7 @@
 		</nav>
 	</div> -->
 	
-	<div id="admin-footer">
-		<p>Thank you for creating with <a href="https://github.com/codeish/collexy">Collexy</a></p>
-	</div>
+	
 </div>
 
 <script src="public/assets/js/main.js"></script>
@@ -66,7 +70,6 @@
 <script src="public/lib/ckeditor/ckeditor.js"></script>
 
 <script src="public/lib/angular-ui/ui-codemirror-0.2.3/ui-codemirror.js"></script>
-
 
 <!-- Services -->
 <script src="public/services/user.js"></script>

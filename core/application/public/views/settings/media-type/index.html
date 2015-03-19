@@ -1,10 +1,40 @@
-<div id="list" class="column col-6">
-<!-- 	<div context-menu class="panel panel-default position-fixed" 
-	     data-target="menu-{{index }}"
-	     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
-	</div> -->
-	<div ng-include src="'public/views/settings/media-type/list.html'"></div>
+<div id="list-container" ng-controller="MediaTypeTreeCtrl" class="column col-6">
+	<div id="list" class="nosubmenu-margin-top" top-nav-margin>
+	<!-- 	<div context-menu class="panel panel-default position-fixed" 
+		     data-target="menu-{{index }}"
+		     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
+		</div> -->
+		<div ng-include src="'public/views/settings/media-type/list.html'"></div>
+	</div>
+	<div id="overlay">
+	    {{currentItem}}
+	    <p>Context menu for {{currentItem.name}}</p>
+	    <ul>
+	        <li ng-switch on="currentItem.node_type">
+	            <a>New</a>
+	            <ul ng-switch-when="7">
+	                <li>
+	                    <a ui-sref="settings.mediaTypes.new({type:7, parent:{{currentItem.id}}})">Media Type</a>
+	                </li>
+	                <!-- <li>
+	                    <a ui-sref="settings.mediaTypes.new">Page</a>
+	                </li>
+	                <li>
+	                    <a ui-sref="settings.mediaTypes.new">Product</a>
+	                </li> -->
+	            </ul>
+	            <ul ng-switch-default>
+	                <li>
+	                    <a>News</a>
+	                </li>
+	            </ul>
+	        </li>
+	        <li>
+	            <a>Delete</a>
+	        </li>
+	    </ul>
+	</div>
 </div>
-<div id="content-details" class="column col-6">
+<div id="content-details" class="column col-6 nosubmenu-margin-top" top-nav-margin>
 	<div ui-view></div>
 </div>

@@ -14,7 +14,7 @@
         </ul>
 
 </script>
-<div ng-controller="ContentTreeCtrl">
+
 <!-- <p>user: {{user}}</p> -->
     <div class="top-search def-pad">
         <input type="search" placeholder="search..."><br>
@@ -30,108 +30,4 @@
             <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
         </ul>
     </div>
-    <div id="overlay">
-        <!-- {{currentItem.allowedPermissions}} -->
-        <!-- {{contextMenu}} -->
-        <!-- {{currentItem.entity.content_type.meta.allowed_content_types_node_id}} -->
-        <!-- <p>Context menu for {{currentItem.name}}</p> -->
-        <ul class="context-menu">
-            <li ng-repeat="item in contextMenu" class="context-sub-menu">
-                <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && !isDefined(item, 'sub_menu')">
-                    <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.url)}}">{{item.name}}</a>
-                    <a ng-if="item.is_dialog == true" ng-click="clickToOpen(item)">{{item.name}}</a>
-                </span>
-                <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && isDefined(item, 'sub_menu')">
-                    <a>{{item.name}}</a>
-                     <ul showonhoverparent>
-                        <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
-                            <span class="icon-container"><i ng-class="ct.icon"></i></span>
-                            <a ui-sref="content.new({node_type:1, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})">{{ct.alias}}</a>
-                        </li>
-                    </ul>
-                </span>
-            </li>
-            <!-- <li ng-repeat="p in currentItem.allowedPermissions" class="context-sub-menu">
-                    <span ng-if="p == 1 || p.id ==1">
-                        <a>New</a>
-                        <ul showonhoverparent>
-                            <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
-                                <a ui-sref="2.7({node_type:1, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})">{{ct.alias}}</a>
-                            </li>
-                        </ul>
-                    </span>
-                    <span ng-if="p == 2 || p.id ==2">
-                        <a>Delete</a>
-                    </span>
-                    <span ng-if="p == 3 || p.id ==3">
-                        <a>Update</a>
-                    </span>
-                    <span ng-if="p == 4 || p.id ==4">
-                        <a>Move</a>
-                    </span>
-                    <span ng-if="p == 5 || p.id ==5">
-                        <a>Copy</a>
-                    </span>
-                    <span ng-if="p == 6 || p.id ==6">
-                        <a>Change content type</a>
-                    </span>
-                    <span ng-if="p == 7 || p.id ==7">
-                        <a>Public access</a>
-                    </span>
-                    <span ng-if="p == 8 || p.id ==8">
-                        <a>Permissions</a>
-                    </span>
-                    <span ng-if="p == 9 || p.id ==9">
-                        <a>Send to publish</a>
-                    </span>
-                    <span ng-if="p == 10 || p.id ==10">
-                        <a>Sort</a>
-                    </span>
-                    <span ng-if="p == 11 || p.id ==11">
-                        <a>Publish</a>
-                    </span>
-            </li> -->
-            <!-- <li>
-                <a>New</a>
-                <ul>
-                    <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
-                        <a ui-sref="2.7({node_type:1, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})">{{ct.alias}}</a>
-                    </li>
-                </ul>
-                
-            </li> 
-            <li>
-                <a>Delete</a>
-            </li>-->
-        </ul>
-        <!-- {{currentItem}} -->
-        <!-- <ul>
-            <li ng-repeat="option in currentItem.nodes">
-                <a>
-                    {{ option.name }}
-                    <ul ng-if="option.nodes">
-                        <li ng-repeat="child in option.nodes">
-                            <a>{{ child.name }} </a>
-                        </li>
-                    </ul>
-                </a>
-            </li>
-        </ul> -->
-    </div>
-
-    <!-- <div class="dropdown position-fixed" id="ng-context-menu">
-      <ul class="dropdown-menu" role="menu">
-        <li ng-repeat="option in menuOptions">
-          <a class="pointer" role="menuitem" tabindex="1"
-             ng-click="panel.highlight = true">
-             {{ option.name }}
-             <ul ng-if="option.children" style="padding: 1em 0; list-style-type: none;">
-                 <li ng-repeat="child in option.children">
-                    <a>{{ child.name }} </a>
-                 </li>
-             </ul>
-          </a>
-        </li>
-      </ul>
-    </div> -->
-</div>
+    

@@ -105,16 +105,27 @@ adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute'
     		$scope.currentSectionId = id;
     	}
 
+
+
     	if(angular.element('#adminsubmenucontainer').hasClass("collapse1")){
     		if($scope.subMenuItems.length>0){
     			if($scope.currentSectionId == id){
 	    			angular.element('#adminsubmenucontainer').removeClass("collapse1");
 	    			angular.element('#adminsubmenucontainer').addClass("expanded1");
-
+                    angular.forEach(angular.element(".nosubmenu-margin-top"), function(value, key){
+                         var a = angular.element(value);
+                         a.removeClass('nosubmenu-margin-top');
+                         a.addClass('submenu-margin-top');
+                    });
     			} else {
 	    			
 	    			angular.element('#adminsubmenucontainer').removeClass("collapse1");
 	    			angular.element('#adminsubmenucontainer').addClass("expanded1");
+                    angular.forEach(angular.element(".nosubmenu-margin-top"), function(value, key){
+                         var a = angular.element(value);
+                         a.removeClass('nosubmenu-margin-top');
+                         a.addClass('submenu-margin-top');
+                    });
 	    			$scope.currentSectionId = id;
 	    		}
     		}
@@ -122,6 +133,11 @@ adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute'
     		if($scope.currentSectionId == id){
     			angular.element('#adminsubmenucontainer').removeClass("expanded1");
     			angular.element('#adminsubmenucontainer').addClass("collapse1");
+                angular.forEach(angular.element(".submenu-margin-top"), function(value, key){
+                         var a = angular.element(value);
+                         a.removeClass('submenu-margin-top');
+                         a.addClass('nosubmenu-margin-top');
+                    });
     			$scope.currentSectionId = 0;
     		} else {
     			var hasSubs = false;
@@ -134,6 +150,11 @@ adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute'
     			if(!hasSubs){
     				angular.element('#adminsubmenucontainer').removeClass("expanded1");
     				angular.element('#adminsubmenucontainer').addClass("collapse1");
+                    angular.forEach(angular.element(".submenu-margin-top"), function(value, key){
+                         var a = angular.element(value);
+                         a.removeClass('submenu-margin-top');
+                         a.addClass('nosubmenu-margin-top');
+                    });
     			}
     			
     			$scope.currentSectionId = id;

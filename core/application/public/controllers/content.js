@@ -135,8 +135,8 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
 
   $scope.showOptions = function (item,$event) {       
       var overlayDisplay;
-
-      if ($scope.currentItem === item) {
+      // if ($scope.currentItem === item){
+      if ($oLay.css("display") == "block") {
           $scope.currentItem = null;
            overlayDisplay='none'
       }else{
@@ -156,7 +156,7 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
   }
 
   $scope.getEntityInfo = function(currentItem){
-    console.log(currentItem);
+    //console.log(currentItem);
     currentItem['entity'] = Content.get({ nodeId: currentItem.id}, function(data){
       var allowedContentTypes = [];
       //console.log(data.content_type.meta)

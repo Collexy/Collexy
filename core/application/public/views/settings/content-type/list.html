@@ -13,39 +13,11 @@
         </ul>
 
 </script>
-<div ng-controller="ContentTypeTreeCtrl">
+
     <h4>Content Types</h4>
     <div class="admin-tree-container">
         <ul class="admin-tree">
             <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
         </ul>
     </div>
-    <div id="overlay">
-        {{currentItem}}
-        <p>Context menu for {{currentItem.name}}</p>
-        <ul>
-            <li ng-switch on="currentItem.node_type">
-                <a>New</a>
-                <ul ng-switch-when="4">
-                    <li>
-                        <a ui-sref="settings.contentTypes.new({type:4, parent:{{currentItem.id}}})">Content Type</a>
-                    </li>
-                    <!-- <li>
-                        <a ui-sref="settings.contentTypes.new">Page</a>
-                    </li>
-                    <li>
-                        <a ui-sref="settings.contentTypes.new">Product</a>
-                    </li> -->
-                </ul>
-                <ul ng-switch-default>
-                    <li>
-                        <a>News</a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a>Delete</a>
-            </li>
-        </ul>
-    </div>
-</div>
+    

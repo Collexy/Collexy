@@ -1,11 +1,41 @@
-<div id="list" class="column col-6">
-<!-- 	<div context-menu class="panel panel-default position-fixed" 
-	     data-target="menu-{{index }}"
-	     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
-	</div> -->
-	<div ng-include src="'public/views/media/list.html'"></div>
+<div id="list-container" ng-controller="MediaTreeCtrl" class="column col-6">
+	<div id="list" class="nosubmenu-margin-top" top-nav-margin>
+	<!-- 	<div context-menu class="panel panel-default position-fixed" 
+		     data-target="menu-{{index }}"
+		     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
+		</div> -->
+		<div ng-include src="'public/views/media/list.html'"></div>
+	</div>
+	<div id="overlay">
+	    <!-- {{currentItem.entity.allowedContentTypes}} -->
+	        <!-- {{currentItem.entity.content_type.meta.allowed_content_types_node_id}} -->
+	        <!-- <p>Context menu for {{currentItem.name}}</p> -->
+        <ul>
+            <li>
+                <a>New</a>
+                <ul ng-if="currentItem.entity.allowedContentTypes[0].node_id">
+                    <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
+                        <a ui-sref="media.new({node_type:2, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})">{{ct.alias}}</a>
+                    </li>
+
+                </ul>
+                <ul ng-if="!currentItem.entity.allowedContentTypes[0].node_id">
+                    <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
+                        <a ui-sref="media.new({node_type:2, content_type_node_id: ct.id, parent_id:{{currentItem.id}}})">{{ct.name}}</a>
+                    </li>
+
+                </ul>
+            </li>
+            <li>
+                <a>Delete</a>
+            </li>
+        </ul>
+
+        </ul>
+
+    </div>
 </div>
-<div id="content-details" class="column col-6">
+<div id="content-details" class="column col-6 nosubmenu-margin-top" top-nav-margin>
 	<div ng-if="state.current.name == 'media.edit' || state.current.name == 'media.new'" ui-view></div>
 	<div ng-if="state.current.name == 'media'">
 		<div>

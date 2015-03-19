@@ -13,39 +13,11 @@
         </ul>
 
 </script>
-<div ng-controller="TemplateTreeCtrl">
+
     <h4>Templates</h4>
     <div class="admin-tree-container">
         <ul class="admin-tree">
             <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
         </ul>
     </div>
-    <div id="overlay">
-    {{currentItem}}
-        <!-- <p>Context menu for {{currentItem.name}}</p> -->
-        <ul id="overlay-menu">
-            <li ng-switch on="currentItem.node_type">
-                <a>New</a>
-                <ul ng-switch-when="3">
-                    <li>
-                        <a ui-sref="settings.templates.new({parent:{{currentItem.id}}})">Template</a>
-                    </li>
-                    <!-- <li>
-                        <a ui-sref="settings.templates.new">Page</a>
-                    </li>
-                    <li>
-                        <a ui-sref="settings.templates.new">Product</a>
-                    </li> -->
-                </ul>
-                <ul ng-switch-default>
-                    <li>
-                        <a>News</a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a>Delete</a>
-            </li>
-        </ul>
-    </div>
-</div>
+    
