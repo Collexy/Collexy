@@ -163,7 +163,8 @@ userControllers.controller('UserLoginCtrl', ['$scope', '$http','$window', '$loca
   $scope.message = '';
   $scope.submit = function (user) {
     $scope.user = user;
-    alert("username: " + $scope.user.username + ", password: " + $scope.user.password);
+    alert("User: " + $scope.user.username + "logged in successfully!");
+    //alert("username: " + $scope.user.username + ", password: " + $scope.user.password);
 
     // var req = {
     //   method: 'POST',
