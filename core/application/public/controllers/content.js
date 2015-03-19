@@ -127,7 +127,7 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
   var offset = {
         // left: 40,
         // top: -80
-        left: -15,
+        left: 0,
         top: -76
   }
 

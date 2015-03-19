@@ -522,15 +522,18 @@ div[class*='col-'] + div[class*='col-'] {
 	bottom: 0;
 	position: fixed;
 	z-index: 9999;
+	left: 0;
+	overflow: auto;
 }
 
 #admin-content #list {
-	width: 20%;
-	position: fixed;
+	width: 100%;
+	height: 100%;
+	/*position: fixed;*/
 	left: 0;
 	
 	bottom: 0;
-	overflow: auto;
+	
 	
 	/*min-width: 300px;*/
 	max-width: none;
@@ -573,3 +576,25 @@ div[class*='col-'] + div[class*='col-'] {
 
 .submenu-margin-top { top: 121px; }
 .nosubmenu-margin-top { top: 76px; }
+
+
+/*::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+::-webkit-scrollbar-thumb {
+    height: 4px;
+    border: 4px solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+    -webkit-border-radius: 7px;
+    background-color: rgba(0, 0, 0, 0.15);
+    -webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+}
+::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+}
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}*/
