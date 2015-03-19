@@ -518,7 +518,10 @@ div[class*='col-'] + div[class*='col-'] {
 }
 
 #admin-content #list-container{
-	
+	width: 20%;
+	bottom: 0;
+	position: fixed;
+	z-index: 9999;
 }
 
 #admin-content #list {
