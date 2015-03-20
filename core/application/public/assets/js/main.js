@@ -21,8 +21,15 @@ Array.prototype.unique = function() {
 // };
 
 // self executing function here
-(function() {
-	
+$(document).ready(function(){
+	// $("*").on("mouseover", function (e){ 
+	// 	alert($(e.currentTarget).attr("id"))
+	// 	$(".scroller").perfectScrollbar("update"); 
+	// });
+	// setTimeout(function() {
+
+	//   $('.scroller').perfectScrollbar('update');
+	// }, 10000);
 	// var toggleSessionDataState = localStorage.getItem('toggleSessionDataState');
 	// if(toggleSessionDataState== null){
 	// 	toggleSessionDataState = "collapse";
@@ -112,4 +119,4 @@ Array.prototype.unique = function() {
 	// }
 	// alert("remember to remove this from main.js:: this is only temporary")
 	// alert(JSON.stringify(treeify(nodes), undefined, "\t"));
-})();
+});

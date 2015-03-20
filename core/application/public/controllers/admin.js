@@ -75,8 +75,6 @@ adminControllers.controller('AdminContentCtrl', ['$scope', '$interpolate', 'sess
         return hasPermissions;
     }
 
-
-
     // $scope.getContentByContentTypeId = function(id){}
 }]);
 

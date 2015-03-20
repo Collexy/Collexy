@@ -1,10 +1,12 @@
-<div id="list-container" ng-controller="DirectoryTreeCtrl" class="column col-6 nosubmenu-margin-top" top-nav-margin>
-	<div id="list" class="nosubmenu-margin-top" top-nav-margin>
-	<!-- 	<div context-menu class="panel panel-default position-fixed" 
-		     data-target="menu-{{index }}"
-		     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
-		</div> -->
-		<div ng-include src="'public/views/settings/script/list.html'"></div>
+<div ng-controller="DirectoryTreeCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin>
+	<div id="list-container" class="scroller" perfect-scroll>
+		<div id="list" >
+		<!-- 	<div context-menu class="panel panel-default position-fixed" 
+			     data-target="menu-{{index }}"
+			     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
+			</div> -->
+			<div ng-include src="'public/views/settings/script/list.html'"></div>
+		</div>
 	</div>
 	<div id="overlay">
 	    {{currentItem}}
@@ -41,28 +43,32 @@
 	    </ul>
 	</div>
 </div>
-<div id="content-details" class="column col-6 nosubmenu-margin-top" top-nav-margin>
-	<div ng-if="state.current.name == 'settings.scripts.edit' || state.current.name == 'settings.scripts.new'" ui-view></div>
-	<div ng-if="state.current.name == 'settings.scripts'">
-		<div>
-			<h4>Content</h4>
-			<ul class="admin-tabs">
-				<li class="active"><a href="#getStarted">Get Started</a></li>
-			</ul>
-			<div>
-				<h2>Hours of Collexy training videos</h2>
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-				<ul>
-					<li>Link #1</li>
-					<li>Link #2</li>
-					<li>Link #3</li>
-					<li>Link #4</li>
-				</ul>
+<div class="outer-content-details-container nosubmenu-margin-top" top-nav-margin>
+	<div class="content-details-container scroller" perfect-scroll>
+		<div id="content-details">
+			<div ng-if="state.current.name == 'settings.scripts.edit' || state.current.name == 'settings.scripts.new'" ui-view></div>
+			<div ng-if="state.current.name == 'settings.scripts'">
+				<div>
+					<h4>Content</h4>
+					<ul class="admin-tabs">
+						<li class="active"><a href="#getStarted">Get Started</a></li>
+					</ul>
+					<div>
+						<h2>Hours of Collexy training videos</h2>
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+						consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+						cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+						proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+						<ul>
+							<li>Link #1</li>
+							<li>Link #2</li>
+							<li>Link #3</li>
+							<li>Link #4</li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

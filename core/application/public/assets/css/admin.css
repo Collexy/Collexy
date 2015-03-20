@@ -517,28 +517,28 @@ div[class*='col-'] + div[class*='col-'] {
 	/*list-style-position: inside*/
 }
 
-#admin-content #list-container{
-	width: 20%;
-	bottom: 0;
+#admin-content .outer-list-container {
 	position: fixed;
-	z-index: 9999;
+	bottom: 0;
 	left: 0;
-	overflow: auto;
+	z-index: 9999999;
+	width: 20%;
+}
+
+#admin-content #list-container{
+	width: 100%;
+	z-index: 9999;
+	height: 100%;
+	overflow: hidden;
+	position: relative;
 }
 
 #admin-content #list {
-	width: 100%;
-	height: 100%;
-	/*position: fixed;*/
-	left: 0;
-	
-	bottom: 0;
-	
-	
-	/*min-width: 300px;*/
-	max-width: none;
-	/*height: 100%;
-	border-right: 1px solid #ddd;*/
+	min-width: 100%;
+	min-height: 100%;
+	float: left;
+	padding: 0 1em;
+
 }
 
 #admin-content #list ul {
@@ -553,15 +553,29 @@ div[class*='col-'] + div[class*='col-'] {
 	margin-right: 0.2em;
 }
 
-#admin-content #content-details {
+#admin-content .outer-content-details-container {
 	position: fixed;
-	overflow: auto;
 	left: 20%;
-
 	bottom: 0;
 	width: 80%;
-	max-width: none;
-		border-left: 1px solid #ddd;
+	border-left: 1px solid #DDD;
+}
+
+#admin-content .content-details-container {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+}
+
+#admin-content #content-details {
+	float: left;
+	min-width: 100%;
+	min-height: 100%;
+	padding-right: 1em;
+	padding-left: 1em;
+	/*border-left: 1px solid #ddd;*/
+	/*overflow: auto;*/
 }
 
 #admin-content #content-details table, 

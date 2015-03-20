@@ -31,7 +31,8 @@ angular.module('myApp', [
   'memberTypeControllers',
   'angularRouteService',
   'ngDialog',
-  'ui.codemirror'
+  'ui.codemirror',
+  'perfect_scrollbar'
   // 'ng-context-menu'
   // 'underscoreServices'
 ])
@@ -796,6 +797,35 @@ angular.module('myApp', [
       
     }
   };
+})
+
+.directive('perfectScroll', function(){
+    return {
+        restrict: 'A',
+        template: '<div ng-transclude></div>',
+        transclude: true,
+        scope: {},
+        link: function(scope, element){
+            element.perfectScrollbar();
+            element.bind("mouseover", function(e){
+				e.stopPropagation();
+				e.preventDefault();    
+			    element.perfectScrollbar('update');
+			}); 
+        }
+    }
+})
+
+.directive('psMouseOver', function () {    
+	return {       
+		link: function(scope, element) {
+			element.bind("mouseover", function(e){
+				e.stopPropagation();
+				e.preventDefault();    
+			    element.perfectScrollbar('update');
+			});   
+		}
+	}
 });
 
 // .directive('ngContextMenu', [

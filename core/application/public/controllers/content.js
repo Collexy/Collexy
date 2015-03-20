@@ -133,7 +133,8 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
 
   var $oLay = angular.element(document.getElementById('overlay'))
 
-  $scope.showOptions = function (item,$event) {       
+  $scope.showOptions = function (item,$event) {
+
       var overlayDisplay;
       // if ($scope.currentItem === item){
       if ($oLay.css("display") == "block") {
@@ -142,6 +143,15 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
       }else{
           $scope.currentItem = item;
           overlayDisplay='block'
+      }
+
+      if(angular.element(document.getElementById('adminsubmenucontainer')).hasClass('expanded1')){
+        offset = {
+          // left: 40,
+          // top: -80
+          left: 0,
+          top: -121
+        }
       }
     
       var overLayCSS = {
