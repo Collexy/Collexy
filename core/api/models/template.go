@@ -85,12 +85,13 @@ func (t *Template) Post(){
   corehelpers.PanicIf(err1)
 
   tplNodeName := t.Node.Name + ".tmpl"
-  absPath, _ := filepath.Abs("/views/" + tplNodeName)
-
+  //absPath, _ := filepath.Abs("/views/" + tplNodeName)
+  absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + tplNodeName)
+  
   // write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
-  err = ioutil.WriteFile(absPath, []byte(t.Html), 0644)
-  if err != nil {
-      panic(err)
+  createTemplateErr := ioutil.WriteFile(absPath, []byte(t.Html), 0644)
+  if createTemplateErr != nil {
+      panic(createTemplateErr)
   }
 }
 

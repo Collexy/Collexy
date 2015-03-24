@@ -161,7 +161,7 @@ func installHandler(w http.ResponseWriter, r *http.Request){
                                 </tr>
                                 <tr>
                                     <td><strong>Database user password</strong></td>
-                                    <td><input type="text" name="db_password"/></td>
+                                    <td><input type="password" name="db_password"/></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Database SSL mode</strong></td>
@@ -240,7 +240,7 @@ func installHandler(w http.ResponseWriter, r *http.Request){
                                     </td>
                                     <td>
                                         <input type="password" name="password"/><br>
-                                        <input type="password">
+                                        <input type="password"/>
                                     </td>
                                 </tr>
                                 <tr>

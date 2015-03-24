@@ -1,7 +1,8 @@
 <script type="text/ng-template"  id="tree_item_renderer.html">
     <!--<a ui-sref="settings.dataTypes.edit({nodeId:data.id})" ng-right-click="contextMenu({{data.node_type}})">{{data.path}}</a>-->
     <!--<i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-caret-down' : 'fa-caret-right'"></i>-->
-        <i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-folder-open-o' : 'fa-folder-o'"></i>
+        <!--<i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-folder-open-o' : 'fa-folder-o'"></i>-->
+        <i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-caret-down' : 'fa-caret-right'"></i>
         <!--<button ng-click="expand_collapse(data)" ng-show="data.show">collapse</button>
         <button ng-click="expand_collapse(data)" ng-show="!data.show">expand</button>-->
         <a ui-sref="settings.dataTypes.edit({nodeId:data.id})"  ui-sref-active="active" ng-context-menu="showOptions(data,$event)">{{data.name}} ({{data.path}})</a>

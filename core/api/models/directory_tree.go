@@ -81,7 +81,7 @@ func NewTree(root string) (result *FileNode, err error) {
 
 /* NEW STUFF */
 
-func (t *FileNode) Post(){
+func (t *FileNode) Post() (err error){
 	fmt.Println("t.parent:::: " + t.Parent + "\n")
 	fmt.Println("t.path:::: " + t.FullPath + "\n")
 	fmt.Println("t.info.name:::: " + t.Info.Name + "\n")
@@ -98,14 +98,15 @@ func (t *FileNode) Post(){
 
 	if(t.Info.IsDir){
 		// create directory 0777 permission too liberal?
-		os.Mkdir(absPath,0644)
+		fmt.Println("creating directory: " + t.Info.Name + "with path: " + t.FullPath)
+		err = os.Mkdir(absPath,0644)
 		
 	} else{
+		fmt.Println("creating file...")
 		// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
 		err = ioutil.WriteFile(absPath, []byte(t.Contents), 0644)
-		corehelpers.PanicIf(err)
 	}
-  
+  	return
 }
 
 

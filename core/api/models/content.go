@@ -1091,7 +1091,7 @@ func (t *Content) Post(){
   // use the Postgres RETURNING clause with a standard Query or QueryRow call:
   
   var node_id int64
-  err = db.QueryRow(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`, t.Node.Name, t.Node.NodeType, 1, t.Node.ParentId).Scan(&node_id)
+  err = tx.QueryRow(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`, t.Node.Name, t.Node.NodeType, 1, t.Node.ParentId).Scan(&node_id)
   //res, err := tx.Exec(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4)`, t.Node.Name, 3, 1, t.ParentTemplateNodeId)
   //corehelpers.PanicIf(err)
   //node_id, err := res.LastInsertId()
@@ -1115,19 +1115,28 @@ func (t *Content) Post(){
   if(t.Node.NodeType == 2){
     var fi FileInfo
     var fin FileNode
-    if(t.ContentTypeNodeId == 16){
+    if(t.ContentTypeNodeId == 40){
       fi = FileInfo{t.Node.Name, 0, 0777 , time.Now(), true}
       fin = FileNode{t.Meta["path"].(string), "", &fi, nil, "", true, ""}
-      fin.Post()
-    } 
-
+      //fin.Post()
+    } else {
+      fi = FileInfo{t.Node.Name, 0, 0777 , time.Now(), false}
+      fin = FileNode{t.Meta["path"].(string), "", &fi, nil, "", true, ""}
+    }
+    filePostErr := fin.Post()
+    if(filePostErr == nil){
+      err1 := tx.Commit()
+      corehelpers.PanicIf(err1)
+    }
     // else {
     //   fi = FileInfo{t.Node.Name, 0, 0777 , time.Time.Now(), false}
     //   fin = FileNode{t.Meta.Path, "", fi, nil, "", true, ""}
     // }
+  } else {
+      err1 := tx.Commit()
+      corehelpers.PanicIf(err1)
+
   }
-  err1 := tx.Commit()
-  corehelpers.PanicIf(err1)
 
   // // res, _ := json.Marshal(c)
   // // log.Println(string(res))

@@ -102,14 +102,13 @@ mediaControllers.controller('MediaTreeCtrl', ['$scope', '$stateParams', 'NodeChi
   var $oLay = angular.element(document.getElementById('overlay'))
 
   $scope.showOptions = function (item,$event) {
-
+      console.log("showoptions")
       var overlayDisplay;
       // if ($scope.currentItem === item){
       if ($oLay.css("display") == "block") {
           $scope.currentItem = null;
            overlayDisplay='none'
       }else{
-          
           $scope.currentItem = item;
           overlayDisplay='block'
       }
@@ -135,8 +134,8 @@ mediaControllers.controller('MediaTreeCtrl', ['$scope', '$stateParams', 'NodeChi
   }
 
   $scope.getEntityInfo = function(currentItem){
-    
-
+    console.log("getEntityInfo")
+    //console.log(currentItem);
     if(currentItem==undefined){
       currentItem = $scope.rootNode;
       // data = currentItem
@@ -148,9 +147,9 @@ mediaControllers.controller('MediaTreeCtrl', ['$scope', '$stateParams', 'NodeChi
     }
     if(currentItem.node_type != 5){
       allowedContentTypes = [];
-      //console.log(currentItem);
+
       currentItem['entity'] = Content.get({ nodeId: currentItem.id}, function(data){
-        
+        var allowedContentTypes = [];
         //console.log(data.content_type.meta)
         for(var i = 0; i < data.content_type.meta.allowed_content_types_node_id.length; i++){
             var ct = ContentType.get({nodeId: data.content_type.meta.allowed_content_types_node_id[i]}, function(){});
