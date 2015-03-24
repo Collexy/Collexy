@@ -153,23 +153,94 @@ func CmTest(w http.ResponseWriter, r *http.Request){
 
 	var contentTypeItems []ContextMenuItem
 	//contentTypeItem := ContextMenuItem{"content.new({node_type:1, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})", "", nil, nil}
-	cmNew := ContextMenu{nil}
-	contentTypeItemNew := ContextMenuItem{"New", "", "", "",&cmNew,"node_create", false}
-	contentTypeItems = append(contentTypeItems, contentTypeItemNew)
 	
-	contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/content/delete.html", "", nil,"node_delete", true}
-	// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
-	contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
+	
+	//contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/content/delete.html", "", nil,"node_delete", true}
+	//contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
 
+	// this could be refactored away easily, AND SHOULD!!!!
 	if(nodeType == 1){
-		res, err := json.Marshal(contentTypeItems)
-    	corehelpers.PanicIf(err)
+		cmNew := ContextMenu{nil}
+		contentTypeItemNew := ContextMenuItem{"New", "", "", "",&cmNew,"node_create", false}
+		contentTypeItems = append(contentTypeItems, contentTypeItemNew)
+		contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/content/delete.html", "", nil,"node_delete", true}
+		// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
+		contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
+		
+	} else if(nodeType == 2){ 
+		cmNew := ContextMenu{nil}
+		contentTypeItemNew := ContextMenuItem{"New", "", "", "",&cmNew,"node_create", false}
+		contentTypeItems = append(contentTypeItems, contentTypeItemNew)
+		//fmt.Fprintf(w,"nodetype is: %d", nodeType)
+		contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/media/delete.html", "", nil,"node_delete", true}
+		// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
+		contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
 
-    	fmt.Fprintf(w,"%s",res)
-	} else {
-		fmt.Fprintf(w,"nodetype is: %d", nodeType)
+	} else if(nodeType == 3){
+		contentTypeItemNew := ContextMenuItem{"New", "", "settings.templates.new({type:3, parent:{{currentItem.id}}})", "fa fa-folder fa-fw",nil,"node_create", false}
+		contentTypeItems = append(contentTypeItems, contentTypeItemNew)
+		//fmt.Fprintf(w,"nodetype is: %d", nodeType)
+		contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/settings/template/delete.html", "", nil,"node_delete", true}
+		// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
+		contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
+
+	} else if(nodeType == 4){ 
+		
+		contentTypeItemNew := ContextMenuItem{"New", "", "settings.contentTypes.new({type:4, parent:{{currentItem.id}}})", "fa fa-folder fa-fw",nil,"node_create", false}
+		contentTypeItems = append(contentTypeItems, contentTypeItemNew)
+		//fmt.Fprintf(w,"nodetype is: %d", nodeType)
+		contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/settings/content-type/delete.html", "", nil,"node_delete", true}
+		// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
+		contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
+
+	} else if(nodeType == 5){ 
+		// ROOT NODE
+	} else if(nodeType == 7){ 
+		contentTypeItemNew := ContextMenuItem{"New", "", "settings.mediaTypes.new({type:7, parent:{{currentItem.id}}})", "fa fa-folder fa-fw",nil,"node_create", false}
+		contentTypeItems = append(contentTypeItems, contentTypeItemNew)
+		//fmt.Fprintf(w,"nodetype is: %d", nodeType)
+		contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/settings/media-type/delete.html", "", nil,"node_delete", true}
+		// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
+		contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
+
+	} else if(nodeType == 9){ 
+		cmNew := ContextMenu{nil}
+		contentTypeItemNew := ContextMenuItem{"New", "", "", "",&cmNew,"node_create", false}
+		contentTypeItems = append(contentTypeItems, contentTypeItemNew)
+		//fmt.Fprintf(w,"nodetype is: %d", nodeType)
+		contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/settings/stylesheet/delete.html", "", nil,"node_delete", true}
+		// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
+		contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
+
+	} else if(nodeType == 10){ 
+		
+		contentTypeItemNewFolder := ContextMenuItem{"Folder", "", "settings.scripts.new({type:'folder', parent:currentItem.path})", "fa fa-folder fa-fw",nil,"node_create", false}
+		contentTypeItemNewFile := ContextMenuItem{"File", "", "settings.scripts.new({type:'file', parent:currentItem.path})", "fa fa-file fa-fw",nil,"node_create", false}
+		var directoryItems []ContextMenuItem
+		directoryItems = append(directoryItems, contentTypeItemNewFolder)
+		directoryItems = append(directoryItems, contentTypeItemNewFile)
+
+		cmNew := ContextMenu{directoryItems}
+
+		contentTypeItemNew := ContextMenuItem{"New", "", "", "",&cmNew,"node_create", false}
+		contentTypeItems = append(contentTypeItems, contentTypeItemNew)
+		//fmt.Fprintf(w,"nodetype is: %d", nodeType)
+		contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/settings/script/delete.html", "", nil,"node_delete", true}
+		// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
+		contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
+
+	} else if(nodeType == 11){ 
+		contentTypeItemNew := ContextMenuItem{"New", "", "settings.dataTypes.new({type:11, parent:{{currentItem.id}}})", "fa fa-folder fa-fw",nil,"node_create", false}
+		contentTypeItems = append(contentTypeItems, contentTypeItemNew)
+		//fmt.Fprintf(w,"nodetype is: %d", nodeType)
+		contentTypeItemDelete := ContextMenuItem{"Delete", "", "public/views/settings/data-type/delete.html", "", nil,"node_delete", true}
+		// contentTypeItemDelete := ContextMenuItem{"Delete", "", "content.delete({nodeId: {{currentItem.id}}})", "", nil,2, true}
+		contentTypeItems = append(contentTypeItems, contentTypeItemDelete)
 	}
-	
+	res, err := json.Marshal(contentTypeItems)
+	corehelpers.PanicIf(err)
+
+	fmt.Fprintf(w,"%s",res)
 }
 
 type ContextMenu struct {
@@ -186,7 +257,7 @@ type ContextMenuItem struct {
 	CssClass string `json:"css_class,omitempty"`
 	SubMenu *ContextMenu `json:"sub_menu,omitempty"`
 	Permission string `json:"permission,omitempty"`
-	IsDialog bool `json:"is_dialog,omitempty"`
+	IsDialog bool `json:"is_dialog"`
 }
 
 func GetMenu(nodeId int, nodeType int){

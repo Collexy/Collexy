@@ -1,4 +1,4 @@
-<div ng-controller="MediaTypeTreeCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin>
+<div ng-controller="MediaTypeTreeCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin ng-right-click="getEntityInfo()" ng-context-menu="showOptions(rootNode,$event)">
 	<div id="list-container" class="scroller" perfect-scroll>
 		<div id="list">
 		<!-- 	<div context-menu class="panel panel-default position-fixed" 
@@ -9,7 +9,16 @@
 		</div>
 	</div>
 	<div id="overlay">
-	    {{currentItem}}
+		<ul class="context-menu">
+	        <li ng-repeat="item in contextMenu" class="context-sub-menu">
+	            <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && !isDefined(item, 'sub_menu')">
+	                <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.url)}}">{{item.name}}</a>
+	                <a ng-if="item.is_dialog == true" ng-click="clickToOpen(item)">{{item.name}}</a>
+	            </span>
+	            
+	        </li>
+	    </ul>
+	    <!-- {{currentItem}}
 	    <p>Context menu for {{currentItem.name}}</p>
 	    <ul>
 	        <li ng-switch on="currentItem.node_type">
@@ -18,12 +27,7 @@
 	                <li>
 	                    <a ui-sref="settings.mediaTypes.new({type:7, parent:{{currentItem.id}}})">Media Type</a>
 	                </li>
-	                <!-- <li>
-	                    <a ui-sref="settings.mediaTypes.new">Page</a>
-	                </li>
-	                <li>
-	                    <a ui-sref="settings.mediaTypes.new">Product</a>
-	                </li> -->
+
 	            </ul>
 	            <ul ng-switch-default>
 	                <li>
@@ -34,7 +38,7 @@
 	        <li>
 	            <a>Delete</a>
 	        </li>
-	    </ul>
+	    </ul> -->
 	</div>
 </div>
 <div class="outer-content-details-container nosubmenu-margin-top" top-nav-margin>

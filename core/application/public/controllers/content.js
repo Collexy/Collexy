@@ -2,45 +2,6 @@ angular.module("myApp").controller("ContentTreeCtrl", ContentTreeCtrl);
 angular.module("myApp").controller("ContentTreeCtrlEdit", ContentTreeCtrlEdit);
 
 
-
-// function LegacyDeleteController($scope, legacyResource, treeService, navigationService) {
-
-//     $scope.performDelete = function() {
-
-//         //mark it for deletion (used in the UI)
-
-//         $scope.currentNode.loading = true;
-
-//         legacyResource.deleteItem({            
-
-//             nodeId: $scope.currentNode.id,
-
-//             nodeType: $scope.currentNode.nodeType,
-
-//             alias: $scope.currentNode.name,
-
-//         }).then(function () {
-
-//             $scope.currentNode.loading = false;
-
-//             //TODO: Need to sync tree, etc...
-
-//             treeService.removeNode($scope.currentNode);
-
-//             navigationService.hideMenu();
-
-//         });
-
-//     };
-
-//    $scope.cancel = function() {
-
-//         navigationService.hideDialog();
-
-//     };
-
-// }
-
 /**
  * @ngdoc controller
  * @name ContentTreeCtrl
@@ -49,6 +10,39 @@ angular.module("myApp").controller("ContentTreeCtrlEdit", ContentTreeCtrlEdit);
  * The controller for deleting content
  */
 function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, ContentType, sessionService, ContextMenu, $interpolate, ngDialog) {
+  var allowedContentTypeNodes = [];
+  var allowedContentTypes = [];
+
+  Node.query({'node-type': '4'},{},function(node){
+    allowedContentTypeNodes.push(node);
+
+  }).$promise.then(function(data){
+    console.log("success")
+    console.log(allowedContentTypeNodes[0])
+    for(var i = 0; i < allowedContentTypeNodes[0].length; i++){
+        var ct = ContentType.get({nodeId: allowedContentTypeNodes[0][i].id}, function(){});
+        allowedContentTypes.push(ct);
+        
+    }
+  }, function(error) {
+      // error handler
+  });
+
+
+
+  
+  $scope.rootNode = {
+    "id": 1,
+    "allowedPermissions": ["node_create"],
+    "path": "1",
+    "name": "root",
+    "node_type": 5,
+    "created_by": 1,
+    "entity": {
+      "allowedContentTypes": allowedContentTypes
+    }
+  }
+
   $scope.clickToOpen = function (item) {
         ngDialog.open({ 
           template: item.url,
@@ -134,7 +128,7 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
   var $oLay = angular.element(document.getElementById('overlay'))
 
   $scope.showOptions = function (item,$event) {
-
+      console.log("showoptions")
       var overlayDisplay;
       // if ($scope.currentItem === item){
       if ($oLay.css("display") == "block") {
@@ -166,41 +160,55 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
   }
 
   $scope.getEntityInfo = function(currentItem){
+    console.log("getEntityInfo")
     //console.log(currentItem);
-    currentItem['entity'] = Content.get({ nodeId: currentItem.id}, function(data){
-      var allowedContentTypes = [];
-      //console.log(data.content_type.meta)
-      for(var i = 0; i < data.content_type.meta.allowed_content_types_node_id.length; i++){
-          var ct = ContentType.get({nodeId: data.content_type.meta.allowed_content_types_node_id[i]}, function(){});
-          allowedContentTypes.push(ct);
-          
-      }
-      data['allowedContentTypes'] = allowedContentTypes;
-      //alert(sessionService.getUser())
+    if(currentItem==undefined){
+      currentItem = $scope.rootNode;
+      // data = currentItem
+      // console.log($scope.currentItem)
+      // $scope.currentItem = currentItem;
+      // console.log($scope.currentItem)
+      // console.log(currentItem)
+      $scope.getMenu(1);
+    }
+    if(currentItem.node_type != 5){
+      allowedContentTypes = [];
 
-      var tempArray = getUserNodePermissions(currentItem, sessionService.getUser());
-      var tempArray2 = [];
-      if(typeof tempArray[0] == 'object'){
-        for(var i = 0; i < tempArray.length; i++){
-          tempArray2.push(tempArray[i].id)
+      currentItem['entity'] = Content.get({ nodeId: currentItem.id}, function(data){
+        var allowedContentTypes = [];
+        //console.log(data.content_type.meta)
+        for(var i = 0; i < data.content_type.meta.allowed_content_types_node_id.length; i++){
+            var ct = ContentType.get({nodeId: data.content_type.meta.allowed_content_types_node_id[i]}, function(){});
+            allowedContentTypes.push(ct);
+            
         }
-        currentItem['allowedPermissions'] = tempArray2;
-      } else {
-        currentItem['allowedPermissions'] = tempArray;
-      }
+        data['allowedContentTypes'] = allowedContentTypes;
+        //alert(sessionService.getUser())
 
-      // currentItem['allowedPermissions'] = getUserNodePermissions(currentItem, sessionService.getUser());
+        var tempArray = getUserNodePermissions(currentItem, sessionService.getUser());
+        var tempArray2 = [];
+        if(typeof tempArray[0] == 'object'){
+          for(var i = 0; i < tempArray.length; i++){
+            tempArray2.push(tempArray[i].id)
+          }
+          currentItem['allowedPermissions'] = tempArray2;
+        } else {
+          currentItem['allowedPermissions'] = tempArray;
+        }
 
-      $scope.getMenu(currentItem);
-    });
+        // currentItem['allowedPermissions'] = getUserNodePermissions(currentItem, sessionService.getUser());
+
+        $scope.getMenu(currentItem.node_type);
+      });
+    }
     
     
   }
 
-  $scope.getMenu = function (currentItem){
+  $scope.getMenu = function (node_type){
     //alert(currentItem.entity.node.node_type)
     // First we get all pre-registered Context Menu items for the given nodeType
-    $scope.contextMenu = ContextMenu.query({},{nodeType:currentItem.entity.node.node_type}, function(menu){
+    $scope.contextMenu = ContextMenu.query({},{nodeType:node_type}, function(menu){
       //alert("lol1")
     })
     //alert($scope.contextMenu)

@@ -1,6 +1,31 @@
 var dataTypeControllers = angular.module('dataTypeControllers', []);
 
-dataTypeControllers.controller('DataTypeTreeCtrl', ['$scope', '$stateParams', 'NodeChildren','Node', function ($scope, $stateParams, NodeChildren, Node) {
+dataTypeControllers.controller('DataTypeTreeCtrl', ['$scope', '$stateParams', 'NodeChildren','Node', 'DataType', 'sessionService', 'ContextMenu', '$interpolate', 'ngDialog', function ($scope, $stateParams, NodeChildren, Node, DataType, sessionService, ContextMenu, $interpolate, ngDialog) {
+
+  $scope.rootNode = {
+    "id": 1,
+    "allowedPermissions": ["node_create"],
+    "path": "1",
+    "name": "root",
+    "node_type": 5,
+    "created_by": 1,
+    "entity": {}
+  }
+
+  $scope.clickToOpen = function (item) {
+        ngDialog.open({ 
+          template: item.url,
+          scope: $scope 
+        });
+    };
+
+  $scope.deleteNode = function(item) {
+    //alert("deleteNode")
+    DataType.delete({nodeId: item.entity.node.id}, function(){
+      console.log("data type and node record deleted with nodeId: " + item.entity.node.id)
+    })
+    
+  };
 
   $scope.delete = function(data) {
     data.nodes = [];
@@ -140,30 +165,82 @@ dataTypeControllers.controller('DataTypeTreeCtrl', ['$scope', '$stateParams', 'N
   }
 
   var offset = {
-        left: 40,
-        top: -80
+        // left: 40,
+        // top: -80
+        left: 0,
+        top: -76
   }
 
   var $oLay = angular.element(document.getElementById('overlay'))
 
-  $scope.showOptions = function (item,$event) {       
+  $scope.showOptions = function (item,$event) {
+      console.log("showoptions")
       var overlayDisplay;
-
-      if ($scope.currentItem === item) {
+      // if ($scope.currentItem === item){
+      if ($oLay.css("display") == "block") {
           $scope.currentItem = null;
            overlayDisplay='none'
       }else{
           $scope.currentItem = item;
           overlayDisplay='block'
       }
+
+      if(angular.element(document.getElementById('adminsubmenucontainer')).hasClass('expanded1')){
+        offset = {
+          // left: 40,
+          // top: -80
+          left: 0,
+          top: -121
+        }
+      }
     
       var overLayCSS = {
+          // left: $event.clientX + offset.left + 'px',
+          // top: $event.clientY + offset.top + 'px',
           left: $event.clientX + offset.left + 'px',
           top: $event.clientY + offset.top + 'px',
           display: overlayDisplay
       }
 
        $oLay.css(overLayCSS)
+  }
+
+  $scope.getEntityInfo = function(currentItem){
+    if(currentItem==undefined){
+      
+      currentItem = $scope.rootNode;
+      $scope.getMenu(11);
+    } else {
+      currentItem['entity'] = DataType.get({ nodeId: currentItem.id}, function(data){
+        var tempArray = getUserNodePermissions(currentItem, sessionService.getUser());
+        var tempArray2 = [];
+        if(typeof tempArray[0] == 'object'){
+          for(var i = 0; i < tempArray.length; i++){
+            tempArray2.push(tempArray[i].id)
+          }
+          currentItem['allowedPermissions'] = tempArray2;
+        } else {
+          currentItem['allowedPermissions'] = tempArray;
+        }
+
+        $scope.getMenu(currentItem.node_type);
+      });
+    }
+
+
+  }
+
+  $scope.interpolate = function (value) {
+        return $interpolate(value)($scope);
+    };
+
+  $scope.getMenu = function (node_type){
+    //alert(currentItem.entity.node.node_type)
+    // First we get all pre-registered Context Menu items for the given nodeType
+    $scope.contextMenu = ContextMenu.query({},{nodeType:node_type}, function(menu){
+      //alert("lol1")
+    })
+    //alert($scope.contextMenu)
   }
 
 }]);

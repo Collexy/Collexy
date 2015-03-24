@@ -283,6 +283,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
     cc := controllers.ContentController{}
     content := models.Content{}
     if(r.URL.String() == "/admin/login"){
+        fmt.Println("FSLSO LOOOL ;;::: :: LOOL")
         //cc.RenderTemplate(w, "admin.tmpl", &content, &user)
         if user := models.GetLoggedInUser(r); user != nil {
             //cc.RenderTemplate(w, "admin.tmpl", &content, user)
@@ -415,7 +416,10 @@ func Main(){
     m.HandleFunc("/admin/install", installPostHandler).Methods("POST")
     m.HandleFunc("/admin/install", installHandler).Methods("GET")
     //m.HandleFunc("/admin/{_dummy:^((?!install).)*$}", adminHandler).Methods("GET")
-    m.HandleFunc("/admin/{^((?!install).)*$}", adminHandler).Methods("GET")
+    //`BBB([^B]*)EEE`
+    //m.HandleFunc("/admin/{([^install])*}/{*}", adminHandler).Methods("GET")
+    m.HandleFunc(`/{_dummy:admin\/([^install]*).*}`, adminHandler).Methods("GET")
+    //m.HandleFunc("/admin/{^((?!install).)*$}", adminHandler).Methods("GET")
     m.HandleFunc("/admin", adminHandler).Methods("GET")
     
     

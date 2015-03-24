@@ -5,7 +5,7 @@
         <i ng-click="expand_collapse(data)" ng-class="data.icon"></i>
         <!--<button ng-click="expand_collapse(data)" ng-show="data.show">collapse</button>
         <button ng-click="expand_collapse(data)" ng-show="!data.show">expand</button>-->
-        <a ui-sref="media.edit({nodeId:data.id})"  ui-sref-active="active" ng-context-menu="showOptions(data,$event)">{{data.name}} ({{data.path}})</a>
+        <a ui-sref="media.edit({nodeId:data.id})"  ui-sref-active="active" ng-right-click="getEntityInfo()" ng-context-menu="showOptions(data,$event)">{{data.name}} ({{data.path}})</a>
         <!--<button ng-click="add(data)">Add node</button>-->
         <!--<button ng-click="delete(data)" ng-show="data.nodes.length > 0">Delete nodes</button>
         <!--<button ng-click="expand_collapse(data)" ng-show="data.show && data.nodes.length > 0">collapse</button>-->
@@ -18,7 +18,8 @@
     
     <h4>Media</h4>
     <div class="admin-tree-container">
-        <ul class="admin-tree" ng-context-menu="showOptions(rootNode,$event)">
+        <!-- <ul class="admin-tree" ng-context-menu="showOptions(rootNode,$event)"> -->
+        <ul class="admin-tree" >
             <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
         </ul>
     </div>

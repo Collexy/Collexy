@@ -1,30 +1,69 @@
 var directoryControllers = angular.module('directoryControllers', []);
 
-directoryControllers.controller('DirectoryTreeCtrl', ['$scope', '$stateParams', '$state','Directory', function ($scope, $stateParams, $state, Directory) {
+directoryControllers.controller('DirectoryTreeCtrl', ['$scope', '$stateParams', '$state','Directory', 'ngDialog', function ($scope, $stateParams, $state, Directory, ngDialog) {
   //$scope.rootdir = $state.current.data.rootdir;
+
   $scope.rootdir = $state.current.name.split(".")[1];
   //alert(rootdir);
-  var directoryNodes = Directory.query({ rootdir: $scope.rootdir }, function(node){}); 
-  $scope.tree = directoryNodes;
+  var directoryNodes;
+
+  Directory.query({ rootdir: $scope.rootdir }, function(){
+    
+  }).$promise.then(function(data){
+    directoryNodes = data;
+    $scope.tree = directoryNodes;
+    $scope.rootNode = data;
+
+    console.log($scope.rootNode)
+  }, function(err){
+    // ERROR
+  });
+
+  $scope.clickToOpen = function (url) {
+        ngDialog.open({ 
+          template: url,
+          scope: $scope 
+        });
+    };
+
+  $scope.deleteNode = function(item) {
+    //alert("deleteNode")
+    Directory.delete({'rootdir': rootdir, name: item.info.name}, function(){
+      console.log("content and node record deleted with nodeId: " + item.entity.node.id)
+    })
+    
+  };
+
+
   
   var offset = {
         // left: 40,
         // top: -80
-        left: -115,
-        top: -120
+        left: 0,
+        top: -76
   }
 
   var $oLay = angular.element(document.getElementById('overlay'))
 
-  $scope.showOptions = function (item,$event) {       
+  $scope.showOptions = function (item,$event) {
+      console.log("showoptions")
       var overlayDisplay;
-
-      if ($scope.currentItem === item) {
+      // if ($scope.currentItem === item){
+      if ($oLay.css("display") == "block") {
           $scope.currentItem = null;
            overlayDisplay='none'
       }else{
           $scope.currentItem = item;
           overlayDisplay='block'
+      }
+
+      if(angular.element(document.getElementById('adminsubmenucontainer')).hasClass('expanded1')){
+        offset = {
+          // left: 40,
+          // top: -80
+          left: 0,
+          top: -121
+        }
       }
     
       var overLayCSS = {
@@ -37,6 +76,7 @@ directoryControllers.controller('DirectoryTreeCtrl', ['$scope', '$stateParams', 
 
        $oLay.css(overLayCSS)
   }
+
 }]);
 
 directoryControllers.controller('DirectoryTreeCtrlEdit', ['$scope', '$stateParams', 'Directory', '$state', function ($scope, $stateParams, Directory, $state) {

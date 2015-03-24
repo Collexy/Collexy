@@ -7,7 +7,7 @@
 	</ul>
 	<p>Estimated time left until first beta release: <strong>~1 work-days</strong></p>
 </div> -->
-<div ng-controller="TemplateTreeCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin>
+<div ng-controller="TemplateTreeCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin ng-right-click="getEntityInfo()" ng-context-menu="showOptions(rootNode,$event)">
     <div id="list-container" class="scroller" perfect-scroll>
     	<div id="list" class="nosubmenu-margin-top" top-nav-margin>
     	<!-- 	<div context-menu class="panel panel-default position-fixed" 
@@ -18,8 +18,16 @@
     	</div>
     </div>
 	<div id="overlay">
-	    {{currentItem}}
-	        <!-- <p>Context menu for {{currentItem.name}}</p> -->
+        <ul class="context-menu">
+            <li ng-repeat="item in contextMenu" class="context-sub-menu">
+                <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && !isDefined(item, 'sub_menu')">
+                    <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.url)}}">{{item.name}}</a>
+                    <a ng-if="item.is_dialog == true" ng-click="clickToOpen(item)">{{item.name}}</a>
+                </span>
+                
+            </li>
+        </ul>
+<!-- 	    {{currentItem}}
         <ul id="overlay-menu">
             <li ng-switch on="currentItem.node_type">
                 <a>New</a>
@@ -27,12 +35,6 @@
                     <li>
                         <a ui-sref="settings.templates.new({parent:{{currentItem.id}}})">Template</a>
                     </li>
-                    <!-- <li>
-                        <a ui-sref="settings.templates.new">Page</a>
-                    </li>
-                    <li>
-                        <a ui-sref="settings.templates.new">Product</a>
-                    </li> -->
                 </ul>
                 <ul ng-switch-default>
                     <li>
@@ -43,7 +45,7 @@
             <li>
                 <a>Delete</a>
             </li>
-        </ul>
+        </ul> -->
 	</div>
 </div>
 <div class="outer-content-details-container nosubmenu-margin-top" top-nav-margin>

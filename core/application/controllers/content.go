@@ -134,9 +134,10 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
     url := params["url"]
     
-    if(strings.HasPrefix(url,"/admin")){
-        fmt.Println("lol")
+    if(strings.HasPrefix(url,"admin/")){
+        //fmt.Println("lol")
     } else {
+        fmt.Println(url)
         s := strings.Split(url, "/")
         name := strings.Replace(strings.ToLower(s[len(s)-1]), "-", " ",-1)
 
