@@ -45,6 +45,8 @@ func Main(){
     directoryApiController := controllers.DirectoryApiController{}
 
     userApiController := controllers.UserApiController{}
+    userGroupApiController := controllers.UserGroupApiController{}
+
     memberApiController := controllers.MemberApiController{}
     memberTypeApiController := controllers.MemberTypeApiController{}
 
@@ -111,7 +113,11 @@ func Main(){
     // User
     publicApiRouter.HandleFunc("/api/public/user/login", http.HandlerFunc(userApiController.Login)).Methods("POST")
     m.HandleFunc("/api/user", http.HandlerFunc(userApiController.Get)).Methods("GET")
+    m.HandleFunc("/api/user/{id:.*}", http.HandlerFunc(userApiController.GetById)).Methods("GET")
     m.HandleFunc("/api/user", http.HandlerFunc(userApiController.Post)).Methods("POST")
+
+    m.HandleFunc("/api/user-group", http.HandlerFunc(userGroupApiController.Get)).Methods("GET")
+    m.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.GetById)).Methods("GET")
 
     // Member
     publicApiRouter.HandleFunc("/api/public/member/login", http.HandlerFunc(memberApiController.Login)).Methods("POST")

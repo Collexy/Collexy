@@ -128,6 +128,124 @@ func (u *User) CreateCookie(sid string) (cookie *http.Cookie, err error){
   return
 }
 
+func GetUsers() (users []*User){
+  db := coreglobals.Db
+
+    rows, err := db.Query(`SELECT id, username, first_name, last_name, password, email,
+      created_date, updated_date, login_date, accessed_date, status, sid, user_group_ids 
+      FROM "user"`)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+      var id int
+      var username, email string
+      var password []byte
+      //var meta []byte
+      var created_date, updated_date, login_date, accessed_date *time.Time
+      var status uint8
+      // IntArray is temporarily defined in template.go model
+      var user_group_ids IntArray
+
+      var sid, first_name, last_name sql.NullString
+
+      if err := rows.Scan(&id,&username,&first_name,&last_name,&password,&email,&created_date,&updated_date,&login_date,&accessed_date,&status,&sid,&user_group_ids); err != nil {
+              log.Fatal(err)
+      }
+
+      // var metaMap map[string]interface{}
+      // err1 := json.Unmarshal(meta, &metaMap)
+      // if err1 != nil {
+      //   fmt.Println("error:", err)
+      // }
+
+      var user_sid string
+      if sid.Valid {
+        // use s.String
+        user_sid = sid.String
+      } else { 
+        // NULL value 
+      }
+
+      var user_first_name string
+      if first_name.Valid {
+        // use s.String
+        user_first_name = first_name.String
+      } else { 
+        // NULL value 
+      }
+
+      var user_last_name string
+      if last_name.Valid {
+        // use s.String
+        user_last_name = last_name.String
+      } else { 
+        // NULL value 
+      }
+
+      user := &User{id,username,user_first_name, user_last_name, password,email,created_date,updated_date,login_date,accessed_date,status,user_sid,user_group_ids,nil,nil}
+      users = append(users, user)
+    }
+    if err := rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+    return
+}
+
+func GetUserById(id int) (user *User){
+  db := coreglobals.Db
+
+  var username, email string
+  var password []byte
+  //var meta []byte
+  var created_date, updated_date, login_date, accessed_date *time.Time
+  var status uint8
+  // IntArray is temporarily defined in template.go model
+  var user_group_ids IntArray
+
+  var sid, first_name, last_name sql.NullString
+
+  err := db.QueryRow(`SELECT username, first_name, last_name, password, email,
+      created_date, updated_date, login_date, accessed_date, status, sid, user_group_ids 
+      FROM "user" WHERE id=$1`,id).Scan(&username,&first_name,&last_name,&password,&email,&created_date,&updated_date,&login_date,&accessed_date,&status,&sid,&user_group_ids)
+  switch {
+    case err == sql.ErrNoRows:
+        log.Printf("No member with that ID.")
+    case err != nil:
+        log.Println("lolol")
+        log.Fatal(err)
+    default:
+      var user_sid string
+      if sid.Valid {
+        // use s.String
+        user_sid = sid.String
+      } else { 
+        // NULL value 
+      }
+
+      var user_first_name string
+      if first_name.Valid {
+        // use s.String
+        user_first_name = first_name.String
+      } else { 
+        // NULL value 
+      }
+
+      var user_last_name string
+      if last_name.Valid {
+        // use s.String
+        user_last_name = last_name.String
+      } else { 
+        // NULL value 
+      }
+
+      user = &User{id,username,user_first_name, user_last_name, password,email,created_date,updated_date,login_date,accessed_date,status,user_sid,user_group_ids,nil,nil}
+  }
+  return
+}
+
 
 func GetUser (sid string) (u *User, err error){
   // check memcache first
@@ -162,6 +280,7 @@ LATERAL (
     SELECT * 
     FROM user_group
     WHERE user_group.id = ANY ("user".user_group_ids)
+    --WHERE "user".user_group_ids @> user_group.id::text
   ) user_group_agg
 ) user_groups
 WHERE sid=$1`

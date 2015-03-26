@@ -1,0 +1,14 @@
+<div ng-controller="UserGroupListCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin ng-right-click="getEntityInfo()" ng-context-menu="showOptions(rootNode,$event)">
+	<div id="list-container" class="scroller" perfect-scroll>
+		<div id="list">
+			<div ng-include src="'public/views/users/user-group/list.html'"></div>
+		</div>
+	</div>
+</div>
+<div class="outer-content-details-container nosubmenu-margin-top" top-nav-margin>
+	<div class="content-details-container scroller" perfect-scroll>
+		<div id="content-details">
+			<div ui-view></div>
+		</div>
+	</div>
+</div>

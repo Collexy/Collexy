@@ -21,24 +21,48 @@ import (
 type UserApiController struct {}
 
 func (this *UserApiController) Get(w http.ResponseWriter, r *http.Request) {
-    db := coreglobals.Db
-    rows, err := db.Query("SELECT id, username, first_name, last_name, password FROM \"user\"")
+    w.Header().Set("Content-Type", "application/json")
+    users := models.GetUsers()
+    res, err := json.Marshal(users)
     corehelpers.PanicIf(err)
-    defer rows.Close()
 
-    // var id, created_by, User_type int
-    // var path, label string
-    // var created_date time.Time
-    var id int
-    var username, first_name, last_name, password string
-
-    for rows.Next(){
-        err := rows.Scan(&id, &username, &first_name, &last_name, &password)
-        corehelpers.PanicIf(err)
-        fmt.Fprintf(w, "Id: %d, Username: %s, First: %s, Last: %s, Password:%s\n", id, username, first_name, last_name, password)
-    }
-
+    fmt.Fprintf(w,"%s",res)
 }
+
+func (this *UserApiController) GetById(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    params := mux.Vars(r)
+    idStr := params["id"]
+
+    userId, _ := strconv.Atoi(idStr)
+
+    user := models.GetUserById(userId)
+    res, err := json.Marshal(user)
+    corehelpers.PanicIf(err)
+
+    fmt.Fprintf(w,"%s",res)
+}
+
+// func (this *UserApiController) Get(w http.ResponseWriter, r *http.Request) {
+//     db := coreglobals.Db
+//     rows, err := db.Query("SELECT id, username, first_name, last_name, password FROM \"user\"")
+//     corehelpers.PanicIf(err)
+//     defer rows.Close()
+
+//     // var id, created_by, User_type int
+//     // var path, label string
+//     // var created_date time.Time
+//     var id int
+//     var username, first_name, last_name, password string
+
+//     for rows.Next(){
+//         err := rows.Scan(&id, &username, &first_name, &last_name, &password)
+//         corehelpers.PanicIf(err)
+//         fmt.Fprintf(w, "Id: %d, Username: %s, First: %s, Last: %s, Password:%s\n", id, username, first_name, last_name, password)
+//     }
+
+// }
 
 // func (this *UserApiController) GetById(w http.ResponseWriter, r *http.Request) {
 

@@ -1,82 +1,173 @@
+angular.module("myApp").controller("UserCtrl", UserCtrl);
+angular.module("myApp").controller("UserListCtrl", UserListCtrl);
+angular.module("myApp").controller("UserEditCtrl", UserEditCtrl);
+
+/**
+ * @ngdoc controller
+ * @name ContentTreeCtrl
+ * @function
+ * @description
+ * The controller for deleting content
+ */
+function UserListCtrl($scope, $state){
+  $scope.state = $state;
+}
+
+/**
+ * @ngdoc controller
+ * @name ContentTreeCtrl
+ * @function
+ * @description
+ * The controller for deleting content
+ */
+function UserListCtrl($scope, $stateParams, NodeChildren, Node, User, sessionService, ContextMenu, $interpolate, ngDialog) {
+  $scope.users = User.query();
+}
+
+/**
+ * @ngdoc controller
+ * @name ContentTreeCtrl
+ * @function
+ * @description
+ * The controller for deleting content
+ */
+function UserEditCtrl($scope, $stateParams, NodeChildren, Node, User, UserGroup, sessionService, ContextMenu, $interpolate, ngDialog) {
+
+  User.get({id:$stateParams.id}, function(){}).$promise.then(function(data){
+    $scope.data = data;
+    $scope.currentTab = data.username;
+
+    UserGroup.query().$promise.then(function(userGroups){
+      $scope.allUserGroups = userGroups;
+      
+      var availableUserGroups = [];
+      var selectedUserGroups = [];
+
+      for(var i = 0; i < data.user_group_ids.length; i++){
+        for(var j = 0; j < userGroups.length; j++){
+          //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
+          if(data.user_group_ids[i] != userGroups[j].id){
+            availableUserGroups.push(userGroups[j])
+
+          } else {
+            selectedUserGroups.push(userGroups[j])
+          }
+        }
+      }
+      availableUserGroups.unique();
+      selectedUserGroups.unique();
+      $scope.availableUserGroups = availableUserGroups;
+      $scope.selectedUserGroups = selectedUserGroups;
+    }, function(){
+      //ERR
+    })
+
+  }, function(){
+    // ERR
+  });
+
+  $scope.moveItem = function(item, from, to) {
+        alert("moveitem")
+        var idx=from.indexOf(item);
+        if (idx != -1) {
+            from.splice(idx, 1);
+            to.push(item);      
+        }
+        var user_group_ids = [];
+        
+        for(var i = 0; i < $scope.selectedUserGroups.length; i++){
+          user_group_ids.push($scope.selectedUserGroups[i].id);
+        }
+        $scope.data.user_group_ids = user_group_ids;
+    };
+  $scope.moveAll = function(from, to) {
+      angular.forEach(from, function(item) {
+          to.push(item);
+      });
+      from.length = 0;
+  };
+  
+}
+
 var userControllers = angular.module('userControllers', []);
 
-userControllers.controller('UserListCtrl', ['$scope', 'User', function ($scope, User) {
-	$scope.users = User.query();
-}]);
+// userControllers.controller('UserListCtrl', ['$scope', 'User', function ($scope, User) {
+// 	$scope.users = User.query();
+// }]);
 
-userControllers.controller('UserEditCtrl', ['$scope', '$stateParams', '$location', 'User', 'UserGroup', function($scope, $stateParams, $location, User, UserGroup) {
-  //$scope.user_groups = UserGroup.query();
-	//console.log($stateParams);
-  if ($stateParams.userId) {
+// userControllers.controller('UserEditCtrl', ['$scope', '$stateParams', '$location', 'User', 'UserGroup', function($scope, $stateParams, $location, User, UserGroup) {
+//   //$scope.user_groups = UserGroup.query();
+// 	//console.log($stateParams);
+//   if ($stateParams.userId) {
 
-    $scope.user = User.get({ userId: $stateParams.userId}, function(user){
+//     $scope.user = User.get({ userId: $stateParams.userId}, function(user){
 
-    });
-    //User.get({ userId: $stateParams.userId} , function(phone) {
-  } else {
+//     });
+//     //User.get({ userId: $stateParams.userId} , function(phone) {
+//   } else {
 
-    $scope.user = new User();
-  }
+//     $scope.user = new User();
+//   }
 
-  //   $scope.isSelected =
-  // function isSelected(listOfItems, item) {
-  //   //console.log(listOfItems);
-  //   if(listOfItems != undefined){
-  //     for(var i = 0; i< listOfItems.length; i++){
-  //       if(listOfItems[i]._id == item)
-  //         return true;
-  //     }
+//   //   $scope.isSelected =
+//   // function isSelected(listOfItems, item) {
+//   //   //console.log(listOfItems);
+//   //   if(listOfItems != undefined){
+//   //     for(var i = 0; i< listOfItems.length; i++){
+//   //       if(listOfItems[i]._id == item)
+//   //         return true;
+//   //     }
     
-  //   }
-  //   return false;
-  // };
+//   //   }
+//   //   return false;
+//   // };
 
-    $scope.isSelected =
-  function isSelected(userUserGroup, user_group) {
-    //console.log(listOfItems);
-    if(userUserGroup != undefined){
+//     $scope.isSelected =
+//   function isSelected(userUserGroup, user_group) {
+//     //console.log(listOfItems);
+//     if(userUserGroup != undefined){
       
-        if(userUserGroup == user_group){
+//         if(userUserGroup == user_group){
           
-          return true;
-        }
+//           return true;
+//         }
       
     
-    }
-    return false;
-  };
+//     }
+//     return false;
+//   };
 
-  $scope.submit = function() {
-    console.log("submit")
+//   $scope.submit = function() {
+//     console.log("submit")
 
-    function success(response) {
-      console.log("success", response)
-      $location.path("/admin/users");
-    }
+//     function success(response) {
+//       console.log("success", response)
+//       $location.path("/admin/users");
+//     }
 
-    function failure(response) {
-      console.log("failure", response)
+//     function failure(response) {
+//       console.log("failure", response)
 
-      _.each(response.data, function(errors, key) {
-        if (errors.length > 0) {
-          _.each(errors, function(e) {
-            $scope.form[key].$dirty = true;
-            $scope.form[key].$setValidity(e, false);
-          });
-        }
-      });
-    }
+//       _.each(response.data, function(errors, key) {
+//         if (errors.length > 0) {
+//           _.each(errors, function(e) {
+//             $scope.form[key].$dirty = true;
+//             $scope.form[key].$setValidity(e, false);
+//           });
+//         }
+//       });
+//     }
 
-    if ($stateParams.userId) {
-    	User.update({userId: $stateParams.userId}, $scope.user, success, failure);
-      //User.update($scope.user, success, failure);
-    } else {
-    	User.create($scope.user, success, failure);
-      //User.create($scope.user, success, failure);
-    }
+//     if ($stateParams.userId) {
+//     	User.update({userId: $stateParams.userId}, $scope.user, success, failure);
+//       //User.update($scope.user, success, failure);
+//     } else {
+//     	User.create($scope.user, success, failure);
+//       //User.create($scope.user, success, failure);
+//     }
 
-  }
-}]);
+//   }
+// }]);
 
 userControllers.controller('UserProfileCtrl', ['$scope', '$stateParams', '$location', '$window', 'User', function($scope, $stateParams, $location, $window, User) {
    // $scope.$watch('username', function () {

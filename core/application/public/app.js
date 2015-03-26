@@ -32,7 +32,9 @@ angular.module('myApp', [
   'angularRouteService',
   'ngDialog',
   'ui.codemirror',
-  'perfect_scrollbar'
+  'perfect_scrollbar',
+  'memberGroupControllers',
+  'userGroupControllers'
   // 'ng-context-menu'
   // 'underscoreServices'
 ])

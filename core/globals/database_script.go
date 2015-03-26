@@ -6,7 +6,7 @@ var DbCreateScriptDML string = `--
 
 -- Dumped from database version 9.4beta3
 -- Dumped by pg_dump version 9.4beta3
--- Started on 2015-03-24 12:21:21
+-- Started on 2015-03-26 03:32:27
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,7 +16,7 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- TOC entry 199 (class 3079 OID 11855)
+-- TOC entry 197 (class 3079 OID 11855)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -24,8 +24,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2347 (class 0 OID 0)
--- Dependencies: 199
+-- TOC entry 2339 (class 0 OID 0)
+-- Dependencies: 197
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -33,7 +33,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- TOC entry 201 (class 3079 OID 94833)
+-- TOC entry 199 (class 3079 OID 97304)
 -- Name: citext; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -41,8 +41,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
 
 
 --
--- TOC entry 2348 (class 0 OID 0)
--- Dependencies: 201
+-- TOC entry 2340 (class 0 OID 0)
+-- Dependencies: 199
 -- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -50,7 +50,7 @@ COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings
 
 
 --
--- TOC entry 200 (class 3079 OID 94917)
+-- TOC entry 198 (class 3079 OID 97388)
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -58,8 +58,8 @@ CREATE EXTENSION IF NOT EXISTS ltree WITH SCHEMA public;
 
 
 --
--- TOC entry 2349 (class 0 OID 0)
--- Dependencies: 200
+-- TOC entry 2341 (class 0 OID 0)
+-- Dependencies: 198
 -- Name: EXTENSION ltree; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -69,7 +69,7 @@ COMMENT ON EXTENSION ltree IS 'data type for hierarchical tree-like structures';
 SET search_path = public, pg_catalog;
 
 --
--- TOC entry 321 (class 1255 OID 95092)
+-- TOC entry 319 (class 1255 OID 97563)
 -- Name: json_merge(json, json); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -93,7 +93,7 @@ $$;
 ALTER FUNCTION public.json_merge(data json, merge_data json) OWNER TO postgres;
 
 --
--- TOC entry 322 (class 1255 OID 95093)
+-- TOC entry 320 (class 1255 OID 97564)
 -- Name: json_object_update_key(json, text, anyelement); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -118,7 +118,7 @@ $$;
 ALTER FUNCTION public.json_object_update_key(json json, key_to_set text, value_to_set anyelement) OWNER TO postgres;
 
 --
--- TOC entry 323 (class 1255 OID 95094)
+-- TOC entry 321 (class 1255 OID 97565)
 -- Name: populate(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -156,7 +156,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 172 (class 1259 OID 95095)
+-- TOC entry 172 (class 1259 OID 97566)
 -- Name: content; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -172,7 +172,7 @@ CREATE TABLE content (
 ALTER TABLE content OWNER TO postgres;
 
 --
--- TOC entry 173 (class 1259 OID 95101)
+-- TOC entry 173 (class 1259 OID 97572)
 -- Name: content_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -187,7 +187,7 @@ CREATE SEQUENCE content_id_seq
 ALTER TABLE content_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2350 (class 0 OID 0)
+-- TOC entry 2342 (class 0 OID 0)
 -- Dependencies: 173
 -- Name: content_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -196,7 +196,7 @@ ALTER SEQUENCE content_id_seq OWNED BY content.id;
 
 
 --
--- TOC entry 174 (class 1259 OID 95103)
+-- TOC entry 174 (class 1259 OID 97574)
 -- Name: content_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -216,7 +216,7 @@ CREATE TABLE content_type (
 ALTER TABLE content_type OWNER TO postgres;
 
 --
--- TOC entry 175 (class 1259 OID 95109)
+-- TOC entry 175 (class 1259 OID 97580)
 -- Name: content_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -231,7 +231,7 @@ CREATE SEQUENCE content_type_id_seq
 ALTER TABLE content_type_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2351 (class 0 OID 0)
+-- TOC entry 2343 (class 0 OID 0)
 -- Dependencies: 175
 -- Name: content_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -240,7 +240,7 @@ ALTER SEQUENCE content_type_id_seq OWNED BY content_type.id;
 
 
 --
--- TOC entry 176 (class 1259 OID 95111)
+-- TOC entry 176 (class 1259 OID 97582)
 -- Name: data_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -255,7 +255,7 @@ CREATE TABLE data_type (
 ALTER TABLE data_type OWNER TO postgres;
 
 --
--- TOC entry 177 (class 1259 OID 95117)
+-- TOC entry 177 (class 1259 OID 97588)
 -- Name: data_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -270,7 +270,7 @@ CREATE SEQUENCE data_type_id_seq
 ALTER TABLE data_type_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2352 (class 0 OID 0)
+-- TOC entry 2344 (class 0 OID 0)
 -- Dependencies: 177
 -- Name: data_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -279,7 +279,7 @@ ALTER SEQUENCE data_type_id_seq OWNED BY data_type.id;
 
 
 --
--- TOC entry 178 (class 1259 OID 95119)
+-- TOC entry 178 (class 1259 OID 97590)
 -- Name: domain; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -293,7 +293,7 @@ CREATE TABLE domain (
 ALTER TABLE domain OWNER TO postgres;
 
 --
--- TOC entry 179 (class 1259 OID 95125)
+-- TOC entry 179 (class 1259 OID 97596)
 -- Name: domain_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -308,7 +308,7 @@ CREATE SEQUENCE domain_id_seq
 ALTER TABLE domain_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2353 (class 0 OID 0)
+-- TOC entry 2345 (class 0 OID 0)
 -- Dependencies: 179
 -- Name: domain_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -317,7 +317,7 @@ ALTER SEQUENCE domain_id_seq OWNED BY domain.id;
 
 
 --
--- TOC entry 180 (class 1259 OID 95127)
+-- TOC entry 180 (class 1259 OID 97598)
 -- Name: member; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -334,52 +334,14 @@ CREATE TABLE member (
     status smallint DEFAULT 1 NOT NULL,
     sid character varying,
     member_type_node_id bigint,
-    group_ids integer[]
+    member_group_node_ids integer[]
 );
 
 
 ALTER TABLE member OWNER TO postgres;
 
 --
--- TOC entry 181 (class 1259 OID 95135)
--- Name: member_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE member_group (
-    id integer NOT NULL,
-    name character varying,
-    description text
-);
-
-
-ALTER TABLE member_group OWNER TO postgres;
-
---
--- TOC entry 182 (class 1259 OID 95141)
--- Name: member_group_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE member_group_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE member_group_id_seq OWNER TO postgres;
-
---
--- TOC entry 2354 (class 0 OID 0)
--- Dependencies: 182
--- Name: member_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE member_group_id_seq OWNED BY member_group.id;
-
-
---
--- TOC entry 183 (class 1259 OID 95143)
+-- TOC entry 181 (class 1259 OID 97614)
 -- Name: member_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -394,8 +356,8 @@ CREATE SEQUENCE member_id_seq
 ALTER TABLE member_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2355 (class 0 OID 0)
--- Dependencies: 183
+-- TOC entry 2346 (class 0 OID 0)
+-- Dependencies: 181
 -- Name: member_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -403,7 +365,7 @@ ALTER SEQUENCE member_id_seq OWNED BY member.id;
 
 
 --
--- TOC entry 184 (class 1259 OID 95145)
+-- TOC entry 182 (class 1259 OID 97616)
 -- Name: member_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -422,7 +384,7 @@ CREATE TABLE member_type (
 ALTER TABLE member_type OWNER TO postgres;
 
 --
--- TOC entry 185 (class 1259 OID 95151)
+-- TOC entry 183 (class 1259 OID 97622)
 -- Name: member_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -437,8 +399,8 @@ CREATE SEQUENCE member_type_id_seq
 ALTER TABLE member_type_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2356 (class 0 OID 0)
--- Dependencies: 185
+-- TOC entry 2347 (class 0 OID 0)
+-- Dependencies: 183
 -- Name: member_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -446,7 +408,7 @@ ALTER SEQUENCE member_type_id_seq OWNED BY member_type.id;
 
 
 --
--- TOC entry 186 (class 1259 OID 95153)
+-- TOC entry 184 (class 1259 OID 97624)
 -- Name: menu_link; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -467,7 +429,7 @@ CREATE TABLE menu_link (
 ALTER TABLE menu_link OWNER TO postgres;
 
 --
--- TOC entry 187 (class 1259 OID 95159)
+-- TOC entry 185 (class 1259 OID 97630)
 -- Name: menu_link_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -482,8 +444,8 @@ CREATE SEQUENCE menu_link_id_seq
 ALTER TABLE menu_link_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2357 (class 0 OID 0)
--- Dependencies: 187
+-- TOC entry 2348 (class 0 OID 0)
+-- Dependencies: 185
 -- Name: menu_link_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -491,7 +453,7 @@ ALTER SEQUENCE menu_link_id_seq OWNED BY menu_link.id;
 
 
 --
--- TOC entry 188 (class 1259 OID 95161)
+-- TOC entry 186 (class 1259 OID 97632)
 -- Name: node; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -511,7 +473,7 @@ CREATE TABLE node (
 ALTER TABLE node OWNER TO postgres;
 
 --
--- TOC entry 189 (class 1259 OID 95168)
+-- TOC entry 187 (class 1259 OID 97639)
 -- Name: node_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -526,8 +488,8 @@ CREATE SEQUENCE node_id_seq
 ALTER TABLE node_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2358 (class 0 OID 0)
--- Dependencies: 189
+-- TOC entry 2349 (class 0 OID 0)
+-- Dependencies: 187
 -- Name: node_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -535,7 +497,7 @@ ALTER SEQUENCE node_id_seq OWNED BY node.id;
 
 
 --
--- TOC entry 190 (class 1259 OID 95170)
+-- TOC entry 188 (class 1259 OID 97641)
 -- Name: permission; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -547,7 +509,7 @@ CREATE TABLE permission (
 ALTER TABLE permission OWNER TO postgres;
 
 --
--- TOC entry 191 (class 1259 OID 95176)
+-- TOC entry 189 (class 1259 OID 97647)
 -- Name: route; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -565,8 +527,8 @@ CREATE TABLE route (
 ALTER TABLE route OWNER TO postgres;
 
 --
--- TOC entry 2359 (class 0 OID 0)
--- Dependencies: 191
+-- TOC entry 2350 (class 0 OID 0)
+-- Dependencies: 189
 -- Name: COLUMN route.path; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -575,7 +537,7 @@ COMMENT ON COLUMN route.path IS '
 
 
 --
--- TOC entry 192 (class 1259 OID 95182)
+-- TOC entry 190 (class 1259 OID 97653)
 -- Name: route_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -590,8 +552,8 @@ CREATE SEQUENCE route_id_seq
 ALTER TABLE route_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2360 (class 0 OID 0)
--- Dependencies: 192
+-- TOC entry 2351 (class 0 OID 0)
+-- Dependencies: 190
 -- Name: route_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -599,7 +561,7 @@ ALTER SEQUENCE route_id_seq OWNED BY route.id;
 
 
 --
--- TOC entry 193 (class 1259 OID 95184)
+-- TOC entry 191 (class 1259 OID 97655)
 -- Name: template; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -616,7 +578,7 @@ CREATE TABLE template (
 ALTER TABLE template OWNER TO postgres;
 
 --
--- TOC entry 194 (class 1259 OID 95191)
+-- TOC entry 192 (class 1259 OID 97662)
 -- Name: template_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -631,8 +593,8 @@ CREATE SEQUENCE template_id_seq
 ALTER TABLE template_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2361 (class 0 OID 0)
--- Dependencies: 194
+-- TOC entry 2352 (class 0 OID 0)
+-- Dependencies: 192
 -- Name: template_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -640,7 +602,7 @@ ALTER SEQUENCE template_id_seq OWNED BY template.id;
 
 
 --
--- TOC entry 195 (class 1259 OID 95193)
+-- TOC entry 193 (class 1259 OID 97664)
 -- Name: user; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -665,7 +627,7 @@ CREATE TABLE "user" (
 ALTER TABLE "user" OWNER TO postgres;
 
 --
--- TOC entry 196 (class 1259 OID 95200)
+-- TOC entry 194 (class 1259 OID 97671)
 -- Name: user_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -680,7 +642,7 @@ CREATE TABLE user_group (
 ALTER TABLE user_group OWNER TO postgres;
 
 --
--- TOC entry 197 (class 1259 OID 95206)
+-- TOC entry 195 (class 1259 OID 97677)
 -- Name: user_group_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -695,8 +657,8 @@ CREATE SEQUENCE user_group_id_seq
 ALTER TABLE user_group_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2362 (class 0 OID 0)
--- Dependencies: 197
+-- TOC entry 2353 (class 0 OID 0)
+-- Dependencies: 195
 -- Name: user_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -704,7 +666,7 @@ ALTER SEQUENCE user_group_id_seq OWNED BY user_group.id;
 
 
 --
--- TOC entry 198 (class 1259 OID 95208)
+-- TOC entry 196 (class 1259 OID 97679)
 -- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -719,8 +681,8 @@ CREATE SEQUENCE user_id_seq
 ALTER TABLE user_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2363 (class 0 OID 0)
--- Dependencies: 198
+-- TOC entry 2354 (class 0 OID 0)
+-- Dependencies: 196
 -- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -728,7 +690,7 @@ ALTER SEQUENCE user_id_seq OWNED BY "user".id;
 
 
 --
--- TOC entry 2194 (class 2604 OID 95210)
+-- TOC entry 2187 (class 2604 OID 97681)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -736,7 +698,7 @@ ALTER TABLE ONLY content ALTER COLUMN id SET DEFAULT nextval('content_id_seq'::r
 
 
 --
--- TOC entry 2195 (class 2604 OID 95211)
+-- TOC entry 2188 (class 2604 OID 97682)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -744,7 +706,7 @@ ALTER TABLE ONLY content_type ALTER COLUMN id SET DEFAULT nextval('content_type_
 
 
 --
--- TOC entry 2196 (class 2604 OID 95212)
+-- TOC entry 2189 (class 2604 OID 97683)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -752,7 +714,7 @@ ALTER TABLE ONLY data_type ALTER COLUMN id SET DEFAULT nextval('data_type_id_seq
 
 
 --
--- TOC entry 2197 (class 2604 OID 95213)
+-- TOC entry 2190 (class 2604 OID 97684)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -760,7 +722,7 @@ ALTER TABLE ONLY domain ALTER COLUMN id SET DEFAULT nextval('domain_id_seq'::reg
 
 
 --
--- TOC entry 2200 (class 2604 OID 95214)
+-- TOC entry 2193 (class 2604 OID 97685)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -768,15 +730,7 @@ ALTER TABLE ONLY member ALTER COLUMN id SET DEFAULT nextval('member_id_seq'::reg
 
 
 --
--- TOC entry 2201 (class 2604 OID 95215)
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY member_group ALTER COLUMN id SET DEFAULT nextval('member_group_id_seq'::regclass);
-
-
---
--- TOC entry 2202 (class 2604 OID 95216)
+-- TOC entry 2194 (class 2604 OID 97687)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -784,7 +738,7 @@ ALTER TABLE ONLY member_type ALTER COLUMN id SET DEFAULT nextval('member_type_id
 
 
 --
--- TOC entry 2203 (class 2604 OID 95217)
+-- TOC entry 2195 (class 2604 OID 97688)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -792,7 +746,7 @@ ALTER TABLE ONLY menu_link ALTER COLUMN id SET DEFAULT nextval('menu_link_id_seq
 
 
 --
--- TOC entry 2205 (class 2604 OID 95218)
+-- TOC entry 2197 (class 2604 OID 97689)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -800,7 +754,7 @@ ALTER TABLE ONLY node ALTER COLUMN id SET DEFAULT nextval('node_id_seq'::regclas
 
 
 --
--- TOC entry 2206 (class 2604 OID 95219)
+-- TOC entry 2198 (class 2604 OID 97690)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -808,7 +762,7 @@ ALTER TABLE ONLY route ALTER COLUMN id SET DEFAULT nextval('route_id_seq'::regcl
 
 
 --
--- TOC entry 2208 (class 2604 OID 95220)
+-- TOC entry 2200 (class 2604 OID 97691)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -816,7 +770,7 @@ ALTER TABLE ONLY template ALTER COLUMN id SET DEFAULT nextval('template_id_seq':
 
 
 --
--- TOC entry 2210 (class 2604 OID 95221)
+-- TOC entry 2202 (class 2604 OID 97692)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -824,7 +778,7 @@ ALTER TABLE ONLY "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq'::regcl
 
 
 --
--- TOC entry 2211 (class 2604 OID 95222)
+-- TOC entry 2203 (class 2604 OID 97693)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -832,7 +786,7 @@ ALTER TABLE ONLY user_group ALTER COLUMN id SET DEFAULT nextval('user_group_id_s
 
 
 --
--- TOC entry 2217 (class 2606 OID 95224)
+-- TOC entry 2209 (class 2606 OID 97695)
 -- Name: content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -841,7 +795,7 @@ ALTER TABLE ONLY content_type
 
 
 --
--- TOC entry 2219 (class 2606 OID 95226)
+-- TOC entry 2211 (class 2606 OID 97697)
 -- Name: data_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -850,7 +804,7 @@ ALTER TABLE ONLY data_type
 
 
 --
--- TOC entry 2213 (class 2606 OID 95228)
+-- TOC entry 2205 (class 2606 OID 97699)
 -- Name: document_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -859,7 +813,7 @@ ALTER TABLE ONLY content
 
 
 --
--- TOC entry 2221 (class 2606 OID 95230)
+-- TOC entry 2213 (class 2606 OID 97701)
 -- Name: node_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -868,7 +822,7 @@ ALTER TABLE ONLY node
 
 
 --
--- TOC entry 2223 (class 2606 OID 95232)
+-- TOC entry 2215 (class 2606 OID 97703)
 -- Name: permission_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -877,7 +831,7 @@ ALTER TABLE ONLY permission
 
 
 --
--- TOC entry 2226 (class 2606 OID 95234)
+-- TOC entry 2218 (class 2606 OID 97705)
 -- Name: template_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -886,7 +840,7 @@ ALTER TABLE ONLY template
 
 
 --
--- TOC entry 2228 (class 2606 OID 95236)
+-- TOC entry 2220 (class 2606 OID 97707)
 -- Name: user_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -895,7 +849,7 @@ ALTER TABLE ONLY "user"
 
 
 --
--- TOC entry 2230 (class 2606 OID 95238)
+-- TOC entry 2222 (class 2606 OID 97709)
 -- Name: user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -904,7 +858,7 @@ ALTER TABLE ONLY "user"
 
 
 --
--- TOC entry 2214 (class 1259 OID 95239)
+-- TOC entry 2206 (class 1259 OID 97710)
 -- Name: idxgin; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -912,7 +866,7 @@ CREATE INDEX idxgin ON content USING gin (meta);
 
 
 --
--- TOC entry 2215 (class 1259 OID 95240)
+-- TOC entry 2207 (class 1259 OID 97711)
 -- Name: idxgintags; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -920,7 +874,7 @@ CREATE INDEX idxgintags ON content USING gin (((meta -> 'template_node_id'::text
 
 
 --
--- TOC entry 2224 (class 1259 OID 95241)
+-- TOC entry 2216 (class 1259 OID 97712)
 -- Name: template_partial_template_node_ids_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -928,7 +882,7 @@ CREATE INDEX template_partial_template_node_ids_idx ON template USING gin (parti
 
 
 --
--- TOC entry 2346 (class 0 OID 0)
+-- TOC entry 2338 (class 0 OID 0)
 -- Dependencies: 6
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
@@ -939,12 +893,11 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2015-03-24 12:21:21
+-- Completed on 2015-03-26 03:32:28
 
 --
 -- PostgreSQL database dump complete
 --
-
 `
 
 var DbCreateScriptDDL string = `--
@@ -953,7 +906,7 @@ var DbCreateScriptDDL string = `--
 
 -- Dumped from database version 9.4beta3
 -- Dumped by pg_dump version 9.4beta3
--- Started on 2015-03-24 12:22:06
+-- Started on 2015-03-26 03:33:10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -965,7 +918,7 @@ SET client_min_messages = warning;
 SET search_path = public, pg_catalog;
 
 --
--- TOC entry 2340 (class 0 OID 95095)
+-- TOC entry 2332 (class 0 OID 97566)
 -- Dependencies: 172
 -- Data for Name: content; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -995,7 +948,7 @@ INSERT INTO content (id, node_id, content_type_node_id, meta, public_access) VAL
 
 
 --
--- TOC entry 2371 (class 0 OID 0)
+-- TOC entry 2361 (class 0 OID 0)
 -- Dependencies: 173
 -- Name: content_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1004,7 +957,7 @@ SELECT pg_catalog.setval('content_id_seq', 22, true);
 
 
 --
--- TOC entry 2342 (class 0 OID 95103)
+-- TOC entry 2334 (class 0 OID 97574)
 -- Dependencies: 174
 -- Data for Name: content_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1021,7 +974,7 @@ INSERT INTO content_type (id, node_id, alias, description, icon, thumbnail, pare
 
 
 --
--- TOC entry 2372 (class 0 OID 0)
+-- TOC entry 2362 (class 0 OID 0)
 -- Dependencies: 175
 -- Name: content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1030,7 +983,7 @@ SELECT pg_catalog.setval('content_type_id_seq', 9, true);
 
 
 --
--- TOC entry 2344 (class 0 OID 95111)
+-- TOC entry 2336 (class 0 OID 97582)
 -- Dependencies: 176
 -- Data for Name: data_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1096,7 +1049,7 @@ INSERT INTO data_type (id, node_id, html, alias) VALUES (17, 18, '<div><label><i
 
 
 --
--- TOC entry 2373 (class 0 OID 0)
+-- TOC entry 2363 (class 0 OID 0)
 -- Dependencies: 177
 -- Name: data_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1105,7 +1058,7 @@ SELECT pg_catalog.setval('data_type_id_seq', 18, true);
 
 
 --
--- TOC entry 2346 (class 0 OID 95119)
+-- TOC entry 2338 (class 0 OID 97590)
 -- Dependencies: 178
 -- Data for Name: domain; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1113,7 +1066,7 @@ SELECT pg_catalog.setval('data_type_id_seq', 18, true);
 
 
 --
--- TOC entry 2374 (class 0 OID 0)
+-- TOC entry 2364 (class 0 OID 0)
 -- Dependencies: 179
 -- Name: domain_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1122,35 +1075,17 @@ SELECT pg_catalog.setval('domain_id_seq', 1, true);
 
 
 --
--- TOC entry 2348 (class 0 OID 95127)
+-- TOC entry 2340 (class 0 OID 97598)
 -- Dependencies: 180
 -- Data for Name: member; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO member (id, username, password, email, meta, created_date, updated_date, login_date, accessed_date, status, sid, member_type_node_id, group_ids) VALUES (1, 'default_member', '$2a$10$f9qZyhrTnjirqK53kY3jRu93AgSXUryUZwwFhOFxhh1R9t7LgHRGa', 'default_member@mail.com', '{"comments": "default user comments"}', '2015-01-22 14:25:38.904', NULL, '2015-03-17 11:52:55.345', NULL, 1, 'LVWNOSHTKQ6CMNF3SMXLBVWPH7N6TOWCYNRER2L64O2J23Y4K2MQ', 20, '{1}');
+INSERT INTO member (id, username, password, email, meta, created_date, updated_date, login_date, accessed_date, status, sid, member_type_node_id, member_group_node_ids) VALUES (1, 'default_member', '$2a$10$f9qZyhrTnjirqK53kY3jRu93AgSXUryUZwwFhOFxhh1R9t7LgHRGa', 'default_member@mail.com', '{"comments": "default user comments"}', '2015-01-22 14:25:38.904', NULL, '2015-03-26 01:45:42.32', NULL, 1, 'Z534HRHWIMQ2LPEF62VVEMLZVOJJ3RNB2RIGHBJXS524FKIFVDAA', 20, '{68}');
 
 
 --
--- TOC entry 2349 (class 0 OID 95135)
+-- TOC entry 2365 (class 0 OID 0)
 -- Dependencies: 181
--- Data for Name: member_group; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO member_group (id, name, description) VALUES (1, 'authenticated_member', 'All logged in members');
-
-
---
--- TOC entry 2375 (class 0 OID 0)
--- Dependencies: 182
--- Name: member_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('member_group_id_seq', 1, true);
-
-
---
--- TOC entry 2376 (class 0 OID 0)
--- Dependencies: 183
 -- Name: member_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1158,8 +1093,8 @@ SELECT pg_catalog.setval('member_id_seq', 1, true);
 
 
 --
--- TOC entry 2352 (class 0 OID 95145)
--- Dependencies: 184
+-- TOC entry 2342 (class 0 OID 97616)
+-- Dependencies: 182
 -- Data for Name: member_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1167,8 +1102,8 @@ INSERT INTO member_type (id, node_id, alias, description, icon, parent_member_ty
 
 
 --
--- TOC entry 2377 (class 0 OID 0)
--- Dependencies: 185
+-- TOC entry 2366 (class 0 OID 0)
+-- Dependencies: 183
 -- Name: member_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1176,8 +1111,8 @@ SELECT pg_catalog.setval('member_type_id_seq', 1, true);
 
 
 --
--- TOC entry 2354 (class 0 OID 95153)
--- Dependencies: 186
+-- TOC entry 2344 (class 0 OID 97624)
+-- Dependencies: 184
 -- Data for Name: menu_link; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1194,20 +1129,21 @@ INSERT INTO menu_link (id, path, name, parent_id, route_id, icon, atts, type, me
 INSERT INTO menu_link (id, path, name, parent_id, route_id, icon, atts, type, menu, permissions) VALUES (11, '6.11', 'Stylesheets', 5, 15, 'fa fa-desktop fa-fw', NULL, 1, 'main', '{stylesheets_section}');
 INSERT INTO menu_link (id, path, name, parent_id, route_id, icon, atts, type, menu, permissions) VALUES (12, '5.12', 'Member Types', 4, 30, 'fa fa-smile-o fa-fw', NULL, 1, 'main', '{member_types_section}');
 INSERT INTO menu_link (id, path, name, parent_id, route_id, icon, atts, type, menu, permissions) VALUES (13, '5.13', 'Member Groups', 4, 33, 'fa fa-smile-o fa-fw', NULL, 1, 'main', '{member_groups_section}');
+INSERT INTO menu_link (id, path, name, parent_id, route_id, icon, atts, type, menu, permissions) VALUES (14, '3.14', 'User Groups', 3, 38, 'fa fa-smile-o fa-fw', NULL, 1, 'main', '{user_groups_section}');
 
 
 --
--- TOC entry 2378 (class 0 OID 0)
--- Dependencies: 187
+-- TOC entry 2367 (class 0 OID 0)
+-- Dependencies: 185
 -- Name: menu_link_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('menu_link_id_seq', 13, true);
+SELECT pg_catalog.setval('menu_link_id_seq', 14, true);
 
 
 --
--- TOC entry 2356 (class 0 OID 95161)
--- Dependencies: 188
+-- TOC entry 2346 (class 0 OID 97632)
+-- Dependencies: 186
 -- Data for Name: node; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1279,20 +1215,21 @@ INSERT INTO node (id, path, name, node_type, created_by, created_date, parent_id
 INSERT INTO node (id, path, name, node_type, created_by, created_date, parent_id, user_permissions, user_group_permissions) VALUES (29, '1.21.29', 'Unauthorized', 3, 1, '2014-10-22 16:51:00.215', 21, NULL, NULL);
 INSERT INTO node (id, path, name, node_type, created_by, created_date, parent_id, user_permissions, user_group_permissions) VALUES (67, '1.42.67', 'Login', 1, 1, '2015-03-12 20:49:09.637', 42, NULL, NULL);
 INSERT INTO node (id, path, name, node_type, created_by, created_date, parent_id, user_permissions, user_group_permissions) VALUES (68, '1.68', 'Login Widget', 3, 1, '2015-03-13 10:53:45.924', 1, NULL, NULL);
+INSERT INTO node (id, path, name, node_type, created_by, created_date, parent_id, user_permissions, user_group_permissions) VALUES (69, '1.69', 'authenticated_member', 13, 1, '2015-03-25 14:48:02.682', 1, NULL, NULL);
 
 
 --
--- TOC entry 2379 (class 0 OID 0)
--- Dependencies: 189
+-- TOC entry 2368 (class 0 OID 0)
+-- Dependencies: 187
 -- Name: node_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('node_id_seq', 68, true);
+SELECT pg_catalog.setval('node_id_seq', 69, true);
 
 
 --
--- TOC entry 2358 (class 0 OID 95170)
--- Dependencies: 190
+-- TOC entry 2348 (class 0 OID 97641)
+-- Dependencies: 188
 -- Data for Name: permission; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1398,8 +1335,8 @@ INSERT INTO permission (name) VALUES ('data_types_browse');
 
 
 --
--- TOC entry 2359 (class 0 OID 95176)
--- Dependencies: 191
+-- TOC entry 2349 (class 0 OID 97647)
+-- Dependencies: 189
 -- Data for Name: route; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1435,23 +1372,28 @@ INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALU
 INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (30, 'members.memberTypes', 'memberTypes', 4, '/member-type', '[{"single": "public/views/members/member-type/index.html"}]', false);
 INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (31, 'members.memberTypes.edit', 'edit', 30, '/edit/:nodeId', '[{"single": "public/views/members/member-type/edit.html"}]', false);
 INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (32, 'members.memberTypes.new', 'new', 30, '/new?type&parent', '[{"single": "public/views/members/member-type/new.html"}]', false);
-INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (33, 'members.memberGroups', 'memberTypes', 4, '/member-group', '[{"single": "public/views/members/member-group/index.html"}]', false);
-INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (34, 'members.memberGroups.edit', 'edit', 33, '/edit/:id', '[{"single": "public/views/members/member-group/edit.html"}]', false);
-INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (35, 'members.memberGroups.new', 'new', 33, '/new?type&parent', '[{"single": "public/views/members/member-group/new.html"}]', false);
+INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (33, 'members.memberGroups', 'memberGroups', 4, '/member-group', '[{"single": "public/views/members/member-group/index.html"}]', false);
+INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (34, 'members.memberGroups.edit', 'edit', 33, '/edit/:nodeId', '[{"single": "public/views/members/member-group/edit.html"}]', false);
+INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (36, 'users.new', 'new', 3, '/new', '[{"single": "public/views/users/new.html"}]', false);
+INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (37, 'users.edit', 'edit', 3, '/edit/:id', '[{"single": "public/views/users/edit.html"}]', false);
+INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (38, 'users.userGroups', 'userGroups', 3, '/user-group', '[{"single": "public/views/users/user-group/index.html"}]', false);
+INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (40, 'users.userGroups.new', 'new', 38, '/new', '[{"single": "public/views/users/user-group/new.html"}]', false);
+INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (35, 'members.memberGroups.new', 'new', 33, '/new', '[{"single": "public/views/members/member-group/new.html"}]', false);
+INSERT INTO route (id, path, name, parent_id, url, components, is_abstract) VALUES (39, 'users.userGroups.edit', 'edit', 38, '/edit/:id', '[{"single": "public/views/users/user-group/edit.html"}]', false);
 
 
 --
--- TOC entry 2380 (class 0 OID 0)
--- Dependencies: 192
+-- TOC entry 2369 (class 0 OID 0)
+-- Dependencies: 190
 -- Name: route_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('route_id_seq', 35, true);
+SELECT pg_catalog.setval('route_id_seq', 40, true);
 
 
 --
--- TOC entry 2361 (class 0 OID 95184)
--- Dependencies: 193
+-- TOC entry 2351 (class 0 OID 97655)
+-- Dependencies: 191
 -- Data for Name: template; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1475,8 +1417,8 @@ INSERT INTO template (id, node_id, alias, is_partial, partial_template_node_ids,
 
 
 --
--- TOC entry 2381 (class 0 OID 0)
--- Dependencies: 194
+-- TOC entry 2370 (class 0 OID 0)
+-- Dependencies: 192
 -- Name: template_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1484,28 +1426,28 @@ SELECT pg_catalog.setval('template_id_seq', 17, true);
 
 
 --
--- TOC entry 2363 (class 0 OID 95193)
--- Dependencies: 195
+-- TOC entry 2353 (class 0 OID 97664)
+-- Dependencies: 193
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO "user" (id, username, first_name, last_name, password, email, created_date, updated_date, login_date, accessed_date, status, sid, user_group_ids, permissions) VALUES (1, '%s', 'Admin', 'Demo', '%s', '%s', '2014-11-15 16:51:00.215', NULL, '2015-03-24 02:29:39.894', NULL, 1, 'SBZJXRY35B23EYX3WSM2IA6GTUOG7OIRYUPBV2MQCIGHV4ROZRIA', '{1}', NULL);
+INSERT INTO "user" (id, username, first_name, last_name, password, email, created_date, updated_date, login_date, accessed_date, status, sid, user_group_ids, permissions) VALUES (1, '%s', 'Admin', 'Demo', '%s', '%s', '2014-11-15 16:51:00.215', NULL, '2015-03-26 03:20:53.991', NULL, 1, 'ZLNZZD6KAFP2MX3ZB7S6DD3PDHIOSGVYNEUKKQW6W6GTTBTFH5XQ', '{1}', NULL);
 
 
 --
--- TOC entry 2364 (class 0 OID 95200)
--- Dependencies: 196
+-- TOC entry 2354 (class 0 OID 97671)
+-- Dependencies: 194
 -- Data for Name: user_group; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 INSERT INTO user_group (id, name, alias, permissions) VALUES (1, 'Administrator', 'administrator', '{node_create,node_delete,node_update,node_move,node_copy,node_public_access,node_permissions,node_send_to_publish,node_publish,node_browse,node_change_content_type,admin,content_all,content_create,content_delete,content_update,content_section,content_browse,media_all,media_create,media_delete,media_update,media_section,media_browse,users_all,users_create,users_delete,users_update,users_section,users_browse,user_types_all,user_types_create,user_types_delete,user_types_update,user_types_section,user_types_browse,user_groups_all,user_groups_create,user_groups_delete,user_groups_update,user_groups_section,user_groups_browse,members_all,members_create,members_delete,members_update,members_section,members_browse,member_types_all,member_types_create,member_types_delete,member_types_update,member_types_section,member_types_browse,member_groups_all,member_groups_create,member_groups_delete,member_groups_update,member_groups_section,member_groups_browse,templates_all,templates_create,templates_delete,templates_update,templates_section,templates_browse,scripts_all,scripts_create,scripts_delete,scripts_update,scripts_section,scripts_browse,stylesheets_all,stylesheets_create,stylesheets_delete,stylesheets_update,stylesheets_section,stylesheets_browse,settings_section,settings_all,node_sort,content_types_all,content_types_create,content_types_delete,content_types_update,content_types_section,content_types_browse,media_types_all,media_types_create,media_types_delete,media_types_update,media_types_section,media_types_browse,data_types_all,data_types_create,data_types_delete,data_types_update,data_types_section,data_types_browse}');
-INSERT INTO user_group (id, name, alias, permissions) VALUES (2, 'Editor', 'editor', NULL);
-INSERT INTO user_group (id, name, alias, permissions) VALUES (3, 'Writer', 'writer', NULL);
+INSERT INTO user_group (id, name, alias, permissions) VALUES (2, 'Editor', 'editor', '{}');
+INSERT INTO user_group (id, name, alias, permissions) VALUES (3, 'Writer', 'writer', '{}');
 
 
 --
--- TOC entry 2382 (class 0 OID 0)
--- Dependencies: 197
+-- TOC entry 2371 (class 0 OID 0)
+-- Dependencies: 195
 -- Name: user_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1513,18 +1455,17 @@ SELECT pg_catalog.setval('user_group_id_seq', 3, true);
 
 
 --
--- TOC entry 2383 (class 0 OID 0)
--- Dependencies: 198
+-- TOC entry 2372 (class 0 OID 0)
+-- Dependencies: 196
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('user_id_seq', 1, true);
 
 
--- Completed on 2015-03-24 12:22:06
+-- Completed on 2015-03-26 03:33:10
 
 --
 -- PostgreSQL database dump complete
 --
-
 `

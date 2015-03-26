@@ -13,7 +13,7 @@ nodeServices.factory('NodeChildren', ['$resource',
 nodeServices.factory('Node', ['$resource',
     function($resource) {
         //return $resource('/api/node/node-type', {nodeTypeId: "@nodeTypeId", levels: "@levels"}, {
-        return $resource('/api/node', {}, {
+        return $resource('/api/node/:id', {}, {
             //query: { method: 'GET', isArray: true },
             update: { method: 'PUT', isArray: false },
             create: { method: 'POST', isArray: false }
