@@ -22,20 +22,30 @@ import (
 
 type ContentTypeApiController struct {}
 
-func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
+func (this *ContentTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
-    contentType := models.ContentType{}
+    contentTypes := models.GetContentTypes()
+    res, err := json.Marshal(contentTypes)
+    corehelpers.PanicIf(err)
 
-    err := json.NewDecoder(r.Body).Decode(&contentType)
-
-    if err != nil {
-        http.Error(w, "Bad Request", 400)
-    }
-
-    contentType.Post()
-
+    fmt.Fprintf(w,"%s",res)
 }
+
+// func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
+//     w.Header().Set("Content-Type", "application/json")
+
+//     contentType := models.ContentType{}
+
+//     err := json.NewDecoder(r.Body).Decode(&contentType)
+
+//     if err != nil {
+//         http.Error(w, "Bad Request", 400)
+//     }
+
+//     contentType.Post()
+
+// }
 
 // func (this *ContentTypeApiController) GetContentTypes(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Content-Type", "application/json")
@@ -49,27 +59,27 @@ func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Reques
 
 // }
 
-// func (this *ContentTypeApiController) GetContentTypeExtendedByNodeId(w http.ResponseWriter, r *http.Request) {
+// func (this *ContentTypeApiController) GetContentTypeExtendedById(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Content-Type", "application/json")
 
-//     var nodeIdStr string = ""
-//     nodeIdStr = r.URL.Query().Get(":nodeId")
+//     var idStr string = ""
+//     idStr = r.URL.Query().Get(":id")
 
-//     nodeId, _ := strconv.Atoi(nodeIdStr)
-//     content := models.GetContentTypeExtendedByNodeId(nodeId)
+//     id, _ := strconv.Atoi(idStr)
+//     content := models.GetContentTypeExtendedById(id)
 //     res, err := json.Marshal(content)
 //     corehelpers.PanicIf(err)
 
 //     fmt.Fprintf(w,"%s",res)
 // }
 
-func (this *ContentTypeApiController) GetContentTypeByNodeId(w http.ResponseWriter, r *http.Request) {
+func (this *ContentTypeApiController) GetById(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
     params := mux.Vars(r)
-    idStr := params["nodeId"]
+    idStr := params["id"]
 
-    nodeId, _ := strconv.Atoi(idStr)
+    id, _ := strconv.Atoi(idStr)
 
     var extended bool = false
     extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
@@ -77,13 +87,13 @@ func (this *ContentTypeApiController) GetContentTypeByNodeId(w http.ResponseWrit
     //extended, _ := strconv.Atoi(extendedStr)
 
     if(!extended){
-        content := models.GetContentTypeByNodeId(nodeId)
+        content := models.GetContentTypeById(id)
         res, err := json.Marshal(content)
         corehelpers.PanicIf(err)
 
         fmt.Fprintf(w,"%s",res)
     } else {
-        content := models.GetContentTypeExtendedByNodeId(nodeId)
+        content := models.GetContentTypeExtendedById(id)
         res, err := json.Marshal(content)
         corehelpers.PanicIf(err)
 
@@ -93,17 +103,17 @@ func (this *ContentTypeApiController) GetContentTypeByNodeId(w http.ResponseWrit
     
 }
 
-// func (this *ContentTypeApiController) GetContentTypeByNodeId(w http.ResponseWriter, r *http.Request) {
+// func (this *ContentTypeApiController) GetContentTypeById(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Content-Type", "application/json")
 
-//     var nodeIdStr string = ""
-//     nodeIdStr = r.URL.Query().Get(":nodeId")
+//     var idStr string = ""
+//     idStr = r.URL.Query().Get(":id")
     
 
-//     if(len(nodeIdStr)>0){
+//     if(len(idStr)>0){
 //         fmt.Println("lol1")
-//         nodeId, _ := strconv.Atoi(nodeIdStr)
-//         content := models.GetContentTypeByNodeId(nodeId)
+//         id, _ := strconv.Atoi(idStr)
+//         content := models.GetContentTypeById(id)
 //         res, err := json.Marshal(content)
 //         corehelpers.PanicIf(err)
 
@@ -118,23 +128,23 @@ func (this *ContentTypeApiController) GetContentTypeByNodeId(w http.ResponseWrit
 //     }
 // }
 
-func (this *ContentTypeApiController) PutContentType(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+// func (this *ContentTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
+//     w.Header().Set("Content-Type", "application/json")
 
-    contentType := models.ContentType{}
+//     contentType := models.ContentType{}
 
-    err := json.NewDecoder(r.Body).Decode(&contentType)
+//     err := json.NewDecoder(r.Body).Decode(&contentType)
 
-    if err != nil {
-        http.Error(w, "Bad Request", 400)
-    }
+//     if err != nil {
+//         http.Error(w, "Bad Request", 400)
+//     }
 
-    // b, err := json.Marshal(contentType)
-    // if err != nil {
-    //     fmt.Println(err)
-    //     return
-    // }
+//     // b, err := json.Marshal(contentType)
+//     // if err != nil {
+//     //     fmt.Println(err)
+//     //     return
+//     // }
     
 
-    contentType.Update()
-}
+//     contentType.Update()
+// }

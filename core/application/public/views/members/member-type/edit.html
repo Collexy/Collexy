@@ -2,7 +2,7 @@
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
-        <input type="text" ng-model="node.node.name">
+        <input type="text" ng-model="entity.name">
 
         <ul class="admin-tabs">
             <li ng-class="(currentTab=='member-type') ? 'active' : ''"><a href="#member-type" ng-click="toggleTab('member-type')">Member Type</a></li>
@@ -13,23 +13,23 @@
             <table>
                 <tr>
                     <td>Alias</td>
-                    <td><input type="text" ng-model="node.alias"></td>
+                    <td><input type="text" ng-model="entity.alias"></td>
                     <td>Overrides site title if entered bla bla bla</td>
                 </tr>
                 <tr>
                     <td>Icon</td>
-                    <td><input type="text" ng-model="node.icon"></td>
+                    <td><input type="text" ng-model="entity.icon"></td>
                     <td>Icon</td>
                 </tr>
                 <tr>
                     <td>Description</td>
-                    <td><textarea ng-model="node.description"></textarea></td>
+                    <td><textarea ng-model="entity.description"></textarea></td>
                     <td>Notes about the content type1.</td>
                 </tr>
                 <!-- <tr>
                     <td>Allowed templates</td>
                     <td>
-                        <div ng-repeat="tmpl in allTemplates"><label><input type="checkbox" checklist-model="node.meta.allowed_templates_node_id" checklist-value="tmpl.id"></label> {{tmpl.name}}</div>
+                        <div ng-repeat="tmpl in allTemplates"><label><input type="checkbox" checklist-model="entity.meta.allowed_templates_id" checklist-value="tmpl.id"></label> {{tmpl.name}}</div>
                         <br>
                           <button ng-click="checkAll()">check all</button>
                           <button ng-click="uncheckAll()">uncheck all</button>
@@ -39,7 +39,7 @@
                 <tr>
                     <td>Default template</td>
                     <td>
-                        <select ng-model="node.meta.template_node_id">
+                        <select ng-model="entity.meta.template_id">
                             <option ng-repeat="tmpl in allTemplates" value="{{tmpl.id}}">{{tmpl.name}}</option>
                         </select>
                     </td>
@@ -52,7 +52,7 @@
                 <tr>
                     <td>Allowed content types</td>
                     <td>
-                        <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" checklist-model="node.meta.allowed_content_types_node_id" checklist-value="ctype.id"></label> {{ctype.name}}</div>
+                        <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" checklist-model="entity.meta.allowed_content_types_id" checklist-value="ctype.id"></label> {{ctype.name}}</div>
                         <br>
                           <button type="button" ng-click="checkAll()">check all</button>
                           <button type="button" ng-click="uncheckAll()">uncheck all</button>
@@ -72,7 +72,7 @@
                         
                     </thead>
                     <tbody>
-                        <tr ng-repeat="tab in node.tabs">
+                        <tr ng-repeat="tab in entity.tabs">
                             <td><input type="text" ng-model="tab.name"/></td>
                             <td>
                                 <table>
@@ -89,7 +89,7 @@
                                     <tr ng-repeat="prop in tab.properties">
                                         <td><input type="text" ng-model="prop.name"></td>
                                         <td>
-                                            <select ng-model="prop.data_type_node_id" ng-options="dt.node_id as aliasOrNodeName(dt.alias,dt.node.name) for dt in allDataTypes">
+                                            <select ng-model="prop.data_type_id" ng-options="dt.id as dt.name for dt in allDataTypes">
                                                 <!-- <option ng-repeat="dt in allDataTypes" value="{{dt.node.id}}">{{dt.alias != "" && dt.alias || dt.node.name}}</option> -->
                                             </select>
                                         </td>

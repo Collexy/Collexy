@@ -48,6 +48,7 @@ func Main(){
     userGroupApiController := controllers.UserGroupApiController{}
 
     memberApiController := controllers.MemberApiController{}
+    memberGroupApiController := controllers.MemberGroupApiController{}
     memberTypeApiController := controllers.MemberTypeApiController{}
 
     angularRouteApiController := controllers.AngularRouteApiController{}
@@ -60,34 +61,33 @@ func Main(){
 	m := mux.NewRouter()
     publicApiRouter := mux.NewRouter()
 
-    m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Delete)).Methods("DELETE")
-	m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Post)).Methods("POST")
-    m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.GetBackendContentByNodeId)).Methods("GET")
-    m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.PutContent)).Methods("PUT")
-    m.HandleFunc("/api/media/{nodeId:.*}", http.HandlerFunc(contentApiController.GetBackendContentByNodeId)).Methods("GET")
+    // Content
+
+    //m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Delete)).Methods("DELETE")
+	//m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Post)).Methods("POST")
+    m.HandleFunc("/api/content/{id:.*}", http.HandlerFunc(contentApiController.GetBackendContentById)).Methods("GET")
+    //m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.PutContent)).Methods("PUT")
+    m.HandleFunc("/api/media/{id:.*}", http.HandlerFunc(contentApiController.GetBackendContentById)).Methods("GET")
 
     // m.Get("/api/content-type/extended/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.GetContentTypeExtendedByNodeId))
-    m.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.GetContentTypeByNodeId)).Methods("GET")
+    m.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.GetById)).Methods("GET")
+    m.HandleFunc("/api/content-type", http.HandlerFunc(contentTypeApiController.Get)).Methods("GET")
     //m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypeByNodeId)) // not sure about this
     //m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypes)) // not sure about this
-    m.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.PutContentType)).Methods("PUT")
-    m.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.Post)).Methods("POST")
-    // m.Put("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.PutContentType))
-    // m.Post("/api/content-type", http.HandlerFunc(contentTypeApiController.PostContentType))
-    // m.Delete("/api/content-type/nodeId", http.HandlerFunc(contentTypeApiController.DeleteContentType))
+    //m.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.PutContentType)).Methods("PUT")
+    //m.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.Post)).Methods("POST")
 
-    m.HandleFunc("/api/data-type/{nodeId:.*}", http.HandlerFunc(dataTypeApiController.GetByNodeId)).Methods("GET")
+
+    m.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.GetById)).Methods("GET")
     m.HandleFunc("/api/data-type", http.HandlerFunc(dataTypeApiController.Get)).Methods("GET") // not sure about this
-    m.HandleFunc("/api/data-type/{nodeId:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
-    m.HandleFunc("/api/data-type/{nodeId:.*}", http.HandlerFunc(dataTypeApiController.Post)).Methods("POST")
-    // m.Post("/api/data-type", http.HandlerFunc(dataTypeController.PostDataType))
-    // m.Delete("/api/data-type/nodeId", http.HandlerFunc(dataTypeController.DeleteDataType))
+    //m.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
+    //m.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Post)).Methods("POST")
 
-    m.HandleFunc("/api/template", http.HandlerFunc(templateApiController.GetTemplates)).Methods("GET") // not sure about this
-    m.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.GetTemplateByNodeId)).Methods("GET")
+    m.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
+    m.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.GetById)).Methods("GET")
     
-    m.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PutTemplate)).Methods("PUT")
-    m.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PostTemplate)).Methods("POST")
+    // m.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PutTemplate)).Methods("PUT")
+    // m.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PostTemplate)).Methods("POST")
 
     m.HandleFunc("/api/auth/{sid:.*}", http.HandlerFunc(apihelpers.AngularAuth)).Methods("GET")
     
@@ -125,8 +125,17 @@ func Main(){
     m.HandleFunc("/api/member", http.HandlerFunc(memberApiController.Get)).Methods("GET")
     m.HandleFunc("/api/member/{id:.*}", http.HandlerFunc(memberApiController.GetById)).Methods("GET")
 
+    // Member Group
+    m.HandleFunc("/api/member-group", http.HandlerFunc(memberGroupApiController.Get)).Methods("GET")
+    m.HandleFunc("/api/member-group/{id:.*}", http.HandlerFunc(memberGroupApiController.GetById)).Methods("GET")
+    m.HandleFunc("/api/member-group", http.HandlerFunc(memberGroupApiController.Post)).Methods("POST")
+    m.HandleFunc("/api/member-group/{id:.*}", http.HandlerFunc(memberGroupApiController.Put)).Methods("PUT")
+
     // Member type
-    m.HandleFunc("/api/member-type/{nodeId:.*}", http.HandlerFunc(memberTypeApiController.GetMemberTypeByNodeId)).Methods("GET")
+    m.HandleFunc("/api/member-type", http.HandlerFunc(memberTypeApiController.Get)).Methods("GET")
+    m.HandleFunc("/api/member-type/{id:.*}", http.HandlerFunc(memberTypeApiController.GetById)).Methods("GET")
+    // m.HandleFunc("/api/member-type", http.HandlerFunc(memberTypeApiController.Post)).Methods("POST")
+    // m.HandleFunc("/api/member-type/{id:.*}", http.HandlerFunc(memberTypeApiController.Put)).Methods("PUT")
 
     m.HandleFunc("/api/angular-route", http.HandlerFunc(angularRouteApiController.Get)).Methods("GET")
     m.HandleFunc("/api/route", http.HandlerFunc(routeApiController.Get)).Methods("GET")

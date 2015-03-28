@@ -84,7 +84,7 @@ func GetNodes(queryStringParams url.Values, user *User) (nodes []Node){
   if(queryStringParams.Get("node-type")=="1" || queryStringParams.Get("node-type")=="2"){
     sqlStr = `SELECT node.id, node.path, node.created_by, node.name, node.node_type, node.created_date, node.user_permissions, node.user_group_permissions, content_type.icon as content_type_icon FROM node
      JOIN content ON node.id = content.node_id
-     JOIN content_type ON content.content_type_node_id = content_type.node_id`
+     JOIN content_type ON content.content_type_node_id = content_type.id`
   } else {
     sqlStr = `SELECT node.id, node.path, node.created_by, node.name, node.node_type, node.created_date, node.user_permissions, node.user_group_permissions FROM node`
   }

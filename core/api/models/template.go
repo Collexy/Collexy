@@ -20,115 +20,218 @@ import (
 )
 
 type Template struct {
-  Id int `json:"id,omitempty"`
-  NodeId int `json:"node_id,omitempty"`
-  Alias string `json:"alias,omitempty"`
-  ParentTemplateNodeId int `json:"parent_template_node_id,omitempty"`
-  Html string `json:"html,omitempty"`
-  PartialTemplates []Template `json:"partial_templates,omitempty"`
-  PartialTemplateNodes []Node `json:"partial_template_nodes,omitempty"`
-  PartialTemplateNodeIds IntArray `json:"partial_template_node_ids,omitempty"`
+  Id int `json:"id"`
+  Path string `json:"path"`
+  ParentId int `json:"parent_id,omitempty"`
+  Name string `json:"name"`
+  Alias string `json:"alias"`
+  CreatedBy int `json:"created_by"`
+  CreatedDate *time.Time `json:"created_date"`
   IsPartial bool `json:"is_partial,omitempty"`
-  Node *Node `json:"node,omitempty"`
+  Html string `json:"html,omitempty"`
+  ParentTemplates []*Template `json:"parent_templates,omitempty"`
 }
 
-func (t *Template) Post(){
-  tm, err := json.Marshal(t)
-  corehelpers.PanicIf(err)
-  fmt.Println("tm:::: ")
-  fmt.Println(string(tm))
-  db := coreglobals.Db
+func GetTemplates() (templates []*Template){
+    db := coreglobals.Db
 
-  tx, err := db.Begin()
-  corehelpers.PanicIf(err)
-  //defer tx.Rollback()
-  var parentNode Node
-  var id, created_by, node_type int
-  var path, name string
+    rows, err := db.Query(`SELECT id, path, parent_id, name, alias, created_by, created_date, is_partial 
+        FROM template`)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var id, created_by int
+        var path, name, alias string
+        var created_date time.Time
+        var parent_id sql.NullInt64
+        var is_partial bool
+
+        if err := rows.Scan(&id,&path,&parent_id,&name,&alias,&created_by,&created_date,&is_partial); err != nil {
+            log.Fatal(err)
+        }
+
+        var pid int
+
+        if parent_id.Valid {
+            pid = int(parent_id.Int64)
+        }
+
+        template := &Template{id,path,pid,name,alias,created_by,&created_date,is_partial,"",nil}
+        templates = append(templates, template)
+    }
+    if err := rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+    return
+}
+
+
+func GetTemplateById(id int) (template Template){
+
+  db := coreglobals.Db
+  querystr := `SELECT path, parent_id, name, alias, created_by, created_date, is_partial, 
+    ffgd.parent_templates
+FROM template as my_template,
+LATERAL 
+(
+    SELECT array_to_json(array_agg(template)) as parent_templates
+    from template
+    where path @> subpath(my_template.path,0,nlevel(my_template.path)-1)
+    order by my_template.path asc
+) ffgd
+where my_template.id=$1`
+
+  // node
+  var created_by int
+  var path, name, alias string
   var created_date *time.Time
-  err = tx.QueryRow(`SELECT id, path, created_by, name, node_type, created_date FROM node WHERE id=$1`, t.ParentTemplateNodeId).Scan(&id, &path, &created_by, &name, &node_type, &created_date)
+  var is_partial bool
+  var parent_templates []byte
+  var parent_id sql.NullInt64
+
+
+  row := db.QueryRow(querystr, id)
+
+  err:= row.Scan(
+      &path,&parent_id,&name,&alias,&created_by,&created_date,&is_partial,&parent_templates)
+
+  var pid int
+
+  if parent_id.Valid {
+    // use s.String
+    pid = int(parent_id.Int64)
+  } else {
+     // NULL value
+  }
+  
+  tplName := name + ".tmpl"
+  //absPath, _ := filepath.Abs("/views/" + name)
+  absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + tplName)
+  //fmt.Println("FILEPATH:: " + absPath)
+  
+  bs, err7 := ioutil.ReadFile(absPath)
+  corehelpers.PanicIf(err7)
+  str := string(bs)
+
+  //var tplSlice []Template
+  var parentTemplatesSlice []Node
+
+  //json.Unmarshal(template_partial_templates, &tplSlice)
+  json.Unmarshal(parent_templates, &parentTemplatesSlice)
+
   switch {
     case err == sql.ErrNoRows:
-      log.Printf("No user with that ID.")
+      log.Printf("No template with that ID.")
     case err != nil:
       log.Fatal(err)
     default:
-      parentNode = Node{id, path, created_by, name, node_type, created_date, 0, nil,nil, false, "", nil, nil, ""}
-      //fmt.Printf("Username is %s\n", username)
+      template = Template{id,path,pid,name,alias,created_by,created_date,is_partial,str,nil}
   }
 
-  // http://godoc.org/github.com/lib/pq
-  // pq does not support the LastInsertId() method of the Result type in database/sql. 
-  // To return the identifier of an INSERT (or UPDATE or DELETE), 
-  // use the Postgres RETURNING clause with a standard Query or QueryRow call:
-  
-  var node_id int64
-  err = db.QueryRow(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`, t.Node.Name, 3, 1, t.ParentTemplateNodeId).Scan(&node_id)
-  //res, err := tx.Exec(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4)`, t.Node.Name, 3, 1, t.ParentTemplateNodeId)
-  //helpers.PanicIf(err)
-  //node_id, err := res.LastInsertId()
-  fmt.Println(strconv.FormatInt(node_id, 10))
-  if err != nil {
-    //log.Println(string(res))
-    log.Fatal(err.Error())
-  } else {
-    _, err = tx.Exec("UPDATE node SET path=$1 WHERE id=$2", parentNode.Path + "." + strconv.FormatInt(node_id, 10), node_id)
-    corehelpers.PanicIf(err)
-    //println("LastInsertId:", node_id)
-  }
-  //defer r1.Close()
-
-  _, err = tx.Exec("INSERT INTO template (node_id, alias, is_partial, partial_template_node_ids, parent_template_node_id) VALUES ($1, $2, $3, $4, $5)", node_id, t.Alias, false, t.PartialTemplateNodeIds, t.ParentTemplateNodeId)
-  corehelpers.PanicIf(err)
-  //defer r2.Close()
-  err1 := tx.Commit()
-  corehelpers.PanicIf(err1)
-
-  tplNodeName := t.Node.Name + ".tmpl"
-  //absPath, _ := filepath.Abs("/views/" + tplNodeName)
-  absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + tplNodeName)
-  
-  // write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
-  createTemplateErr := ioutil.WriteFile(absPath, []byte(t.Html), 0644)
-  if createTemplateErr != nil {
-      panic(createTemplateErr)
-  }
+  return
 }
 
 
-func (t *Template) Update(){
-  db := coreglobals.Db
+// func (t *Template) Post(){
+//   tm, err := json.Marshal(t)
+//   corehelpers.PanicIf(err)
+//   fmt.Println("tm:::: ")
+//   fmt.Println(string(tm))
+//   db := coreglobals.Db
 
-  tx, err := db.Begin()
-  corehelpers.PanicIf(err)
-  //defer tx.Rollback()
+//   tx, err := db.Begin()
+//   corehelpers.PanicIf(err)
+//   //defer tx.Rollback()
+//   var parentNode Node
+//   var id, created_by, node_type int
+//   var path, name string
+//   var created_date *time.Time
+//   err = tx.QueryRow(`SELECT id, path, created_by, name, node_type, created_date FROM node WHERE id=$1`, t.ParentTemplateId).Scan(&id, &path, &created_by, &name, &node_type, &created_date)
+//   switch {
+//     case err == sql.ErrNoRows:
+//       log.Printf("No user with that ID.")
+//     case err != nil:
+//       log.Fatal(err)
+//     default:
+//       parentNode = Node{id, path, created_by, name, node_type, created_date, 0, nil,nil, false, "", nil, nil, ""}
+//       //fmt.Printf("Username is %s\n", username)
+//   }
 
-  _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", t.Node.Name, t.Node.Id)
-  corehelpers.PanicIf(err)
-  //defer r1.Close()
+//   // http://godoc.org/github.com/lib/pq
+//   // pq does not support the LastInsertId() method of the Result type in database/sql. 
+//   // To return the identifier of an INSERT (or UPDATE or DELETE), 
+//   // use the Postgres RETURNING clause with a standard Query or QueryRow call:
+  
+//   var node_id int64
+//   err = db.QueryRow(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`, t.Node.Name, 3, 1, t.ParentTemplateId).Scan(&node_id)
+//   //res, err := tx.Exec(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4)`, t.Node.Name, 3, 1, t.ParentTemplateId)
+//   //helpers.PanicIf(err)
+//   //node_id, err := res.LastInsertId()
+//   fmt.Println(strconv.FormatInt(node_id, 10))
+//   if err != nil {
+//     //log.Println(string(res))
+//     log.Fatal(err.Error())
+//   } else {
+//     _, err = tx.Exec("UPDATE node SET path=$1 WHERE id=$2", parentNode.Path + "." + strconv.FormatInt(node_id, 10), node_id)
+//     corehelpers.PanicIf(err)
+//     //println("LastInsertId:", node_id)
+//   }
+//   //defer r1.Close()
 
-  fmt.Println("partial template node ids (array): ")
-  fmt.Println(t.PartialTemplateNodeIds)
+//   _, err = tx.Exec("INSERT INTO template (node_id, alias, is_partial, partial_template_node_ids, parent_template_node_id) VALUES ($1, $2, $3, $4, $5)", node_id, t.Alias, false, t.PartialTemplateIds, t.ParentTemplateId)
+//   corehelpers.PanicIf(err)
+//   //defer r2.Close()
+//   err1 := tx.Commit()
+//   corehelpers.PanicIf(err1)
 
-  fmt.Println("partial template node ids (postgres format): ")
-  partial_template_node_ids_pgs_format, _ := t.PartialTemplateNodeIds.Value()
-  fmt.Println(partial_template_node_ids_pgs_format)
+//   tplNodeName := t.Node.Name + ".tmpl"
+//   //absPath, _ := filepath.Abs("/views/" + tplNodeName)
+//   absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + tplNodeName)
+  
+//   // write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
+//   createTemplateErr := ioutil.WriteFile(absPath, []byte(t.Html), 0644)
+//   if createTemplateErr != nil {
+//       panic(createTemplateErr)
+//   }
+// }
 
-  _, err = tx.Exec(`UPDATE template SET alias = $1, parent_template_node_id = $2, partial_template_node_ids = $3 WHERE node_id = $4`, t.Alias, t.ParentTemplateNodeId, partial_template_node_ids_pgs_format, t.Node.Id)
-  corehelpers.PanicIf(err)
-  //defer r2.Close()
-  err1 := tx.Commit()
-  corehelpers.PanicIf(err1)
 
-  name := t.Node.Name + ".tmpl"
-  absPath, _ := filepath.Abs("/views/" + name)
+// func (t *Template) Update(){
+//   db := coreglobals.Db
 
-  // write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
-  err = ioutil.WriteFile(absPath, []byte(t.Html), 0644)
-  if err != nil {
-      panic(err)
-  }
-}
+//   tx, err := db.Begin()
+//   corehelpers.PanicIf(err)
+//   //defer tx.Rollback()
+
+//   _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", t.Node.Name, t.Node.Id)
+//   corehelpers.PanicIf(err)
+//   //defer r1.Close()
+
+//   fmt.Println("partial template node ids (array): ")
+//   fmt.Println(t.PartialTemplateIds)
+
+//   fmt.Println("partial template node ids (postgres format): ")
+//   partial_template_node_ids_pgs_format, _ := t.PartialTemplateIds.Value()
+//   fmt.Println(partial_template_node_ids_pgs_format)
+
+//   _, err = tx.Exec(`UPDATE template SET alias = $1, parent_template_node_id = $2, partial_template_node_ids = $3 WHERE node_id = $4`, t.Alias, t.ParentTemplateId, partial_template_node_ids_pgs_format, t.Node.Id)
+//   corehelpers.PanicIf(err)
+//   //defer r2.Close()
+//   err1 := tx.Commit()
+//   corehelpers.PanicIf(err1)
+
+//   name := t.Node.Name + ".tmpl"
+//   absPath, _ := filepath.Abs("/views/" + name)
+
+//   // write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
+//   err = ioutil.WriteFile(absPath, []byte(t.Html), 0644)
+//   if err != nil {
+//       panic(err)
+//   }
+// }
 
 /*
 TODO: Fetch node for each parent template - for use in aliasOrNode in template edit controller
@@ -197,157 +300,3 @@ func (b IntArray) Value() (driver.Value, error) {
     //   return nil
 }
 
-func GetTemplates() (templates []Template) {
-  
-  db := coreglobals.Db
-
-    querystr := `SELECT 
-    node.id as node_id, node.path as node_path, node.created_by as node_created_by, node.name as node_name, node.node_type as node_type, node.created_date as node_created_date,
-  t.id as template_id, t.node_id as template_node_id, t.alias as template_alias, t.partial_template_node_ids as partial_template_node_ids, parent_template_node_id as parent_template_node_id, t.is_partial as template_is_partial 
-  FROM node 
-  JOIN template as t
-  ON t.node_id = node.id
-  WHERE node.node_type=3`
-
-  // node
-  var node_id, node_created_by, node_type int
-  var node_path, node_name string
-  var node_created_date time.Time
-
-  // data type
-  var template_id, template_node_id int
-  var template_alias, parent_template_node_id sql.NullString
-  var template_is_partial bool
-  //var partial_template_node_ids sql.NullString
-  var partial_template_node_ids IntArray
-
-
-
-  rows, err := db.Query(querystr)
-    corehelpers.PanicIf(err)
-    defer rows.Close()
-
-    for rows.Next(){
-      err:= rows.Scan(
-        &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date,
-        &template_id, &template_node_id, &template_alias, &partial_template_node_ids, &parent_template_node_id, &template_is_partial)
-
-      var template_alias_string string
-
-      if template_alias.Valid {
-        // use s.String
-        template_alias_string = template_alias.String
-      } else {
-         // NULL value
-      }
-      var parent_template_node_id_int int
-      if parent_template_node_id.Valid {
-        // use s.String
-        parent_template_node_id_int, _ = strconv.Atoi(parent_template_node_id.String)
-      } else {
-         // NULL value
-      }
-
-      // var partial_templates_slice []Template
-      // if partial_template_node_ids.Valid {
-      //   // use s.String
-      //   temp := []byte(partial_template_node_ids.String)
-      //   err := json.Unmarshal(temp, &partial_templates_slice)
-      //   corehelpers.PanicIf(err)
-      // } else {
-      //    // NULL value
-      // }
-
-      // b := make([]int, len(partial_template_node_ids))
-      // for i, v := range partial_template_node_ids {
-      //     b[i] = v.(int)
-      // }
-
-      switch {
-          case err == sql.ErrNoRows:
-              log.Printf("No node with that ID.")
-          case err != nil:
-              log.Fatal(err)
-          default:
-            node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
-            template := Template{template_id, node_id, template_alias_string, parent_template_node_id_int, "", nil, nil, partial_template_node_ids, template_is_partial, &node}
-            templates = append(templates,template)
-      }
-    }
-
-  return
-}
-
-func GetTemplateByNodeId(nodeId int) (template Template){
-
-  db := coreglobals.Db
-  querystr := `select my_node.id as node_id, my_node.path as node_path, my_node.created_by as node_created_by, my_node.name as node_name, my_node.node_type as node_type, my_node.created_date as node_created_date, 
-    ffgd.parent_template_nodes,
-template.id as template_id, template.node_id as template_node_id, template.alias as template_alias, template.parent_template_node_id as parent_template_node_id, template.partial_template_node_ids as template_partial_templates, template.is_partial as template_is_partial
-from node as my_node,
-LATERAL 
-(
-    SELECT array_to_json(array_agg(node)) as parent_template_nodes
-    from node
-    where path @> subpath(my_node.path,0,nlevel(my_node.path)-1) and node_type=3 
-    order by my_node.path asc
-) ffgd,
-template
-where my_node.id=$1 and template.node_id = my_node.id`
-
-  // node
-  var node_id, node_created_by, node_type int
-  var node_path, node_name string
-  var node_created_date time.Time
-  var parent_template_nodes []byte
-
-  // template
-  var template_id, template_node_id int
-  var parent_template_node_id sql.NullString
-  var template_alias string
-  var template_partial_templates IntArray
-  var template_is_partial bool
-
-  var template_parent_template_node_id int
-
-  row := db.QueryRow(querystr, nodeId)
-
-  err:= row.Scan(
-      &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &parent_template_nodes,
-      &template_id, &template_node_id, &template_alias, &parent_template_node_id, &template_partial_templates, &template_is_partial)
-
-  if parent_template_node_id.Valid {
-    // use s.String
-    id, _ := strconv.Atoi(parent_template_node_id.String)
-    template_parent_template_node_id = id
-  } else {
-     // NULL value
-  }
-  
-  name := node_name + ".tmpl"
-  //absPath, _ := filepath.Abs("/views/" + name)
-  absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + name)
-  //fmt.Println("FILEPATH:: " + absPath)
-  
-  bs, err7 := ioutil.ReadFile(absPath)
-  corehelpers.PanicIf(err7)
-  str := string(bs)
-
-  //var tplSlice []Template
-  var parentTemplateNodesSlice []Node
-
-  //json.Unmarshal(template_partial_templates, &tplSlice)
-  json.Unmarshal(parent_template_nodes, &parentTemplateNodesSlice)
-
-  switch {
-    case err == sql.ErrNoRows:
-      log.Printf("No node with that ID.")
-    case err != nil:
-      log.Fatal(err)
-    default:
-      node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, parentTemplateNodesSlice, nil, false, "", nil, nil, ""}
-      template = Template{template_id, template_node_id, template_alias, template_parent_template_node_id, str, nil, nil, template_partial_templates, template_is_partial, &node}
-  }
-
-  return
-}

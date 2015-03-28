@@ -6,9 +6,9 @@
 					<div class="row">
 						<div class="12u">
 							<div class="content">
-								{{range $content := .Data.Content.GetAncestors 0 2}}
+								{{range $content := .Data.Content.GetAncestors 0 1}}
 								<!-- Content -->
-									{{if $content.Eq $content.ContentTypeNodeId 37}}
+									{{if $content.Eq $content.ContentTypeNodeId 3}}
 										{{if $content.Meta.is_featured}}
 										<article class="box page-content">
 

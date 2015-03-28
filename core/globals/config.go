@@ -8,5 +8,5 @@ type Config struct {
     DbPassword string `json:"db_password,omitempty"`
     DbHost string `json:"db_host,omitempty"`
     SslMode string `json:"ssl_mode,omitempty"`
-    NodeId404 int `json:"node_id_404,omitempty"`
+    Id404 int `json:"id_404,omitempty"`
 }

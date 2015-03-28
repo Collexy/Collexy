@@ -177,8 +177,8 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
       currentItem['entity'] = Content.get({ nodeId: currentItem.id}, function(data){
         var allowedContentTypes = [];
         //console.log(data.content_type.meta)
-        for(var i = 0; i < data.content_type.meta.allowed_content_types_node_id.length; i++){
-            var ct = ContentType.get({nodeId: data.content_type.meta.allowed_content_types_node_id[i]}, function(){});
+        for(var i = 0; i < data.content_type.meta.allowed_content_type_ids.length; i++){
+            var ct = ContentType.get({nodeId: data.content_type.meta.allowed_content_type_ids[i]}, function(){});
             allowedContentTypes.push(ct);
             
         }
@@ -249,7 +249,7 @@ function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentTyp
     //User.get({ userId: $stateParams.userId} , function(phone) {
   } else{
     if($scope.stateParams.content_type_node_id){
-      var ct = ContentType.getExtended({extended: true},{nodeId: $scope.stateParams.content_type_node_id}, function(c){
+      var ct = ContentType.getExtended({extended: true},{id: $scope.stateParams.content_type_node_id}, function(c){
         if(c.tabs != null){
           tabs = c.tabs;
         }
@@ -321,7 +321,7 @@ function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentTyp
   
   $scope.filteredTemplates = function () {
     return $scope.allTemplates.filter(function (template) {
-      return $scope.data.content_type.meta.allowed_templates_node_id.indexOf(template.node_id) !== -1;
+      return $scope.data.content_type.meta.allowed_template_ids.indexOf(template.id) !== -1;
     });
   };
 

@@ -12,11 +12,11 @@ entityServices.factory('Content', ['$resource',
 
 entityServices.factory('ContentType', ['$resource',
     function($resource) {
-        return $resource('/api/content-type/:nodeId', {nodeId: '@nodeId'}, {
+        return $resource('/api/content-type/:id', {id: '@id'}, {
             getExtended: { method: 'GET', isArray: false },
             query: { method: 'GET', isArray: true },
             update: { method: 'PUT', isArray: false },
-            create: { method: 'POST', params: {nodeId: 'new'}, isArray: false }
+            create: { method: 'POST', params: {id: 'new'}, isArray: false }
 
             // delete: { method: 'delete', isArray: false }
         });
@@ -24,10 +24,10 @@ entityServices.factory('ContentType', ['$resource',
 
 entityServices.factory('DataType', ['$resource',
     function($resource) {
-        return $resource('/api/data-type/:nodeId', {}, {
-            query: { method: 'GET', params: {nodeId: ''}, isArray: true },
+        return $resource('/api/data-type/:id', {}, {
+            query: { method: 'GET', params: {id: ''}, isArray: true },
             update: { method: 'PUT', isArray: false },
-            create: { method: 'POST', params: {nodeId: 'new'}, isArray: false }
+            create: { method: 'POST', params: {id: 'new'}, isArray: false }
             // delete: { method: 'delete', isArray: false }
         });
     }]);
@@ -53,14 +53,14 @@ entityServices.factory('Directory', ['$resource',
         });
     }]);
 
-entityServices.factory('MemberType', ['$resource',
-    function($resource) {
-        return $resource('/api/member-type/:nodeId', {nodeId: '@nodeId'}, {
-            getExtended: { method: 'GET', isArray: false },
-            query: { method: 'GET', isArray: true },
-            update: { method: 'PUT', isArray: false },
-            create: { method: 'POST', params: {nodeId: 'new'}, isArray: false }
+// entityServices.factory('MemberType', ['$resource',
+//     function($resource) {
+//         return $resource('/api/member-type/:nodeId', {nodeId: '@nodeId'}, {
+//             getExtended: { method: 'GET', isArray: false },
+//             query: { method: 'GET', isArray: true },
+//             update: { method: 'PUT', isArray: false },
+//             create: { method: 'POST', params: {nodeId: 'new'}, isArray: false }
 
-            // delete: { method: 'delete', isArray: false }
-        });
-    }]);
+//             // delete: { method: 'delete', isArray: false }
+//         });
+//     }]);

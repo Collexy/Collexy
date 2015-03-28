@@ -130,7 +130,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
     // nodeId, _ := strconv.Atoi(idStr)
     // fmt.Println(nodeId)
 
-    // content := models.GetFrontendContentByNodeId(nodeId)
+    // content := models.GetFrontendContentById(nodeId)
 
     url := params["url"]
     
@@ -153,24 +153,24 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
         if(content == nil){
             fmt.Println("content is null!!")
             //First, check if 404 node id has been set in config
-            if(coreglobals.Conf.NodeId404 == -1){
+            if(coreglobals.Conf.Id404 == -1){
                 //turn off 404 functionality
-            } else if(coreglobals.Conf.NodeId404 >= 0){
-                if(coreglobals.Conf.NodeId404 == 0){
+            } else if(coreglobals.Conf.Id404 >= 0){
+                if(coreglobals.Conf.Id404 == 0){
                     // use custom handler (a little slower, but works for multiple domains/sites)
                     // //GET home page by domain from http request
                     // urlSlice := strings.Split(url, "/")
                     // homeContent := GetHomeContentByDomainAlternate(urlSlice[0])
                     // // if home has set a 404 page
-                    // if(homeContent.Meta.node_id_404){
+                    // if(homeContent.Meta.id_404){
                     //     // get content by id
                     //     content = GetContentById(homeContent.Meta.404_node_id)
                     //     // parse templates
                     //     // render template
                     // }
                 } else {    
-                    // use node_id_404 from /confic/config.json
-                    content = models.GetFrontendContentByNodeId(coreglobals.Conf.NodeId404)
+                    // use id_404 from /confic/config.json
+                    content = models.GetFrontendContentById(coreglobals.Conf.Id404)
                 }
             }
             
@@ -180,7 +180,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
             // // applicationglobals.Templates["404.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl","views/404.tmpl"))
             // this.RenderTemplate(w, "404.tmpl", content, nil)
 
-            var templateName string = content.Template.Node.Name + ".tmpl"
+            var templateName string = content.Template.Name + ".tmpl"
             fmt.Println("Content node name: " + templateName)
             //templateName := strings.Replace(content["template_name"].(string), " ", "-", -1) + ".tmpl"
             if(templateName !=".tmpl"){
@@ -189,7 +189,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
                 } else{       
 
                     templateArray := []string{"views/" + templateName} 
-                    if(content.Template.Node.ParentNodes != nil){
+                    if(content.Template.ParentTemplates != nil){
                         
 
                         tplFile := models.GetFilesystemNodeById("./views",templateName)
@@ -208,9 +208,9 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
                         }
                         
                         fmt.Println(templateArray)
-                        if(content.Template.Node.ParentNodes != nil){
+                        if(content.Template.ParentTemplates != nil){
           
-                            parentTemplateNodes := content.Template.Node.ParentNodes
+                            parentTemplateNodes := content.Template.ParentTemplates
 
                             v := make([]string, 0, len(parentTemplateNodes))
 
@@ -272,13 +272,13 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
             }
 
         } else{
-            var templateName string = content.Template.Node.Name + ".tmpl"
+            var templateName string = content.Template.Name + ".tmpl"
             //templateName := strings.Replace(content["template_name"].(string), " ", "-", -1) + ".tmpl"
             if(templateName !=".tmpl"){
                 if(applicationglobals.Templates[templateName] != nil){
 
                 } else{        
-                    if(content.Template.Node.ParentNodes != nil || content.Template.PartialTemplates != nil){
+                    if(content.Template.ParentTemplates != nil){
                         templateArray := []string{"views/" + templateName}
 
                         tplFile := models.GetFilesystemNodeById("./views",templateName)
@@ -314,9 +314,9 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
 
 
-                        if(content.Template.Node.ParentNodes != nil){
+                        if(content.Template.ParentTemplates != nil){
           
-                            parentTemplateNodes := content.Template.Node.ParentNodes
+                            parentTemplateNodes := content.Template.ParentTemplates
 
                             v := make([]string, 0, len(parentTemplateNodes))
 
@@ -381,8 +381,8 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
                         // templateArray = append(templateArray, "views/About Widget.tmpl")
                         // templateArray = append(templateArray, "views/Social.tmpl")
 
-                        // if(content.Template.Node.ParentNodes != nil){
-                        //     for _, value := range content.Template.Node.ParentNodes {
+                        // if(content.Template.ParentTemplates != nil){
+                        //     for _, value := range content.Template.ParentTemplates {
                         //         for _, pn := range value.
                         //     }
                         // } 

@@ -1,8 +1,8 @@
 {{define "Post Overview Widget"}}
 
-{{$homePage := .Data.Content.GetHomeNode}}
+{{$homePage := .Data.Content.GetHomeContentItem}}
 
-{{$posts := $homePage.GetByContentTypeNodeId 37}}
+{{$posts := $homePage.GetByContentTypeId 3}}
 {{$firstPost := index $posts 0}}
 
 
@@ -49,7 +49,7 @@
 											<ul class="divided">
 												{{range $content := $posts}}
 													
-														{{$is_not_first := ne $content.Node.Id $firstPost.Node.Id}}
+														{{$is_not_first := ne $content.Id $firstPost.Id}}
 														{{if and $content.Meta.is_featured $is_not_first}}
 															<li>
 																<article class="box post-summary">

@@ -4,8 +4,8 @@
 <section>
 	<h2 class="major"><span>Recent Posts</span></h2>
 	<ul class="divided">
-		{{range $content := .Data.Content.GetAncestors 0 2}}
-			{{if $content.Eq $content.ContentTypeNodeId 37}}
+		{{range $content := .Data.Content.GetAncestors 0 1}}
+			{{if $content.Eq $content.ContentTypeId 3}}
 				{{if $content.Meta.is_featured}}
 				<li>
 					<article class="box post-summary">

@@ -58,7 +58,7 @@
                 <tr ng-if="tab.name=='Properties'">
                     <td>Template:</td>
                     <td>
-                        <select ng-model="data.meta.template_node_id" ng-options="t.node_id as aliasOrNodeName(t.alias,t.node.name) for t in filteredTemplates(allTemplates)">
+                        <select ng-model="data.meta.template_id" ng-options="t.id as aliasOrNodeName(t.alias,t.name) for t in filteredTemplates(allTemplates)">
                         </select>
                     </td>
                     <td></td>

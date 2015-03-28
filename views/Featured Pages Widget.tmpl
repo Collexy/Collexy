@@ -5,9 +5,9 @@
 	<h2 class="major"><span>Featured Pages</span></h2>
 	<div>
 		<div class="row">
-		{{range $content := .Data.Content.GetAncestors 0 2}}
+		{{range $content := .Data.Content.GetAncestors 0 1}}
 
-			{{if $content.Eq $content.ContentTypeNodeId 39}}
+			{{if $content.Eq $content.ContentTypeId 5}}
 				{{if $content.Meta.is_featured}}
 				<div class="3u">
 					<!-- Feature -->

@@ -17,7 +17,7 @@ memberControllers.controller('MemberEditCtrl', ['$scope', '$stateParams', 'Membe
   var tabs = [];
 
   $scope.data = Member.get({id:$stateParams.id}, function(data){
-  	$scope.member_type = MemberType.getExtended({extended: true},{nodeId:data.member_type_node_id}, function(member_type){});
+  	$scope.member_type = MemberType.getExtended({extended: true},{id:data.member_type_id}, function(member_type){});
   });
 
   $scope.toggleTab = function (item,$event) {

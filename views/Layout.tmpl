@@ -1,7 +1,7 @@
 
 {{define "base"}}
 {{$currentPage := .Data.Content}}
-{{$homePage := .Data.Content.GetHomeNode}}
+{{$homePage := .Data.Content.GetHomeContentItem}}
 <!DOCTYPE HTML>
 <html ng-app="myApp">
 	<head>
@@ -68,8 +68,8 @@
 				{{else}}
 					<li><a href="http://{{index $homePage.Domains 0}}/{{$homePage.Url}}">{{$homePage.Meta.title}}</a></li>
 				{{end}}
-				{{range $content := .Data.Content.GetContentByDepth 0 2 1 }}
-					{{$is_not_home := ne $content.Node.Id $homePage.Node.Id}}
+				{{range $content := .Data.Content.GetContentByDepth 0 1 1 }}
+					{{$is_not_home := ne $content.Id $homePage.Id}}
 					{{$hide_in_nav := eq $content.Meta.hide_in_nav false}}
 					{{if and $hide_in_nav $is_not_home}}
 						{{$classes := ""}}

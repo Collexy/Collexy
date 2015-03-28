@@ -1,20 +1,12 @@
 package models
 
 import (
-	//"code.google.com/p/go.crypto/bcrypt"
-	//"crypto"
 	"golang.org/x/crypto/bcrypt"
 	"fmt"
 	"encoding/json"
-	//"github.com/dgrijalva/jwt-go"
 	"time"
-	//"collexy/helpers"
 	coreglobals "collexy/core/globals"
 	"log"
-	// "io"
-	// "io/ioutil"
-	// "os"
-	//"labix.org/v2/mgo/bson"
 	"net/http"
 	"github.com/gorilla/securecookie"
 	"strings"
@@ -36,8 +28,8 @@ type Member struct {
 	AccessedDate *time.Time `json:"accessed_date,omitempty"`
 	Status uint8 `json:"status"`
 	Sid string `json:"sid,omitempty"`
-	MemberTypeNodeId int `json:"member_type_node_id,omitempty"`
-	GroupNodeIds []int `json:"member_group_node_ids,omitempty"`
+	MemberTypeId int `json:"member_type_id,omitempty"`
+	MemberGroupIds []int `json:"member_group_ids,omitempty"`
 	Groups []*MemberGroup `json:"groups,omitempty"`
 }
 
@@ -126,19 +118,19 @@ func (m *Member) Login(password string) (cookie *http.Cookie, err error){
 func GetMemberByUsername(username string)(member *Member){
 	db := coreglobals.Db
 
-	var id, member_type_node_id int
+	var id, member_type_id int
 	var email string
 	var password []byte
 	var meta []byte
 	var created_date, updated_date, login_date, accessed_date *time.Time
 	var status uint8
 	// IntArray is temporarily defined in template.go model
-	var member_group_node_ids IntArray
+	var member_group_ids IntArray
 
 	var sid sql.NullString
 
-    err := db.QueryRow(`SELECT id, password, email, meta, created_date, updated_date, login_date, accessed_date, status, sid, member_type_node_id, member_group_node_ids 
-    	FROM member WHERE username=$1`,username).Scan(&id,&password,&email,&meta,&created_date,&updated_date,&login_date,&accessed_date,&status,&sid,&member_type_node_id,&member_group_node_ids)
+    err := db.QueryRow(`SELECT id, password, email, meta, created_date, updated_date, login_date, accessed_date, status, sid, member_type_id, member_group_ids 
+    	FROM member WHERE username=$1`,username).Scan(&id,&password,&email,&meta,&created_date,&updated_date,&login_date,&accessed_date,&status,&sid,&member_type_id,&member_group_ids)
     switch {
 	    case err == sql.ErrNoRows:
 	        log.Printf("No member with that ID.")
@@ -158,7 +150,7 @@ func GetMemberByUsername(username string)(member *Member){
 			} else { 
 				// NULL value 
 			}
-			member = &Member{id,username,password,email,metaMap,created_date,updated_date,login_date,accessed_date,status,member_sid,member_type_node_id,member_group_node_ids,nil}
+			member = &Member{id,username,password,email,metaMap,created_date,updated_date,login_date,accessed_date,status,member_sid,member_type_id,member_group_ids,nil}
 	}
 	return
 }
@@ -172,18 +164,18 @@ func GetMembers() (members []*Member){
     }
     defer rows.Close()
     for rows.Next() {
-        var id, member_type_node_id int
+        var id, member_type_id int
 		var username, email string
 		var password []byte
 		var meta []byte
 		var created_date, updated_date, login_date, accessed_date *time.Time
 		var status uint8
 		// IntArray is temporarily defined in template.go model
-		var member_group_node_ids IntArray
+		var member_group_ids IntArray
 
 		var sid sql.NullString
 
-        if err := rows.Scan(&id,&username,&password,&email,&meta,&created_date,&updated_date,&login_date,&accessed_date,&status,&sid,&member_type_node_id,&member_group_node_ids); err != nil {
+        if err := rows.Scan(&id,&username,&password,&email,&meta,&created_date,&updated_date,&login_date,&accessed_date,&status,&sid,&member_type_id,&member_group_ids); err != nil {
                 log.Fatal(err)
         }
 
@@ -200,7 +192,7 @@ func GetMembers() (members []*Member){
 		} else { 
 			// NULL value 
 		}
-		member := &Member{id,username,password,email,metaMap,created_date,updated_date,login_date,accessed_date,status,member_sid,member_type_node_id,member_group_node_ids,nil}
+		member := &Member{id,username,password,email,metaMap,created_date,updated_date,login_date,accessed_date,status,member_sid,member_type_id,member_group_ids,nil}
 		members = append(members, member)
     }
     if err := rows.Err(); err != nil {
@@ -212,19 +204,19 @@ func GetMembers() (members []*Member){
 func GetMemberById(id int) (member *Member){
 	db := coreglobals.Db
 
-    var member_type_node_id int
+    var member_type_id int
 	var username, email string
 	var password []byte
 	var meta []byte
 	var created_date, updated_date, login_date, accessed_date *time.Time
 	var status uint8
 	// IntArray is temporarily defined in template.go model
-	var member_group_node_ids IntArray
+	var member_group_ids IntArray
 
 	var sid sql.NullString
 
-    err := db.QueryRow(`SELECT username, password, email, meta, created_date, updated_date, login_date, accessed_date, status, sid, member_type_node_id, member_group_node_ids 
-    	FROM member WHERE id=$1`,id).Scan(&username,&password,&email,&meta,&created_date,&updated_date,&login_date,&accessed_date,&status,&sid,&member_type_node_id,&member_group_node_ids)
+    err := db.QueryRow(`SELECT username, password, email, meta, created_date, updated_date, login_date, accessed_date, status, sid, member_type_id, member_group_ids 
+    	FROM member WHERE id=$1`,id).Scan(&username,&password,&email,&meta,&created_date,&updated_date,&login_date,&accessed_date,&status,&sid,&member_type_id,&member_group_ids)
     switch {
     case err == sql.ErrNoRows:
         log.Printf("No member with that ID.")
@@ -244,7 +236,7 @@ func GetMemberById(id int) (member *Member){
 		} else { 
 			// NULL value 
 		}
-		member = &Member{id,username,password,email,metaMap,created_date,updated_date,login_date,accessed_date,status,member_sid,member_type_node_id,member_group_node_ids,nil}
+		member = &Member{id,username,password,email,metaMap,created_date,updated_date,login_date,accessed_date,status,member_sid,member_type_id,member_group_ids,nil}
         fmt.Printf("Username is %s\n", username)
     }
     return
@@ -296,14 +288,14 @@ func GetMember (sid string) (m *Member, err error){
 // WHERE sid=$1`
 
   querystr := `SELECT member.id, member.username, member.password, 
-  member.email, member.created_date, member.updated_date, member.login_date, member.accessed_date, member.status, member.sid, member.member_group_node_ids, groups.groups 
+  member.email, member.created_date, member.updated_date, member.login_date, member.accessed_date, member.status, member.sid, member.member_group_ids, groups.groups 
 FROM member,
 LATERAL (
   SELECT array_to_json(array_agg(group_agg)) AS groups
   FROM (
-    SELECT node.id, node.name
-    FROM node
-    WHERE node.id = ANY (member.member_group_node_ids) and node.node_type=13
+    SELECT member_group.id, member_group.path, member_group.parent_id, member_group.name, member_group.alias, member_group.created_by, member_group.created_date 
+    FROM member_group
+    WHERE member_group.id = ANY (member.member_group_ids)
   ) group_agg
 ) groups
 WHERE sid=$1`
@@ -317,10 +309,10 @@ WHERE sid=$1`
   // potential nulls
   // var role_ids []int // doesn't work with scan
   // IntArray custom type is right now located in models.Template
-  var member_group_node_ids IntArray
+  var member_group_ids IntArray
   var groups []byte
 
-  err = db.QueryRow(querystr, sid).Scan(&id, &username, &password, &email, &created_date, &updated_date, &login_date, &accessed_date, &status, &sid, &member_group_node_ids, &groups)
+  err = db.QueryRow(querystr, sid).Scan(&id, &username, &password, &email, &created_date, &updated_date, &login_date, &accessed_date, &status, &sid, &member_group_ids, &groups)
 
   switch {
     case err == sql.ErrNoRows:
@@ -333,7 +325,7 @@ WHERE sid=$1`
       var groupsSlice []*MemberGroup
       json.Unmarshal(groups, &groupsSlice)
       m = &Member{id, username, password, email, nil, created_date, updated_date,
-        login_date, accessed_date, status, sid, 0, member_group_node_ids, groupsSlice}
+        login_date, accessed_date, status, sid, 0, member_group_ids, groupsSlice}
 
       uByteArr, err := json.Marshal(m)
       if err != nil {

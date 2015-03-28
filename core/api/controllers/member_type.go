@@ -22,6 +22,45 @@ import (
 
 type MemberTypeApiController struct {}
 
+func (this *MemberTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    memberTypes := models.GetMemberTypes()
+    res, err := json.Marshal(memberTypes)
+    corehelpers.PanicIf(err)
+
+    fmt.Fprintf(w,"%s",res)
+}
+
+func (this *MemberTypeApiController) GetById(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    params := mux.Vars(r)
+    idStr := params["id"]
+
+    id, _ := strconv.Atoi(idStr)
+
+    var extended bool = false
+    extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
+
+    //extended, _ := strconv.Atoi(extendedStr)
+
+    if(!extended){
+        memberType := models.GetMemberTypeById(id)
+        res, err := json.Marshal(memberType)
+        corehelpers.PanicIf(err)
+
+        fmt.Fprintf(w,"%s",res)
+    } else {
+        memberType := models.GetMemberTypeExtendedById(id)
+        res, err := json.Marshal(memberType)
+        corehelpers.PanicIf(err)
+
+        fmt.Fprintf(w,"%s",res)
+    }
+    
+}
+
 // func (this *MemberTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Member-Type", "application/json")
 
@@ -46,35 +85,6 @@ type MemberTypeApiController struct {}
 
 //     fmt.Fprintf(w,"%s",res)
 // }
-
-func (this *MemberTypeApiController) GetMemberTypeByNodeId(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-
-    params := mux.Vars(r)
-    idStr := params["nodeId"]
-
-    nodeId, _ := strconv.Atoi(idStr)
-
-    var extended bool = false
-    extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
-
-    //extended, _ := strconv.Atoi(extendedStr)
-
-    if(!extended){
-        memberType := models.GetMemberTypeByNodeId(nodeId)
-        res, err := json.Marshal(memberType)
-        corehelpers.PanicIf(err)
-
-        fmt.Fprintf(w,"%s",res)
-    } else {
-        memberType := models.GetMemberTypeExtendedByNodeId(nodeId)
-        res, err := json.Marshal(memberType)
-        corehelpers.PanicIf(err)
-
-        fmt.Fprintf(w,"%s",res)
-    }
-    
-}
 
 
 // func (this *MemberTypeApiController) PutMemberType(w http.ResponseWriter, r *http.Request) {

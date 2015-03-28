@@ -10,7 +10,7 @@ type TabProperty struct {
   //Id int `json:"id"`
   Name string `json:"name,omitempty"`
   Order int `json:"order,omitempty"`
-  DataTypeNodeId int `json:"data_type_node_id,omitempty"`
+  DataTypeId int `json:"data_type_id,omitempty"`
   DataType *DataType `json:"data_type,omitempty"`
   HelpText string `json:"help_text,omitempty"`
   Description string `json:"description,omitempty"`
@@ -54,8 +54,8 @@ type TabProperty struct {
 //   if(t.Order != 0){
 //     newTp.Order = t.Order
 //   } 
-//   if(t.DataTypeNodeId != 0){
-//     newTp.DataTypeNodeId = t.DataTypeNodeId
+//   if(t.DataTypeId != 0){
+//     newTp.DataTypeId = t.DataTypeId
 //   } 
 //   if(t.DataType.NodeId != 0){
 //     newTp.DataType = t.DataType

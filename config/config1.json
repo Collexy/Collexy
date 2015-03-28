@@ -1,7 +1,0 @@
-{
-	"db_name": "collexy",
-	"db_user": "postgres",
-	"db_password": "hathat",
-	"db_host": "localhost",
-	"ssl_mode": "disable"
-}

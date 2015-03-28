@@ -24,15 +24,15 @@ func (this *DataTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (this *DataTypeApiController) GetByNodeId(w http.ResponseWriter, r *http.Request) {
+func (this *DataTypeApiController) GetById(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
     params := mux.Vars(r)
-    idStr := params["nodeId"]
+    idStr := params["id"]
 
-    nodeId, _ := strconv.Atoi(idStr)
+    id, _ := strconv.Atoi(idStr)
 
-    dataType := models.GetDataTypeByNodeId(nodeId)
+    dataType := models.GetDataTypeById(id)
 
     res, err := json.Marshal(dataType)
     corehelpers.PanicIf(err)
@@ -41,31 +41,31 @@ func (this *DataTypeApiController) GetByNodeId(w http.ResponseWriter, r *http.Re
 
 }
 
-func (this *DataTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+// func (this *DataTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
+//     w.Header().Set("Content-Type", "application/json")
 
-    dataType := models.DataType{}
+//     dataType := models.DataType{}
 
-    err := json.NewDecoder(r.Body).Decode(&dataType)
+//     err := json.NewDecoder(r.Body).Decode(&dataType)
 
-    if err != nil {
-        http.Error(w, "Bad Request", 400)
-    }
+//     if err != nil {
+//         http.Error(w, "Bad Request", 400)
+//     }
 
-    dataType.Post()
+//     dataType.Post()
 
-}
+// }
 
-func (this *DataTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+// func (this *DataTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
+//     w.Header().Set("Content-Type", "application/json")
 
-    dataType := models.DataType{}
+//     dataType := models.DataType{}
 
-    err := json.NewDecoder(r.Body).Decode(&dataType)
+//     err := json.NewDecoder(r.Body).Decode(&dataType)
 
-    if err != nil {
-        http.Error(w, "Bad Request", 400)
-    }
+//     if err != nil {
+//         http.Error(w, "Bad Request", 400)
+//     }
 
-    dataType.Update()
-}
+//     dataType.Update()
+// }

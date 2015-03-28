@@ -105,70 +105,70 @@ func (this *ContentApiController) RenderAdminTemplate(w http.ResponseWriter, nam
     return nil
 }
 
-func (this *ContentApiController) Post(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+// func (this *ContentApiController) Post(w http.ResponseWriter, r *http.Request) {
+//     w.Header().Set("Content-Type", "application/json")
 
-    if user := models.GetLoggedInUser(r); user != nil {
-        var hasPermission bool = false
-        hasPermission = user.HasPermissions([]string{"content_create"})
-        if(hasPermission){
+//     if user := models.GetLoggedInUser(r); user != nil {
+//         var hasPermission bool = false
+//         hasPermission = user.HasPermissions([]string{"content_create"})
+//         if(hasPermission){
 
-            content := models.Content{}
+//             content := models.Content{}
 
-            err := json.NewDecoder(r.Body).Decode(&content)
+//             err := json.NewDecoder(r.Body).Decode(&content)
 
-            if err != nil {
-                http.Error(w, "Bad Request", 400)
-            }
+//             if err != nil {
+//                 http.Error(w, "Bad Request", 400)
+//             }
 
-            content.Post()
-        } else {
-            fmt.Fprintf(w,"You do not have permission to create content")
-        }
-    }
-}
+//             content.Post()
+//         } else {
+//             fmt.Fprintf(w,"You do not have permission to create content")
+//         }
+//     }
+// }
 
-func (this *ContentApiController) PutContent(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+// func (this *ContentApiController) PutContent(w http.ResponseWriter, r *http.Request) {
+//     w.Header().Set("Content-Type", "application/json")
 
-    if user := models.GetLoggedInUser(r); user != nil {
-        var hasPermission bool = false
-        hasPermission = user.HasPermissions([]string{"content_update"})
-        if(hasPermission){
-            content := models.Content{}
+//     if user := models.GetLoggedInUser(r); user != nil {
+//         var hasPermission bool = false
+//         hasPermission = user.HasPermissions([]string{"content_update"})
+//         if(hasPermission){
+//             content := models.Content{}
 
-            err := json.NewDecoder(r.Body).Decode(&content)
+//             err := json.NewDecoder(r.Body).Decode(&content)
 
-            if err != nil {
-                http.Error(w, "Bad Request", 400)
-            }
+//             if err != nil {
+//                 http.Error(w, "Bad Request", 400)
+//             }
 
-            content.Update()
-        } else {
-            fmt.Fprintf(w,"You do not have permission to update content")
-        }
+//             content.Update()
+//         } else {
+//             fmt.Fprintf(w,"You do not have permission to update content")
+//         }
         
-    } 
-}
+//     } 
+// }
 
-func (this *ContentApiController) Delete(w http.ResponseWriter, r *http.Request){
-    w.Header().Set("Content-Type", "application/json")
-    if user := models.GetLoggedInUser(r); user != nil {
-        var hasPermission bool = false
-        hasPermission = user.HasPermissions([]string{"content_delete"})
-        if(hasPermission){
-            params := mux.Vars(r)
+// func (this *ContentApiController) Delete(w http.ResponseWriter, r *http.Request){
+//     w.Header().Set("Content-Type", "application/json")
+//     if user := models.GetLoggedInUser(r); user != nil {
+//         var hasPermission bool = false
+//         hasPermission = user.HasPermissions([]string{"content_delete"})
+//         if(hasPermission){
+//             params := mux.Vars(r)
 
-            idStr := params["nodeId"]
-            id, _ := strconv.Atoi(idStr)
+//             idStr := params["id"]
+//             id, _ := strconv.Atoi(idStr)
 
-            models.DeleteContent(id)
-        } else {
-            fmt.Fprintf(w,"You do not have permission to delete content")
-        }
+//             models.DeleteContent(id)
+//         } else {
+//             fmt.Fprintf(w,"You do not have permission to delete content")
+//         }
         
-    } 
-}
+//     } 
+// }
 
 func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.Request) {
 
@@ -179,15 +179,15 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
 
     fmt.Println("RENDERCONTENT")
 
-    // idStr := r.URL.Query().Get(":nodeId")
+    // idStr := r.URL.Query().Get(":id")
 
     params := mux.Vars(r)
-    // idStr := params["nodeId"]
+    // idStr := params["id"]
 
-    // nodeId, _ := strconv.Atoi(idStr)
-    // fmt.Println(nodeId)
+    // id, _ := strconv.Atoi(idStr)
+    // fmt.Println(id)
 
-    // content := models.GetFrontendContentByNodeId(nodeId)
+    // content := models.GetFrontendContentById(id)
 
     url := params["url"]
     s := strings.Split(url, "/")
@@ -206,18 +206,18 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
         applicationglobals.Templates["404.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl","views/404.tmpl"))
         this.RenderTemplate(w, "404.tmpl", nil, nil)
     } else{
-        var templateName string = content.Template.Node.Name + ".tmpl"
+        var templateName string = content.Template.Name + ".tmpl"
         //templateName := strings.Replace(content["template_name"].(string), " ", "-", -1) + ".tmpl"
         if(templateName !=".tmpl"){
             if(applicationglobals.Templates[templateName] != nil){
 
             } else{        
-                if(content.Template.Node.ParentNodes != nil || content.Template.PartialTemplates != nil){
+                if(content.Template.ParentTemplates != nil){
                     templateArray := []string{"views/" + templateName}
 
-                    if(content.Template.Node.ParentNodes != nil){
+                    if(content.Template.ParentTemplates != nil){
       
-                        parentTemplateNodes := content.Template.Node.ParentNodes
+                        parentTemplateNodes := content.Template.ParentTemplates
 
                         v := make([]string, 0, len(parentTemplateNodes))
 
@@ -229,17 +229,17 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
                         
                     }
 
-                    if(content.Template.PartialTemplateNodes != nil){
-                        partialTemplateNodes := content.Template.PartialTemplateNodes
+                    // if(content.Template.PartialTemplateNodes != nil){
+                    //     partialTemplateNodes := content.Template.PartialTemplateNodes
                         
-                        x := make([]string, 0, len(partialTemplateNodes))
+                    //     x := make([]string, 0, len(partialTemplateNodes))
 
-                        for  _, value := range partialTemplateNodes {
-                            tplName := "views/" + value.Name + ".tmpl"
-                            x = append(x, tplName)
-                        }
-                        templateArray = append(templateArray, x...)
-                    }
+                    //     for  _, value := range partialTemplateNodes {
+                    //         tplName := "views/" + value.Name + ".tmpl"
+                    //         x = append(x, tplName)
+                    //     }
+                    //     templateArray = append(templateArray, x...)
+                    // }
 
                     applicationglobals.Templates[templateName] = template.Must(template.ParseFiles(templateArray...))
                     //.Delims("{@","@}")
@@ -287,17 +287,17 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
 }
 
 
-func (this *ContentApiController) GetBackendContentByNodeId(w http.ResponseWriter, r *http.Request) {
+func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
     params := mux.Vars(r)
-    idStr := params["nodeId"]
+    idStr := params["id"]
 
-    nodeId, _ := strconv.Atoi(idStr)
+    id, _ := strconv.Atoi(idStr)
 
     // Content object including the content' Node, the content type object. 
     // Note: Inside the content type object is an array of parent ContentTypes
-    content := models.GetBackendContentByNodeId(nodeId)
+    content := models.GetBackendContentById(id)
 
     res, err := json.Marshal(content)
     corehelpers.PanicIf(err)

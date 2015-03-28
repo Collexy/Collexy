@@ -1,6 +1,6 @@
 <script type="text/ng-template"  id="tree_item_renderer.html">
         <i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-folder-open-o' : 'fa-folder-o'"></i>
-        <a ui-sref="members.memberGroups.edit({nodeId:data.id})"  ui-sref-active="active" ng-right-click="getEntityInfo()" ng-context-menu="showOptions(data,$event)">{{data.name}} ({{data.path}})</a>
+        <a ui-sref="members.memberGroups.edit({id:data.id})"  ui-sref-active="active" ng-right-click="getEntityInfo()" ng-context-menu="showOptions(data,$event)">{{data.name}} ({{data.path}})</a>
         <ul ng-show="data.show">
             <li ng-repeat="data in data.nodes" ng-include="'tree_item_renderer.html'"></li>
         </ul>
