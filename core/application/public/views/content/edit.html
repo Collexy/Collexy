@@ -2,14 +2,14 @@
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
         <!-- <p>user1: {{$parent.userSession.username}}</p> -->
-        <input type="text" ng-model="data.node.name">
+        <input type="text" ng-model="data.name">
         <!-- <pre>
         {{node}}
-            {{node.ctm.tabs}}
-            {{node.ct.tabs}}
+            {{ctm.tabs}}
+            {{ct.tabs}}
         </pre>
         <p>
-            {{node.content}}
+            {{content}}
         </p> -->
         <ul class="admin-tabs">
             <!-- <li class="active"><a href="">Meta</a></li>
@@ -22,37 +22,37 @@
             <table>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Id:</td>
-                    <td>{{data.node.id}}</td>
+                    <td>{{data.id}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Created By:</td>
-                    <td>{{data.node.created_by}}</td>
+                    <td>{{data.created_by}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Created Date:</td>
-                    <td>{{data.node.created_date}}</td>
+                    <td>{{data.created_date}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Last updated date:</td>
-                    <td>{{data.node.updated_date}}</td>
+                    <td>{{data.updated_date}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Node Type:</td>
-                    <td>{{data.node.node_type}}</td>
+                    <td>{{data.type_id}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Node Path:</td>
-                    <td>{{data.node.path}}</td>
+                    <td>{{data.path}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Parent Node ID:</td>
-                    <td><input type="number" ng-model="data.node.parent_id"/></td>
+                    <td><input type="number" ng-model="data.parent_id"/></td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
@@ -65,18 +65,18 @@
                 </tr>
     <!--             <tr ng-if="tab.name=='Properties'">
                     <td>Publish at:</td>
-                    <td>{{node.content.meta.publish_at}}</td>
+                    <td>{{content.meta.publish_at}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Unpublish at:</td>
-                    <td>{{node.content.meta.unpublish_at}}</td>
+                    <td>{{content.meta.unpublish_at}}</td>
                     <td></td>
                 </tr> -->
                 <tr ng-repeat="prop in tab.properties">
                     <td>{{prop.name}}<br><small>{{prop.description}}<small></td>
                     <!-- <td><div wrap-input></div><td> -->
-                    <!-- <td><div wrap-input><input type="text" ng-model="node.content.meta[prop.name]"/></div></td> -->
+                    <!-- <td><div wrap-input><input type="text" ng-model="content.meta[prop.name]"/></div></td> -->
                     <!-- <td><input type="text" ng-model="prop.name"></td> -->
                     <td compile ng-bind-html="prop.data_type.html | unsafe" style="width:70%;"></td>
                 </tr>
@@ -86,13 +86,13 @@
         </div>
         
         <!-- <form role="form" ng-submit="submit()">
-            <label>Id: {{node.id}}</label><br>
-            <label>Created By: {{node.created_by}}</label><br>
-            <label>Created Date: {{node.created_date}}</label><br>
-            <label>Node Type: {{node.node_type}}</label><br>
-            <label>Node Path: {{node.path}}</label><br>
+            <label>Id: {{id}}</label><br>
+            <label>Created By: {{created_by}}</label><br>
+            <label>Created Date: {{created_date}}</label><br>
+            <label>Node Type: {{node_type}}</label><br>
+            <label>Node Path: {{path}}</label><br>
             <label>Name</label>
-            <input type="text" ng-model="node.name" name="name" class="form-control"><br>
+            <input type="text" ng-model="name" name="name" class="form-control"><br>
             
             <button class="btn" type="submit">Update Node &raquo;</button>
         </form> -->

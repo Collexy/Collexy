@@ -9,24 +9,27 @@ angular.module("myApp").controller("ContentTreeCtrlEdit", ContentTreeCtrlEdit);
  * @description
  * The controller for deleting content
  */
-function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, ContentType, sessionService, ContextMenu, $interpolate, ngDialog) {
+function ContentTreeCtrl($scope, $stateParams, ContentChildren, Node, Content, ContentType, sessionService, ContextMenu, $interpolate, ngDialog) {
   var allowedContentTypeNodes = [];
   var allowedContentTypes = [];
 
-  Node.query({'node-type': '4'},{},function(node){
-    allowedContentTypeNodes.push(node);
-
+  ContentType.query({'type-id': '1'},{},function(){
   }).$promise.then(function(data){
-    console.log("success")
-    console.log(allowedContentTypeNodes[0])
-    for(var i = 0; i < allowedContentTypeNodes[0].length; i++){
-        var ct = ContentType.get({nodeId: allowedContentTypeNodes[0][i].id}, function(){});
-        allowedContentTypes.push(ct);
+    allowedContentTypes = data;
+  }, function(){
+
+  })
+  // .$promise.then(function(data){
+  //   console.log("success")
+  //   console.log(allowedContentTypeNodes[0])
+  //   for(var i = 0; i < allowedContentTypeNodes[0].length; i++){
+  //       var ct = ContentType.get({id: allowedContentTypeNodes[0][i].id}, function(){});
+  //       allowedContentTypes.push(ct);
         
-    }
-  }, function(error) {
-      // error handler
-  });
+  //   }
+  // }, function(error) {
+  //     // error handler
+  // });
 
 
 
@@ -73,7 +76,7 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
       }
       if(data.nodes.length == 0){
         // REST API call to fetch the current node's immediate children
-        data.nodes = NodeChildren.query({ nodeId: data.id}, function(node){
+        data.nodes = ContentChildren.query({ id: data.id}, function(node){
           //console.log(node)
         });
 
@@ -87,7 +90,7 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
                           data.nodes.push({name: newName, show: true, nodes: []});
   };
   // var contentNodes = Node.query({},{'nodeTypeId': 1, 'levels': '1'},function(node){
-  var contentNodes = Node.query({'node-type': '1', 'levels': '1'},{},function(node){
+  var contentNodes = Content.query({'type-id': '1', 'levels': '1'},{},function(node){
           //console.log(node)
         });
 
@@ -222,15 +225,15 @@ function ContentTreeCtrl($scope, $stateParams, NodeChildren, Node, Content, Cont
 function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentType, Node, $interpolate) {
   //$scope._ = _;
 
-  // $scope.allContentNodes = Node.query({'node-type': '1'},{},function(node){
-  //   });
+  $scope.contentNodes = Content.query({'type-id': '1','content-type':'9'},{},function(node){
+    });
 
   var tabs = [];
 
   $scope.stateParams = $stateParams;
-    if ($stateParams.nodeId) {
+    if ($stateParams.id) {
 
-      $scope.data = Content.get({ nodeId: $stateParams.nodeId}, function(data){
+      $scope.data = Content.get({ id: $stateParams.id}, function(data){
         if(data.content_type.tabs != null){
           tabs = data.content_type.tabs;
         }
@@ -371,7 +374,7 @@ function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentTyp
         return $interpolate(value)($scope);
     };
 
-    $scope.contentNodes = $scope.contentNodes = Node.query({'node-type': '1', 'content-type':'64'},{},function(node){});
+    //$scope.contentNodes = $scope.contentNodes = Node.query({'node-type': '1', 'content-type':'64'},{},function(node){});
 
   
 }

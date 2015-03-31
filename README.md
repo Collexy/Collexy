@@ -6,7 +6,7 @@ This project is still in its very early development phase <i>(Phase 1)</i>.
 
 Phases:
 
-1. Proof of concept only: Quick and dirty,nightmar-ish prototype-ish code. <strong>(where we're currently at)</strong>
+1. Proof of concept only: Quick and dirty prototype-ish code. <strong>(where we're currently at)</strong>
 2. Database architecture analysis: Make sure the foundation is solid before rewriting the code completely.
 3. Total code rewrite: Adhere to design patterns, Go/angular/postgres best practices and modularize, promote extensibility and have a plugin architecture in mind.
 4. Extensibility: Make the necessary changes for seemless plugin integration and improve extensibility 

@@ -2,11 +2,21 @@ var entityServices = angular.module('entityServices', ['ngResource']);
 
 entityServices.factory('Content', ['$resource',
     function($resource) {
-        return $resource('/api/content/:nodeId', {}, {
-            query: { method: 'GET', params: { nodeId: 'nodeId' }, isArray: true },
+        return $resource('/api/content/:id', {}, {
+            //query: { method: 'GET', params: { id: 'id' }, isArray: true },
             update: { method: 'PUT', isArray: false },
             create: { method: 'POST', params: {nodeId: 'new'}, isArray: false },
             delete: { method: 'DELETE'}
+        });
+    }]);
+
+nodeServices.factory('ContentChildren', ['$resource',
+    function($resource) {
+        return $resource('/api/content/:id/children', {}, {
+            //query: { method: 'GET', params: { nodeId: 'nodeId' }, isArray: true },
+            update: { method: 'PUT', isArray: false },
+            create: { method: 'POST', isArray: false }
+            // delete: { method: 'delete', isArray: false }
         });
     }]);
 

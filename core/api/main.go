@@ -62,7 +62,8 @@ func Main(){
     publicApiRouter := mux.NewRouter()
 
     // Content
-
+    m.HandleFunc("/api/content", http.HandlerFunc(contentApiController.Get)).Methods("GET")
+    m.HandleFunc("/api/content/{id:.*}/children", http.HandlerFunc(contentApiController.GetByIdChildren)).Methods("GET")
     //m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Delete)).Methods("DELETE")
 	//m.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Post)).Methods("POST")
     m.HandleFunc("/api/content/{id:.*}", http.HandlerFunc(contentApiController.GetBackendContentById)).Methods("GET")
