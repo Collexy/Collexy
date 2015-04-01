@@ -2,7 +2,7 @@
 
 Live test site here: <a href="http://test.codeish.com" rel="nofollow">http://test.codeish.com</a>
 
-<i>This project is still in the first development phase.</i>
+<i>This project is still in the first development phase.</i> 
 
 ###Early prototype
 (video updated, 24-03-2015)
@@ -15,7 +15,7 @@ alt="IMAGE ALT TEXT HERE" width="560" height="315" border="10" /></a>
 ###To-do
 Preview of my first sketches to help illustrate the big picture for Phase 2
 
-![Alt text](/docs/screenshots/687474703a2f2f73382e706f7374696d672e6f72672f6739696334396579742f7075626c6973682e706e67.jpg?raw=true "To-do next")
+![Alt text](https://github.com/codeish/collexy/blob/master/docs/screenshots/20150401_221528.jpg?raw=true "To-do next")
 
 ###Phases
 
