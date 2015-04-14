@@ -358,17 +358,11 @@ angular.module('myApp', [
 .run(['$rootScope', '$state', '$stateParams', 'authenticationService', '$location', '$window', '$q', '$cookies', 'sessionService', 'AngularRoute', 'Route', '$timeout', function ($rootScope, $state,$stateParams, authenticationService, $location, $window, $q, $cookies, sessionService, AngularRoute, Route, $timeout) {
 	//console.log(JSON.parse(localStorage["lastStateParams"]));
 	var routes = Route.query({}, function(routes){
-		//console.log(routes)
+		console.log(routes)
 		angular.forEach(routes, function (value, key){
 			var templateUrl = "";
 			var abstract = false;
 
-			if('components' in value){
-				if(value.components.length > 0){
-					templateUrl = value.components[0].single
-				}
-			}
-			
 			if(value.is_abstract){
 				//alert(value.is_abstract)
 				var state = {
@@ -376,19 +370,46 @@ angular.module('myApp', [
 					//"parent" : parent,
 					"abstract": true,
 					//"views":{}
-					"templateUrl": templateUrl
+					"templateUrl": value.template_url
 				};
-				$stateProviderRef.state(value.path, state);
+				$stateProviderRef.state(value.state, state);
 			} else {
 				var state = {
 					"url": value.url,
 					//"parent" : parent,
 					//"abstract": value.abstract,
 					//"views":{}
-					"templateUrl": templateUrl
+					"templateUrl": value.template_url
 				};
-				$stateProviderRef.state(value.path, state);
+				$stateProviderRef.state(value.state, state);
 			}
+
+			// if('components' in value){
+			// 	if(value.components.length > 0){
+			// 		templateUrl = value.components[0].single
+			// 	}
+			// }
+			
+			// if(value.is_abstract){
+			// 	//alert(value.is_abstract)
+			// 	var state = {
+			// 		"url": value.url,
+			// 		//"parent" : parent,
+			// 		"abstract": true,
+			// 		//"views":{}
+			// 		"templateUrl": templateUrl
+			// 	};
+			// 	$stateProviderRef.state(value.path, state);
+			// } else {
+			// 	var state = {
+			// 		"url": value.url,
+			// 		//"parent" : parent,
+			// 		//"abstract": value.abstract,
+			// 		//"views":{}
+			// 		"templateUrl": templateUrl
+			// 	};
+			// 	$stateProviderRef.state(value.path, state);
+			// }
 
 			// var lol = window.location.href.split("/admin");
 			// //alert("/admin" +lol[1])

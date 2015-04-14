@@ -51,10 +51,10 @@ angularRouteService.factory('Route', ['$resource',
         });
     }]);
 
-angularRouteService.factory('MenuLink', ['$resource',
+angularRouteService.factory('Section', ['$resource',
     function($resource) {
         //return $resource('/api/node/node-type', {nodeTypeId: "@nodeTypeId", levels: "@levels"}, {
-        return $resource('/api/menu-link/:name', {name: '@name'}, {
+        return $resource('/api/section/:name', {name: '@name'}, {
             query: { method: 'GET', isArray: true },
             update: { method: 'PUT', isArray: false },
             create: { method: 'POST', isArray: false }

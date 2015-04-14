@@ -4,11 +4,13 @@ import(
     "log"
     "net/http"
     "html/template"
+    "database/sql"
     "collexy/core/application/controllers"
-    applicationglobals "collexy/core/application/globals"
-    "collexy/core/api/models"
+    //"collexy/core/application/controllers"
+    //"collexy/core/api/models"
     corehelpers "collexy/core/helpers"
     "github.com/gorilla/mux"
+    "github.com/gorilla/context"
     //"collexy/globals"
     "fmt"
     "os"
@@ -18,6 +20,15 @@ import(
     "path/filepath"
     //"collexy/helpers"
     "strings"
+    "collexy/core/lib"
+    // _ "collexy/core/modules/mytest"
+    _ "collexy/core/modules/user"
+    _ "collexy/core/modules/member"
+    _ "collexy/core/modules/settings"
+    _ "collexy/core/modules/content"
+    coremoduleusermodels "collexy/core/modules/user/models"
+    coremodulecontentmodels "collexy/core/modules/content/models"
+    coremodulecontentcontrollers "collexy/core/modules/content/controllers"
 )
 
 func executeDatabaseInstallScript(site_title,username,password,email string,privacy bool) (err error) {
@@ -275,24 +286,24 @@ func installHandler(w http.ResponseWriter, r *http.Request){
 func adminHandler(w http.ResponseWriter, r *http.Request) {
 
     sid := corehelpers.CheckCookie(w,r)
-    u, _ := models.GetUser(sid)
+    u, _ := coremoduleusermodels.GetUser(sid)
 
-    models.SetLoggedInUser(r,u)
+    coremoduleusermodels.SetLoggedInUser(r,u)
 
 
-    cc := controllers.ContentController{}
-    content := models.Content{}
+    cc := coremodulecontentcontrollers.ContentController{}
+    content := coremodulecontentmodels.Content{}
     if(r.URL.String() == "/admin/login"){
         fmt.Println("FSLSO LOOOL ;;::: :: LOOL")
         //cc.RenderTemplate(w, "admin.tmpl", &content, &user)
-        if user := models.GetLoggedInUser(r); user != nil {
+        if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
             //cc.RenderTemplate(w, "admin.tmpl", &content, user)
             http.Redirect(w, r, "/admin", 301)
         } else {
             cc.RenderAdminTemplate(w, "admin.tmpl", &content, nil)
         }
     } else {
-        if user := models.GetLoggedInUser(r); user != nil {
+        if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
             cc.RenderAdminTemplate(w, "admin.tmpl", &content, user)
         } else {
             http.Redirect(w, r, "/admin/login", 301)
@@ -300,115 +311,141 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func GetSections(w http.ResponseWriter, r *http.Request){
+    // w.Header().Set("Content-Type", "text/html")
+    // for _, s := range Sections{
+    //     fmt.Fprintf(w,"Section: " + s.Name + "<br>")
+    // }
+    
+    w.Header().Set("Content-Type", "application/json")
+    res, err := json.Marshal(coreglobals.Sections)
+    if err!=nil{
+        panic(err)
+    }
+    corehelpers.PanicIf(err)
 
-// func init is run before main. All packages can have an init function
-
-func init(){
-    test()
+    fmt.Fprintf(w,"%s",res)
+    
 }
 
-func test() {
-    // var routes []globals.IRoute
-    // var menus []interface{}
-    /**
-    * Menu
-    */
-    am := models.AdminMenu{"main", nil}
-
+func GetRoutes(w http.ResponseWriter, r *http.Request){
+    // w.Header().Set("Content-Type", "text/html")
+    // for _, s := range Sections{
+    //     fmt.Fprintf(w,"Section: " + s.Name + "<br>")
+    // }
     
-    /**
-    * Dashboard
-    */
-
-    // Routes
-    var components []map[string]interface{}
-    component := map[string]interface{}{
-        "single":"public/views/admin/dashboard.html",
+    w.Header().Set("Content-Type", "application/json")
+    res, err := json.Marshal(coreglobals.Routes)
+    if err!=nil{
+        panic(err)
     }
-    //components = [0]map[string]interface{}{"single":"public/views/admin/dashboard.html"}
-    components = append(components, component)
-    rDashboard := models.AdminRoute{"index", nil, "/admin", components, "", nil}
+    corehelpers.PanicIf(err)
 
-    // Menu items
-    miDashboard := models.AdminMenuItem {"Dashboard", "fa fa-dashboard fa-fw", &rDashboard, nil}
-    am.AddItem(miDashboard)
+    fmt.Fprintf(w,"%s",res)
+    
+}
 
-    /**
-    * Settings
-    */
+// func GetSectionById(w http.ResponseWriter, r *http.Request){
+//     w.Header().Set("Content-Type", "application/json")
+//     params := mux.Vars(r)
+//     idStr := params["id"]
+//     id, _ := strconv.Atoi(idStr)
+// }
 
-    // Sub menus
-    smSettings := models.AdminMenu{"Settings", nil}
+func Middleware(h http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        log.Println("middleware", r.URL)
 
-    // Routes
-    components = nil
-    component = map[string]interface{}{
-        "single":"public/views/settings/index.html",
-    }
-    components = append(components, component)
-    //components = [0]map[string]interface{}{"single":"public/views/settings/index.html"}
-    rSettings := models.AdminRoute{"settings", nil, "/admin/settings", components, "", nil}
+        sid := corehelpers.CheckCookie(w,r)
 
-    //
-    components = nil
-    component = map[string]interface{}{
-        "single":"public/views/settings/content-type/index.html",
-    }
-    components = append(components, component)
-    //components = [0]map[string]interface{}{"single":"public/views/settings/content-type/index.html"}
-    rSettingsContentTypes := models.AdminRoute{"contentType", nil, "/content-type", components, "", nil}
+        u, err := coremoduleusermodels.GetUser(sid)
+        
+        if(u == nil || err==sql.ErrNoRows){
+            fmt.Println(err)
+            fmt.Fprintf(w, "You need to be logged in to access the API.")
+        } else {
+            coremoduleusermodels.SetLoggedInUser(r,u)
+            h.ServeHTTP(w, r)
+        }
 
-    components = nil
-    component = map[string]interface{}{
-        "single":"public/views/settings/content-type/new.html",
-    }
-    components = append(components, component)
-    //components = [0]map[string]interface{}{"single":"public/views/settings/content-type/new.html"}
-    rSettingsContentTypesNew := models.AdminRoute{"new", nil, "/new?type&parent", components, "", nil}
+        
+    })
+}
 
-    components = nil
-    component = map[string]interface{}{
-        "single":"public/views/settings/content-type/edit.html",
-    }
-    components = append(components, component)
-    //components = [0]map[string]interface{}{"single":"public/views/settings/content-type/edit.html"}
-    rSettingsContentTypesEdit := models.AdminRoute{"edit", nil, "/edit/:nodeId", components, "", nil}
+func APIstuff(){
 
+    // Setup API controllers
+    // nodeApiController := controllers.NodeApiController{}
 
-    // Menu items
+    //angularRouteApiController := controllers.AngularRouteApiController{}
+    sectionApiController := controllers.SectionApiController{}
+    routeApiController := controllers.RouteApiController{}
+    
+    //menuApiController := controllers.MenuApiController{}
 
+    //menuLinkApiController := controllers.MenuLinkApiController{}
+
+    // Setup API routes
+    privateApiRouter := coreglobals.PrivateApiRouter
+    publicApiRouter := coreglobals.PublicApiRouter
     
 
-    miSettingsContentTypes := models.AdminMenuItem {"Content Types", "fa fa-newspaper-o fa-fw", &rSettingsContentTypes, nil}
+    privateApiRouter.HandleFunc("/api/auth/{sid:.*}", http.HandlerFunc(corehelpers.AngularAuth)).Methods("GET")
+  
+    privateApiRouter.HandleFunc("/api/section", http.HandlerFunc(sectionApiController.Get)).Methods("GET")
+    
+    // privateApiRouter.HandleFunc("/api/section/{name:.*}", http.HandlerFunc(sectionApiController.GetByName)).Methods("GET")
+    privateApiRouter.HandleFunc("/api/route", http.HandlerFunc(routeApiController.Get)).Methods("GET")
+    //privateApiRouter.HandleFunc("/api/menu-link/{name:.*}", http.HandlerFunc(menuLinkApiController.GetByName)).Methods("GET")
 
-    smSettings.AddItem(miSettingsContentTypes)
-
-    miSettings := models.AdminMenuItem {"Settings", "fa fa-gear fa-fw", &rSettings, &smSettings}
-
-    am.AddItem(miSettings)
-
-    coreglobals.Menus = append(coreglobals.Menus, am)
-
-    // rSettingsContentTypes.Children = append(rSettingsContentTypes.Children,rSettingsContentTypesNew)
-    // rSettingsContentTypes.Children = append(rSettingsContentTypes.Children,rSettingsContentTypesEdit)
-    // rSettings.Children = append(rSettings.Children,rSettingsContentTypes)
-
-    rSettingsContentTypes.AddChildren(&rSettingsContentTypesNew)
-    rSettingsContentTypes.AddChildren(&rSettingsContentTypesEdit)
-    rSettings.AddChildren(&rSettingsContentTypes)
-
-    coreglobals.Routes = append(coreglobals.Routes, &rDashboard)
-    coreglobals.Routes = append(coreglobals.Routes, &rSettings)
-
-    //globals.Routes = routes
+    //publicApiRouter.HandleFunc("/api/public/contextmenutest/{nodeType:.*}", http.HandlerFunc(models.CmTest)).Methods("GET")
+    
+    http.Handle("/api/public/", publicApiRouter)
+    http.Handle("/api/", context.ClearHandler(Middleware(privateApiRouter)))
 }
 
 func Main(){
-    applicationglobals.Templates["admin.tmpl"] = template.Must(template.ParseFiles("core/application/views/includes/admin.tmpl", "core/application/views/layouts/base.tmpl"))
+
+    APIstuff()
+
+    for _, m := range lib.Modules{
+        for _, s := range m.Sections{
+            var r *lib.Route = s.Route
+            var r1 lib.Route = *r
+            coreglobals.Routes = append(coreglobals.Routes, r1)
+            coreglobals.Sections = append(coreglobals.Sections, s)
+            for _, t := range s.Trees{
+                coreglobals.Routes = append(coreglobals.Routes, t.Routes...)
+            }
+            for _, cs := range s.Children{
+                var r *lib.Route = cs.Route
+                var r1 lib.Route = *r
+                coreglobals.Routes = append(coreglobals.Routes, r1)
+                // Sections = append(Sections, s)
+                for _, t := range cs.Trees{
+                    coreglobals.Routes = append(coreglobals.Routes, t.Routes...)
+                }
+            }
+        }
+    }
+
+    // fmt.Println("Routes:")
+    // fmt.Println(len(Routes))
+    for _, r := range coreglobals.Routes{
+        mystr, _ := json.Marshal(r)
+        fmt.Println(string(mystr))
+    }
+
+
+    coreglobals.Templates["admin.tmpl"] = template.Must(template.ParseFiles("core/application/views/includes/admin.tmpl", "core/application/views/layouts/base.tmpl"))
 
     m := mux.NewRouter()
+    n := mux.NewRouter()
 
-    contentController := controllers.ContentController{}
+    n.HandleFunc("/test/section", GetSections).Methods("GET")
+    n.HandleFunc("/test/routes", GetRoutes).Methods("GET")
+
+    contentController := coremodulecontentcontrollers.ContentController{}
 
     // Entity routes
     // m.Get("/api/entity/{nodeId:.*}") ?node-type=2&section=myplugin ???????????? l8r
@@ -433,5 +470,6 @@ func Main(){
 
     log.Println("Registered a handler for static files.")
     
+    http.Handle("/test/", n)
     http.Handle("/", m)
 }

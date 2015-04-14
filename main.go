@@ -6,7 +6,6 @@ import (
 	"log"
 	"io/ioutil"
 	"net/http"
-    "collexy/core/api"
     "collexy/core/application"
     "encoding/json"
     "os"
@@ -56,8 +55,6 @@ func main() {
 
 	// After all flags are defined, call flag.parse() to parse the command line into the defined flags. 
 	flag.Parse()
-    
-    api.Main()
 
     application.Main()
 

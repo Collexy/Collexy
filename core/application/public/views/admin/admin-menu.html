@@ -28,7 +28,8 @@
 
 			<ul>
 				<li ng-repeat="section in sections">
-					<a ng-if="section.parent_id == null" ng-click="toggleSubMenu(section.id)" ui-sref="{{section.route.path}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a>
+					<a ng-click="toggleSubMenu(section.alias)" ui-sref="{{section.route.state}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a>
+					<!-- <a ng-if="section.parent_id == null" ng-click="toggleSubMenu(section.alias)" ui-sref="{{section.route.state}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a> -->
 					<!-- <a ng-if="section.id ==6" ng-click="toggleSubMenu(section.id)" ui-sref="{{section.route.path}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a> -->
 					<!-- <a ng-if="section.alias != 'login'" ui-sref="{{section.alias}}" ui-sref-active="active"><i ng-class="section.icon"></i><span>{{section.name}}</span></a> -->
 
@@ -44,7 +45,7 @@
 		<nav id="admin-sub-menu">
 			<ul>
 				<li ng-repeat="sub in subMenuItems">
-					<a ui-sref="{{sub.route.path}}" ui-sref-active="active"><i ng-class="sub.icon"></i><span>{{sub.name}}</span></a>
+					<a ui-sref="{{sub.route.state}}" ui-sref-active="active"><i ng-class="sub.icon"></i><span>{{sub.name}}</span></a>
 				</li>
 			</ul>
 		</nav>

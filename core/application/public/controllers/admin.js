@@ -78,36 +78,48 @@ adminControllers.controller('AdminContentCtrl', ['$scope', '$interpolate', 'sess
     // $scope.getContentByContentTypeId = function(id){}
 }]);
 
-adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute', 'MenuLink', function ($scope, $state, AngularRoute, MenuLink) {
+adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute', 'Section', function ($scope, $state, AngularRoute, Section) {
 	
     //$scope.sections = AngularRoute.query({'type': '1'},{}, function(section){})
-    $scope.sections = MenuLink.query({},{name: 'main'}, function(section){})
-    $scope.currentSectionId = 0;
-    $scope.toggleSubMenu = function(id){
+    $scope.sections = Section.query({},{}, function(section){})
+    $scope.currentSectionAlias = "sectionContent";
+    $scope.toggleSubMenu = function(alias){
 
     	//alert($scope.sections.length)
-    	var subMenuItems = [];
+    	
+        var subMenuItems = [];
+
     	for(var i = 0; i < $scope.sections.length; i++){
-    		if('parent_id' in $scope.sections[i]){
-    			if($scope.sections[i].parent_id == id){
-	    			subMenuItems.push($scope.sections[i]);
-	    		}
-    		}
-    		
+    		// if('parent_id' in $scope.sections[i]){
+    		// 	if($scope.sections[i].parent_id == id){
+	    	// 		subMenuItems.push($scope.sections[i]);
+	    	// 	}
+    		// }
+            if('alias' in $scope.sections[i]){
+        		if($scope.sections[i].alias == alias){
+                    if('children' in $scope.sections[i]){
+                        subMenuItems = $scope.sections[i].children;
+                    } else {
+                        //alert("lol")
+                        subMenuItems = [];
+                    }
+
+                }
+            }
     	}
     	$scope.subMenuItems = subMenuItems;
 
-    	console.log($scope.subMenuItems)
+    	// console.log($scope.subMenuItems)
 
-    	if($scope.currentSectionId == 0){
-    		$scope.currentSectionId = id;
+    	if($scope.currentSectionAlias == "sectionContent"){
+    		$scope.currentSectionAlias = alias;
     	}
 
 
 
     	if(angular.element('#adminsubmenucontainer').hasClass("collapse1")){
     		if($scope.subMenuItems.length>0){
-    			if($scope.currentSectionId == id){
+    			if($scope.currentSectionAlias == alias){
 	    			angular.element('#adminsubmenucontainer').removeClass("collapse1");
 	    			angular.element('#adminsubmenucontainer').addClass("expanded1");
                     angular.forEach(angular.element(".nosubmenu-margin-top"), function(value, key){
@@ -124,11 +136,11 @@ adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute'
                          a.removeClass('nosubmenu-margin-top');
                          a.addClass('submenu-margin-top');
                     });
-	    			$scope.currentSectionId = id;
+	    			$scope.currentSectionAlias = alias;
 	    		}
     		}
     	} else {
-    		if($scope.currentSectionId == id){
+    		if($scope.currentSectionAlias == alias){
     			angular.element('#adminsubmenucontainer').removeClass("expanded1");
     			angular.element('#adminsubmenucontainer').addClass("collapse1");
                 angular.forEach(angular.element(".submenu-margin-top"), function(value, key){
@@ -136,7 +148,7 @@ adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute'
                          a.removeClass('submenu-margin-top');
                          a.addClass('nosubmenu-margin-top');
                     });
-    			$scope.currentSectionId = 0;
+    			$scope.currentSectionAlias = "sectionContent";
     		} else {
     			var hasSubs = false;
     			for(var i = 0; i < subMenuItems.length; i++){
@@ -155,7 +167,7 @@ adminControllers.controller('AdminMenuCtrl', ['$scope', '$state', 'AngularRoute'
                     });
     			}
     			
-    			$scope.currentSectionId = id;
+    			$scope.currentSectionAlias = alias;
     		}
     		
     	}

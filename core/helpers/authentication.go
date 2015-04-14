@@ -6,6 +6,10 @@ import(
     coreglobals "collexy/core/globals"
     // "collexy/admin/models" // Avoid circular dependencies, go compiler however will tell you!
     "net/http"
+
+    "github.com/gorilla/mux"
+    "encoding/json"
+    coremoduleusermodels "collexy/core/modules/user/models"
 )
 
 // func SetupSecureCookie() (sc *securecookie.SecureCookie){
@@ -36,4 +40,21 @@ func CheckMemberCookie(w http.ResponseWriter, r *http.Request) (sid string){
         }
     }
     return
+}
+
+func AngularAuth(w http.ResponseWriter, r *http.Request){
+    w.Header().Set("Content-Type", "application/json")
+    params := mux.Vars(r)
+    encodedSid := params["sid"]
+    var sid string
+    value := make(map[string]string)
+    if err := coreglobals.S.Decode("sessionauth", encodedSid, &value); err == nil {
+        sid = value["sid"]
+        fmt.Println("corehelpers.CheckCookie returns sid (string): " + sid)
+    }
+    
+    u, _ := coremoduleusermodels.GetUser(sid)
+    res, err := json.Marshal(u)
+    PanicIf(err)
+    fmt.Fprintf(w,"%s",res)
 }

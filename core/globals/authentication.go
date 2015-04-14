@@ -1,7 +1,6 @@
 package globals
 
 import (
-	//corehelpers "collexy/core/helpers"
 	"github.com/gorilla/securecookie"
 	"golang.org/x/crypto/bcrypt"
 )
