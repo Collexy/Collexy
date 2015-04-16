@@ -56,7 +56,9 @@ type TemplateApiController struct {}
 func (this *TemplateApiController) Get(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
-    templates := models.GetTemplates()
+    queryStrParams := r.URL.Query()
+
+    templates := models.GetTemplates(queryStrParams)
     
     res, err := json.Marshal(templates)
     corehelpers.PanicIf(err)
@@ -64,6 +66,24 @@ func (this *TemplateApiController) Get(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w,"%s",res)
 
 }
+
+func (this *TemplateApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    params := mux.Vars(r)
+    idStr := params["id"]
+    id, _ := strconv.Atoi(idStr)
+
+    //user := coremoduleuser.GetLoggedInUser(r)
+
+    templates := models.GetTemplatesByIdChildren(id)
+
+    res, err := json.Marshal(templates)
+    corehelpers.PanicIf(err)
+
+    fmt.Fprintf(w,"%s",res)
+}
+
 
 func (this *TemplateApiController) GetById(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")

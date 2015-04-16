@@ -2,7 +2,7 @@
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
-        <input type="text" ng-model="node.node.name">
+        <input type="text" ng-model="node.name">
 
         <ul class="admin-tabs">
             <li ng-class="(currentTab=='content-type') ? 'active' : ''"><a href="#content-type" ng-click="toggleTab('content-type')">Content Type</a></li>
@@ -35,7 +35,7 @@
                 <tr>
                     <td>Allowed templates</td>
                     <td>
-                        <div ng-repeat="tmpl in allTemplates"><label><input type="checkbox" checklist-model="node.meta.allowed_templates_node_id" checklist-value="tmpl.id"></label> {{tmpl.name}}</div>
+                        <div ng-repeat="tmpl in allTemplates"><label><input type="checkbox" checklist-model="node.meta.allowed_template_ids" checklist-value="tmpl.id"></label> {{tmpl.name}}</div>
                         <br>
                           <button ng-click="checkAll()">check all</button>
                           <button ng-click="uncheckAll()">uncheck all</button>
@@ -45,7 +45,7 @@
                 <tr>
                     <td>Default template</td>
                     <td>
-                        <select ng-model="node.meta.template_node_id">
+                        <select ng-model="node.meta.template_id">
                             <option ng-repeat="tmpl in allTemplates" value="{{tmpl.id}}">{{tmpl.name}}</option>
                         </select>
                     </td>

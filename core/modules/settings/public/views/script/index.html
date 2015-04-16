@@ -5,7 +5,7 @@
 			     data-target="menu-{{index }}"
 			     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
 			</div> -->
-			<div ng-include src="'public/views/settings/script/list.html'"></div>
+			<div ng-include src="'core/modules/settings/public/views/script/list.html'"></div>
 		</div>
 	</div>
 	<div id="overlay">
@@ -40,17 +40,17 @@
 		            <ul showonhoverparent>
 		                <li >
 		                	<span class="icon-container"><i class="fa fa-file-o fa-fw"></i></span>
-		                    <a ui-sref="settings.{{rootdir}}.new({type:'file', parent:currentItem.path})">File</a>
+		                    <a ui-sref="settings.script.new({type:'file', parent:currentItem.path})">File</a>
 		                </li>
 		                <li >
 		                	<span class="icon-container"><i class="fa fa-folder-o fa-fw"></i></span>
-		                    <a ui-sref="settings.{{rootdir}}.new({type:'folder', parent:currentItem.path})">Folder</a>
+		                    <a ui-sref="settings.script.new({type:'folder', parent:currentItem.path})">Folder</a>
 		                </li>
 		            </ul>
 	            </span>
 	        </li>
 	        <li ng-if="currentItem.path != rootNode.path" class="context-sub-menu">
-	            <a ng-click="clickToOpen('public/views/settings/script/delete.html')">Delete</a>
+	            <a ng-click="clickToOpen('core/modules/settings/public/views/script/delete.html')">Delete</a>
 	        </li>
 	    </ul>
 	</div>
@@ -58,10 +58,10 @@
 <div class="outer-content-details-container nosubmenu-margin-top" top-nav-margin>
 	<div class="content-details-container scroller" perfect-scroll>
 		<div id="content-details">
-			<div ng-if="state.current.name == 'settings.scripts.edit' || state.current.name == 'settings.scripts.new'" ui-view></div>
-			<div ng-if="state.current.name == 'settings.scripts'">
+			<div ng-if="state.current.name == 'settings.script.edit' || state.current.name == 'settings.script.new'" ui-view></div>
+			<div ng-if="state.current.name == 'settings.script'">
 				<div>
-					<h4>Content</h4>
+					<h4>Scripts</h4>
 					<ul class="admin-tabs">
 						<li class="active"><a href="#getStarted">Get Started</a></li>
 					</ul>

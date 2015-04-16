@@ -1,7 +1,13 @@
-var contentTypeControllers = angular.module('contentTypeControllers', []);
+angular.module("myApp").controller("ContentTypeTreeCtrl", ContentTypeTreeCtrl);
 
-contentTypeControllers.controller('ContentTypeTreeCtrl', ['$scope', '$stateParams', 'NodeChildren','Node', 'ContentType', 'sessionService', 'ContextMenu', '$interpolate', 'ngDialog', function ($scope, $stateParams, NodeChildren, Node, ContentType, sessionService, ContextMenu, $interpolate, ngDialog) {
-  
+/**
+ * @ngdoc controller
+ * @name ContentTreeCtrl
+ * @function
+ * @description
+ * The controller for deleting content
+ */
+function ContentTypeTreeCtrl($scope, $stateParams, ContentTypeChildren, ContentType, sessionService, ContextMenu, $interpolate, ngDialog) {
   $scope.rootNode = {
     "id": 1,
     "allowedPermissions": ["node_create"],
@@ -21,8 +27,8 @@ contentTypeControllers.controller('ContentTypeTreeCtrl', ['$scope', '$stateParam
 
   $scope.deleteNode = function(item) {
     //alert("deleteNode")
-    ContentType.delete({nodeId: item.entity.node.id}, function(){
-      console.log("content type and node record deleted with nodeId: " + item.entity.node.id)
+    ContentType.delete({id: item.entity.node.id}, function(){
+      console.log("content type and node record deleted with id: " + item.entity.node.id)
     })
     
   };
@@ -37,7 +43,7 @@ contentTypeControllers.controller('ContentTypeTreeCtrl', ['$scope', '$stateParam
       }
       if(data.nodes.length == 0){
         // REST API call to fetch the current node's imcontentTypete children
-        data.nodes = NodeChildren.query({ nodeId: data.id}, function(node){
+        data.nodes = ContentTypeChildren.query({ id: data.id}, function(node){
           //console.log(node)
         });
         //console.log(data.nodes)
@@ -56,7 +62,7 @@ contentTypeControllers.controller('ContentTypeTreeCtrl', ['$scope', '$stateParam
                           data.nodes.push({name: newName, show: true, nodes: []});
   };
   //var contentTypeNodes = ContentTypeNode.query(function(node){
-  var contentTypeNodes = Node.query({'node-type': '4', 'levels': '1'},{},function(node){
+  var contentTypeNodes = ContentType.query({'type-id': '1', 'levels': '1'},{},function(node){
           //console.log(node)
         });
  
@@ -138,7 +144,7 @@ contentTypeControllers.controller('ContentTypeTreeCtrl', ['$scope', '$stateParam
       currentItem = $scope.rootNode;
       $scope.getMenu(4);
     } else {
-      currentItem['entity'] = ContentType.get({ nodeId: currentItem.id}, function(data){
+      currentItem['entity'] = ContentType.get({ id: currentItem.id}, function(data){
         var tempArray = getUserNodePermissions(currentItem, sessionService.getUser());
         var tempArray2 = [];
         if(typeof tempArray[0] == 'object'){
@@ -169,15 +175,17 @@ contentTypeControllers.controller('ContentTypeTreeCtrl', ['$scope', '$stateParam
     })
     //alert($scope.contextMenu)
   }
+}
 
-}]);
 
-contentTypeControllers.controller('ContentTypeEditCtrl', ['$scope', '$stateParams', 'ContentType', 'Node', 'DataType', function ($scope, $stateParams, ContentType, Node, DataType) {
+var contentTypeControllers = angular.module('contentTypeControllers', []);
+
+contentTypeControllers.controller('ContentTypeEditCtrl', ['$scope', '$stateParams', 'ContentType', 'Node', 'DataType', 'Template', function ($scope, $stateParams, ContentType, Node, DataType, Template) {
   $scope.currentTab = 'content-type';
   $scope.stateParams = $stateParams;
-  if ($stateParams.nodeId) {
+  if ($stateParams.id) {
 
-    $scope.node = ContentType.get({ nodeId: $stateParams.nodeId}, function(node){
+    $scope.node = ContentType.get({ id: $stateParams.id}, function(node){
       
     });
     //User.get({ userId: $stateParams.userId} , function(phone) {
@@ -198,10 +206,10 @@ contentTypeControllers.controller('ContentTypeEditCtrl', ['$scope', '$stateParam
       
     }
 
-  $scope.allTemplates = Node.query({'node-type': '3'},{},function(node){
+  $scope.allTemplates = Template.query({},{},function(node){
     });
 
-  $scope.allContentTypes = Node.query({'node-type': '4'},{},function(node){
+  $scope.allContentTypes = ContentType.query({'type-id': '1'},{},function(node){
     });
 
   $scope.allMediaTypes = Node.query({'node-type': '7'},{},function(node){
@@ -244,9 +252,9 @@ contentTypeControllers.controller('ContentTypeEditCtrl', ['$scope', '$stateParam
       // });
     }
 
-    if ($stateParams.nodeId) {
+    if ($stateParams.id) {
       console.log("update");
-      ContentType.update({nodeId: $stateParams.nodeId}, $scope.node, success, failure);
+      ContentType.update({id: $stateParams.id}, $scope.node, success, failure);
       console.log($scope.node)
       //User.update($scope.user, success, failure);
     } else {

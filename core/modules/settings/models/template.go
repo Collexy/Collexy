@@ -17,6 +17,7 @@ import (
    "fmt"
   "strings"
   "os"
+  "net/url"
 )
 
 type Template struct {
@@ -32,11 +33,56 @@ type Template struct {
   ParentTemplates []*Template `json:"parent_templates,omitempty"`
 }
 
-func GetTemplates() (templates []*Template){
+func GetTemplates(queryStringParams url.Values) (templates []*Template){
     db := coreglobals.Db
 
-    rows, err := db.Query(`SELECT id, path, parent_id, name, alias, created_by, created_date, is_partial 
-        FROM template`)
+    sqlStr := `SELECT id, path, parent_id, name, alias, created_by, created_date, is_partial 
+        FROM template`
+
+    if(queryStringParams.Get("levels") != ""){
+      sqlStr = sqlStr + ` WHERE path ~ '*.*{`+queryStringParams.Get("levels") +`}'`
+    }
+
+    rows, err := db.Query(sqlStr)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var id, created_by int
+        var path, name, alias string
+        var created_date time.Time
+        var parent_id sql.NullInt64
+        var is_partial bool
+
+        if err := rows.Scan(&id,&path,&parent_id,&name,&alias,&created_by,&created_date,&is_partial); err != nil {
+            log.Fatal(err)
+        }
+
+        var pid int
+
+        if parent_id.Valid {
+            pid = int(parent_id.Int64)
+        }
+
+        template := &Template{id,path,pid,name,alias,created_by,&created_date,is_partial,"",nil}
+        templates = append(templates, template)
+    }
+    if err := rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+    return
+}
+
+func GetTemplatesByIdChildren(parentId int) (templates []*Template){
+    db := coreglobals.Db
+
+    sqlStr := `SELECT id, path, parent_id, name, alias, created_by, created_date, is_partial 
+        FROM template 
+        WHERE parent_id=$1`
+
+    rows, err := db.Query(sqlStr,parentId)
     if err != nil {
         log.Fatal(err)
     }

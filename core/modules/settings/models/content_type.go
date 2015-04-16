@@ -12,6 +12,7 @@ import (
     //"strconv"
     "database/sql"
     "log"
+    "net/url"
 )
 
 type ContentType struct {
@@ -28,20 +29,34 @@ type ContentType struct {
     Meta map[string]interface{} `json:"meta,omitempty"`
     Tabs []Tab `json:"tabs,omitempty"`
     ParentContentTypes []ContentType `json:"parent_content_types,omitempty"`
+    AllowedContentTypes []ContentType `json:"allowed_content_types,omitempty"`
     TypeId int `json:"type_id"`
 }
 
-func GetContentTypes() (contentTypes []*ContentType){
+func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType){
     db := coreglobals.Db
-
-    rows, err := db.Query(`SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
+    sqlStr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
         content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, 
         content_type.alias as member_alias, content_type.created_by as content_type_created_by, 
         content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
         content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail,
         content_type.meta as content_type_meta, content_type.tabs as content_type_tabs, 
         content_type.type_id as content_type_type_id
-        FROM content_type`)
+        FROM content_type`
+
+    if(queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") != ""){
+        sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id") + ` and content_type.path ~ '*.*{`+queryStringParams.Get("levels") +`}'`
+    } else if(queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels")==""){
+        sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
+    } else if(queryStringParams.Get("type-id") == "" && queryStringParams.Get("levels") != ""){
+        sqlStr = sqlStr + ` WHERE content_type.path ~ '*.*{`+queryStringParams.Get("levels") +`}'`
+    }
+
+    // if queryStringParams.Get("type-id") != ""{
+    //     sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
+    // }
+
+    rows, err := db.Query(sqlStr)
 
     if err != nil {
         log.Fatal(err)
@@ -77,7 +92,68 @@ func GetContentTypes() (contentTypes []*ContentType){
         json.Unmarshal(content_type_tabs, &tabs)
         json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-        contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, content_type_type_id}
+        contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
+        contentTypes = append(contentTypes, contentType)
+    }
+    if err := rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+    return
+}
+
+func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType){
+    db := coreglobals.Db
+    sqlStr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
+        content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, 
+        content_type.alias as member_alias, content_type.created_by as content_type_created_by, 
+        content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
+        content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail,
+        content_type.meta as content_type_meta, content_type.tabs as content_type_tabs, 
+        content_type.type_id as content_type_type_id
+        FROM content_type
+        WHERE content_type.parent_id=$1`
+
+    // if queryStringParams.Get("type-id") != ""{
+    //     sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
+    // }
+
+    rows, err := db.Query(sqlStr, id)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var content_type_id, content_type_created_by, content_type_type_id int
+        var content_type_path, content_type_name, content_type_alias string
+        var content_type_description, content_type_icon, content_type_thumbnail string
+        var content_type_created_date *time.Time
+
+        var content_type_parent_id sql.NullInt64
+
+        var content_type_tabs, content_type_meta []byte
+
+        if err := rows.Scan(&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, 
+            &content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description, 
+            &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id); err != nil {
+            log.Fatal(err)
+        }
+
+        var parent_content_type_id int
+        if content_type_parent_id.Valid {
+            parent_content_type_id = int(content_type_parent_id.Int64)
+        } else {
+            // NULL value
+        }
+
+        var tabs []Tab
+        var content_type_metaMap map[string]interface{}
+
+        json.Unmarshal(content_type_tabs, &tabs)
+        json.Unmarshal(content_type_meta, &content_type_metaMap)
+
+        contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
         contentTypes = append(contentTypes, contentType)
     }
     if err := rows.Err(); err != nil {
@@ -233,7 +309,7 @@ WHERE content_type.id=$1`
         case err != nil:
             log.Fatal(err)
         default:
-            contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, content_type_type_id}
+            contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_type_id}
     }
 
     return
@@ -287,7 +363,7 @@ func GetContentTypeById(id int) (contentType ContentType){
         case err != nil:
             log.Fatal(err)
         default:
-            contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, content_type_type_id}
+            contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
     }
 
     return

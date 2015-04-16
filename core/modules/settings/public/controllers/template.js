@@ -1,6 +1,6 @@
 var templateControllers = angular.module('templateControllers', []);
 
-templateControllers.controller('TemplateTreeCtrl', ['$scope', '$stateParams', 'NodeChildren','Node', 'Template', 'sessionService', 'ContextMenu', '$interpolate', 'ngDialog', function ($scope, $stateParams, NodeChildren, Node, Template, sessionService, ContextMenu, $interpolate, ngDialog) {
+templateControllers.controller('TemplateTreeCtrl', ['$scope', '$stateParams', 'TemplateChildren','Node', 'Template', 'sessionService', 'ContextMenu', '$interpolate', 'ngDialog', function ($scope, $stateParams, TemplateChildren, Node, Template, sessionService, ContextMenu, $interpolate, ngDialog) {
   $scope.rootNode = {
     "id": 1,
     "allowedPermissions": ["node_create"],
@@ -20,8 +20,8 @@ templateControllers.controller('TemplateTreeCtrl', ['$scope', '$stateParams', 'N
 
   $scope.deleteNode = function(item) {
     //alert("deleteNode")
-    Template.delete({nodeId: item.entity.node.id}, function(){
-      console.log("content type and node record deleted with nodeId: " + item.entity.node.id)
+    Template.delete({id: item.entity.node.id}, function(){
+      console.log("content type and node record deleted with id: " + item.entity.node.id)
     })
     
   };
@@ -36,7 +36,7 @@ templateControllers.controller('TemplateTreeCtrl', ['$scope', '$stateParams', 'N
       }
       if(data.nodes.length == 0){
         // REST API call to fetch the current node's imtemplatete children
-        data.nodes = NodeChildren.query({ nodeId: data.id}, function(node){
+        data.nodes = TemplateChildren.query({ id: data.id}, function(node){
           //console.log(node)
         });
         //console.log(data.nodes)
@@ -55,7 +55,7 @@ templateControllers.controller('TemplateTreeCtrl', ['$scope', '$stateParams', 'N
                           data.nodes.push({name: newName, show: true, nodes: []});
   };
   //var templateNodes = TemplateNode.query(function(node){
-  var templateNodes = Node.query({'node-type': '3', 'levels': '1'},{},function(node){
+  var templateNodes = Template.query({'levels': '1'},{},function(node){
           //console.log(node)
         });
   // var templateNodes1 = [];
@@ -228,7 +228,7 @@ templateControllers.controller('TemplateTreeCtrl', ['$scope', '$stateParams', 'N
       currentItem = $scope.rootNode;
       $scope.getMenu(3);
     } else {
-      currentItem['entity'] = Template.get({ nodeId: currentItem.id}, function(data){
+      currentItem['entity'] = Template.get({ id: currentItem.id}, function(data){
         var tempArray = getUserNodePermissions(currentItem, sessionService.getUser());
         var tempArray2 = [];
         if(typeof tempArray[0] == 'object'){
@@ -273,9 +273,9 @@ templateControllers.controller('TemplateTreeCtrlEdit', ['$scope', '$stateParams'
   $scope.currentTab = 'template';
 
   $scope.stateParams = $stateParams;
-  if ($stateParams.nodeId) {
+  if ($stateParams.id) {
 
-    $scope.node = Template.get({ nodeId: $stateParams.nodeId}, function(node){
+    $scope.node = Template.get({ id: $stateParams.id}, function(node){
       
     });
     //User.get({ userId: $stateParams.userId} , function(phone) {
@@ -373,9 +373,9 @@ templateControllers.controller('TemplateTreeCtrlEdit', ['$scope', '$stateParams'
       // });
     }
 
-    if ($stateParams.nodeId) {
+    if ($stateParams.id) {
       console.log("update");
-      Template.update({nodeId: $stateParams.nodeId}, $scope.node, success, failure);
+      Template.update({id: $stateParams.id}, $scope.node, success, failure);
       console.log($scope.node)
       //User.update($scope.user, success, failure);
     } else {

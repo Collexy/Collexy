@@ -25,6 +25,7 @@ func init(){
 	subrPrivate := privateApiRouter.PathPrefix("/").Subrouter()
 
 	// m.Get("/api/content-type/extended/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.GetContentTypeExtendedByNodeId))
+	subrPrivate.HandleFunc("/api/content-type/{id:.*}/children", http.HandlerFunc(contentTypeApiController.GetByIdChildren)).Methods("GET")
     subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.GetById)).Methods("GET")
     subrPrivate.HandleFunc("/api/content-type", http.HandlerFunc(contentTypeApiController.Get)).Methods("GET")
     //m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypeByNodeId)) // not sure about this
@@ -38,6 +39,7 @@ func init(){
     //privateApiRouter.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
     //privateApiRouter.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Post)).Methods("POST")
 
+    subrPrivate.HandleFunc("/api/template/{id:.*}/children", http.HandlerFunc(templateApiController.GetByIdChildren)).Methods("GET")
     subrPrivate.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
     subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.GetById)).Methods("GET")
     
@@ -85,11 +87,11 @@ func init(){
 	rTemplateTreeMethodNew := lib.Route{"settings.template.new", "/new?type&parent", "core/modules/settings/public/views/template/new.html", false}
 
 	rScriptSection := lib.Route{"settings.script", "/script", "core/modules/settings/public/views/script/index.html", false}
-	rScriptTreeMethodEdit := lib.Route{"settings.script.edit", "/edit/:id", "core/modules/settings/public/views/script/edit.html", false}
+	rScriptTreeMethodEdit := lib.Route{"settings.script.edit", "/edit/:name", "core/modules/settings/public/views/script/edit.html", false}
 	rScriptTreeMethodNew := lib.Route{"settings.script.new", "/new?type&parent", "core/modules/settings/public/views/script/new.html", false}
 
 	rStylesheetSection := lib.Route{"settings.stylesheet", "/stylesheet", "core/modules/settings/public/views/stylesheet/index.html", false}
-	rStylesheetTreeMethodEdit := lib.Route{"settings.stylesheet.edit", "/edit/:id", "core/modules/settings/public/views/stylesheet/edit.html", false}
+	rStylesheetTreeMethodEdit := lib.Route{"settings.stylesheet.edit", "/edit/:name", "core/modules/settings/public/views/stylesheet/edit.html", false}
 	rStylesheetTreeMethodNew := lib.Route{"settings.stylesheet.new", "/new?type&parent", "core/modules/settings/public/views/stylesheet/new.html", false}
 
 	// setup trees
@@ -115,14 +117,14 @@ func init(){
 	treesStylesheetSection := []*lib.Tree{&tStylesheet}
 
 	// params: name, alias, icon, route, trees, iscontainer, parent
-	sSettings := lib.Section{"Settings Section", "settingsSection", "fa fa-gear fa-fw", &rSettingsSection, nil, true, nil,nil}
+	sSettings := lib.Section{"Settings Section", "settingsSection", "fa fa-gear fa-fw", &rSettingsSection, nil, true, nil,nil, []string{"settings_section"}}
 
-	sContentType := lib.Section{"Content Type Section", "contentTypeSection", "fa fa-newspaper-o fa-fw", &rContentTypeSection, treesContentTypeSection, false, nil, nil}
-	sMediaType := lib.Section{"Media Type Section", "mediaTypeSection", "fa fa-files-o fa-fw", &rMediaTypeSection, treesMediaTypeSection, false, nil, nil}
-	sDataType := lib.Section{"Data Type Section", "dataTypeSection", "fa fa-check-square-o fa-fw", &rDataTypeSection, treesDataTypeSection, false, nil, nil}
-	sTemplate := lib.Section{"Template Section", "templateSection", "fa fa-eye fa-fw", &rTemplateSection, treesTemplateSection, false, nil, nil}
-	sScript := lib.Section{"Script Section", "scriptSection", "fa fa-file-code-o fa-fw", &rScriptSection, treesScriptSection, false, nil, nil}
-	sStylesheet := lib.Section{"Stylesheet Type Section", "stylesheetSection", "fa fa-desktop fa-fw", &rStylesheetSection, treesStylesheetSection, false, nil, nil}
+	sContentType := lib.Section{"Content Type Section", "contentTypeSection", "fa fa-newspaper-o fa-fw", &rContentTypeSection, treesContentTypeSection, false, nil, nil, []string{"content_type_section"}}
+	sMediaType := lib.Section{"Media Type Section", "mediaTypeSection", "fa fa-files-o fa-fw", &rMediaTypeSection, treesMediaTypeSection, false, nil, nil, []string{"media_type_section"}}
+	sDataType := lib.Section{"Data Type Section", "dataTypeSection", "fa fa-check-square-o fa-fw", &rDataTypeSection, treesDataTypeSection, false, nil, nil, []string{"data_type_section"}}
+	sTemplate := lib.Section{"Template Section", "templateSection", "fa fa-eye fa-fw", &rTemplateSection, treesTemplateSection, false, nil, nil, []string{"template_section"}}
+	sScript := lib.Section{"Script Section", "scriptSection", "fa fa-file-code-o fa-fw", &rScriptSection, treesScriptSection, false, nil, nil, []string{"script_section"}}
+	sStylesheet := lib.Section{"Stylesheet Type Section", "stylesheetSection", "fa fa-desktop fa-fw", &rStylesheetSection, treesStylesheetSection, false, nil, nil, []string{"stylesheet_section"}}
 
 	lol := []lib.Section{sContentType, sMediaType, sDataType, sTemplate, sScript, sStylesheet}
 	sSettings.Children = lol

@@ -16,8 +16,10 @@ func init(){
     subr := privateApiRouter.PathPrefix("/").Subrouter()
 
     contentApiController := coremodulecontentcontrollers.ContentApiController{}
+    contentTreeController := coremodulecontentcontrollers.ContentTreeController{}
     
     // Content
+    subr.HandleFunc("/api/content/{id:.*}/contextmenu", http.HandlerFunc(contentTreeController.GetMenuForContent)).Methods("GET")
     subr.HandleFunc("/api/content", http.HandlerFunc(contentApiController.Get)).Methods("GET")
     subr.HandleFunc("/api/content/{id:.*}/children", http.HandlerFunc(contentApiController.GetByIdChildren)).Methods("GET")
     //privateApiRouter.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Delete)).Methods("DELETE")
@@ -61,8 +63,8 @@ func init(){
 	treesMediaSection := []*lib.Tree{&tMedia}
 
 	// params: name, alias, icon, route, trees, iscontainer, parent
-	sContent := lib.Section{"Content Section", "contentSection", "fa fa-newspaper-o fa-fw", &rContentSection, treesContentSection, true, nil,nil}
-	sMedia := lib.Section{"Media Section", "mediaSection", "fa fa-file-image-o fa-fw", &rMediaSection, treesMediaSection, true, nil,nil}
+	sContent := lib.Section{"Content Section", "contentSection", "fa fa-newspaper-o fa-fw", &rContentSection, treesContentSection, true, nil,nil, []string{"content_section"}}
+	sMedia := lib.Section{"Media Section", "mediaSection", "fa fa-file-image-o fa-fw", &rMediaSection, treesMediaSection, true, nil,nil, []string{"media_section"}}
 
 	//reflect.ValueOf(&sSettings).Elem().FieldByName("Children").Set(reflect.ValueOf(lol))
 	// log.Println(sSettings.Children[0].Name + ":FDSF:SDF:DS:F:")

@@ -50,7 +50,7 @@ func init(){
     rMemberGroupTreeMethodEdit := lib.Route{"member.memberGroup.edit", "/edit/:id", "core/modules/member/public/views/member-group/edit.html", false}
     rMemberGroupTreeMethodNew := lib.Route{"member.memberGroup.new", "/new", "core/modules/member/public/views/member-group/new.html", false}
 
-    rMemberTypeSection := lib.Route{"member.memberType", "/member-group", "core/modules/member/public/views/member-type/index.html", false}
+    rMemberTypeSection := lib.Route{"member.memberType", "/member-type", "core/modules/member/public/views/member-type/index.html", false}
     rMemberTypeTreeMethodEdit := lib.Route{"member.memberType.edit", "/edit/:id", "core/modules/member/public/views/member-type/edit.html", false}
     rMemberTypeTreeMethodNew := lib.Route{"member.memberType.new", "/new", "core/modules/member/public/views/member-type/new.html", false}
 
@@ -68,11 +68,11 @@ func init(){
     treesMemberTypeSection := []*lib.Tree{&tMemberType}
 
     // params: name, alias, icon, route, trees, iscontainer, parent
-    sMembers := lib.Section{"Members Section", "membersSection", "fa fa-users fa-fw", &rMemberSection, treesMemberSection, false, nil,nil}
+    sMembers := lib.Section{"Members Section", "membersSection", "fa fa-users fa-fw", &rMemberSection, treesMemberSection, false, nil,nil, []string{"member_section"}}
 
-    sMemberGroup := lib.Section{"Member Group Section", "memberGroupSection", "fa fa-smile-o fa-fw", &rMemberGroupSection, treesMemberGroupSection, false, nil, nil}
+    sMemberGroup := lib.Section{"Member Group Section", "memberGroupSection", "fa fa-smile-o fa-fw", &rMemberGroupSection, treesMemberGroupSection, false, nil, nil, []string{"member_group_section"}}
 
-    sMemberType := lib.Section{"Member Type Section", "memberTypeSection", "fa fa-smile-o fa-fw", &rMemberTypeSection, treesMemberTypeSection, false, nil, nil}
+    sMemberType := lib.Section{"Member Type Section", "memberTypeSection", "fa fa-smile-o fa-fw", &rMemberTypeSection, treesMemberTypeSection, false, nil, nil, []string{"member_type_section"}}
 
     lol := []lib.Section{sMemberGroup,sMemberType}
     sMembers.Children = lol

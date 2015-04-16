@@ -2,7 +2,7 @@
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
-        <input type="text" ng-model="node.node.name">
+        <input type="text" ng-model="node.name">
 
         <ul class="admin-tabs">
             <li ng-class="(currentTab=='content-type') ? 'active' : ''"><a href="#content-type" ng-click="toggleTab('content-type')">Content Type</a></li>
@@ -58,7 +58,7 @@
                 <tr>
                     <td>Allowed media types</td>
                     <td>
-                        <div ng-repeat="ctype in allMediaTypes"><label><input type="checkbox" checklist-model="node.meta.allowed_content_types_node_id" checklist-value="ctype.id"></label> {{ctype.name}}</div>
+                        <div ng-repeat="ctype in allMediaTypes"><label><input type="checkbox" checklist-model="node.meta.allowed_content_type_ids" checklist-value="ctype.id"></label> {{ctype.name}}</div>
                         <br>
                           <button type="button" ng-click="checkAll()">check all</button>
                           <button type="button" ng-click="uncheckAll()">uncheck all</button>

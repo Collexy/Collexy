@@ -3,7 +3,7 @@ var directoryControllers = angular.module('directoryControllers', []);
 directoryControllers.controller('DirectoryTreeCtrl', ['$scope', '$stateParams', '$state','Directory', 'ngDialog', function ($scope, $stateParams, $state, Directory, ngDialog) {
   //$scope.rootdir = $state.current.data.rootdir;
 
-  $scope.rootdir = $state.current.name.split(".")[1];
+  $scope.rootdir = $state.current.name.split(".")[1]+"s";
   //alert(rootdir);
   var directoryNodes;
 
@@ -82,7 +82,7 @@ directoryControllers.controller('DirectoryTreeCtrl', ['$scope', '$stateParams', 
 directoryControllers.controller('DirectoryTreeCtrlEdit', ['$scope', '$stateParams', 'Directory', '$state', function ($scope, $stateParams, Directory, $state) {
   
   //console.log($state.current)
-  $scope.rootdir = $state.current.name.split(".")[1];
+  $scope.rootdir = $state.current.name.split(".")[1]+"s";
   if($scope.rootdir == 'stylesheets'){
     $scope.editorOptions = {
         lineWrapping : true,

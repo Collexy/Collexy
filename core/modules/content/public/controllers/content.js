@@ -9,7 +9,7 @@ angular.module("myApp").controller("ContentTreeCtrlEdit", ContentTreeCtrlEdit);
  * @description
  * The controller for deleting content
  */
-function ContentTreeCtrl($scope, $stateParams, ContentChildren, Node, Content, ContentType, sessionService, ContextMenu, $interpolate, ngDialog) {
+function ContentTreeCtrl($scope, $stateParams, ContentChildren, Node, Content, ContentType, sessionService, ContextMenu, $interpolate, ngDialog, ContentContextMenu) {
   var allowedContentTypeNodes = [];
   var allowedContentTypes = [];
 
@@ -35,15 +35,15 @@ function ContentTreeCtrl($scope, $stateParams, ContentChildren, Node, Content, C
 
   
   $scope.rootNode = {
-    "id": 1,
+    "id": 0,
     "allowedPermissions": ["node_create"],
     "path": "1",
     "name": "root",
     "node_type": 5,
     "created_by": 1,
-    "entity": {
+    // "entity": {
       "allowedContentTypes": allowedContentTypes
-    }
+    // }
   }
 
   $scope.clickToOpen = function (item) {
@@ -55,8 +55,8 @@ function ContentTreeCtrl($scope, $stateParams, ContentChildren, Node, Content, C
 
   $scope.deleteNode = function(item) {
     //alert("deleteNode")
-    Content.delete({nodeId: item.entity.node.id}, function(){
-      console.log("content and node record deleted with nodeId: " + item.entity.node.id)
+    Content.delete({id: item.entity.node.id}, function(){
+      console.log("content and node record deleted with id: " + item.entity.node.id)
     })
     
   };
@@ -163,47 +163,61 @@ function ContentTreeCtrl($scope, $stateParams, ContentChildren, Node, Content, C
   }
 
   $scope.getEntityInfo = function(currentItem){
-    console.log("getEntityInfo")
-    //console.log(currentItem);
     if(currentItem==undefined){
       currentItem = $scope.rootNode;
-      // data = currentItem
-      // console.log($scope.currentItem)
-      // $scope.currentItem = currentItem;
-      // console.log($scope.currentItem)
-      // console.log(currentItem)
-      $scope.getMenu(1);
     }
-    if(currentItem.node_type != 5){
-      allowedContentTypes = [];
 
-      currentItem['entity'] = Content.get({ nodeId: currentItem.id}, function(data){
-        var allowedContentTypes = [];
-        //console.log(data.content_type.meta)
-        for(var i = 0; i < data.content_type.meta.allowed_content_type_ids.length; i++){
-            var ct = ContentType.get({nodeId: data.content_type.meta.allowed_content_type_ids[i]}, function(){});
-            allowedContentTypes.push(ct);
-            
-        }
-        data['allowedContentTypes'] = allowedContentTypes;
-        //alert(sessionService.getUser())
+    // if(currentItem==undefined){
+    //   currentItem = $scope.rootNode;
+    // } else {
+      ContentContextMenu.query({id: currentItem.id},function(){
 
-        var tempArray = getUserNodePermissions(currentItem, sessionService.getUser());
-        var tempArray2 = [];
-        if(typeof tempArray[0] == 'object'){
-          for(var i = 0; i < tempArray.length; i++){
-            tempArray2.push(tempArray[i].id)
-          }
-          currentItem['allowedPermissions'] = tempArray2;
-        } else {
-          currentItem['allowedPermissions'] = tempArray;
-        }
-
-        // currentItem['allowedPermissions'] = getUserNodePermissions(currentItem, sessionService.getUser());
-
-        $scope.getMenu(currentItem.node_type);
+      }).$promise.then(function(data){
+        $scope.contextMenu = data;
       });
-    }
+    // }
+    
+    // console.log("getEntityInfo")
+    // //console.log(currentItem);
+    // if(currentItem==undefined){
+    //   currentItem = $scope.rootNode;
+    //   // data = currentItem
+    //   // console.log($scope.currentItem)
+    //   // $scope.currentItem = currentItem;
+    //   // console.log($scope.currentItem)
+    //   // console.log(currentItem)
+    //   $scope.getMenu(1);
+    // }
+    // if(currentItem.node_type != 5){
+    //   allowedContentTypes = [];
+
+    //   currentItem['entity'] = Content.get({ id: currentItem.id}, function(data){
+    //     var allowedContentTypes = [];
+    //     //console.log(data.content_type.meta)
+    //     for(var i = 0; i < data.content_type.meta.allowed_content_type_ids.length; i++){
+    //         var ct = ContentType.get({id: data.content_type.meta.allowed_content_type_ids[i]}, function(){});
+    //         allowedContentTypes.push(ct);
+            
+    //     }
+    //     data['allowedContentTypes'] = allowedContentTypes;
+    //     //alert(sessionService.getUser())
+
+    //     var tempArray = getUserNodePermissions(currentItem, sessionService.getUser());
+    //     var tempArray2 = [];
+    //     if(typeof tempArray[0] == 'object'){
+    //       for(var i = 0; i < tempArray.length; i++){
+    //         tempArray2.push(tempArray[i].id)
+    //       }
+    //       currentItem['allowedPermissions'] = tempArray2;
+    //     } else {
+    //       currentItem['allowedPermissions'] = tempArray;
+    //     }
+
+    //     // currentItem['allowedPermissions'] = getUserNodePermissions(currentItem, sessionService.getUser());
+
+    //     $scope.getMenu(currentItem.node_type);
+    //   });
+    // }
     
     
   }
@@ -224,9 +238,6 @@ function ContentTreeCtrl($scope, $stateParams, ContentChildren, Node, Content, C
 
 function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentType, Node, $interpolate) {
   //$scope._ = _;
-
-  $scope.contentNodes = Content.query({'type-id': '1','content-type':'9'},{},function(node){
-    });
 
   var tabs = [];
 
@@ -251,8 +262,8 @@ function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentTyp
     });
     //User.get({ userId: $stateParams.userId} , function(phone) {
   } else{
-    if($scope.stateParams.content_type_node_id){
-      var ct = ContentType.getExtended({extended: true},{id: $scope.stateParams.content_type_node_id}, function(c){
+    if($scope.stateParams.content_type_id){
+      var ct = ContentType.getExtended({extended: true},{id: $scope.stateParams.content_type_id}, function(c){
         if(c.tabs != null){
           tabs = c.tabs;
         }
@@ -279,9 +290,9 @@ function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentTyp
       }
       
     }
-    if($scope.stateParams.content_type_node_id){
+    if($scope.stateParams.content_type_id){
       if(typeof $scope.data !== 'undefined'){
-        $scope.data["content_type_node_id"] = parseInt($scope.stateParams.content_type_node_id);
+        $scope.data["content_type_id"] = parseInt($scope.stateParams.content_type_id);
       }
       
     }
@@ -356,9 +367,9 @@ function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentTyp
       // });
     }
 
-    if ($stateParams.nodeId) {
+    if ($stateParams.id) {
       console.log("update");
-      Content.update({nodeId: $stateParams.nodeId}, $scope.data, success, failure);
+      Content.update({id: $stateParams.id}, $scope.data, success, failure);
       console.log($scope.data)
       //User.update($scope.user, success, failure);
     } else {

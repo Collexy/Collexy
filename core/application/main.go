@@ -22,9 +22,10 @@ import(
     "strings"
     "collexy/core/lib"
     // _ "collexy/core/modules/mytest"
+    _ "collexy/core/modules/settings"
     _ "collexy/core/modules/user"
     _ "collexy/core/modules/member"
-    _ "collexy/core/modules/settings"
+    
     _ "collexy/core/modules/content"
     coremoduleusermodels "collexy/core/modules/user/models"
     coremodulecontentmodels "collexy/core/modules/content/models"

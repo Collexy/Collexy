@@ -25,7 +25,26 @@ type ContentTypeApiController struct {}
 func (this *ContentTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
-    contentTypes := models.GetContentTypes()
+    queryStrParams := r.URL.Query()
+    
+    contentTypes := models.GetContentTypes(queryStrParams)
+    res, err := json.Marshal(contentTypes)
+    corehelpers.PanicIf(err)
+
+    fmt.Fprintf(w,"%s",res)
+}
+
+func (this *ContentTypeApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    params := mux.Vars(r)
+    idStr := params["id"]
+    id, _ := strconv.Atoi(idStr)
+
+    //user := coremoduleuser.GetLoggedInUser(r)
+
+    contentTypes := models.GetContentTypesByIdChildren(id)
+
     res, err := json.Marshal(contentTypes)
     corehelpers.PanicIf(err)
 

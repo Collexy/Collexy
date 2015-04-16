@@ -52,9 +52,9 @@ func init(){
 	treesUserGroupSection := []*lib.Tree{&tUserGroup}
 
 	// params: name, alias, icon, route, trees, iscontainer, parent
-	sUsers := lib.Section{"Users Section", "usersSection", "fa fa-user fa-fw", &rUserSection, treesUserSection, false, nil,nil}
+	sUsers := lib.Section{"Users Section", "usersSection", "fa fa-user fa-fw", &rUserSection, treesUserSection, false, nil,nil,[]string{"user_section"}}
 
-	sUserGroup := lib.Section{"User Group Section", "userGroupSection", "fa fa-smile-o fa-fw", &rUserGroupSection, treesUserGroupSection, false, nil, nil}
+	sUserGroup := lib.Section{"User Group Section", "userGroupSection", "fa fa-smile-o fa-fw", &rUserGroupSection, treesUserGroupSection, false, nil, nil, []string{"user_group_section"}}
 
 	lol := []lib.Section{sUserGroup}
 	sUsers.Children = lol

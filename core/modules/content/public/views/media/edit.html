@@ -1,8 +1,8 @@
 <div ng-controller="MediaTreeCtrlEdit">
     <form role="form" ng-submit="submit()">
-        <h4>Edit1</h4>
+        <h4>Edit</h4>
 
-        <input type="text" ng-model="data.node.name">
+        <input type="text" ng-model="data.name">
         <!-- <pre>
         {{node}}
             {{node.ctm.tabs}}
@@ -18,55 +18,48 @@
             <li ng-repeat="tab in tabs | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li>
         </ul>
 
-        <div ng-repeat="tab in tabs | unique: name" ng-show="currentTab == tab.name">
+        <div ng-repeat="tab in tabs | unique: 'name'" ng-show="currentTab == tab.name">
+
             <table>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Id:</td>
-                    <td>{{data.node.id}}</td>
+                    <td>{{data.id}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Created By:</td>
-                    <td>{{data.node.created_by}}</td>
+                    <td>{{data.created_by}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Created Date:</td>
-                    <td>{{data.node.created_date}}</td>
+                    <td>{{data.created_date}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Last updated date:</td>
-                    <td>{{data.node.updated_date}}</td>
+                    <td>{{data.updated_date}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Node Type:</td>
-                    <td>{{data.node.node_type}}</td>
+                    <td>{{data.type_id}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Node Path:</td>
-                    <td>{{data.node.path}}</td>
+                    <td>{{data.path}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
-                    <td>Parent Node Id:</td>
-                    <td><input type="number" ng-model="data.node.parent_id"></td>
-                </tr>
-    <!--             <tr ng-if="tab.name=='Properties'">
-                    <td>Publish at:</td>
-                    <td>{{node.media.meta.publish_at}}</td>
+                    <td>Parent Node ID:</td>
+                    <td><input type="number" ng-model="data.parent_id"/></td>
                     <td></td>
                 </tr>
-                <tr ng-if="tab.name=='Properties'">
-                    <td>Unpublish at:</td>
-                    <td>{{node.media.meta.unpublish_at}}</td>
-                    <td></td>
-                </tr> -->
+        
 
                 <tr ng-repeat="prop in tab.properties">
-                    <td>{{prop.name}}</td>
+                    <td>{{prop.name}}<br><small>{{prop.description}}<small></td>
                     <!-- <td><div wrap-input></div><td> -->
                     <!-- <td><div wrap-input><input type="text" ng-model="node.media.meta[prop.name]"/></div></td> -->
                     <!-- <td><input type="text" ng-model="prop.name"></td> -->
@@ -74,7 +67,7 @@
                     <!-- <td>{{prop.description}}</td> -->
                     <td>
                         <img ng-if="data.meta[prop.name] === data.meta.path && node.content.meta[prop.name] != '' && data.meta[prop.name] != null" ng-src="{{data.meta.path | pathToUrl}}" width="75" height="75">
-                        <span ng-if="data.meta[prop.name] !== data.meta.path">{{value.description}}</span>
+                       <!--  <span ng-if="data.meta[prop.name] !== data.meta.path">{{value.description}}</span> -->
                     </td>
                 </tr>
                 <!-- <p>{{tab.name}} fields</p>

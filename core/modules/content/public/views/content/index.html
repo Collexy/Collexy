@@ -8,7 +8,23 @@
 	</div>
 	<div id="overlay">
 	    <ul class="context-menu">
-	        <li ng-repeat="item in contextMenu" class="context-sub-menu">
+	    	<li ng-repeat="item in contextMenu" class="context-sub-menu">
+	    		<span ng-if="!isDefined(item, 'items')">
+	                <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.path)}}">{{item.name}}</a>
+	                <a ng-if="item.is_dialog == true" ng-click="clickToOpen(item)">{{item.name}}</a>
+	            </span>
+	            <span ng-if="isDefined(item, 'items')">
+	                <a>{{item.name}}</a>
+	                 <ul showonhoverparent>
+	                    <li ng-repeat="subitem in item.items">
+	                        <span class="icon-container"><i ng-class="subitem.css_class"></i></span>
+	                        <a ng-if="subitem.is_dialog == false" ui-sref="{{interpolate(subitem.path)}}">{{subitem.name}}</a>
+	                		<a ng-if="subitem.is_dialog == true" ng-click="clickToOpen(subitem)">{{subitem.name}}</a>
+	                    </li>
+	                </ul>
+	            </span>
+	    	</li>
+	        <!-- <li ng-repeat="item in contextMenu" class="context-sub-menu">
 	            <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && !isDefined(item, 'sub_menu')">
 	                <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.url)}}">{{item.name}}</a>
 	                <a ng-if="item.is_dialog == true" ng-click="clickToOpen(item)">{{item.name}}</a>
@@ -22,7 +38,7 @@
 	                    </li>
 	                </ul>
 	            </span>
-	        </li>
+	        </li> -->
 	    </ul>
 	</div>
 </div>

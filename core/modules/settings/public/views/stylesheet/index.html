@@ -5,7 +5,7 @@
 			     data-target="menu-{{index }}"
 			     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
 			</div> -->
-			<div ng-include src="'public/views/settings/stylesheet/list.html'"></div>
+			<div ng-include src="'core/modules/settings/public/views/stylesheet/list.html'"></div>
 		</div>
 	</div>
 	<div id="overlay">
@@ -17,17 +17,17 @@
 		            <ul showonhoverparent>
 		                <li >
 		                	<span class="icon-container"><i class="fa fa-file-o fa-fw"></i></span>
-		                    <a ui-sref="settings.{{rootdir}}.new({type:'file', parent:currentItem.path})">File</a>
+		                    <a ui-sref="settings.stylesheet.new({type:'file', parent:currentItem.path})">File</a>
 		                </li>
 		                <li >
 		                	<span class="icon-container"><i class="fa fa-folder-o fa-fw"></i></span>
-		                    <a ui-sref="settings.{{rootdir}}.new({type:'folder', parent:currentItem.path})">Folder</a>
+		                    <a ui-sref="settings.stylesheet.new({type:'folder', parent:currentItem.path})">Folder</a>
 		                </li>
 		            </ul>
 	            </span>
 	        </li>
 	        <li ng-if="currentItem.path != rootNode.path" class="context-sub-menu">
-	            <a ng-click="clickToOpen('public/views/settings/stylesheet/delete.html')">Delete</a>
+	            <a ng-click="clickToOpen('core/modules/settings/public/views/stylesheet/delete.html')">Delete</a>
 	        </li>
 	    </ul>
 	    <!-- {{currentItem}}
@@ -37,10 +37,10 @@
 	            <a>New</a>
 	            <ul>
 	                <li >
-	                    <a ui-sref="settings.{{rootdir}}.new({type:'file', parent:currentItem.path})">{{rootdir | capitalize}} file</a>
+	                    <a ui-sref="settings.stylesheet.new({type:'file', parent:currentItem.path})">{{rootdir | capitalize}} file</a>
 	                </li>
 	                <li >
-	                    <a ui-sref="settings.{{rootdir}}.new({type:'folder', parent:currentItem.path})">Folder</a>
+	                    <a ui-sref="settings.stylesheet.new({type:'folder', parent:currentItem.path})">Folder</a>
 	                </li>
 	            </ul>
 	        </li>
@@ -48,10 +48,10 @@
 	            <a>Delete</a>
 	            <ul ng-switch="currentItem.info.is_dir">
 	                <li ng-switch-when="true">
-	                    <a ui-sref="settings.{{rootdir}}.delete(currentItem.path)">Folder</a>
+	                    <a ui-sref="settings.stylesheet.delete(currentItem.path)">Folder</a>
 	                </li>
 	                <li ng-switch-when="false">
-	                    <a ui-sref="settings.{{rootdir}}.delete(currentItem.path)">{{rootdir | capitalize}} file</a>
+	                    <a ui-sref="settings.stylesheet.delete(currentItem.path)">{{rootdir | capitalize}} file</a>
 	                </li>
 	            </ul>
 	        </li>
@@ -61,10 +61,10 @@
 <div class="outer-content-details-container nosubmenu-margin-top" top-nav-margin>
 	<div class="content-details-container scroller" perfect-scroll>
 		<div id="content-details">
-			<div ng-if="state.current.name == 'settings.stylesheets.edit' || state.current.name == 'settings.stylesheets.new'" ui-view></div>
-			<div ng-if="state.current.name == 'settings.stylesheets'">
+			<div ng-if="state.current.name == 'settings.stylesheet.edit' || state.current.name == 'settings.stylesheet.new'" ui-view></div>
+			<div ng-if="state.current.name == 'settings.stylesheet'">
 				<div>
-					<h4>Content</h4>
+					<h4>Stylesheets</h4>
 					<ul class="admin-tabs">
 						<li class="active"><a href="#getStarted">Get Started</a></li>
 					</ul>

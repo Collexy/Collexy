@@ -1,11 +1,11 @@
 <script type="text/ng-template"  id="tree_item_renderer.html">
-    <!--<a ui-sref="settings.templates.edit({nodeId:data.id})" ng-right-click="contextMenu({{data.node_type}})">{{data.path}}</a>-->
+    <!--<a ui-sref="settings.template.edit({id:data.id})" ng-right-click="contextMenu({{data.node_type}})">{{data.path}}</a>-->
     <!--<i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-caret-down' : 'fa-caret-right'"></i>-->
         <!--<i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-folder-open-o' : 'fa-folder-o'"></i>-->
         <i ng-click="expand_collapse(data)" class="fa" ng-class="data.show == true ? 'fa-caret-down' : 'fa-caret-right'"></i>
         <!--<button ng-click="expand_collapse(data)" ng-show="data.show">collapse</button>
         <button ng-click="expand_collapse(data)" ng-show="!data.show">expand</button>-->
-        <a ui-sref="settings.templates.edit({nodeId:data.id})"  ui-sref-active="active" ng-context-menu="showOptions(data,$event)">{{data.name}} ({{data.path}})</a>
+        <a ui-sref="settings.template.edit({id:data.id})"  ui-sref-active="active" ng-context-menu="showOptions(data,$event)">{{data.name}} ({{data.path}})</a>
         <!--<button ng-click="add(data)">Add node</button>-->
         <!--<button ng-click="delete(data)" ng-show="data.nodes.length > 0">Delete nodes</button>
         <!--<button ng-click="expand_collapse(data)" ng-show="data.show && data.nodes.length > 0">collapse</button>-->

@@ -5,20 +5,31 @@ entityServices.factory('Content', ['$resource',
         return $resource('/api/content/:id', {}, {
             //query: { method: 'GET', params: { id: 'id' }, isArray: true },
             update: { method: 'PUT', isArray: false },
-            create: { method: 'POST', params: {nodeId: 'new'}, isArray: false },
+            create: { method: 'POST', params: {id: 'new'}, isArray: false },
             delete: { method: 'DELETE'}
         });
     }]);
 
-nodeServices.factory('ContentChildren', ['$resource',
+entityServices.factory('ContentChildren', ['$resource',
     function($resource) {
         return $resource('/api/content/:id/children', {}, {
-            //query: { method: 'GET', params: { nodeId: 'nodeId' }, isArray: true },
+            //query: { method: 'GET', params: { id: 'id' }, isArray: true },
             update: { method: 'PUT', isArray: false },
             create: { method: 'POST', isArray: false }
             // delete: { method: 'delete', isArray: false }
         });
     }]);
+
+entityServices.factory('ContentContextMenu', ['$resource',
+    function($resource) {
+        return $resource('/api/content/:id/contextmenu', {}, {
+            //query: { method: 'GET', params: { id: 'id' }, isArray: true },
+            update: { method: 'PUT', isArray: false },
+            create: { method: 'POST', isArray: false }
+            // delete: { method: 'delete', isArray: false }
+        });
+    }]);
+
 
 entityServices.factory('ContentType', ['$resource',
     function($resource) {
@@ -28,6 +39,16 @@ entityServices.factory('ContentType', ['$resource',
             update: { method: 'PUT', isArray: false },
             create: { method: 'POST', params: {id: 'new'}, isArray: false }
 
+            // delete: { method: 'delete', isArray: false }
+        });
+    }]);
+
+entityServices.factory('ContentTypeChildren', ['$resource',
+    function($resource) {
+        return $resource('/api/content-type/:id/children', {}, {
+            //query: { method: 'GET', params: { id: 'id' }, isArray: true },
+            update: { method: 'PUT', isArray: false },
+            create: { method: 'POST', isArray: false }
             // delete: { method: 'delete', isArray: false }
         });
     }]);
@@ -44,10 +65,20 @@ entityServices.factory('DataType', ['$resource',
 
 entityServices.factory('Template', ['$resource',
     function($resource) {
-        return $resource('/api/template/:nodeId', {}, {
-            query: { method: 'GET', params: {nodeId: ''}, isArray: true },
+        return $resource('/api/template/:id', {}, {
+            query: { method: 'GET', params: {id: ''}, isArray: true },
             update: { method: 'PUT', isArray: false },
-            create: { method: 'POST', params: {nodeId: 'new'}, isArray: false }
+            create: { method: 'POST', params: {id: 'new'}, isArray: false }
+            // delete: { method: 'delete', isArray: false }
+        });
+    }]);
+
+entityServices.factory('TemplateChildren', ['$resource',
+    function($resource) {
+        return $resource('/api/template/:id/children', {}, {
+            //query: { method: 'GET', params: { id: 'id' }, isArray: true },
+            update: { method: 'PUT', isArray: false },
+            create: { method: 'POST', isArray: false }
             // delete: { method: 'delete', isArray: false }
         });
     }]);
@@ -65,11 +96,11 @@ entityServices.factory('Directory', ['$resource',
 
 // entityServices.factory('MemberType', ['$resource',
 //     function($resource) {
-//         return $resource('/api/member-type/:nodeId', {nodeId: '@nodeId'}, {
+//         return $resource('/api/member-type/:id', {id: '@id'}, {
 //             getExtended: { method: 'GET', isArray: false },
 //             query: { method: 'GET', isArray: true },
 //             update: { method: 'PUT', isArray: false },
-//             create: { method: 'POST', params: {nodeId: 'new'}, isArray: false }
+//             create: { method: 'POST', params: {id: 'new'}, isArray: false }
 
 //             // delete: { method: 'delete', isArray: false }
 //         });

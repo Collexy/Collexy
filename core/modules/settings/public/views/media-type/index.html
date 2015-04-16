@@ -5,7 +5,7 @@
 			     data-target="menu-{{index }}"
 			     ng-class="{ 'highlight': highlight, 'expanded' : expanded }">
 			</div> -->
-			<div ng-include src="'public/views/settings/media-type/list.html'"></div>
+			<div ng-include src="'core/modules/settings/public/views/media-type/list.html'"></div>
 		</div>
 	</div>
 	<div id="overlay">
@@ -25,7 +25,7 @@
 	            <a>New</a>
 	            <ul ng-switch-when="7">
 	                <li>
-	                    <a ui-sref="settings.mediaTypes.new({type:7, parent:{{currentItem.id}}})">Media Type</a>
+	                    <a ui-sref="settings.mediaType.new({type:7, parent:{{currentItem.id}}})">Media Type</a>
 	                </li>
 
 	            </ul>
@@ -44,10 +44,10 @@
 <div class="outer-content-details-container nosubmenu-margin-top" top-nav-margin>
 	<div class="content-details-container scroller" perfect-scroll>
 		<div id="content-details">
-			<div ng-if="state.current.name == 'settings.mediaTypes.edit' || state.current.name == 'settings.mediaTypes.new'" ui-view></div>
-			<div ng-if="state.current.name == 'settings.mediaTypes'">
+			<div ng-if="state.current.name == 'settings.mediaType.edit' || state.current.name == 'settings.mediaType.new'" ui-view></div>
+			<div ng-if="state.current.name == 'settings.mediaType'">
 				<div>
-					<h4>Content</h4>
+					<h4>Media Types</h4>
 					<ul class="admin-tabs">
 						<li class="active"><a href="#getStarted">Get Started</a></li>
 					</ul>

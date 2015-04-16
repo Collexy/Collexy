@@ -14,6 +14,7 @@ type Section struct {
 	IsContainer bool `json:"is_container,omitempty"`
 	Parent *Section `json:"parent,omitempty"`
 	Children []Section `json:"children,omitempty"`
+	Permissions []string `json:"permissions,omitempty"`
 	//ContextMenu *ContextMenu
 	//SubSections []*Section
 }
