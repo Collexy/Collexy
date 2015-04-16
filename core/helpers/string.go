@@ -1,8 +1,8 @@
 package helpers
 
 import (
-    "unicode"
-    "unicode/utf8"
+	"unicode"
+	"unicode/utf8"
 )
 
 func IsFirstLower(s string) bool {

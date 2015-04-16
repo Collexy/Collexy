@@ -1,54 +1,54 @@
 package controllers
 
 import (
-    "fmt"
-    "net/http"
-    //"time"
-    //"database/sql"
-    _ "github.com/lib/pq"
-    corehelpers "collexy/core/helpers"
-    "collexy/core/modules/settings/models"
-    "strconv"
-    //"log"
-    //"github.com/gorilla/schema"
-    "encoding/json"
-    //"log"
-    //"io/ioutil"
-    //"path/filepath"
-    //"strings"
-    //"html/template"
-    "github.com/gorilla/mux"
+	"fmt"
+	"net/http"
+	//"time"
+	//"database/sql"
+	corehelpers "collexy/core/helpers"
+	"collexy/core/modules/settings/models"
+	_ "github.com/lib/pq"
+	"strconv"
+	//"log"
+	//"github.com/gorilla/schema"
+	"encoding/json"
+	//"log"
+	//"io/ioutil"
+	//"path/filepath"
+	//"strings"
+	//"html/template"
+	"github.com/gorilla/mux"
 )
 
-type ContentTypeApiController struct {}
+type ContentTypeApiController struct{}
 
 func (this *ContentTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    queryStrParams := r.URL.Query()
-    
-    contentTypes := models.GetContentTypes(queryStrParams)
-    res, err := json.Marshal(contentTypes)
-    corehelpers.PanicIf(err)
+	queryStrParams := r.URL.Query()
 
-    fmt.Fprintf(w,"%s",res)
+	contentTypes := models.GetContentTypes(queryStrParams)
+	res, err := json.Marshal(contentTypes)
+	corehelpers.PanicIf(err)
+
+	fmt.Fprintf(w, "%s", res)
 }
 
 func (this *ContentTypeApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    params := mux.Vars(r)
-    idStr := params["id"]
-    id, _ := strconv.Atoi(idStr)
+	params := mux.Vars(r)
+	idStr := params["id"]
+	id, _ := strconv.Atoi(idStr)
 
-    //user := coremoduleuser.GetLoggedInUser(r)
+	//user := coremoduleuser.GetLoggedInUser(r)
 
-    contentTypes := models.GetContentTypesByIdChildren(id)
+	contentTypes := models.GetContentTypesByIdChildren(id)
 
-    res, err := json.Marshal(contentTypes)
-    corehelpers.PanicIf(err)
+	res, err := json.Marshal(contentTypes)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 }
 
 // func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
@@ -93,33 +93,32 @@ func (this *ContentTypeApiController) GetByIdChildren(w http.ResponseWriter, r *
 // }
 
 func (this *ContentTypeApiController) GetById(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    params := mux.Vars(r)
-    idStr := params["id"]
+	params := mux.Vars(r)
+	idStr := params["id"]
 
-    id, _ := strconv.Atoi(idStr)
+	id, _ := strconv.Atoi(idStr)
 
-    var extended bool = false
-    extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
+	var extended bool = false
+	extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
 
-    //extended, _ := strconv.Atoi(extendedStr)
+	//extended, _ := strconv.Atoi(extendedStr)
 
-    if(!extended){
-        content := models.GetContentTypeById(id)
-        res, err := json.Marshal(content)
-        corehelpers.PanicIf(err)
+	if !extended {
+		content := models.GetContentTypeById(id)
+		res, err := json.Marshal(content)
+		corehelpers.PanicIf(err)
 
-        fmt.Fprintf(w,"%s",res)
-    } else {
-        content := models.GetContentTypeExtendedById(id)
-        res, err := json.Marshal(content)
-        corehelpers.PanicIf(err)
+		fmt.Fprintf(w, "%s", res)
+	} else {
+		content := models.GetContentTypeExtendedById(id)
+		res, err := json.Marshal(content)
+		corehelpers.PanicIf(err)
 
-        fmt.Fprintf(w,"%s",res)
-    }
+		fmt.Fprintf(w, "%s", res)
+	}
 
-    
 }
 
 // func (this *ContentTypeApiController) GetContentTypeById(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +126,6 @@ func (this *ContentTypeApiController) GetById(w http.ResponseWriter, r *http.Req
 
 //     var idStr string = ""
 //     idStr = r.URL.Query().Get(":id")
-    
 
 //     if(len(idStr)>0){
 //         fmt.Println("lol1")
@@ -163,7 +161,6 @@ func (this *ContentTypeApiController) GetById(w http.ResponseWriter, r *http.Req
 //     //     fmt.Println(err)
 //     //     return
 //     // }
-    
 
 //     contentType.Update()
 // }

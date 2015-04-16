@@ -1,15 +1,15 @@
 package models
 
 import (
-  //"fmt"
-  //"encoding/json"
-  //"time"
+//"fmt"
+//"encoding/json"
+//"time"
 )
 
 type Tab struct {
-  //Id int `json:"id"`
-  Name string `json:"name"`
-  Properties []*TabProperty `json:"properties,omitempty"`
+	//Id int `json:"id"`
+	Name       string         `json:"name"`
+	Properties []*TabProperty `json:"properties,omitempty"`
 }
 
 // type tab Tab

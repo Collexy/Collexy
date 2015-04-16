@@ -1,46 +1,46 @@
 package controllers
 
 import (
-    "fmt"
-    "net/http"
-    //"time"
-    //"database/sql"
-    _ "github.com/lib/pq"
-    corehelpers "collexy/core/helpers"
-    "strconv"
-    "log"
-    "encoding/json"
-    //"github.com/gorilla/schema"
-    "collexy/core/modules/member/models"
-    "github.com/gorilla/mux"
-    //"github.com/dgrijalva/jwt-go"
-    //"encoding/json"
+	"fmt"
+	"net/http"
+	//"time"
+	//"database/sql"
+	corehelpers "collexy/core/helpers"
+	"encoding/json"
+	_ "github.com/lib/pq"
+	"log"
+	"strconv"
+	//"github.com/gorilla/schema"
+	"collexy/core/modules/member/models"
+	"github.com/gorilla/mux"
+	//"github.com/dgrijalva/jwt-go"
+	//"encoding/json"
 )
 
-type MemberApiController struct {}
+type MemberApiController struct{}
 
 func (this *MemberApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	members := models.GetMembers()
-    res, err := json.Marshal(members)
-    corehelpers.PanicIf(err)
+	res, err := json.Marshal(members)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 }
 
 func (this *MemberApiController) GetById(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    params := mux.Vars(r)
-    idStr := params["id"]
+	params := mux.Vars(r)
+	idStr := params["id"]
 
-    memberId, _ := strconv.Atoi(idStr)
+	memberId, _ := strconv.Atoi(idStr)
 
-    member := models.GetMemberById(memberId)
-    res, err := json.Marshal(member)
-    corehelpers.PanicIf(err)
+	member := models.GetMemberById(memberId)
+	res, err := json.Marshal(member)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 }
 
 func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
@@ -51,16 +51,15 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 	member := models.GetMemberByUsername(username)
 	cookie, err := member.Login(password)
 	switch {
-        case err != nil:
-            log.Println(err)
-        default:
-            fmt.Println(member.Username + " successfully logged in")
-            http.SetCookie(w, cookie)
-            //fmt.Fprintf(w,"%s",tokenString)
-    } 
+	case err != nil:
+		log.Println(err)
+	default:
+		fmt.Println(member.Username + " successfully logged in")
+		http.SetCookie(w, cookie)
+		//fmt.Fprintf(w,"%s",tokenString)
+	}
 	//fmt.Fprintf(w,"username: %s\n password: ",username, password)
 }
-
 
 // func (this *MemberApiController) Post(w http.ResponseWriter, r *http.Request) {
 //     user := new(models.User)
@@ -73,7 +72,6 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 //     // r.PostForm is a map of our POST form values
 //     decoder.Decode(user, r.PostForm)
 
-
 //     fmt.Println(r.PostForm)
 //     fmt.Println(user.FirstName)
 //     fmt.Println(user.Password)
@@ -85,7 +83,7 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 //     //fmt.Println(fmt.Sprintf("path: %s, created_by: %d, label: %s, User type: %d", t.Path, t.Created_by, t.Label, t.User_type))
 //     lol := string(r.FormValue("Password"))
 //     user.SetPassword(lol)
-    
+
 //     // password := user.Password
 //     fmt.Println(fmt.Sprintf("username: %s, first name: %s, last name: %s, password: %s", user.Username, user.FirstName, user.LastName, user.Password))
 
@@ -94,7 +92,7 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 //     res, err := db.Exec(querystr)
 //     corehelpers.PanicIf(err)
 //     fmt.Println(res)
-    
+
 // }
 
 // func (this *UserController) Delete(w http.ResponseWriter, r *http.Request) {
@@ -105,9 +103,8 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 
 //     parm_id := id
 
-   
 //     db := corehelpers.Db
-    
+
 //     querystr := fmt.Sprintf("DELETE FROM \"user\" WHERE id=%d", parm_id)
 //     res, err := db.Exec(querystr)
 //     corehelpers.PanicIf(err)
@@ -119,7 +116,6 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 //   Username string `json:"username,omitempty"`
 //   Password string `json:"password"`
 // }
-
 
 // func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {}
 

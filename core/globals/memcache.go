@@ -8,11 +8,10 @@ import (
 
 var Mc = SetupMemcacheServer()
 
-func SetupMemcacheServer() (mc *memcache.Client){
+func SetupMemcacheServer() (mc *memcache.Client) {
 	mc = memcache.New("127.0.0.1:11211")
 	log.Println("Memcache client started")
 	return
 }
-
 
 //var Mc = corehelpers.StartMemcacheServer()

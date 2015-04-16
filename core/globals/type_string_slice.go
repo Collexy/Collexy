@@ -3,9 +3,9 @@ package globals
 import (
 	"errors"
 	//corehelpers "collexy/core/helpers"
+	"fmt"
 	"regexp"
 	"strings"
-	"fmt"
 )
 
 type StringSlice []string
@@ -19,11 +19,11 @@ func (s *StringSlice) Scan(src interface{}) error {
 	if !ok {
 		return error(errors.New("Scan source was not []bytes"))
 	}
- 
+
 	asString := string(asBytes)
 	parsed := ParseArray(asString)
 	(*s) = StringSlice(parsed)
- 
+
 	return nil
 }
 
@@ -31,34 +31,33 @@ func RemoveDuplicatesStringSlice(xs *[]string) {
 	found := make(map[string]bool)
 	j := 0
 	for i, x := range *xs {
-	if !found[x] {
-	found[x] = true
-	(*xs)[j] = (*xs)[i]
-	j++
-	}
+		if !found[x] {
+			found[x] = true
+			(*xs)[j] = (*xs)[i]
+			j++
+		}
 	}
 	*xs = (*xs)[:j]
 }
-
 
 var (
 	// unquoted array values must not contain: (" , \ { } whitespace NULL)
 	// and must be at least one char
 	unquotedChar  = `[^",\\{}\s(NULL)]`
 	unquotedValue = fmt.Sprintf("(%s)+", unquotedChar)
- 
+
 	// quoted array values are surrounded by double quotes, can be any
 	// character except " or \, which must be backslash escaped:
 	quotedChar  = `[^"\\]|\\"|\\\\`
 	quotedValue = fmt.Sprintf("\"(%s)*\"", quotedChar)
- 
+
 	// an array value may be either quoted or unquoted:
 	arrayValue = fmt.Sprintf("(?P<value>(%s|%s))", unquotedValue, quotedValue)
- 
+
 	// Array values are separated with a comma IF there is more than one value:
 	//arrayExp = regexp.MustCompile(fmt.Sprintf("((%s)(,)?)", arrayValue))
 	arrayExp = regexp.MustCompile(fmt.Sprintf("((%s)()?)", arrayValue))
- 
+
 	valueIndex int
 )
 

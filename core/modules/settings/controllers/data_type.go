@@ -1,43 +1,43 @@
 package controllers
 
 import (
-    "fmt"
-    "net/http"
-    corehelpers "collexy/core/helpers"
-    "collexy/core/modules/settings/models"
-    "strconv"
-    "encoding/json"
-    "github.com/gorilla/mux"
+	corehelpers "collexy/core/helpers"
+	"collexy/core/modules/settings/models"
+	"encoding/json"
+	"fmt"
+	"github.com/gorilla/mux"
+	"net/http"
+	"strconv"
 )
 
-type DataTypeApiController struct {}
+type DataTypeApiController struct{}
 
 func (this *DataTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    dataTypes := models.GetDataTypes()
+	dataTypes := models.GetDataTypes()
 
-    res, err := json.Marshal(dataTypes)
-    corehelpers.PanicIf(err)
+	res, err := json.Marshal(dataTypes)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 
 }
 
 func (this *DataTypeApiController) GetById(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    params := mux.Vars(r)
-    idStr := params["id"]
+	params := mux.Vars(r)
+	idStr := params["id"]
 
-    id, _ := strconv.Atoi(idStr)
+	id, _ := strconv.Atoi(idStr)
 
-    dataType := models.GetDataTypeById(id)
+	dataType := models.GetDataTypeById(id)
 
-    res, err := json.Marshal(dataType)
-    corehelpers.PanicIf(err)
+	res, err := json.Marshal(dataType)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 
 }
 

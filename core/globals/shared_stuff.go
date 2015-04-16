@@ -1,7 +1,6 @@
 package globals
 
-import
-(
+import (
 	"collexy/core/lib"
 )
 

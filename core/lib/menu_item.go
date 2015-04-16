@@ -1,10 +1,10 @@
 package lib
 
-type MenuItem struct{
-	Name string
-	Icon string
+type MenuItem struct {
+	Name        string
+	Icon        string
 	Permissions []string
-	Route *Route
+	Route       *Route
 	//Action *Action
 	SubMenu *Menu
 }

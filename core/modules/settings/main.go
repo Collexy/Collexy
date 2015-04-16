@@ -1,75 +1,61 @@
 package settings
 
-import
-(
+import (
+	"collexy/core/lib"
 	"log"
 	"net/http"
-	"collexy/core/lib"
 	// "reflect"
 	//"encoding/json"
 	coreglobals "collexy/core/globals"
 	coremodulesettingscontrollers "collexy/core/modules/settings/controllers"
 )
 
-
-func init(){
+func init() {
 
 	// register API route endpoints, controllers and handlers
 
 	contentTypeApiController := coremodulesettingscontrollers.ContentTypeApiController{}
-    dataTypeApiController := coremodulesettingscontrollers.DataTypeApiController{}
-    templateApiController := coremodulesettingscontrollers.TemplateApiController{}
-    directoryApiController := coremodulesettingscontrollers.DirectoryApiController{}
+	dataTypeApiController := coremodulesettingscontrollers.DataTypeApiController{}
+	templateApiController := coremodulesettingscontrollers.TemplateApiController{}
+	directoryApiController := coremodulesettingscontrollers.DirectoryApiController{}
 
 	privateApiRouter := coreglobals.PrivateApiRouter
 	subrPrivate := privateApiRouter.PathPrefix("/").Subrouter()
 
 	// m.Get("/api/content-type/extended/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.GetContentTypeExtendedByNodeId))
 	subrPrivate.HandleFunc("/api/content-type/{id:.*}/children", http.HandlerFunc(contentTypeApiController.GetByIdChildren)).Methods("GET")
-    subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.GetById)).Methods("GET")
-    subrPrivate.HandleFunc("/api/content-type", http.HandlerFunc(contentTypeApiController.Get)).Methods("GET")
-    //m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypeByNodeId)) // not sure about this
-    //m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypes)) // not sure about this
-    //privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.PutContentType)).Methods("PUT")
-    //privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.GetById)).Methods("GET")
+	subrPrivate.HandleFunc("/api/content-type", http.HandlerFunc(contentTypeApiController.Get)).Methods("GET")
+	//m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypeByNodeId)) // not sure about this
+	//m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypes)) // not sure about this
+	//privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.PutContentType)).Methods("PUT")
+	//privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.Post)).Methods("POST")
 
+	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.GetById)).Methods("GET")
+	subrPrivate.HandleFunc("/api/data-type", http.HandlerFunc(dataTypeApiController.Get)).Methods("GET") // not sure about this
+	//privateApiRouter.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
+	//privateApiRouter.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Post)).Methods("POST")
 
-    subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.GetById)).Methods("GET")
-    subrPrivate.HandleFunc("/api/data-type", http.HandlerFunc(dataTypeApiController.Get)).Methods("GET") // not sure about this
-    //privateApiRouter.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
-    //privateApiRouter.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/template/{id:.*}/children", http.HandlerFunc(templateApiController.GetByIdChildren)).Methods("GET")
+	subrPrivate.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
+	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.GetById)).Methods("GET")
 
-    subrPrivate.HandleFunc("/api/template/{id:.*}/children", http.HandlerFunc(templateApiController.GetByIdChildren)).Methods("GET")
-    subrPrivate.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
-    subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.GetById)).Methods("GET")
-    
-    // privateApiRouter.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PutTemplate)).Methods("PUT")
-    // privateApiRouter.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PostTemplate)).Methods("POST")
+	// privateApiRouter.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PutTemplate)).Methods("PUT")
+	// privateApiRouter.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PostTemplate)).Methods("POST")
 
-    
+	// Directory
+	subrPrivate.HandleFunc("/api/directory/upload-file-test", http.HandlerFunc(directoryApiController.UploadFileTest)).Methods("POST")
+	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Put)).Methods("PUT")
 
-    // Directory
-    subrPrivate.HandleFunc("/api/directory/upload-file-test", http.HandlerFunc(directoryApiController.UploadFileTest)).Methods("POST")
-    subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Post)).Methods("POST")
-    subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.GetById)).Methods("GET")
+	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}", http.HandlerFunc(directoryApiController.Get)).Methods("GET")
 
-    subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.GetById)).Methods("GET")
-    subrPrivate.HandleFunc("/api/directory/{rootdir:.*}", http.HandlerFunc(directoryApiController.Get)).Methods("GET")
-
-
-
-
-
-
-    // API END
-
-
-
-
+	// API END
 
 	// setup routes
 	rSettingsSection := lib.Route{"settings", "/admin/settings", "core/modules/settings/public/views/settings/index.html", true}
-	
+
 	rContentTypeSection := lib.Route{"settings.contentType", "/content-type", "core/modules/settings/public/views/content-type/index.html", false}
 	rContentTypeTreeMethodEdit := lib.Route{"settings.contentType.edit", "/edit/:id", "core/modules/settings/public/views/content-type/edit.html", false}
 	rContentTypeTreeMethodNew := lib.Route{"settings.contentType.new", "/new?type&parent", "core/modules/settings/public/views/content-type/new.html", false}
@@ -101,7 +87,7 @@ func init(){
 	routesTemplateTree := []lib.Route{rTemplateTreeMethodEdit, rTemplateTreeMethodNew}
 	routesScriptTree := []lib.Route{rScriptTreeMethodEdit, rScriptTreeMethodNew}
 	routesStylesheetTree := []lib.Route{rStylesheetTreeMethodEdit, rStylesheetTreeMethodNew}
-	
+
 	tContentType := lib.Tree{"Content Types", "contentTypes", routesContentTypeTree}
 	tMediaType := lib.Tree{"Media Types", "mediaTypes", routesMediaTypeTree}
 	tDataType := lib.Tree{"DataTypes", "dataTypes", routesDataTypeTree}
@@ -117,7 +103,7 @@ func init(){
 	treesStylesheetSection := []*lib.Tree{&tStylesheet}
 
 	// params: name, alias, icon, route, trees, iscontainer, parent
-	sSettings := lib.Section{"Settings Section", "settingsSection", "fa fa-gear fa-fw", &rSettingsSection, nil, true, nil,nil, []string{"settings_section"}}
+	sSettings := lib.Section{"Settings Section", "settingsSection", "fa fa-gear fa-fw", &rSettingsSection, nil, true, nil, nil, []string{"settings_section"}}
 
 	sContentType := lib.Section{"Content Type Section", "contentTypeSection", "fa fa-newspaper-o fa-fw", &rContentTypeSection, treesContentTypeSection, false, nil, nil, []string{"content_type_section"}}
 	sMediaType := lib.Section{"Media Type Section", "mediaTypeSection", "fa fa-files-o fa-fw", &rMediaTypeSection, treesMediaTypeSection, false, nil, nil, []string{"media_type_section"}}
@@ -137,7 +123,7 @@ func init(){
 	// log.Println(res)
 	// log.Println("__-----------------")
 	//sSettings.SetChildren(lol)
-	//sSettings.Children = 
+	//sSettings.Children =
 
 	// setup settings section
 	// maybe add IsContainer bool?

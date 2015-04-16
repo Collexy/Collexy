@@ -1,86 +1,83 @@
 package controllers
 
-import
-(
+import (
 	"fmt"
 	//"collexy/core/api/models"
+	corehelpers "collexy/core/helpers"
 	"encoding/json"
 	"net/http"
-	corehelpers "collexy/core/helpers"
-    // "collexy/globals"
-    coreglobals "collexy/core/globals"
-    coremoduleusermodels "collexy/core/modules/user/models"
-    "collexy/core/lib"
+	// "collexy/globals"
+	coreglobals "collexy/core/globals"
+	"collexy/core/lib"
+	coremoduleusermodels "collexy/core/modules/user/models"
 )
 
 type SectionApiController struct{}
 
 func (this *SectionApiController) Get(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
-        
-        sections := coreglobals.Sections
-        //fmt.Println(sections[0].Permissions[0])
-        var allowedSections []lib.Section
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
 
-        //var userGroupPermissions []string
+		sections := coreglobals.Sections
+		//fmt.Println(sections[0].Permissions[0])
+		var allowedSections []lib.Section
 
-        for i:=0; i<len(sections); i++ {
-            for j:=0; j < len(sections[i].Permissions); j++{
-                for k:=0; k < len(user.UserGroupIds); k++ {
-                    for l:=0; l < len(user.UserGroups[k].Permissions); l++{
-                        for m:=0; m < len(sections[i].Permissions); m++{
-                            if(sections[i].Permissions[m] == user.UserGroups[k].Permissions[l]){
-                                // Check child sections
-                                childSections := sections[i].Children
-                                var allowedChildSections []lib.Section
-                                for n:=0; n<len(childSections); n++ {
-                                    for o:=0; o < len(childSections[n].Permissions); o++{
-                                        for p:=0; p < len(user.UserGroupIds); p++ {
-                                            for q:=0; q < len(user.UserGroups[p].Permissions); q++{
-                                                for r:=0; r < len(childSections[n].Permissions); r++{
-                                                    if(childSections[n].Permissions[r] == user.UserGroups[p].Permissions[q]){
-                                                        allowedChildSections = append(allowedChildSections,childSections[n])
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                tempSection := sections[i]
-                                tempSection.Children = allowedChildSections
-                                allowedSections = append(allowedSections,tempSection)
-                            }
-                        }
-                        
-                    }
-                    
-                }
-            }     
-        }
-        
-        res, err := json.Marshal(allowedSections)
-        corehelpers.PanicIf(err)
+		//var userGroupPermissions []string
 
-        fmt.Fprintf(w,"%s",res)
-    }
+		for i := 0; i < len(sections); i++ {
+			for j := 0; j < len(sections[i].Permissions); j++ {
+				for k := 0; k < len(user.UserGroupIds); k++ {
+					for l := 0; l < len(user.UserGroups[k].Permissions); l++ {
+						for m := 0; m < len(sections[i].Permissions); m++ {
+							if sections[i].Permissions[m] == user.UserGroups[k].Permissions[l] {
+								// Check child sections
+								childSections := sections[i].Children
+								var allowedChildSections []lib.Section
+								for n := 0; n < len(childSections); n++ {
+									for o := 0; o < len(childSections[n].Permissions); o++ {
+										for p := 0; p < len(user.UserGroupIds); p++ {
+											for q := 0; q < len(user.UserGroups[p].Permissions); q++ {
+												for r := 0; r < len(childSections[n].Permissions); r++ {
+													if childSections[n].Permissions[r] == user.UserGroups[p].Permissions[q] {
+														allowedChildSections = append(allowedChildSections, childSections[n])
+													}
+												}
+											}
+										}
+									}
+								}
+								tempSection := sections[i]
+								tempSection.Children = allowedChildSections
+								allowedSections = append(allowedSections, tempSection)
+							}
+						}
+
+					}
+
+				}
+			}
+		}
+
+		res, err := json.Marshal(allowedSections)
+		corehelpers.PanicIf(err)
+
+		fmt.Fprintf(w, "%s", res)
+	}
 }
-
-
 
 // stuff from the old menu_link.go file
 
 // func (this *MenuLinkApiController) GetByName(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Content-Type", "application/json")
-    
+
 //     if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 //         params := mux.Vars(r)
 //         menuName := params["name"]
 
 //         fmt.Println("TEST TEST 123321")
 //         fmt.Println(menuName)
-        
+
 //         menuLinks := models.GetMenuLinks(menuName)
 //         //fmt.Println(menuLinks[0].Permissions[0])
 //         var allowedMenuLinks []models.MenuLink
@@ -96,18 +93,18 @@ func (this *SectionApiController) Get(w http.ResponseWriter, r *http.Request) {
 //                                 allowedMenuLinks = append(allowedMenuLinks,menuLinks[i])
 //                             }
 //                         }
-                        
+
 //                     }
-                    
+
 //                 }
-//             }     
+//             }
 //         }
 
 //         // for k:=0; k < len(user.UserGroups); k++ { // for each user  group
 //         //     for l:=0; l < len(user.UserGroups[k].Permissions); l++{ // for each permission in user group
 //         //         userGroupPermissions = append(userGroupPermissions,user.UserGroups[k].Permissions[l])
 //         //     }
-            
+
 //         // }
 
 //         // globals.RemoveDuplicatesStringSlice(&userGroupPermissions)
@@ -129,7 +126,7 @@ func (this *SectionApiController) Get(w http.ResponseWriter, r *http.Request) {
 //         //                 linkFound = true
 //         //             }
 //         //         }
-//         //     }     
+//         //     }
 //         // }
 
 //         res, err := json.Marshal(allowedMenuLinks)

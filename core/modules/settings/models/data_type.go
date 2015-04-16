@@ -1,103 +1,103 @@
 package models
 
 import (
-    //"encoding/json"
-    //corehelpers "collexy/core/helpers"
-    coreglobals "collexy/core/globals"
-    "time"
-    //"fmt"
-    //"net/http"
-    //"html/template"
-    //"strconv"
-    "database/sql"
-    "log"
+	//"encoding/json"
+	//corehelpers "collexy/core/helpers"
+	coreglobals "collexy/core/globals"
+	"time"
+	//"fmt"
+	//"net/http"
+	//"html/template"
+	//"strconv"
+	"database/sql"
+	"log"
 )
 
 type DataType struct {
-    Id int `json:"id"`
-    Path string `json:"path"`
-    ParentId int `json:"parent_id,omitempty"`
-    Name string `json:"name,omitempty"`
-    Alias string `json:"alias,omitempty"`
-    CreatedBy int `json:"created_by,omitempty"`
-    CreatedDate *time.Time `json:"created_date,omitempty"`
-    Html string `json:"html,omitempty"`
+	Id          int        `json:"id"`
+	Path        string     `json:"path"`
+	ParentId    int        `json:"parent_id,omitempty"`
+	Name        string     `json:"name,omitempty"`
+	Alias       string     `json:"alias,omitempty"`
+	CreatedBy   int        `json:"created_by,omitempty"`
+	CreatedDate *time.Time `json:"created_date,omitempty"`
+	Html        string     `json:"html,omitempty"`
 }
 
-func GetDataTypes() (dataTypes []*DataType){
-    db := coreglobals.Db
+func GetDataTypes() (dataTypes []*DataType) {
+	db := coreglobals.Db
 
-    rows, err := db.Query(`SELECT id, path, parent_id, name, alias, created_by, created_date, html 
+	rows, err := db.Query(`SELECT id, path, parent_id, name, alias, created_by, created_date, html 
         FROM data_type`)
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer rows.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var id, created_by int
-        var path, name, alias string
-        var created_date *time.Time
-        var parent_id sql.NullInt64
-        var html sql.NullString
+	for rows.Next() {
+		var id, created_by int
+		var path, name, alias string
+		var created_date *time.Time
+		var parent_id sql.NullInt64
+		var html sql.NullString
 
-        if err := rows.Scan(&id,&path,&parent_id,&name,&alias,&created_by,&created_date,&html); err != nil {
-            log.Fatal(err)
-        }
+		if err := rows.Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &html); err != nil {
+			log.Fatal(err)
+		}
 
-        var pid int
+		var pid int
 
-        if parent_id.Valid {
-            pid = int(parent_id.Int64)
-        }
+		if parent_id.Valid {
+			pid = int(parent_id.Int64)
+		}
 
-        var html_str string
+		var html_str string
 
-        if html.Valid {
-            html_str = html.String
-        }
+		if html.Valid {
+			html_str = html.String
+		}
 
-        dataType := &DataType{id,path,pid,name,alias,created_by,created_date,html_str}
-        dataTypes = append(dataTypes, dataType)
-    }
-    if err := rows.Err(); err != nil {
-        log.Fatal(err)
-    }
-    return
+		dataType := &DataType{id, path, pid, name, alias, created_by, created_date, html_str}
+		dataTypes = append(dataTypes, dataType)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return
 }
 
-func GetDataTypeById(id int) (dataType *DataType){
-    db := coreglobals.Db
+func GetDataTypeById(id int) (dataType *DataType) {
+	db := coreglobals.Db
 
-    var created_by int
-    var path, name, alias string
-    var created_date *time.Time
-    var parent_id sql.NullInt64
-    var html sql.NullString
+	var created_by int
+	var path, name, alias string
+	var created_date *time.Time
+	var parent_id sql.NullInt64
+	var html sql.NullString
 
-    err := db.QueryRow(`SELECT id, path, parent_id, name, alias, created_by, created_date, html 
-        FROM data_type WHERE id=$1`,id).Scan(&id,&path,&parent_id,&name,&alias,&created_by,&created_date,&html)
-    switch {
-        case err == sql.ErrNoRows:
-            log.Printf("No data type with that ID.")
-        case err != nil:
-            log.Fatal(err)
-        default:
-            var pid int
+	err := db.QueryRow(`SELECT id, path, parent_id, name, alias, created_by, created_date, html 
+        FROM data_type WHERE id=$1`, id).Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &html)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No data type with that ID.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		var pid int
 
-            if parent_id.Valid {
-                    pid = int(parent_id.Int64)
-            }
+		if parent_id.Valid {
+			pid = int(parent_id.Int64)
+		}
 
-            var html_str string
+		var html_str string
 
-            if html.Valid {
-                html_str = html.String
-            }
+		if html.Valid {
+			html_str = html.String
+		}
 
-            dataType = &DataType{id,path,pid,name,alias,created_by,created_date,html_str}
-    }
-    return
+		dataType = &DataType{id, path, pid, name, alias, created_by, created_date, html_str}
+	}
+	return
 }
 
 // func (t *DataType) Post(){
@@ -111,13 +111,12 @@ func GetDataTypeById(id int) (dataType *DataType){
 //   tx, err := db.Begin()
 //   corehelpers.PanicIf(err)
 //   //defer tx.Rollback()
-    
 
 //   // http://godoc.org/github.com/lib/pq
-//   // pq does not support the LastInsertId() method of the Result type in database/sql. 
-//   // To return the identifier of an INSERT (or UPDATE or DELETE), 
+//   // pq does not support the LastInsertId() method of the Result type in database/sql.
+//   // To return the identifier of an INSERT (or UPDATE or DELETE),
 //   // use the Postgres RETURNING clause with a standard Query or QueryRow call:
-    
+
 //   var node_id int64
 //   err = db.QueryRow(`INSERT INTO node (name, node_type, created_by) VALUES ($1, $2, $3) RETURNING id`, t.Node.Name, 11, 1).Scan(&node_id)
 //   //res, err := tx.Exec(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4)`, t.Node.Name, 3, 1, t.ParentTemplateNodeId)
@@ -141,35 +140,32 @@ func GetDataTypeById(id int) (dataType *DataType){
 //   corehelpers.PanicIf(err1)
 // }
 
+// // FILES STUFF NOT USED RIGHT NOW
+// files_array := []DataTypeTemp{}
 
+// absPathDir, _ := filepath.Abs("/admin/public/views/settings/data-type/tmpl")
+// files, _ := ioutil.ReadDir(absPathDir)
+// for _, f := range files {
+//         //fmt.Println(f.Name())
 
-        // // FILES STUFF NOT USED RIGHT NOW
-        // files_array := []DataTypeTemp{}
+//     //var filesMap map[string]interface{}
+//     path := absPathDir + "\\" + f.Name()
+//     bs, _ := ioutil.ReadFile(path)
+//     html := string(bs)
+//     //json_obj := fmt.Sprintf("{\"name\": \"%s\", \"path\": \"%s\", \"html\": \"%s\"}", f.Name(),path, html)
+//     //json.Unmarshal([]byte(string(json_obj)), &filesMap)
+//     dtt := DataTypeTemp{f.Name(), path, html}
+//     files_array = append(files_array, dtt)
 
-        // absPathDir, _ := filepath.Abs("/admin/public/views/settings/data-type/tmpl")
-        // files, _ := ioutil.ReadDir(absPathDir)
-        // for _, f := range files {
-        //         //fmt.Println(f.Name())
-                
-        //     //var filesMap map[string]interface{}
-        //     path := absPathDir + "\\" + f.Name()
-        //     bs, _ := ioutil.ReadFile(path)
-        //     html := string(bs)
-        //     //json_obj := fmt.Sprintf("{\"name\": \"%s\", \"path\": \"%s\", \"html\": \"%s\"}", f.Name(),path, html)
-        //     //json.Unmarshal([]byte(string(json_obj)), &filesMap)
-        //     dtt := DataTypeTemp{f.Name(), path, html}
-        //     files_array = append(files_array, dtt)
-                
-        // }
-        // files_array_str, _ := json.Marshal(files_array)
+// }
+// files_array_str, _ := json.Marshal(files_array)
 
-        // name := "text-input.html"
-        // absPath, _ := filepath.Abs("/admin/public/views/settings/data-type/tmpl/text-input.html")
-        
-        
-        // bs, err7 := ioutil.ReadFile(absPath)
-        // corehelpers.PanicIf(err7)
-        // str := string(bs)
+// name := "text-input.html"
+// absPath, _ := filepath.Abs("/admin/public/views/settings/data-type/tmpl/text-input.html")
+
+// bs, err7 := ioutil.ReadFile(absPath)
+// corehelpers.PanicIf(err7)
+// str := string(bs)
 //}
 
 // func (dt *DataType) Update(){
@@ -188,8 +184,6 @@ func GetDataTypeById(id int) (dataType *DataType){
 //   //defer r2.Close()
 //   tx.Commit()
 // }
-
-
 
 // func (dt *DataType) MarshalJSONUpdate() ([]byte, error) {
 //   // if dt.Id {

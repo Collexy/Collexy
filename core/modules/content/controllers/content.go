@@ -1,160 +1,157 @@
 package controllers
 
 import (
-    "fmt"
-    "net/http"
-    //"time"
-    //"database/sql"
-    _ "github.com/lib/pq"
-    //"collexy/helpers"
-    "collexy/core/modules/content/models"
-    "strconv"
-    //"log"
-    //"github.com/gorilla/schema"
-    "encoding/json"
-    "log"
-    //"io/ioutil"
-    //"path/filepath"
-    "strings"
-    "html/template"
-    "github.com/gorilla/mux"
-    coreglobals "collexy/core/globals"
-    corehelpers "collexy/core/helpers"
-    //"github.com/gorilla/context"
-    coremoduleuser "collexy/core/modules/user/models"
-    coremodulemembermodels "collexy/core/modules/member/models"
+	"fmt"
+	"net/http"
+	//"time"
+	//"database/sql"
+	_ "github.com/lib/pq"
+	//"collexy/helpers"
+	"collexy/core/modules/content/models"
+	"strconv"
+	//"log"
+	//"github.com/gorilla/schema"
+	"encoding/json"
+	"log"
+	//"io/ioutil"
+	//"path/filepath"
+	coreglobals "collexy/core/globals"
+	corehelpers "collexy/core/helpers"
+	"github.com/gorilla/mux"
+	"html/template"
+	"strings"
+	//"github.com/gorilla/context"
+	coremodulemembermodels "collexy/core/modules/member/models"
+	coremoduleuser "collexy/core/modules/user/models"
 )
 
-type ContentApiController struct {}
+type ContentApiController struct{}
 
 func (this *ContentApiController) Get(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    queryStrParams := r.URL.Query()
+	queryStrParams := r.URL.Query()
 
-    user := coremoduleuser.GetLoggedInUser(r)
+	user := coremoduleuser.GetLoggedInUser(r)
 
-    content := models.GetContent(queryStrParams,user)
+	content := models.GetContent(queryStrParams, user)
 
-    res, err := json.Marshal(content)
-    corehelpers.PanicIf(err)
+	res, err := json.Marshal(content)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 }
 
 func (this *ContentApiController) GetById(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    params := mux.Vars(r)
-    idStr := params["id"]
-    id, _ := strconv.Atoi(idStr)
+	params := mux.Vars(r)
+	idStr := params["id"]
+	id, _ := strconv.Atoi(idStr)
 
-    //user := coremoduleuser.GetLoggedInUser(r)
+	//user := coremoduleuser.GetLoggedInUser(r)
 
-    content := models.GetContentById(id)
+	content := models.GetContentById(id)
 
-    res, err := json.Marshal(content)
-    corehelpers.PanicIf(err)
+	res, err := json.Marshal(content)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 }
 
 func (this *ContentApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    params := mux.Vars(r)
-    idStr := params["id"]
-    id, _ := strconv.Atoi(idStr)
+	params := mux.Vars(r)
+	idStr := params["id"]
+	id, _ := strconv.Atoi(idStr)
 
-    user := coremoduleuser.GetLoggedInUser(r)
+	user := coremoduleuser.GetLoggedInUser(r)
 
-    content := models.GetContentByIdChildren(id, user)
+	content := models.GetContentByIdChildren(id, user)
 
-    res, err := json.Marshal(content)
-    corehelpers.PanicIf(err)
+	res, err := json.Marshal(content)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 }
 
-
-
 type TestData struct {
-    Data *TestStruct
-    HasUser bool
+	Data    *TestStruct
+	HasUser bool
 }
 
 type TestStruct struct {
-    User *coremoduleuser.User
-    Content *models.Content
+	User    *coremoduleuser.User
+	Content *models.Content
 }
 
 type TestDataMember struct {
-    Data *TestStructMember
-    HasMember bool
+	Data      *TestStructMember
+	HasMember bool
 }
 
 type TestStructMember struct {
-    Member *coremodulemembermodels.Member
-    Content *models.Content
+	Member  *coremodulemembermodels.Member
+	Content *models.Content
 }
 
 //var Templates map[string]*template.Template
 
 func (this *ContentApiController) RenderTemplate(w http.ResponseWriter, name string, content *models.Content, member *coremodulemembermodels.Member) error {
-    // Ensure the template exists in the map.
-    tmpl, ok := coreglobals.Templates[name]
-    if !ok {
-        return fmt.Errorf("The template %s does not exist.", name)
-    }
-    fmt.Print(coreglobals.Templates)
-    w.Header().Set("Content-Type", "text/html; charset=utf-8")
-    if(member == nil){
-        fmt.Println("controller.content.RenderTemplate(): user is nil")
-        //tmpl.ExecuteTemplate(w, "base", content)
-        test := &TestStructMember{nil, content}
-        tmpl.ExecuteTemplate(w, "base", TestDataMember{test, false})
-    } else {
-        fmt.Println("controller.content.RenderTemplate(): username is: " + member.Username)
-        test := &TestStructMember{member, content}
-        fmt.Println("is this working? username: " + test.Member.Username)
-        if err := tmpl.ExecuteTemplate(w, "base", TestDataMember{test, true}); err == nil{
-            fmt.Println("member & data structs has been passed on to the template")
-        } else{
-            // handle error
-            log.Println("Error in controllers.content.RenderTemplate(): " + err.Error())
-        }
-    }
+	// Ensure the template exists in the map.
+	tmpl, ok := coreglobals.Templates[name]
+	if !ok {
+		return fmt.Errorf("The template %s does not exist.", name)
+	}
+	fmt.Print(coreglobals.Templates)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if member == nil {
+		fmt.Println("controller.content.RenderTemplate(): user is nil")
+		//tmpl.ExecuteTemplate(w, "base", content)
+		test := &TestStructMember{nil, content}
+		tmpl.ExecuteTemplate(w, "base", TestDataMember{test, false})
+	} else {
+		fmt.Println("controller.content.RenderTemplate(): username is: " + member.Username)
+		test := &TestStructMember{member, content}
+		fmt.Println("is this working? username: " + test.Member.Username)
+		if err := tmpl.ExecuteTemplate(w, "base", TestDataMember{test, true}); err == nil {
+			fmt.Println("member & data structs has been passed on to the template")
+		} else {
+			// handle error
+			log.Println("Error in controllers.content.RenderTemplate(): " + err.Error())
+		}
+	}
 
-    return nil
+	return nil
 }
 
-
 func (this *ContentApiController) RenderAdminTemplate(w http.ResponseWriter, name string, content *models.Content, user *coremoduleuser.User) error {
-    // Ensure the template exists in the map.
-    tmpl, ok := coreglobals.Templates[name]
-    if !ok {
-        return fmt.Errorf("The template %s does not exist.", name)
-    }
-    fmt.Print(coreglobals.Templates)
-    w.Header().Set("Content-Type", "text/html; charset=utf-8")
-    if(user == nil){
-        fmt.Println("controller.content.RenderTemplate(): user is nil")
-        //tmpl.ExecuteTemplate(w, "base", content)
-        test := &TestStruct{nil, content}
-        tmpl.ExecuteTemplate(w, "base", TestData{test, false})
-    } else {
-        fmt.Println("controller.content.RenderTemplate(): username is: " + user.Username)
-        test := &TestStruct{user, content}
-        fmt.Println("is this working? username: " + test.User.Username)
-        if err := tmpl.ExecuteTemplate(w, "base", TestData{test, true}); err == nil{
-            fmt.Println("user & data structs has been passed on to the template")
-        } else{
-            // handle error
-            log.Println("Error in controllers.content.RenderTemplate(): " + err.Error())
-        }
-    }
+	// Ensure the template exists in the map.
+	tmpl, ok := coreglobals.Templates[name]
+	if !ok {
+		return fmt.Errorf("The template %s does not exist.", name)
+	}
+	fmt.Print(coreglobals.Templates)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if user == nil {
+		fmt.Println("controller.content.RenderTemplate(): user is nil")
+		//tmpl.ExecuteTemplate(w, "base", content)
+		test := &TestStruct{nil, content}
+		tmpl.ExecuteTemplate(w, "base", TestData{test, false})
+	} else {
+		fmt.Println("controller.content.RenderTemplate(): username is: " + user.Username)
+		test := &TestStruct{user, content}
+		fmt.Println("is this working? username: " + test.User.Username)
+		if err := tmpl.ExecuteTemplate(w, "base", TestData{test, true}); err == nil {
+			fmt.Println("user & data structs has been passed on to the template")
+		} else {
+			// handle error
+			log.Println("Error in controllers.content.RenderTemplate(): " + err.Error())
+		}
+	}
 
-    return nil
+	return nil
 }
 
 // func (this *ContentApiController) Post(w http.ResponseWriter, r *http.Request) {
@@ -199,8 +196,8 @@ func (this *ContentApiController) RenderAdminTemplate(w http.ResponseWriter, nam
 //         } else {
 //             fmt.Fprintf(w,"You do not have permission to update content")
 //         }
-        
-//     } 
+
+//     }
 // }
 
 // func (this *ContentApiController) Delete(w http.ResponseWriter, r *http.Request){
@@ -218,170 +215,166 @@ func (this *ContentApiController) RenderAdminTemplate(w http.ResponseWriter, nam
 //         } else {
 //             fmt.Fprintf(w,"You do not have permission to delete content")
 //         }
-        
-//     } 
+
+//     }
 // }
 
 func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.Request) {
 
-    sid := corehelpers.CheckMemberCookie(w,r)
-    m, _ := coremodulemembermodels.GetMember(sid)
+	sid := corehelpers.CheckMemberCookie(w, r)
+	m, _ := coremodulemembermodels.GetMember(sid)
 
-    coremodulemembermodels.SetLoggedInMember(r,m)
+	coremodulemembermodels.SetLoggedInMember(r, m)
 
-    fmt.Println("RENDERCONTENT")
+	fmt.Println("RENDERCONTENT")
 
-    // idStr := r.URL.Query().Get(":id")
+	// idStr := r.URL.Query().Get(":id")
 
-    params := mux.Vars(r)
-    // idStr := params["id"]
+	params := mux.Vars(r)
+	// idStr := params["id"]
 
-    // id, _ := strconv.Atoi(idStr)
-    // fmt.Println(id)
+	// id, _ := strconv.Atoi(idStr)
+	// fmt.Println(id)
 
-    // content := models.GetFrontendContentById(id)
+	// content := models.GetFrontendContentById(id)
 
-    url := params["url"]
-    s := strings.Split(url, "/")
-    name := strings.Replace(strings.ToLower(s[len(s)-1]), "-", " ",-1)
-    var content *models.Content
-    if(name==""){
-        content = models.GetFrontendContentByDomain(r.Host)
-    } else {
-        content = models.GetFrontendContentByUrl(name, r.Host + r.URL.String())
-    }
-    
+	url := params["url"]
+	s := strings.Split(url, "/")
+	name := strings.Replace(strings.ToLower(s[len(s)-1]), "-", " ", -1)
+	var content *models.Content
+	if name == "" {
+		content = models.GetFrontendContentByDomain(r.Host)
+	} else {
+		content = models.GetFrontendContentByUrl(name, r.Host+r.URL.String())
+	}
 
+	if content == nil {
+		fmt.Println("content is null!!")
+		coreglobals.Templates["404.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/404.tmpl"))
+		this.RenderTemplate(w, "404.tmpl", nil, nil)
+	} else {
+		var templateName string = content.Template.Name + ".tmpl"
+		//templateName := strings.Replace(content["template_name"].(string), " ", "-", -1) + ".tmpl"
+		if templateName != ".tmpl" {
+			if coreglobals.Templates[templateName] != nil {
 
-    if(content == nil){
-        fmt.Println("content is null!!")
-        coreglobals.Templates["404.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl","views/404.tmpl"))
-        this.RenderTemplate(w, "404.tmpl", nil, nil)
-    } else{
-        var templateName string = content.Template.Name + ".tmpl"
-        //templateName := strings.Replace(content["template_name"].(string), " ", "-", -1) + ".tmpl"
-        if(templateName !=".tmpl"){
-            if(coreglobals.Templates[templateName] != nil){
+			} else {
+				if content.Template.ParentTemplates != nil {
+					templateArray := []string{"views/" + templateName}
 
-            } else{        
-                if(content.Template.ParentTemplates != nil){
-                    templateArray := []string{"views/" + templateName}
+					if content.Template.ParentTemplates != nil {
 
-                    if(content.Template.ParentTemplates != nil){
-      
-                        parentTemplateNodes := content.Template.ParentTemplates
+						parentTemplateNodes := content.Template.ParentTemplates
 
-                        v := make([]string, 0, len(parentTemplateNodes))
+						v := make([]string, 0, len(parentTemplateNodes))
 
-                        for  _, value := range parentTemplateNodes {
-                            tplName := "views/" + value.Name + ".tmpl"
-                            v = append(v, tplName)
-                        }
-                        templateArray = append(templateArray, v...)
-                        
-                    }
+						for _, value := range parentTemplateNodes {
+							tplName := "views/" + value.Name + ".tmpl"
+							v = append(v, tplName)
+						}
+						templateArray = append(templateArray, v...)
 
-                    // if(content.Template.PartialTemplateNodes != nil){
-                    //     partialTemplateNodes := content.Template.PartialTemplateNodes
-                        
-                    //     x := make([]string, 0, len(partialTemplateNodes))
+					}
 
-                    //     for  _, value := range partialTemplateNodes {
-                    //         tplName := "views/" + value.Name + ".tmpl"
-                    //         x = append(x, tplName)
-                    //     }
-                    //     templateArray = append(templateArray, x...)
-                    // }
+					// if(content.Template.PartialTemplateNodes != nil){
+					//     partialTemplateNodes := content.Template.PartialTemplateNodes
 
-                    coreglobals.Templates[templateName] = template.Must(template.ParseFiles(templateArray...))
-                    //.Delims("{@","@}")
-                } else {
-                    coreglobals.Templates[templateName] = template.Must(template.ParseFiles("views/" + templateName))
-                }
-            }
+					//     x := make([]string, 0, len(partialTemplateNodes))
 
-            // if user := models.GetLoggedInUser(r); user != nil {
-            //     this.RenderTemplate(w, templateName, content, user)
-            // } else {
-            //     this.RenderTemplate(w, templateName, content, nil)
-            // }
+					//     for  _, value := range partialTemplateNodes {
+					//         tplName := "views/" + value.Name + ".tmpl"
+					//         x = append(x, tplName)
+					//     }
+					//     templateArray = append(templateArray, x...)
+					// }
 
-            if member := coremodulemembermodels.GetLoggedInMember(r); member != nil {
-                if(content.PublicAccess != nil){
-                    if(corehelpers.IntInSlice(member.Id, content.PublicAccess.Members)){
-                        this.RenderTemplate(w, templateName, content, member)
-                    } else if(member.Groups2PublicAccess(content.PublicAccess.Groups)){
-                        this.RenderTemplate(w, templateName, content, member)
-                    } else{
-                        fmt.Println("Member do have access to this content")
-                        coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl","views/Unauthorized.tmpl"))
-                        this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
-                    }
-                } else {
-                    this.RenderTemplate(w, templateName, content, member)
-                }
-            } else {
-                if(content.PublicAccess != nil){
-                    fmt.Println("Member do have access to this content")
-                    coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl","views/Unauthorized.tmpl"))
-                    this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
-                } else{
-                    this.RenderTemplate(w, templateName, content, nil)
-                }
-                
-            }
+					coreglobals.Templates[templateName] = template.Must(template.ParseFiles(templateArray...))
+					//.Delims("{@","@}")
+				} else {
+					coreglobals.Templates[templateName] = template.Must(template.ParseFiles("views/" + templateName))
+				}
+			}
 
-            //this.RenderTemplate(w, templateName, &content, nil)
-        }
-    }
+			// if user := models.GetLoggedInUser(r); user != nil {
+			//     this.RenderTemplate(w, templateName, content, user)
+			// } else {
+			//     this.RenderTemplate(w, templateName, content, nil)
+			// }
 
-    
+			if member := coremodulemembermodels.GetLoggedInMember(r); member != nil {
+				if content.PublicAccess != nil {
+					if corehelpers.IntInSlice(member.Id, content.PublicAccess.Members) {
+						this.RenderTemplate(w, templateName, content, member)
+					} else if member.Groups2PublicAccess(content.PublicAccess.Groups) {
+						this.RenderTemplate(w, templateName, content, member)
+					} else {
+						fmt.Println("Member do have access to this content")
+						coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
+						this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
+					}
+				} else {
+					this.RenderTemplate(w, templateName, content, member)
+				}
+			} else {
+				if content.PublicAccess != nil {
+					fmt.Println("Member do have access to this content")
+					coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
+					this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
+				} else {
+					this.RenderTemplate(w, templateName, content, nil)
+				}
+
+			}
+
+			//this.RenderTemplate(w, templateName, &content, nil)
+		}
+	}
+
 }
-
 
 func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    params := mux.Vars(r)
-    idStr := params["id"]
+	params := mux.Vars(r)
+	idStr := params["id"]
 
-    id, _ := strconv.Atoi(idStr)
+	id, _ := strconv.Atoi(idStr)
 
-    // Content object including the content' Node, the content type object. 
-    // Note: Inside the content type object is an array of parent ContentTypes
-    content := models.GetBackendContentById(id)
+	// Content object including the content' Node, the content type object.
+	// Note: Inside the content type object is an array of parent ContentTypes
+	content := models.GetBackendContentById(id)
 
-    res, err := json.Marshal(content)
-    corehelpers.PanicIf(err)
+	res, err := json.Marshal(content)
+	corehelpers.PanicIf(err)
 
-    fmt.Fprintf(w,"%s",res)
+	fmt.Fprintf(w, "%s", res)
 }
 
-    /*
-    1) 
-    SELECT * FROM content, node 
-    JOIN node ON node.id = content.node_id 
-    WHERE node.id = $1
-    2) 
-    Create node
-    3) 
-    SELECT my_content_type.*, ffgd.*
-    FROM content_type as my_content_type,
-    LATERAL 
-    (
-        SELECT array_to_json(array_agg(c)) as parent_content_types
-        from content_type as c, node
-        where path @> subpath('1.3.5',0,nlevel('1.3.5')-1) and c.node_id = node.id
-    ) ffgd
-    WHERE my_content_type.node_id = 5
-    4) create array of parent conten types
-    5) create content type with parent content types inside
-    6) create content with content type and node
-    */
+/*
+   1)
+   SELECT * FROM content, node
+   JOIN node ON node.id = content.node_id
+   WHERE node.id = $1
+   2)
+   Create node
+   3)
+   SELECT my_content_type.*, ffgd.*
+   FROM content_type as my_content_type,
+   LATERAL
+   (
+       SELECT array_to_json(array_agg(c)) as parent_content_types
+       from content_type as c, node
+       where path @> subpath('1.3.5',0,nlevel('1.3.5')-1) and c.node_id = node.id
+   ) ffgd
+   WHERE my_content_type.node_id = 5
+   4) create array of parent conten types
+   5) create content type with parent content types inside
+   6) create content with content type and node
+*/
 
 //     sql := `SELECT my_content_type.*,ffgd.*
 // FROM content_type as my_content_type,
-// LATERAL 
+// LATERAL
 // (
 //     SELECT array_to_json(array_agg(okidoki)) as parent_content_types
 //     FROM (
@@ -392,14 +385,14 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //             select y.name, ss.properties
 //             from json_to_recordset(
 //             (
-//                 select * 
+//                 select *
 //                 from json_to_recordset(
 //                 (
 //                     SELECT json_agg(ggg)
 //                     from(
 //                     SELECT tabs
-//                     FROM 
-//                     (   
+//                     FROM
+//                     (
 //                         SELECT *
 //                         FROM content_type as ct
 //                         WHERE ct.id=c.id
@@ -414,7 +407,7 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //             select json_agg(json_build_object('name',row.name,'order',row."order",'data_type', json_build_object('id',row.data_type, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
 //             from(
 //                 select name, "order", data_type, data_type.html as data_type_html, help_text, description
-//                 from json_to_recordset(properties) 
+//                 from json_to_recordset(properties)
 //                 as k(name text, "order" int, data_type int, help_text text, description text)
 //                 JOIN data_type
 //                 ON data_type.id = k.data_type
@@ -427,22 +420,8 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 // ) ffgd
 // WHERE my_content_type.node_id = 5`
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //     querystr := `SELECT *
-// FROM 
+// FROM
 // (
 //     SELECT node.id as node_id, node.path as node_path, node.created_by as node_created_by, node.name as node_name, node.node_type as node_type, node.created_date as node_created_date,
 //     content.id as content_id, content.node_id as content_node_id, content.content_type_node_id as content_content_type_node_id, content.meta as content_meta,
@@ -468,14 +447,14 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //     select y.name, ss.properties
 //     from json_to_recordset(
 //         (
-//             select * 
+//             select *
 //             from json_to_recordset(
 //                 (
 //                     SELECT json_agg(ggg)
 //                     from(
 //                         SELECT tabs
-//                         FROM 
-//                         (   
+//                         FROM
+//                         (
 //                             SELECT *
 //                             FROM content_type as ct
 //                             WHERE ct.id=content_type.id
@@ -491,7 +470,7 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //         select json_agg(json_build_object('name',row.name,'order',row."order",'data_type', json_build_object('id',row.data_type, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
 //         from(
 //             select name, "order", data_type, data_type.html as data_type_html, help_text, description
-//             from json_to_recordset(properties) 
+//             from json_to_recordset(properties)
 //             as k(name text, "order" int, data_type int, help_text text, description text)
 //             JOIN data_type
 //             ON data_type.id = k.data_type
@@ -504,14 +483,14 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //     select p.name, ss2.properties
 //     from json_to_recordset(
 //         (
-//             select * 
+//             select *
 //             from json_to_recordset(
 //                 (
 //                     SELECT json_agg(ggg)
 //                     from(
 //                         SELECT tabs
-//                         FROM 
-//                         (   
+//                         FROM
+//                         (
 //                             SELECT *
 //                             FROM content_type as ctm
 //                             WHERE ctm.node_id=content_type.master_content_type_node_id
@@ -527,7 +506,7 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //         select json_agg(json_build_object('name',row.name,'order',row."order",'data_type', json_build_object('id',row.data_type, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
 //         from(
 //             select name, "order", data_type, data_type.html as data_type_html, help_text, description
-//             from json_to_recordset(properties) 
+//             from json_to_recordset(properties)
 //             as k(name text, "order" int, data_type int, help_text text, description text)
 //             JOIN data_type
 //             ON data_type.id = k.data_type
@@ -557,7 +536,7 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //     var ctm_id, ctm_node_id, ctm_master_content_type_node_id int
 //     var ctm_name, ctm_description, ctm_icon, ctm_thumbnail string
 //     var ctm_tabs, ctm_meta []byte
-    
+
 //     var content_type_id, master_content_type_node_id int
 
 //     templol := r.URL.Query().Get(":id")
@@ -595,7 +574,6 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //     var ctm_meta_map map[string]interface{}
 //     json.Unmarshal([]byte(string(ctm_meta_str)), &ctm_meta_map)
 
-
 // // Decode the json object
 
 //     var ctTabs []models.Tab
@@ -607,18 +585,16 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //     fmt.Printf("id: %d, HTML: %s, name: %s", ctTabs[0].Properties[0].DataType.Id, ctTabs[0].Properties[0].DataType.Html, ctTabs[0].Properties[0].Name)
 //     //fmt.Println(ct_tabs_str)
 
-
 //     var x map[string]interface{}
 //     json.Unmarshal([]byte(string(content_meta)), &x)
 //     fmt.Println(x)
-    
+
 //     fmt.Println("ksjdflk sdfkj: " + node_name)
 //     //fmt.Println(string(content_meta))
 //     node := models.Node{node_id,node_path,node_created_by, node_name, node_type, node_created_date, nil, nil, false}
 //     content := models.Content{content_id,content_node_id,content_content_type_node_id, x}
 //     ct := models.ContentType{ct_id, ct_node_id, ct_name, ct_description, ct_icon, ct_thumbnail, ct_master_content_type_node_id, ctTabs, ct_meta_map}
 //     ctm := models.ContentType{ctm_id, ctm_node_id, ctm_name, ctm_description, ctm_icon, ctm_thumbnail, ctm_master_content_type_node_id, ctmTabs, ctm_meta_map}
-
 
 //     //helpers.PanicIf(err)
 //     switch {
@@ -638,7 +614,6 @@ func (this *ContentApiController) GetBackendContentById(w http.ResponseWriter, r
 //                 combined_res := fmt.Sprintf("{\"node\": %s, \"content\": %s, \"ct\": %s, \"ctm\": %s}",node_str, content_str, ct_str, ctm_str)
 //                 fmt.Fprintf(w, "%s", combined_res)
 //     }
-
 
 // func (this *ContentApiController) Get(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Content-Type", "application/json")

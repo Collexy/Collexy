@@ -9,14 +9,14 @@
 package models
 
 import (
+	corehelpers "collexy/core/helpers"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
-	"encoding/json"
-	corehelpers "collexy/core/helpers"
-	"fmt"
-	"io/ioutil"
 )
 
 // FileInfo is a struct created from os.FileInfo interface for serialization.
@@ -35,13 +35,13 @@ func fileInfoFromInterface(v os.FileInfo) *FileInfo {
 
 // FileNode represents a node in a directory tree.
 type FileNode struct {
-	FullPath string    `json:"path,omitempty"`
-	OldPath string `json:"old_path,omitempty"`
-	Info     *FileInfo `json:"info,omitempty"`
-	Children []*FileNode   `json:"children,omitempty"`
-	Contents string `json:"contents,omitempty"`
-	Show bool `json:"show,omitempty"`
-	Parent string `json:"parent,omitempty"`
+	FullPath string      `json:"path,omitempty"`
+	OldPath  string      `json:"old_path,omitempty"`
+	Info     *FileInfo   `json:"info,omitempty"`
+	Children []*FileNode `json:"children,omitempty"`
+	Contents string      `json:"contents,omitempty"`
+	Show     bool        `json:"show,omitempty"`
+	Parent   string      `json:"parent,omitempty"`
 }
 
 // Helper function to get a path's parent path (OS-specific).
@@ -61,7 +61,7 @@ func NewTree(root string) (result *FileNode, err error) {
 		if err != nil {
 			return err
 		}
-		parents[path] = &FileNode{path, "", fileInfoFromInterface(info), []*FileNode{},"",true, ""}
+		parents[path] = &FileNode{path, "", fileInfoFromInterface(info), []*FileNode{}, "", true, ""}
 		return nil
 	}
 	if err = filepath.Walk(absRoot, walkFunc); err != nil {
@@ -81,7 +81,7 @@ func NewTree(root string) (result *FileNode, err error) {
 
 /* NEW STUFF */
 
-func (t *FileNode) Post() (err error){
+func (t *FileNode) Post() (err error) {
 	fmt.Println("t.parent:::: " + t.Parent + "\n")
 	fmt.Println("t.path:::: " + t.FullPath + "\n")
 	fmt.Println("t.info.name:::: " + t.Info.Name + "\n")
@@ -96,92 +96,91 @@ func (t *FileNode) Post() (err error){
 	//tplNodeName := t.Info.Name + ".tmpl"
 	absPath := t.FullPath
 
-	if(t.Info.IsDir){
+	if t.Info.IsDir {
 		// create directory 0777 permission too liberal?
 		fmt.Println("creating directory: " + t.Info.Name + "with path: " + t.FullPath)
-		err = os.Mkdir(absPath,0644)
-		
-	} else{
+		err = os.Mkdir(absPath, 0644)
+
+	} else {
 		fmt.Println("creating file...")
 		// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
 		err = ioutil.WriteFile(absPath, []byte(t.Contents), 0644)
 	}
-  	return
+	return
 }
 
+func (t *FileNode) Update() {
+	fmt.Println("::: FileNode Update Initiated :::")
+	//tplNodeName := t.Info.Name + ".tmpl"
 
-func (t *FileNode) Update(){
-  	fmt.Println("::: FileNode Update Initiated :::")
- 	//tplNodeName := t.Info.Name + ".tmpl"
- 	
- 	// equivalent to Python's `if os.path.exists(filename)`
+	// equivalent to Python's `if os.path.exists(filename)`
 	if _, err := os.Stat(t.OldPath); err == nil {
 		newAbsPath := t.FullPath
-	  	if(t.Info.IsDir){
-	  		fmt.Println("DIRECTORY RENAME:::")
-	  		// create directory 0777 permission too liberal?
+		if t.Info.IsDir {
+			fmt.Println("DIRECTORY RENAME:::")
+			// create directory 0777 permission too liberal?
 			//os.Mkdir(newAbsPath,0644)
-			err :=  os.Rename(t.OldPath, newAbsPath)
+			err := os.Rename(t.OldPath, newAbsPath)
 
 			if err != nil {
-			  fmt.Println(err)
-			  return
+				fmt.Println(err)
+				return
 			}
-		} else{
+		} else {
 			fmt.Println("old: " + t.OldPath + "new: ")
 			fmt.Println(newAbsPath)
-			
-				//fmt.Println("FILE EXISTS ::: RENAMING FILE :::")
-				//Add old/original file path attribute in FileNode
-		  		err :=  os.Rename(t.OldPath, newAbsPath)
 
-				if err != nil {
-				  fmt.Println(err)
-				  return
-				}
-			
+			//fmt.Println("FILE EXISTS ::: RENAMING FILE :::")
+			//Add old/original file path attribute in FileNode
+			err := os.Rename(t.OldPath, newAbsPath)
+
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
 			// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
 			err = ioutil.WriteFile(newAbsPath, []byte(t.Contents), 0644)
 			if err != nil {
 				panic(err)
 			}
-			
+
 		}
 	}
 }
 
-func GetFilesystemNodes(rootdir string) (tree *FileNode, err error){
+func GetFilesystemNodes(rootdir string) (tree *FileNode, err error) {
 	tree, err = NewTree(rootdir) // maybe try prepending with slash /
-    return
+	return
 }
 
-func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode){
-    filepath.Walk(rootdir, func (path string, fi os.FileInfo, err error) (e error) {
-        //if !fi.IsDir() {
-        if(fi.Name()==filename){
-            //fmt.Println("AWESOME... WORKS!!!")
-            //fmt.Println(fi.Name())
-            //fmt.Println("AWESOME... WORKS!!!")
-            finfo := FileInfo{fi.Name(),fi.Size(), fi.Mode(), fi.ModTime(), fi.IsDir()}
-            //finfoInterface := *FileInfo
-            //f, _ := json.Marshal(finfo)
-            if(!fi.IsDir()) {
-                bytes, err1 := ioutil.ReadFile(path) // path is the path to the file.
-                corehelpers.PanicIf(err1)
+func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode) {
+	filepath.Walk(rootdir, func(path string, fi os.FileInfo, err error) (e error) {
+		//if !fi.IsDir() {
+		if fi.Name() == filename {
+			//fmt.Println("AWESOME... WORKS!!!")
+			//fmt.Println(fi.Name())
+			//fmt.Println("AWESOME... WORKS!!!")
+			finfo := FileInfo{fi.Name(), fi.Size(), fi.Mode(), fi.ModTime(), fi.IsDir()}
+			//finfoInterface := *FileInfo
+			//f, _ := json.Marshal(finfo)
+			if !fi.IsDir() {
+				bytes, err1 := ioutil.ReadFile(path) // path is the path to the file.
+				corehelpers.PanicIf(err1)
 
-                fileNode = FileNode{path,path,&finfo,nil,string(bytes),true, ""}
-                return
-            } else {
-                fileNode = FileNode{path,path,&finfo,nil,"",true, ""}
-                return
-                // finod, _ := json.Marshal(fin)
-                // fmt.Fprintf(w,"%s",finod)
-            }       
-        }  
-        if err != nil {
-            fmt.Println("Fail")
-        }
-        return
-    })
+				fileNode = FileNode{path, path, &finfo, nil, string(bytes), true, ""}
+				return
+			} else {
+				fileNode = FileNode{path, path, &finfo, nil, "", true, ""}
+				return
+				// finod, _ := json.Marshal(fin)
+				// fmt.Fprintf(w,"%s",finod)
+			}
+		}
+		if err != nil {
+			fmt.Println("Fail")
+		}
+		return
+	})
 	return
 }

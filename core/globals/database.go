@@ -1,15 +1,16 @@
 package globals
 
-import(
+import (
 	"database/sql"
-    _ "github.com/lib/pq"
-	"log"
 	"fmt"
+	_ "github.com/lib/pq"
+	"log"
 )
+
 var Db *sql.DB
 
 func SetupDB() (db *sql.DB) {
-	
+
 	connString := fmt.Sprintf("dbname=%s user=%s password=%s sslmode=%s", Conf.DbName, Conf.DbUser, Conf.DbPassword, Conf.SslMode)
 	//log.Println(connString)
 	db, err := sql.Open(Conf.DbUser, connString)

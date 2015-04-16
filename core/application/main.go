@@ -1,158 +1,158 @@
 package application
 
-import(
-    "log"
-    "net/http"
-    "html/template"
-    "database/sql"
-    "collexy/core/application/controllers"
-    //"collexy/core/application/controllers"
-    //"collexy/core/api/models"
-    corehelpers "collexy/core/helpers"
-    "github.com/gorilla/mux"
-    "github.com/gorilla/context"
-    //"collexy/globals"
-    "fmt"
-    "os"
-    coreglobals "collexy/core/globals"
-    "encoding/json"
-    "io/ioutil"
-    "path/filepath"
-    //"collexy/helpers"
-    "strings"
-    "collexy/core/lib"
-    // _ "collexy/core/modules/mytest"
-    _ "collexy/core/modules/settings"
-    _ "collexy/core/modules/user"
-    _ "collexy/core/modules/member"
-    
-    _ "collexy/core/modules/content"
-    coremoduleusermodels "collexy/core/modules/user/models"
-    coremodulecontentmodels "collexy/core/modules/content/models"
-    coremodulecontentcontrollers "collexy/core/modules/content/controllers"
+import (
+	"collexy/core/application/controllers"
+	"database/sql"
+	"html/template"
+	"log"
+	"net/http"
+	//"collexy/core/application/controllers"
+	//"collexy/core/api/models"
+	corehelpers "collexy/core/helpers"
+	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
+	//"collexy/globals"
+	coreglobals "collexy/core/globals"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	//"collexy/helpers"
+	"collexy/core/lib"
+	"strings"
+	// _ "collexy/core/modules/mytest"
+	_ "collexy/core/modules/member"
+	_ "collexy/core/modules/settings"
+	_ "collexy/core/modules/user"
+
+	_ "collexy/core/modules/content"
+	coremodulecontentcontrollers "collexy/core/modules/content/controllers"
+	coremodulecontentmodels "collexy/core/modules/content/models"
+	coremoduleusermodels "collexy/core/modules/user/models"
 )
 
-func executeDatabaseInstallScript(site_title,username,password,email string,privacy bool) (err error) {
-    db := coreglobals.Db
-    tx, err1 := db.Begin()
+func executeDatabaseInstallScript(site_title, username, password, email string, privacy bool) (err error) {
+	db := coreglobals.Db
+	tx, err1 := db.Begin()
 
-    sqlStr := fmt.Sprintf(coreglobals.DbCreateScriptDML + coreglobals.DbCreateScriptDDL,site_title,username,password,email)
-    sqlStmtSlice := strings.Split(sqlStr, ";\r")
+	sqlStr := fmt.Sprintf(coreglobals.DbCreateScriptDML+coreglobals.DbCreateScriptDDL, site_title, username, password, email)
+	sqlStmtSlice := strings.Split(sqlStr, ";\r")
 
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    defer func() {
-        // Rollback the transaction after the function returns.
-        // If the transaction was already commited, this will do nothing.
-        _ = tx.Rollback()
-    }()
+	defer func() {
+		// Rollback the transaction after the function returns.
+		// If the transaction was already commited, this will do nothing.
+		_ = tx.Rollback()
+	}()
 
-    for _, q := range sqlStmtSlice {
-        //fmt.Println(q)
-        // Execute the query in the transaction.
-        _, err := tx.Exec(q)
+	for _, q := range sqlStmtSlice {
+		//fmt.Println(q)
+		// Execute the query in the transaction.
+		_, err := tx.Exec(q)
 
-        if err != nil {
-            return err
-        }
-    }
+		if err != nil {
+			return err
+		}
+	}
 
-    err1 = tx.Commit()
-    err = err1
-    return
+	err1 = tx.Commit()
+	err = err1
+	return
 }
 
-func installPostHandler(w http.ResponseWriter, r *http.Request){
-    if _, err := os.Stat("./config/config.json"); err != nil {
-        if os.IsNotExist(err) {
-            // file does not exist
-            log.Println("Config file does not exist")
-            // create file
-            // var bool hide_from_search_engines = false
-            // if(r.PostFormValue("hide_from_search_engines")){
-            //     hide_from_search_engines = r.PostFormValue("hide_from_search_engines"
-            // }
-            coreglobals.Conf = coreglobals.Config{r.PostFormValue("db_name"), r.PostFormValue("db_user"), r.PostFormValue("db_password"), "", r.PostFormValue("db_ssl_mode"), -1}
-            res, err3 := json.Marshal(coreglobals.Conf)
-            if(err3 != nil){
+func installPostHandler(w http.ResponseWriter, r *http.Request) {
+	if _, err := os.Stat("./config/config.json"); err != nil {
+		if os.IsNotExist(err) {
+			// file does not exist
+			log.Println("Config file does not exist")
+			// create file
+			// var bool hide_from_search_engines = false
+			// if(r.PostFormValue("hide_from_search_engines")){
+			//     hide_from_search_engines = r.PostFormValue("hide_from_search_engines"
+			// }
+			coreglobals.Conf = coreglobals.Config{r.PostFormValue("db_name"), r.PostFormValue("db_user"), r.PostFormValue("db_password"), "", r.PostFormValue("db_ssl_mode"), -1}
+			res, err3 := json.Marshal(coreglobals.Conf)
+			if err3 != nil {
 
-            } else {
-                // write whole the body
-                absPath, _ := filepath.Abs("./config/config.json")
-                err4 := ioutil.WriteFile(absPath, res, 0644)
-                if err4 != nil {
-                    panic(err4)
-                }
-                installHandler(w,r)
-            }
-        } else {
-            // other error
-        }
-    } else {
-        // run DB create script
-        var site_title, username, password, email string
-        var privacy bool
-        site_title = r.PostFormValue("site_title")
-        username = r.PostFormValue("username")
-        password = r.PostFormValue("password")
-        email = r.PostFormValue("email")
-        privacy = false //r.PostFormValue("privacy")
-        err5 := executeDatabaseInstallScript(site_title,username,coreglobals.SetPassword(password),email,privacy)
-        if(err5 != nil){
-            log.Println("ERROR INSTALLING DATABASE SCRIPT")
-            log.Fatal(err5)
-        } else{
-            log.Println("DATABASE SCRIPT INSTALLED SUCCESSFULLY")
-            adminHandler(w,r)
-        }
-    }
+			} else {
+				// write whole the body
+				absPath, _ := filepath.Abs("./config/config.json")
+				err4 := ioutil.WriteFile(absPath, res, 0644)
+				if err4 != nil {
+					panic(err4)
+				}
+				installHandler(w, r)
+			}
+		} else {
+			// other error
+		}
+	} else {
+		// run DB create script
+		var site_title, username, password, email string
+		var privacy bool
+		site_title = r.PostFormValue("site_title")
+		username = r.PostFormValue("username")
+		password = r.PostFormValue("password")
+		email = r.PostFormValue("email")
+		privacy = false //r.PostFormValue("privacy")
+		err5 := executeDatabaseInstallScript(site_title, username, coreglobals.SetPassword(password), email, privacy)
+		if err5 != nil {
+			log.Println("ERROR INSTALLING DATABASE SCRIPT")
+			log.Fatal(err5)
+		} else {
+			log.Println("DATABASE SCRIPT INSTALLED SUCCESSFULLY")
+			adminHandler(w, r)
+		}
+	}
 }
 
-func installHandler(w http.ResponseWriter, r *http.Request){
-    //stepStr := r.URL.Query().Post("isPostBack")
-    var htmlStr string
-    r.ParseForm()
-    step := r.PostFormValue("step")
-    if(step == "2"){
-        fmt.Println("POST VALUE STEP = 2:::::::::::::::::")
-        if _, err := os.Stat("./config/config.json"); err != nil {
-            if os.IsNotExist(err) {
-                // file does not exist
-                log.Println("Config file does not exist")
-            } else {
-                // other error
-            }
-        } else {
+func installHandler(w http.ResponseWriter, r *http.Request) {
+	//stepStr := r.URL.Query().Post("isPostBack")
+	var htmlStr string
+	r.ParseForm()
+	step := r.PostFormValue("step")
+	if step == "2" {
+		fmt.Println("POST VALUE STEP = 2:::::::::::::::::")
+		if _, err := os.Stat("./config/config.json"); err != nil {
+			if os.IsNotExist(err) {
+				// file does not exist
+				log.Println("Config file does not exist")
+			} else {
+				// other error
+			}
+		} else {
 
-            configFile, err1 := os.Open("./config/config.json")
-            defer configFile.Close()
-            if err1 != nil {
-                log.Println("Error opening config file")
-                //printError("opening config file", err1.Error())
-            }
+			configFile, err1 := os.Open("./config/config.json")
+			defer configFile.Close()
+			if err1 != nil {
+				log.Println("Error opening config file")
+				//printError("opening config file", err1.Error())
+			}
 
-            jsonParser := json.NewDecoder(configFile)
-            if err1 = jsonParser.Decode(&coreglobals.Conf); err1 != nil {
-                log.Println("Error parsing config file")
-                //printError("parsing config file", err1.Error())
-            }
-            // log.Println(coreglobals.Conf.DbName)
-            // log.Println(coreglobals.Conf.DbUser)
-            // log.Println(coreglobals.Conf.DbPassword)
-            // log.Println(coreglobals.Conf.DbHost)
-            // log.Println(coreglobals.Conf.SslMode)
-            coreglobals.Db = coreglobals.SetupDB()
+			jsonParser := json.NewDecoder(configFile)
+			if err1 = jsonParser.Decode(&coreglobals.Conf); err1 != nil {
+				log.Println("Error parsing config file")
+				//printError("parsing config file", err1.Error())
+			}
+			// log.Println(coreglobals.Conf.DbName)
+			// log.Println(coreglobals.Conf.DbUser)
+			// log.Println(coreglobals.Conf.DbPassword)
+			// log.Println(coreglobals.Conf.DbHost)
+			// log.Println(coreglobals.Conf.SslMode)
+			coreglobals.Db = coreglobals.SetupDB()
 
-        }
-    }
+		}
+	}
 
-    if _, err := os.Stat("./config/config.json"); err != nil {
-        if os.IsNotExist(err) {
-            // file does not exist
-            log.Println("Config file does not exist")
-            htmlStr = `<html >
+	if _, err := os.Stat("./config/config.json"); err != nil {
+		if os.IsNotExist(err) {
+			// file does not exist
+			log.Println("Config file does not exist")
+			htmlStr = `<html >
                 <head>
                     <title>Collexy Installation</title>
                 </head>
@@ -197,15 +197,15 @@ func installHandler(w http.ResponseWriter, r *http.Request){
                     </div>
                 </body>
             </html>`
-            fmt.Fprintf(w, htmlStr)
-        } else {
-            // other error
-        }
-    } else {
-        log.Println(coreglobals.Conf.DbName)
-        coreglobals.Db = coreglobals.SetupDB()
-        if(corehelpers.CheckIfDbInstalled()){
-            htmlStr = `<html>
+			fmt.Fprintf(w, htmlStr)
+		} else {
+			// other error
+		}
+	} else {
+		log.Println(coreglobals.Conf.DbName)
+		coreglobals.Db = coreglobals.SetupDB()
+		if corehelpers.CheckIfDbInstalled() {
+			htmlStr = `<html>
                     <head>
                         <title>Collexy Installation</title>
                     </head>
@@ -218,8 +218,8 @@ func installHandler(w http.ResponseWriter, r *http.Request){
                         <div>
                     </body
                 </html>`
-        } else {
-            htmlStr = `<html>
+		} else {
+			htmlStr = `<html>
                 <head>
                     <title>Collexy Installation</title>
                 </head>
@@ -275,75 +275,72 @@ func installHandler(w http.ResponseWriter, r *http.Request){
                     </div>
                 </body>
             </html>`
-        }
-        
-        fmt.Fprintf(w, htmlStr)
-    }
-    
-    
-    
+		}
+
+		fmt.Fprintf(w, htmlStr)
+	}
+
 }
 
 func adminHandler(w http.ResponseWriter, r *http.Request) {
 
-    sid := corehelpers.CheckCookie(w,r)
-    u, _ := coremoduleusermodels.GetUser(sid)
+	sid := corehelpers.CheckCookie(w, r)
+	u, _ := coremoduleusermodels.GetUser(sid)
 
-    coremoduleusermodels.SetLoggedInUser(r,u)
+	coremoduleusermodels.SetLoggedInUser(r, u)
 
-
-    cc := coremodulecontentcontrollers.ContentController{}
-    content := coremodulecontentmodels.Content{}
-    if(r.URL.String() == "/admin/login"){
-        fmt.Println("FSLSO LOOOL ;;::: :: LOOL")
-        //cc.RenderTemplate(w, "admin.tmpl", &content, &user)
-        if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
-            //cc.RenderTemplate(w, "admin.tmpl", &content, user)
-            http.Redirect(w, r, "/admin", 301)
-        } else {
-            cc.RenderAdminTemplate(w, "admin.tmpl", &content, nil)
-        }
-    } else {
-        if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
-            cc.RenderAdminTemplate(w, "admin.tmpl", &content, user)
-        } else {
-            http.Redirect(w, r, "/admin/login", 301)
-        }
-    }
+	cc := coremodulecontentcontrollers.ContentController{}
+	content := coremodulecontentmodels.Content{}
+	if r.URL.String() == "/admin/login" {
+		fmt.Println("FSLSO LOOOL ;;::: :: LOOL")
+		//cc.RenderTemplate(w, "admin.tmpl", &content, &user)
+		if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+			//cc.RenderTemplate(w, "admin.tmpl", &content, user)
+			http.Redirect(w, r, "/admin", 301)
+		} else {
+			cc.RenderAdminTemplate(w, "admin.tmpl", &content, nil)
+		}
+	} else {
+		if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+			cc.RenderAdminTemplate(w, "admin.tmpl", &content, user)
+		} else {
+			http.Redirect(w, r, "/admin/login", 301)
+		}
+	}
 }
 
-func GetSections(w http.ResponseWriter, r *http.Request){
-    // w.Header().Set("Content-Type", "text/html")
-    // for _, s := range Sections{
-    //     fmt.Fprintf(w,"Section: " + s.Name + "<br>")
-    // }
-    
-    w.Header().Set("Content-Type", "application/json")
-    res, err := json.Marshal(coreglobals.Sections)
-    if err!=nil{
-        panic(err)
-    }
-    corehelpers.PanicIf(err)
+func GetSections(w http.ResponseWriter, r *http.Request) {
+	// w.Header().Set("Content-Type", "text/html")
+	// for _, s := range Sections{
+	//     fmt.Fprintf(w,"Section: " + s.Name + "<br>")
+	// }
 
-    fmt.Fprintf(w,"%s",res)
-    
+	w.Header().Set("Content-Type", "application/json")
+	res, err := json.Marshal(coreglobals.Sections)
+	if err != nil {
+		panic(err)
+	}
+	corehelpers.PanicIf(err)
+
+	fmt.Fprintf(w, "%s", res)
+
 }
 
-func GetRoutes(w http.ResponseWriter, r *http.Request){
-    // w.Header().Set("Content-Type", "text/html")
-    // for _, s := range Sections{
-    //     fmt.Fprintf(w,"Section: " + s.Name + "<br>")
-    // }
-    
-    w.Header().Set("Content-Type", "application/json")
-    res, err := json.Marshal(coreglobals.Routes)
-    if err!=nil{
-        panic(err)
-    }
-    corehelpers.PanicIf(err)
+func GetRoutes(w http.ResponseWriter, r *http.Request) {
+	// w.Header().Set("Content-Type", "text/html")
+	// for _, s := range Sections{
+	//     fmt.Fprintf(w,"Section: " + s.Name + "<br>")
+	// }
 
-    fmt.Fprintf(w,"%s",res)
-    
+	w.Header().Set("Content-Type", "application/json")
+	res, err := json.Marshal(coreglobals.Routes)
+	if err != nil {
+		panic(err)
+	}
+	corehelpers.PanicIf(err)
+
+	fmt.Fprintf(w, "%s", res)
+
 }
 
 // func GetSectionById(w http.ResponseWriter, r *http.Request){
@@ -354,123 +351,119 @@ func GetRoutes(w http.ResponseWriter, r *http.Request){
 // }
 
 func Middleware(h http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        log.Println("middleware", r.URL)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("middleware", r.URL)
 
-        sid := corehelpers.CheckCookie(w,r)
+		sid := corehelpers.CheckCookie(w, r)
 
-        u, err := coremoduleusermodels.GetUser(sid)
-        
-        if(u == nil || err==sql.ErrNoRows){
-            fmt.Println(err)
-            fmt.Fprintf(w, "You need to be logged in to access the API.")
-        } else {
-            coremoduleusermodels.SetLoggedInUser(r,u)
-            h.ServeHTTP(w, r)
-        }
+		u, err := coremoduleusermodels.GetUser(sid)
 
-        
-    })
+		if u == nil || err == sql.ErrNoRows {
+			fmt.Println(err)
+			fmt.Fprintf(w, "You need to be logged in to access the API.")
+		} else {
+			coremoduleusermodels.SetLoggedInUser(r, u)
+			h.ServeHTTP(w, r)
+		}
+
+	})
 }
 
-func APIstuff(){
+func APIstuff() {
 
-    // Setup API controllers
-    // nodeApiController := controllers.NodeApiController{}
+	// Setup API controllers
+	// nodeApiController := controllers.NodeApiController{}
 
-    //angularRouteApiController := controllers.AngularRouteApiController{}
-    sectionApiController := controllers.SectionApiController{}
-    routeApiController := controllers.RouteApiController{}
-    
-    //menuApiController := controllers.MenuApiController{}
+	//angularRouteApiController := controllers.AngularRouteApiController{}
+	sectionApiController := controllers.SectionApiController{}
+	routeApiController := controllers.RouteApiController{}
 
-    //menuLinkApiController := controllers.MenuLinkApiController{}
+	//menuApiController := controllers.MenuApiController{}
 
-    // Setup API routes
-    privateApiRouter := coreglobals.PrivateApiRouter
-    publicApiRouter := coreglobals.PublicApiRouter
-    
+	//menuLinkApiController := controllers.MenuLinkApiController{}
 
-    privateApiRouter.HandleFunc("/api/auth/{sid:.*}", http.HandlerFunc(corehelpers.AngularAuth)).Methods("GET")
-  
-    privateApiRouter.HandleFunc("/api/section", http.HandlerFunc(sectionApiController.Get)).Methods("GET")
-    
-    // privateApiRouter.HandleFunc("/api/section/{name:.*}", http.HandlerFunc(sectionApiController.GetByName)).Methods("GET")
-    privateApiRouter.HandleFunc("/api/route", http.HandlerFunc(routeApiController.Get)).Methods("GET")
-    //privateApiRouter.HandleFunc("/api/menu-link/{name:.*}", http.HandlerFunc(menuLinkApiController.GetByName)).Methods("GET")
+	// Setup API routes
+	privateApiRouter := coreglobals.PrivateApiRouter
+	publicApiRouter := coreglobals.PublicApiRouter
 
-    //publicApiRouter.HandleFunc("/api/public/contextmenutest/{nodeType:.*}", http.HandlerFunc(models.CmTest)).Methods("GET")
-    
-    http.Handle("/api/public/", publicApiRouter)
-    http.Handle("/api/", context.ClearHandler(Middleware(privateApiRouter)))
+	privateApiRouter.HandleFunc("/api/auth/{sid:.*}", http.HandlerFunc(corehelpers.AngularAuth)).Methods("GET")
+
+	privateApiRouter.HandleFunc("/api/section", http.HandlerFunc(sectionApiController.Get)).Methods("GET")
+
+	// privateApiRouter.HandleFunc("/api/section/{name:.*}", http.HandlerFunc(sectionApiController.GetByName)).Methods("GET")
+	privateApiRouter.HandleFunc("/api/route", http.HandlerFunc(routeApiController.Get)).Methods("GET")
+	//privateApiRouter.HandleFunc("/api/menu-link/{name:.*}", http.HandlerFunc(menuLinkApiController.GetByName)).Methods("GET")
+
+	//publicApiRouter.HandleFunc("/api/public/contextmenutest/{nodeType:.*}", http.HandlerFunc(models.CmTest)).Methods("GET")
+
+	http.Handle("/api/public/", publicApiRouter)
+	http.Handle("/api/", context.ClearHandler(Middleware(privateApiRouter)))
 }
 
-func Main(){
+func Main() {
 
-    APIstuff()
+	APIstuff()
 
-    for _, m := range lib.Modules{
-        for _, s := range m.Sections{
-            var r *lib.Route = s.Route
-            var r1 lib.Route = *r
-            coreglobals.Routes = append(coreglobals.Routes, r1)
-            coreglobals.Sections = append(coreglobals.Sections, s)
-            for _, t := range s.Trees{
-                coreglobals.Routes = append(coreglobals.Routes, t.Routes...)
-            }
-            for _, cs := range s.Children{
-                var r *lib.Route = cs.Route
-                var r1 lib.Route = *r
-                coreglobals.Routes = append(coreglobals.Routes, r1)
-                // Sections = append(Sections, s)
-                for _, t := range cs.Trees{
-                    coreglobals.Routes = append(coreglobals.Routes, t.Routes...)
-                }
-            }
-        }
-    }
+	for _, m := range lib.Modules {
+		for _, s := range m.Sections {
+			var r *lib.Route = s.Route
+			var r1 lib.Route = *r
+			coreglobals.Routes = append(coreglobals.Routes, r1)
+			coreglobals.Sections = append(coreglobals.Sections, s)
+			for _, t := range s.Trees {
+				coreglobals.Routes = append(coreglobals.Routes, t.Routes...)
+			}
+			for _, cs := range s.Children {
+				var r *lib.Route = cs.Route
+				var r1 lib.Route = *r
+				coreglobals.Routes = append(coreglobals.Routes, r1)
+				// Sections = append(Sections, s)
+				for _, t := range cs.Trees {
+					coreglobals.Routes = append(coreglobals.Routes, t.Routes...)
+				}
+			}
+		}
+	}
 
-    // fmt.Println("Routes:")
-    // fmt.Println(len(Routes))
-    for _, r := range coreglobals.Routes{
-        mystr, _ := json.Marshal(r)
-        fmt.Println(string(mystr))
-    }
+	// fmt.Println("Routes:")
+	// fmt.Println(len(Routes))
+	for _, r := range coreglobals.Routes {
+		mystr, _ := json.Marshal(r)
+		fmt.Println(string(mystr))
+	}
 
+	coreglobals.Templates["admin.tmpl"] = template.Must(template.ParseFiles("core/application/views/includes/admin.tmpl", "core/application/views/layouts/base.tmpl"))
 
-    coreglobals.Templates["admin.tmpl"] = template.Must(template.ParseFiles("core/application/views/includes/admin.tmpl", "core/application/views/layouts/base.tmpl"))
+	m := mux.NewRouter()
+	n := mux.NewRouter()
 
-    m := mux.NewRouter()
-    n := mux.NewRouter()
+	n.HandleFunc("/test/section", GetSections).Methods("GET")
+	n.HandleFunc("/test/routes", GetRoutes).Methods("GET")
 
-    n.HandleFunc("/test/section", GetSections).Methods("GET")
-    n.HandleFunc("/test/routes", GetRoutes).Methods("GET")
+	contentController := coremodulecontentcontrollers.ContentController{}
 
-    contentController := coremodulecontentcontrollers.ContentController{}
+	// Entity routes
+	// m.Get("/api/entity/{nodeId:.*}") ?node-type=2&section=myplugin ???????????? l8r
 
-    // Entity routes
-    // m.Get("/api/entity/{nodeId:.*}") ?node-type=2&section=myplugin ???????????? l8r
+	m.HandleFunc("/admin/install", installPostHandler).Methods("POST")
+	m.HandleFunc("/admin/install", installHandler).Methods("GET")
+	//m.HandleFunc("/admin/{_dummy:^((?!install).)*$}", adminHandler).Methods("GET")
+	//`BBB([^B]*)EEE`
+	//m.HandleFunc("/admin/{([^install])*}/{*}", adminHandler).Methods("GET")
+	m.HandleFunc(`/{_dummy:admin\/([^install]*).*}`, adminHandler).Methods("GET")
+	//m.HandleFunc("/admin/{^((?!install).)*$}", adminHandler).Methods("GET")
+	m.HandleFunc("/admin", adminHandler).Methods("GET")
 
-    m.HandleFunc("/admin/install", installPostHandler).Methods("POST")
-    m.HandleFunc("/admin/install", installHandler).Methods("GET")
-    //m.HandleFunc("/admin/{_dummy:^((?!install).)*$}", adminHandler).Methods("GET")
-    //`BBB([^B]*)EEE`
-    //m.HandleFunc("/admin/{([^install])*}/{*}", adminHandler).Methods("GET")
-    m.HandleFunc(`/{_dummy:admin\/([^install]*).*}`, adminHandler).Methods("GET")
-    //m.HandleFunc("/admin/{^((?!install).)*$}", adminHandler).Methods("GET")
-    m.HandleFunc("/admin", adminHandler).Methods("GET")
-    
-    
-    // or use "/url:.*" for all
-    m.HandleFunc("/{url:.*}", http.HandlerFunc(contentController.RenderContent)).Methods("GET")
+	// or use "/url:.*" for all
+	m.HandleFunc("/{url:.*}", http.HandlerFunc(contentController.RenderContent)).Methods("GET")
 
-    http.Handle("/stylesheets/",  http.StripPrefix("/", http.FileServer(http.Dir("./"))))
-    http.Handle("/scripts/",  http.StripPrefix("/", http.FileServer(http.Dir("./"))))
-    http.Handle("/media/",  http.StripPrefix("/", http.FileServer(http.Dir("./"))))
-    http.Handle("/public/", http.FileServer(http.Dir("./core/application"))) 
+	http.Handle("/stylesheets/", http.StripPrefix("/", http.FileServer(http.Dir("./"))))
+	http.Handle("/scripts/", http.StripPrefix("/", http.FileServer(http.Dir("./"))))
+	http.Handle("/media/", http.StripPrefix("/", http.FileServer(http.Dir("./"))))
+	http.Handle("/public/", http.FileServer(http.Dir("./core/application")))
 
-    log.Println("Registered a handler for static files.")
-    
-    http.Handle("/test/", n)
-    http.Handle("/", m)
+	log.Println("Registered a handler for static files.")
+
+	http.Handle("/test/", n)
+	http.Handle("/", m)
 }

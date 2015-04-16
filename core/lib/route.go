@@ -8,8 +8,8 @@ package lib
 // }
 
 type Route struct {
-	State string `json:"state"`
-	Url string `json:"url,omitempty"`
+	State       string `json:"state"`
+	Url         string `json:"url,omitempty"`
 	TemplateUrl string `json:"template_url,omitempty"`
-	IsAbstract bool `json:"is_abstract"`
+	IsAbstract  bool   `json:"is_abstract"`
 }

@@ -1,34 +1,33 @@
 package models
 
-import 
-(
-    coreglobals "collexy/core/globals"
-    "encoding/json"
-    "time"
-    "database/sql"
-    "log"
-    coremodulesettingsmodels "collexy/core/modules/settings/models"
+import (
+	coreglobals "collexy/core/globals"
+	coremodulesettingsmodels "collexy/core/modules/settings/models"
+	"database/sql"
+	"encoding/json"
+	"log"
+	"time"
 )
 
 type MemberType struct {
-    Id int `json:"id"`
-    Path string `json:"path"`
-    ParentId int `json:"parent_id,omitempty"`
-    Name string `json:"name"`
-    Alias string `json:"alias"`
-    CreatedBy int `json:"created_by"`
-    CreatedDate *time.Time `json:"created_date"`
-    Description string `json:"description,omitempty"`
-    Icon string `json:"icon,omitempty"`
-    Meta map[string]interface{} `json:"meta,omitempty"`
-    Tabs []coremodulesettingsmodels.Tab `json:"tabs,omitempty"`
-    ParentMemberTypes []MemberType `json:"parent_member_types,omitempty"`
+	Id                int                            `json:"id"`
+	Path              string                         `json:"path"`
+	ParentId          int                            `json:"parent_id,omitempty"`
+	Name              string                         `json:"name"`
+	Alias             string                         `json:"alias"`
+	CreatedBy         int                            `json:"created_by"`
+	CreatedDate       *time.Time                     `json:"created_date"`
+	Description       string                         `json:"description,omitempty"`
+	Icon              string                         `json:"icon,omitempty"`
+	Meta              map[string]interface{}         `json:"meta,omitempty"`
+	Tabs              []coremodulesettingsmodels.Tab `json:"tabs,omitempty"`
+	ParentMemberTypes []MemberType                   `json:"parent_member_types,omitempty"`
 }
 
-func GetMemberTypes() (memberTypes []*MemberType){
-    db := coreglobals.Db
+func GetMemberTypes() (memberTypes []*MemberType) {
+	db := coreglobals.Db
 
-    rows, err := db.Query(`SELECT member_type.id as member_type_id, member_type.path as member_type_path, 
+	rows, err := db.Query(`SELECT member_type.id as member_type_id, member_type.path as member_type_path, 
         member_type.parent_id as member_type_parent_id, member_type.name as member_type_name, 
         member_type.alias as member_alias, member_type.created_by as member_type_created_by, 
         member_type.created_date as member_type_created_date, member_type.description as member_type_description, 
@@ -36,52 +35,52 @@ func GetMemberTypes() (memberTypes []*MemberType){
         member_type.tabs as member_type_tabs
         FROM member_type`)
 
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer rows.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var member_type_id, member_type_created_by int
-        var member_type_path, member_type_name, member_type_alias string
-        var member_type_description, member_type_icon string
-        var member_type_created_date *time.Time
+	for rows.Next() {
+		var member_type_id, member_type_created_by int
+		var member_type_path, member_type_name, member_type_alias string
+		var member_type_description, member_type_icon string
+		var member_type_created_date *time.Time
 
-        var member_type_parent_id sql.NullInt64
+		var member_type_parent_id sql.NullInt64
 
-        var member_type_tabs, member_type_meta []byte
+		var member_type_tabs, member_type_meta []byte
 
-        if err := rows.Scan(&member_type_id, &member_type_path, &member_type_parent_id, &member_type_name, 
-            &member_type_alias, &member_type_created_by, &member_type_created_date, &member_type_description, 
-            &member_type_icon, &member_type_meta, &member_type_tabs); err != nil {
-            log.Fatal(err)
-        }
+		if err := rows.Scan(&member_type_id, &member_type_path, &member_type_parent_id, &member_type_name,
+			&member_type_alias, &member_type_created_by, &member_type_created_date, &member_type_description,
+			&member_type_icon, &member_type_meta, &member_type_tabs); err != nil {
+			log.Fatal(err)
+		}
 
-        var parent_member_type_id int
-        if member_type_parent_id.Valid {
-            parent_member_type_id = int(member_type_parent_id.Int64)
-        } else {
-            // NULL value
-        }
+		var parent_member_type_id int
+		if member_type_parent_id.Valid {
+			parent_member_type_id = int(member_type_parent_id.Int64)
+		} else {
+			// NULL value
+		}
 
-        var tabs []coremodulesettingsmodels.Tab
-        var member_type_metaMap map[string]interface{}
+		var tabs []coremodulesettingsmodels.Tab
+		var member_type_metaMap map[string]interface{}
 
-        json.Unmarshal(member_type_tabs, &tabs)
-        json.Unmarshal(member_type_meta, &member_type_metaMap)
+		json.Unmarshal(member_type_tabs, &tabs)
+		json.Unmarshal(member_type_meta, &member_type_metaMap)
 
-        memberType := &MemberType{member_type_id, member_type_path, parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_metaMap, tabs, nil}
-        memberTypes = append(memberTypes, memberType)
-    }
-    if err := rows.Err(); err != nil {
-        log.Fatal(err)
-    }
-    return
+		memberType := &MemberType{member_type_id, member_type_path, parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_metaMap, tabs, nil}
+		memberTypes = append(memberTypes, memberType)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return
 }
 
-func GetMemberTypeExtendedById(id int) (memberType MemberType){
+func GetMemberTypeExtendedById(id int) (memberType MemberType) {
 
-    querystr := `SELECT member_type.id as member_type_id, member_type.path as member_type_path, member_type.parent_id as member_type_parent_id, member_type.name as member_type_name, member_type.alias as member_alias, member_type.created_by as member_type_created_by,  member_type.created_date as member_type_created_date, member_type.description as member_type_description, member_type.icon as member_type_icon, member_type.meta as member_type_meta,
+	querystr := `SELECT member_type.id as member_type_id, member_type.path as member_type_path, member_type.parent_id as member_type_parent_id, member_type.name as member_type_name, member_type.alias as member_alias, member_type.created_by as member_type_created_by,  member_type.created_date as member_type_created_date, member_type.description as member_type_description, member_type.icon as member_type_icon, member_type.meta as member_type_meta,
 res.mt_tabs as member_type_tabs, res.parent_member_types as member_type_parent_member_types
 FROM member_type  
 JOIN
@@ -185,57 +184,54 @@ LATERAL
 ON res.id = member_type.id
 WHERE member_type.id=$1`
 
-    // node
-    var member_type_id, member_type_created_by int
-    var member_type_path, member_type_name, member_type_alias string
-    var member_type_description, member_type_icon string
-    var member_type_created_date *time.Time
+	// node
+	var member_type_id, member_type_created_by int
+	var member_type_path, member_type_name, member_type_alias string
+	var member_type_description, member_type_icon string
+	var member_type_created_date *time.Time
 
-    var member_type_parent_id sql.NullInt64
+	var member_type_parent_id sql.NullInt64
 
-    var member_type_tabs, member_type_meta []byte
-    var member_type_parent_member_types []byte
+	var member_type_tabs, member_type_meta []byte
+	var member_type_parent_member_types []byte
 
-    db := coreglobals.Db
+	db := coreglobals.Db
 
-    row := db.QueryRow(querystr, id)
+	row := db.QueryRow(querystr, id)
 
-    err:= row.Scan(
-            &member_type_id, &member_type_path, &member_type_parent_id, &member_type_name, &member_type_alias,
-            &member_type_created_by, &member_type_created_date, &member_type_description, &member_type_icon, &member_type_meta, &member_type_tabs, &member_type_parent_member_types)
+	err := row.Scan(
+		&member_type_id, &member_type_path, &member_type_parent_id, &member_type_name, &member_type_alias,
+		&member_type_created_by, &member_type_created_date, &member_type_description, &member_type_icon, &member_type_meta, &member_type_tabs, &member_type_parent_member_types)
 
-    var parent_member_type_id int
-    if member_type_parent_id.Valid {
-        parent_member_type_id = int(member_type_parent_id.Int64)
-    } else {
-        // NULL value
-    }
+	var parent_member_type_id int
+	if member_type_parent_id.Valid {
+		parent_member_type_id = int(member_type_parent_id.Int64)
+	} else {
+		// NULL value
+	}
 
-    var parent_member_types []MemberType
-    var tabs []coremodulesettingsmodels.Tab
-    var member_type_metaMap map[string]interface{}
+	var parent_member_types []MemberType
+	var tabs []coremodulesettingsmodels.Tab
+	var member_type_metaMap map[string]interface{}
 
+	json.Unmarshal(member_type_parent_member_types, &parent_member_types)
+	json.Unmarshal(member_type_tabs, &tabs)
+	json.Unmarshal(member_type_meta, &member_type_metaMap)
 
-    json.Unmarshal(member_type_parent_member_types, &parent_member_types)
-    json.Unmarshal(member_type_tabs, &tabs)
-    json.Unmarshal(member_type_meta, &member_type_metaMap)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No node with that ID.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		memberType = MemberType{member_type_id, member_type_path, parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_metaMap, tabs, parent_member_types}
+	}
 
-    switch {
-        case err == sql.ErrNoRows:
-            log.Printf("No node with that ID.")
-        case err != nil:
-            log.Fatal(err)
-        default:
-            memberType = MemberType{member_type_id, member_type_path, parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_metaMap, tabs, parent_member_types}
-    }
-
-    return
+	return
 }
 
-
-
-func GetMemberTypeById(id int) (memberType MemberType){
-    querystr := `SELECT member_type.id as member_type_id, member_type.path as member_type_path, 
+func GetMemberTypeById(id int) (memberType MemberType) {
+	querystr := `SELECT member_type.id as member_type_id, member_type.path as member_type_path, 
     member_type.parent_id as member_type_parent_id, member_type.name as member_type_name, 
     member_type.alias as member_alias, member_type.created_by as member_type_created_by, 
     member_type.created_date as member_type_created_date, member_type.description as member_type_description, 
@@ -244,46 +240,46 @@ func GetMemberTypeById(id int) (memberType MemberType){
         FROM member_type
         WHERE member_type.id=$1`
 
-    var member_type_id, member_type_created_by int
-    var member_type_path, member_type_name, member_type_alias string
-    var member_type_description, member_type_icon string
-    var member_type_created_date *time.Time
+	var member_type_id, member_type_created_by int
+	var member_type_path, member_type_name, member_type_alias string
+	var member_type_description, member_type_icon string
+	var member_type_created_date *time.Time
 
-    var member_type_parent_id sql.NullInt64
+	var member_type_parent_id sql.NullInt64
 
-    var member_type_tabs, member_type_meta []byte
+	var member_type_tabs, member_type_meta []byte
 
-    db := coreglobals.Db
+	db := coreglobals.Db
 
-    row := db.QueryRow(querystr, id)
+	row := db.QueryRow(querystr, id)
 
-    err:= row.Scan(
-            &member_type_id, &member_type_path, &member_type_parent_id, &member_type_name, &member_type_alias,
-            &member_type_created_by, &member_type_created_date, &member_type_description, &member_type_icon, &member_type_meta, &member_type_tabs)
+	err := row.Scan(
+		&member_type_id, &member_type_path, &member_type_parent_id, &member_type_name, &member_type_alias,
+		&member_type_created_by, &member_type_created_date, &member_type_description, &member_type_icon, &member_type_meta, &member_type_tabs)
 
-    var parent_member_type_id int
-    if member_type_parent_id.Valid {
-        parent_member_type_id = int(member_type_parent_id.Int64)
-    } else {
-        // NULL value
-    }
+	var parent_member_type_id int
+	if member_type_parent_id.Valid {
+		parent_member_type_id = int(member_type_parent_id.Int64)
+	} else {
+		// NULL value
+	}
 
-    var tabs []coremodulesettingsmodels.Tab
-    var member_type_metaMap map[string]interface{}
+	var tabs []coremodulesettingsmodels.Tab
+	var member_type_metaMap map[string]interface{}
 
-    json.Unmarshal(member_type_tabs, &tabs)
-    json.Unmarshal(member_type_meta, &member_type_metaMap)
+	json.Unmarshal(member_type_tabs, &tabs)
+	json.Unmarshal(member_type_meta, &member_type_metaMap)
 
-    switch {
-        case err == sql.ErrNoRows:
-            log.Printf("No node with that ID.")
-        case err != nil:
-            log.Fatal(err)
-        default:
-            memberType = MemberType{member_type_id, member_type_path, parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_metaMap, tabs, nil}
-    }
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No node with that ID.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		memberType = MemberType{member_type_id, member_type_path, parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_metaMap, tabs, nil}
+	}
 
-    return
+	return
 }
 
 // STILL NEEDS SOME WORK REGARDING TABS vs THE DATA TYPE ID/WHOLE OBJECT PROBLEM
@@ -298,7 +294,7 @@ func GetMemberTypeById(id int) (memberType MemberType){
 //   var testMapSlice []map[string]interface{}
 //   err1 := json.Unmarshal(tabs,&testMapSlice)
 //   corehelpers.PanicIf(err1)
-    
+
 //   // //tabs, _ := json.Marshal(ct.Tabs)
 //   // for i := 0; i < len(testMapSlice); i++ {
 //   //   var properties []interface{} = testMapSlice[i]["properties"].([]interface{})
@@ -313,7 +309,7 @@ func GetMemberTypeById(id int) (memberType MemberType){
 //   //     fmt.Println(dt)
 //   //     //property["data_type"] = dt["id"]
 //   //   }
-        
+
 //   // }
 
 //   res, _ := json.Marshal(testMapSlice)
@@ -335,16 +331,14 @@ func GetMemberTypeById(id int) (memberType MemberType){
 //   corehelpers.PanicIf(err)
 //   //defer r1.Close()
 
-//   _, err = tx.Exec(`UPDATE content_type 
-//     SET alias = $1, description = $2, icon = $3, thumbnail = $4, meta = $5, tabs = $6 
+//   _, err = tx.Exec(`UPDATE content_type
+//     SET alias = $1, description = $2, icon = $3, thumbnail = $4, meta = $5, tabs = $6
 //     WHERE node_id = $7`, ct.Alias, ct.Description, ct.Icon, meta, tabs, ct.Node.Id)
 //   corehelpers.PanicIf(err)
 //   //defer r2.Close()
 
 //   tx.Commit()
 // }
-
-
 
 // func GetMemberTypes() (memberTypes []MemberType){
 //   querystr := `SELECT node.id as node_id, node.path as node_path, node.created_by as node_created_by, node.name as node_name, node.node_type as node_type, node.created_date as node_created_date,
@@ -358,7 +352,7 @@ func GetMemberTypeById(id int) (memberType MemberType){
 //     (
 //       SELECT my_member_type.*,gf2.*
 //       FROM member_type as my_member_type, node as my_member_type_node,
-//       LATERAL 
+//       LATERAL
 //       (
 //           SELECT okidoki.tabs as mt_tabs
 //           FROM (
@@ -369,14 +363,14 @@ func GetMemberTypeById(id int) (memberType MemberType){
 //           select y.name, ss.properties
 //           from json_to_recordset(
 //           (
-//         select * 
+//         select *
 //         from json_to_recordset(
 //             (
 //           SELECT json_agg(ggg)
 //           from(
 //         SELECT tabs
-//         FROM 
-//         (   
+//         FROM
+//         (
 //             SELECT *
 //             FROM member_type as mt
 //             WHERE mt.id=c.id
@@ -391,7 +385,7 @@ func GetMemberTypeById(id int) (memberType MemberType){
 //         select json_agg(json_build_object('name',row.name,'order',row."order",'data_type', json_build_object('id',row.data_type, 'alias',row.data_type_alias, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
 //         from(
 //       select name, "order", data_type, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
-//       from json_to_recordset(properties) 
+//       from json_to_recordset(properties)
 //       as k(name text, "order" int, data_type int, help_text text, description text)
 //       JOIN data_type
 //       ON data_type.id = k.data_type
@@ -462,9 +456,8 @@ func GetMemberTypeById(id int) (memberType MemberType){
 //       //fmt.Println(string(lol))
 
 //       //fmt.Printf("id: %d, HTML: %s, name: %s", ctTabs[0].Properties[0].DataType.Id, ctTabs[0].Properties[0].DataType.Html, ctTabs[0].Properties[0].Name)
-            
-//       //fmt.Println("ksjdflk sdfkj: " + node_name)
 
+//       //fmt.Println("ksjdflk sdfkj: " + node_name)
 
 //       //helpers.PanicIf(err)
 //       switch {

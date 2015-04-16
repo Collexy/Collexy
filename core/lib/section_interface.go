@@ -1,5 +1,5 @@
 package lib
 
-type ISection interface{
+type ISection interface {
 	SetupTree()
 }

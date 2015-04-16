@@ -1,19 +1,19 @@
 package models
 
 import (
-  //"fmt"
-  //"encoding/json"
-  //"time"
+//"fmt"
+//"encoding/json"
+//"time"
 )
 
 type TabProperty struct {
-  //Id int `json:"id"`
-  Name string `json:"name,omitempty"`
-  Order int `json:"order,omitempty"`
-  DataTypeId int `json:"data_type_id,omitempty"`
-  DataType *DataType `json:"data_type,omitempty"`
-  HelpText string `json:"help_text,omitempty"`
-  Description string `json:"description,omitempty"`
+	//Id int `json:"id"`
+	Name        string    `json:"name,omitempty"`
+	Order       int       `json:"order,omitempty"`
+	DataTypeId  int       `json:"data_type_id,omitempty"`
+	DataType    *DataType `json:"data_type,omitempty"`
+	HelpText    string    `json:"help_text,omitempty"`
+	Description string    `json:"description,omitempty"`
 }
 
 // type tabProperty TabProperty
@@ -50,13 +50,13 @@ type TabProperty struct {
 //   //newDt := DataType{}
 //   if(t.Name != ""){
 //     newTp.Name = t.Name
-//   } 
+//   }
 //   if(t.Order != 0){
 //     newTp.Order = t.Order
-//   } 
+//   }
 //   if(t.DataTypeId != 0){
 //     newTp.DataTypeId = t.DataTypeId
-//   } 
+//   }
 //   if(t.DataType.NodeId != 0){
 //     newTp.DataType = t.DataType
 //   } else{

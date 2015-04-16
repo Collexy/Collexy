@@ -1,41 +1,41 @@
 package models
 
 import (
-    // "fmt"
-    "encoding/json"
-    //corehelpers "collexy/core/helpers"
-    coreglobals "collexy/core/globals"
-    "time"
-    //"fmt"
-    // "net/http"
-    // "html/template"
-    //"strconv"
-    "database/sql"
-    "log"
-    "net/url"
+	// "fmt"
+	"encoding/json"
+	//corehelpers "collexy/core/helpers"
+	coreglobals "collexy/core/globals"
+	"time"
+	//"fmt"
+	// "net/http"
+	// "html/template"
+	//"strconv"
+	"database/sql"
+	"log"
+	"net/url"
 )
 
 type ContentType struct {
-    Id int `json:"id"`
-    Path string `json:"path"`
-    ParentId int `json:"parent_id,omitempty"`
-    Name string `json:"name"`
-    Alias string `json:"alias"`
-    CreatedBy int `json:"created_by"`
-    CreatedDate *time.Time `json:"created_date"`
-    Description string `json:"description,omitempty"`
-    Icon string `json:"icon,omitempty"`
-    Thumbnail string `json:"thumbnail,omitempty"`
-    Meta map[string]interface{} `json:"meta,omitempty"`
-    Tabs []Tab `json:"tabs,omitempty"`
-    ParentContentTypes []ContentType `json:"parent_content_types,omitempty"`
-    AllowedContentTypes []ContentType `json:"allowed_content_types,omitempty"`
-    TypeId int `json:"type_id"`
+	Id                  int                    `json:"id"`
+	Path                string                 `json:"path"`
+	ParentId            int                    `json:"parent_id,omitempty"`
+	Name                string                 `json:"name"`
+	Alias               string                 `json:"alias"`
+	CreatedBy           int                    `json:"created_by"`
+	CreatedDate         *time.Time             `json:"created_date"`
+	Description         string                 `json:"description,omitempty"`
+	Icon                string                 `json:"icon,omitempty"`
+	Thumbnail           string                 `json:"thumbnail,omitempty"`
+	Meta                map[string]interface{} `json:"meta,omitempty"`
+	Tabs                []Tab                  `json:"tabs,omitempty"`
+	ParentContentTypes  []ContentType          `json:"parent_content_types,omitempty"`
+	AllowedContentTypes []ContentType          `json:"allowed_content_types,omitempty"`
+	TypeId              int                    `json:"type_id"`
 }
 
-func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType){
-    db := coreglobals.Db
-    sqlStr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
+func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType) {
+	db := coreglobals.Db
+	sqlStr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
         content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, 
         content_type.alias as member_alias, content_type.created_by as content_type_created_by, 
         content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
@@ -44,66 +44,66 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
         content_type.type_id as content_type_type_id
         FROM content_type`
 
-    if(queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") != ""){
-        sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id") + ` and content_type.path ~ '*.*{`+queryStringParams.Get("levels") +`}'`
-    } else if(queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels")==""){
-        sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
-    } else if(queryStringParams.Get("type-id") == "" && queryStringParams.Get("levels") != ""){
-        sqlStr = sqlStr + ` WHERE content_type.path ~ '*.*{`+queryStringParams.Get("levels") +`}'`
-    }
+	if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") != "" {
+		sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id") + ` and content_type.path ~ '*.*{` + queryStringParams.Get("levels") + `}'`
+	} else if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") == "" {
+		sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
+	} else if queryStringParams.Get("type-id") == "" && queryStringParams.Get("levels") != "" {
+		sqlStr = sqlStr + ` WHERE content_type.path ~ '*.*{` + queryStringParams.Get("levels") + `}'`
+	}
 
-    // if queryStringParams.Get("type-id") != ""{
-    //     sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
-    // }
+	// if queryStringParams.Get("type-id") != ""{
+	//     sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
+	// }
 
-    rows, err := db.Query(sqlStr)
+	rows, err := db.Query(sqlStr)
 
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer rows.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var content_type_id, content_type_created_by, content_type_type_id int
-        var content_type_path, content_type_name, content_type_alias string
-        var content_type_description, content_type_icon, content_type_thumbnail string
-        var content_type_created_date *time.Time
+	for rows.Next() {
+		var content_type_id, content_type_created_by, content_type_type_id int
+		var content_type_path, content_type_name, content_type_alias string
+		var content_type_description, content_type_icon, content_type_thumbnail string
+		var content_type_created_date *time.Time
 
-        var content_type_parent_id sql.NullInt64
+		var content_type_parent_id sql.NullInt64
 
-        var content_type_tabs, content_type_meta []byte
+		var content_type_tabs, content_type_meta []byte
 
-        if err := rows.Scan(&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, 
-            &content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description, 
-            &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id); err != nil {
-            log.Fatal(err)
-        }
+		if err := rows.Scan(&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name,
+			&content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description,
+			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id); err != nil {
+			log.Fatal(err)
+		}
 
-        var parent_content_type_id int
-        if content_type_parent_id.Valid {
-            parent_content_type_id = int(content_type_parent_id.Int64)
-        } else {
-            // NULL value
-        }
+		var parent_content_type_id int
+		if content_type_parent_id.Valid {
+			parent_content_type_id = int(content_type_parent_id.Int64)
+		} else {
+			// NULL value
+		}
 
-        var tabs []Tab
-        var content_type_metaMap map[string]interface{}
+		var tabs []Tab
+		var content_type_metaMap map[string]interface{}
 
-        json.Unmarshal(content_type_tabs, &tabs)
-        json.Unmarshal(content_type_meta, &content_type_metaMap)
+		json.Unmarshal(content_type_tabs, &tabs)
+		json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-        contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
-        contentTypes = append(contentTypes, contentType)
-    }
-    if err := rows.Err(); err != nil {
-        log.Fatal(err)
-    }
-    return
+		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
+		contentTypes = append(contentTypes, contentType)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return
 }
 
-func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType){
-    db := coreglobals.Db
-    sqlStr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
+func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
+	db := coreglobals.Db
+	sqlStr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
         content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, 
         content_type.alias as member_alias, content_type.created_by as content_type_created_by, 
         content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
@@ -113,58 +113,58 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType){
         FROM content_type
         WHERE content_type.parent_id=$1`
 
-    // if queryStringParams.Get("type-id") != ""{
-    //     sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
-    // }
+	// if queryStringParams.Get("type-id") != ""{
+	//     sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
+	// }
 
-    rows, err := db.Query(sqlStr, id)
+	rows, err := db.Query(sqlStr, id)
 
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer rows.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var content_type_id, content_type_created_by, content_type_type_id int
-        var content_type_path, content_type_name, content_type_alias string
-        var content_type_description, content_type_icon, content_type_thumbnail string
-        var content_type_created_date *time.Time
+	for rows.Next() {
+		var content_type_id, content_type_created_by, content_type_type_id int
+		var content_type_path, content_type_name, content_type_alias string
+		var content_type_description, content_type_icon, content_type_thumbnail string
+		var content_type_created_date *time.Time
 
-        var content_type_parent_id sql.NullInt64
+		var content_type_parent_id sql.NullInt64
 
-        var content_type_tabs, content_type_meta []byte
+		var content_type_tabs, content_type_meta []byte
 
-        if err := rows.Scan(&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, 
-            &content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description, 
-            &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id); err != nil {
-            log.Fatal(err)
-        }
+		if err := rows.Scan(&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name,
+			&content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description,
+			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id); err != nil {
+			log.Fatal(err)
+		}
 
-        var parent_content_type_id int
-        if content_type_parent_id.Valid {
-            parent_content_type_id = int(content_type_parent_id.Int64)
-        } else {
-            // NULL value
-        }
+		var parent_content_type_id int
+		if content_type_parent_id.Valid {
+			parent_content_type_id = int(content_type_parent_id.Int64)
+		} else {
+			// NULL value
+		}
 
-        var tabs []Tab
-        var content_type_metaMap map[string]interface{}
+		var tabs []Tab
+		var content_type_metaMap map[string]interface{}
 
-        json.Unmarshal(content_type_tabs, &tabs)
-        json.Unmarshal(content_type_meta, &content_type_metaMap)
+		json.Unmarshal(content_type_tabs, &tabs)
+		json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-        contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
-        contentTypes = append(contentTypes, contentType)
-    }
-    if err := rows.Err(); err != nil {
-        log.Fatal(err)
-    }
-    return
+		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
+		contentTypes = append(contentTypes, contentType)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return
 }
 
-func GetContentTypeExtendedById(id int) (contentType ContentType){
+func GetContentTypeExtendedById(id int) (contentType ContentType) {
 
-    querystr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, content_type.alias as member_alias, content_type.created_by as content_type_created_by,  content_type.created_date as content_type_created_date, content_type.description as content_type_description, content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail, content_type.meta as content_type_meta,
+	querystr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, content_type.alias as member_alias, content_type.created_by as content_type_created_by,  content_type.created_date as content_type_created_date, content_type.description as content_type_description, content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail, content_type.meta as content_type_meta,
 res.mt_tabs as content_type_tabs, res.parent_content_types as content_type_parent_content_types, content_type.type_id as content_type_type_id
 FROM content_type  
 JOIN
@@ -268,57 +268,54 @@ LATERAL
 ON res.id = content_type.id
 WHERE content_type.id=$1`
 
-    // node
-    var content_type_id, content_type_created_by, content_type_type_id int
-    var content_type_path, content_type_name, content_type_alias string
-    var content_type_description, content_type_icon, content_type_thumbnail string
-    var content_type_created_date *time.Time
+	// node
+	var content_type_id, content_type_created_by, content_type_type_id int
+	var content_type_path, content_type_name, content_type_alias string
+	var content_type_description, content_type_icon, content_type_thumbnail string
+	var content_type_created_date *time.Time
 
-    var content_type_parent_id sql.NullInt64
+	var content_type_parent_id sql.NullInt64
 
-    var content_type_tabs, content_type_meta []byte
-    var content_type_parent_content_types []byte
+	var content_type_tabs, content_type_meta []byte
+	var content_type_parent_content_types []byte
 
-    db := coreglobals.Db
+	db := coreglobals.Db
 
-    row := db.QueryRow(querystr, id)
+	row := db.QueryRow(querystr, id)
 
-    err:= row.Scan(
-            &content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, &content_type_alias,
-            &content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_parent_content_types, &content_type_type_id)
+	err := row.Scan(
+		&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, &content_type_alias,
+		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_parent_content_types, &content_type_type_id)
 
-    var parent_content_type_id int
-    if content_type_parent_id.Valid {
-        parent_content_type_id = int(content_type_parent_id.Int64)
-    } else {
-        // NULL value
-    }
+	var parent_content_type_id int
+	if content_type_parent_id.Valid {
+		parent_content_type_id = int(content_type_parent_id.Int64)
+	} else {
+		// NULL value
+	}
 
-    var parent_content_types []ContentType
-    var tabs []Tab
-    var content_type_metaMap map[string]interface{}
+	var parent_content_types []ContentType
+	var tabs []Tab
+	var content_type_metaMap map[string]interface{}
 
+	json.Unmarshal(content_type_parent_content_types, &parent_content_types)
+	json.Unmarshal(content_type_tabs, &tabs)
+	json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-    json.Unmarshal(content_type_parent_content_types, &parent_content_types)
-    json.Unmarshal(content_type_tabs, &tabs)
-    json.Unmarshal(content_type_meta, &content_type_metaMap)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No node with that ID.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_type_id}
+	}
 
-    switch {
-        case err == sql.ErrNoRows:
-            log.Printf("No node with that ID.")
-        case err != nil:
-            log.Fatal(err)
-        default:
-            contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_type_id}
-    }
-
-    return
+	return
 }
 
-
-
-func GetContentTypeById(id int) (contentType ContentType){
-    querystr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
+func GetContentTypeById(id int) (contentType ContentType) {
+	querystr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 
     content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, 
     content_type.alias as member_alias, content_type.created_by as content_type_created_by, 
     content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
@@ -327,46 +324,46 @@ func GetContentTypeById(id int) (contentType ContentType){
         FROM content_type
         WHERE content_type.id=$1`
 
-    var content_type_id, content_type_created_by, content_type_type_id int
-    var content_type_path, content_type_name, content_type_alias string
-    var content_type_description, content_type_icon, content_type_thumbnail string
-    var content_type_created_date *time.Time
+	var content_type_id, content_type_created_by, content_type_type_id int
+	var content_type_path, content_type_name, content_type_alias string
+	var content_type_description, content_type_icon, content_type_thumbnail string
+	var content_type_created_date *time.Time
 
-    var content_type_parent_id sql.NullInt64
+	var content_type_parent_id sql.NullInt64
 
-    var content_type_tabs, content_type_meta []byte
+	var content_type_tabs, content_type_meta []byte
 
-    db := coreglobals.Db
+	db := coreglobals.Db
 
-    row := db.QueryRow(querystr, id)
+	row := db.QueryRow(querystr, id)
 
-    err:= row.Scan(
-            &content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, &content_type_alias,
-            &content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id)
+	err := row.Scan(
+		&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, &content_type_alias,
+		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id)
 
-    var parent_content_type_id int
-    if content_type_parent_id.Valid {
-        parent_content_type_id = int(content_type_parent_id.Int64)
-    } else {
-        // NULL value
-    }
+	var parent_content_type_id int
+	if content_type_parent_id.Valid {
+		parent_content_type_id = int(content_type_parent_id.Int64)
+	} else {
+		// NULL value
+	}
 
-    var tabs []Tab
-    var content_type_metaMap map[string]interface{}
+	var tabs []Tab
+	var content_type_metaMap map[string]interface{}
 
-    json.Unmarshal(content_type_tabs, &tabs)
-    json.Unmarshal(content_type_meta, &content_type_metaMap)
+	json.Unmarshal(content_type_tabs, &tabs)
+	json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-    switch {
-        case err == sql.ErrNoRows:
-            log.Printf("No node with that ID.")
-        case err != nil:
-            log.Fatal(err)
-        default:
-            contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
-    }
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No node with that ID.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
+	}
 
-    return
+	return
 }
 
 // func (t *ContentType) Post(){
@@ -374,7 +371,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //   corehelpers.PanicIf(err)
 //   fmt.Println("tm:::: ")
 //   fmt.Println(string(tm))
-  
+
 //   db := coreglobals.Db
 
 //   tx, err := db.Begin()
@@ -396,10 +393,10 @@ func GetContentTypeById(id int) (contentType ContentType){
 //   }
 
 //   // http://godoc.org/github.com/lib/pq
-//   // pq does not support the LastInsertId() method of the Result type in database/sql. 
-//   // To return the identifier of an INSERT (or UPDATE or DELETE), 
+//   // pq does not support the LastInsertId() method of the Result type in database/sql.
+//   // To return the identifier of an INSERT (or UPDATE or DELETE),
 //   // use the Postgres RETURNING clause with a standard Query or QueryRow call:
-  
+
 //   var node_id int64
 //   err = db.QueryRow(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`, t.Node.Name, t.Node.NodeType, 1, t.ParentContentTypeNodeId).Scan(&node_id)
 //   //res, err := tx.Exec(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4)`, t.Node.Name, 3, 1, t.ParentTemplateNodeId)
@@ -441,7 +438,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //     (
 //       SELECT my_content_type.*,gf2.*
 //       FROM content_type as my_content_type, node as my_content_type_node,
-//       LATERAL 
+//       LATERAL
 //       (
 //           SELECT okidoki.tabs as ct_tabs
 //           FROM (
@@ -452,14 +449,14 @@ func GetContentTypeById(id int) (contentType ContentType){
 //           select y.name, ss.properties
 //           from json_to_recordset(
 //           (
-//         select * 
+//         select *
 //         from json_to_recordset(
 //             (
 //           SELECT json_agg(ggg)
 //           from(
 //         SELECT tabs
-//         FROM 
-//         (   
+//         FROM
+//         (
 //             SELECT *
 //             FROM content_type as ct
 //             WHERE ct.id=c.id
@@ -474,7 +471,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //         select json_agg(json_build_object('name',row.name,'order',row."order",'data_type', json_build_object('id',row.data_type, 'alias',row.data_type_alias, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
 //         from(
 //       select name, "order", data_type, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
-//       from json_to_recordset(properties) 
+//       from json_to_recordset(properties)
 //       as k(name text, "order" int, data_type int, help_text text, description text)
 //       JOIN data_type
 //       ON data_type.id = k.data_type
@@ -545,9 +542,8 @@ func GetContentTypeById(id int) (contentType ContentType){
 //       //fmt.Println(string(lol))
 
 //       //fmt.Printf("id: %d, HTML: %s, name: %s", ctTabs[0].Properties[0].DataType.Id, ctTabs[0].Properties[0].DataType.Html, ctTabs[0].Properties[0].Name)
-      
-//       //fmt.Println("ksjdflk sdfkj: " + node_name)
 
+//       //fmt.Println("ksjdflk sdfkj: " + node_name)
 
 //       //helpers.PanicIf(err)
 //       switch {
@@ -565,21 +561,20 @@ func GetContentTypeById(id int) (contentType ContentType){
 //     return
 // }
 
-
 // func GetContentTypeExtendedByNodeId(nodeId int) (contentType ContentType){
 
 //   querystr := `SELECT my_node.id as node_id, my_node.path as node_path, my_node.created_by as node_created_by, my_node.name as node_name, my_node.node_type as node_type, my_node.created_date as node_created_date,
 //     res.id as ct_id, res.parent_content_type_node_id as ct_parent_content_type_node_id, res.alias as ct_alias,
 //     res.description as ct_description, res.icon as ct_icon, res.thumbnail as ct_thumbnail, res.meta::json as ct_meta, res.ct_tabs as ct_tabs, res.parent_content_types as ct_parent_content_types
-//     FROM content_type 
-//     JOIN node as my_node 
-//     ON my_node.id = content_type.node_id 
+//     FROM content_type
+//     JOIN node as my_node
+//     ON my_node.id = content_type.node_id
 //     JOIN
 //     LATERAL
 //     (
 //       SELECT my_content_type.*,ffgd.*,gf2.*
 //       FROM content_type as my_content_type, node as my_content_type_node,
-//       LATERAL 
+//       LATERAL
 //       (
 //           SELECT array_to_json(array_agg(okidoki)) as parent_content_types
 //           FROM (
@@ -590,14 +585,14 @@ func GetContentTypeById(id int) (contentType ContentType){
 //               select y.name, ss.properties
 //               from json_to_recordset(
 //             (
-//                 select * 
+//                 select *
 //                 from json_to_recordset(
 //               (
 //                   SELECT json_agg(ggg)
 //                   from(
 //                 SELECT tabs
-//                 FROM 
-//                 (   
+//                 FROM
+//                 (
 //                     SELECT *
 //                     FROM content_type as ct
 //                     WHERE ct.id=c.id
@@ -612,7 +607,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //             select json_agg(json_build_object('name',row.name,'order',row."order",'data_type_node_id',row.data_type_node_id,'data_type', json_build_object('id',row.data_type_id, 'node_id',row.data_type_node_id, 'alias', row.data_type_alias,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
 //             from(
 //                 select name, "order", data_type.id as data_type_id, data_type_node_id, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
-//                 from json_to_recordset(properties) 
+//                 from json_to_recordset(properties)
 //                 as k(name text, "order" int, data_type_node_id int, help_text text, description text)
 //                 JOIN data_type
 //                 ON data_type.node_id = k.data_type_node_id
@@ -624,7 +619,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //           )okidoki
 //       ) ffgd,
 //       --
-//       LATERAL 
+//       LATERAL
 //       (
 //           SELECT okidoki.tabs as ct_tabs
 //           FROM (
@@ -635,14 +630,14 @@ func GetContentTypeById(id int) (contentType ContentType){
 //           select y.name, ss.properties
 //           from json_to_recordset(
 //           (
-//         select * 
+//         select *
 //         from json_to_recordset(
 //             (
 //           SELECT json_agg(ggg)
 //           from(
 //         SELECT tabs
-//         FROM 
-//         (   
+//         FROM
+//         (
 //             SELECT *
 //             FROM content_type as ct
 //             WHERE ct.id=c.id
@@ -657,7 +652,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //         select json_agg(json_build_object('name',row.name,'order',row."order",'data_type_node_id', row.data_type_node_id,'data_type', json_build_object('id',row.data_type_id, 'node_id', row.data_type_node_id, 'alias', row.data_type_alias, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
 //         from(
 //       select name, "order", data_type.id as data_type_id, data_type_node_id, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
-//       from json_to_recordset(properties) 
+//       from json_to_recordset(properties)
 //       as k(name text, "order" int, data_type_node_id int, help_text text, description text)
 //       JOIN data_type
 //       ON data_type.node_id = k.data_type_node_id
@@ -708,7 +703,6 @@ func GetContentTypeById(id int) (contentType ContentType){
 //     var tabs []Tab
 //     var ct_metaMap map[string]interface{}
 
-
 //     json.Unmarshal(ct_parent_content_types, &parent_content_types)
 //     json.Unmarshal(ct_tabs, &tabs)
 //     json.Unmarshal(ct_meta, &ct_metaMap)
@@ -718,9 +712,8 @@ func GetContentTypeById(id int) (contentType ContentType){
 //     //fmt.Println(string(lol))
 
 //     //fmt.Printf("id: %d, HTML: %s, name: %s", ctTabs[0].Properties[0].DataType.Id, ctTabs[0].Properties[0].DataType.Html, ctTabs[0].Properties[0].Name)
-    
-//     //fmt.Println("ksjdflk sdfkj: " + node_name)
 
+//     //fmt.Println("ksjdflk sdfkj: " + node_name)
 
 //     //helpers.PanicIf(err)
 //     switch {
@@ -730,8 +723,6 @@ func GetContentTypeById(id int) (contentType ContentType){
 //                 log.Fatal(err)
 //         default:
 //                 node := Node{node_id,node_path,node_created_by, node_name, node_type, &node_created_date, 0, nil, nil, false, "", nil, nil, ""}
-                
-  
 
 //                 contentType = ContentType{ct_id, node_id, ct_alias, ct_description, ct_icon, ct_thumbnail, parent_content_type_node_id, tabs, ct_metaMap, parent_content_types, &node}
 //                 //contentType = ContentType{ct_id, ct_node_id, ct_alias, ct_description, ct_icon, ct_thumbnail, parent_content_type_node_id, ctTabs, x, nil, &node}
@@ -752,7 +743,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //   //   (
 //   //     SELECT my_content_type.*,gf2.*
 //   //     FROM content_type as my_content_type, node as my_content_type_node,
-//   //     LATERAL 
+//   //     LATERAL
 //   //     (
 //   //         SELECT okidoki.tabs as ct_tabs
 //   //         FROM (
@@ -763,14 +754,14 @@ func GetContentTypeById(id int) (contentType ContentType){
 //   //         select y.name, ss.properties
 //   //         from json_to_recordset(
 //   //         (
-//   //       select * 
+//   //       select *
 //   //       from json_to_recordset(
 //   //           (
 //   //         SELECT json_agg(ggg)
 //   //         from(
 //   //       SELECT tabs
-//   //       FROM 
-//   //       (   
+//   //       FROM
+//   //       (
 //   //           SELECT *
 //   //           FROM content_type as ct
 //   //           WHERE ct.id=c.id
@@ -785,7 +776,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //   //       select json_agg(json_build_object('name',row.name,'order',row."order",'data_type', json_build_object('id', row.data_type_id,'node_id',row.data_type, 'alias',row.data_type_alias, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
 //   //       from(
 //   //     select name, "order", data_type.id as data_type_id, data_type, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
-//   //     from json_to_recordset(properties) 
+//   //     from json_to_recordset(properties)
 //   //     as k(name text, "order" int, data_type int, help_text text, description text)
 //   //     JOIN data_type
 //   //     ON data_type.node_id = k.data_type
@@ -860,9 +851,8 @@ func GetContentTypeById(id int) (contentType ContentType){
 //     //fmt.Println(string(lol))
 
 //     //fmt.Printf("id: %d, HTML: %s, name: %s", ctTabs[0].Properties[0].DataType.Id, ctTabs[0].Properties[0].DataType.Html, ctTabs[0].Properties[0].Name)
-    
-//     //fmt.Println("ksjdflk sdfkj: " + node_name)
 
+//     //fmt.Println("ksjdflk sdfkj: " + node_name)
 
 //     //helpers.PanicIf(err)
 //     switch {
@@ -890,7 +880,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //   var testMapSlice []map[string]interface{}
 //   err1 := json.Unmarshal(tabs,&testMapSlice)
 //   corehelpers.PanicIf(err1)
-  
+
 //   // //tabs, _ := json.Marshal(ct.Tabs)
 //   // for i := 0; i < len(testMapSlice); i++ {
 //   //   var properties []interface{} = testMapSlice[i]["properties"].([]interface{})
@@ -905,7 +895,7 @@ func GetContentTypeById(id int) (contentType ContentType){
 //   //     fmt.Println(dt)
 //   //     //property["data_type"] = dt["id"]
 //   //   }
-    
+
 //   // }
 
 //   res, _ := json.Marshal(testMapSlice)
@@ -927,8 +917,8 @@ func GetContentTypeById(id int) (contentType ContentType){
 //   corehelpers.PanicIf(err)
 //   //defer r1.Close()
 
-//   _, err = tx.Exec(`UPDATE content_type 
-//     SET alias = $1, description = $2, icon = $3, thumbnail = $4, meta = $5, tabs = $6 
+//   _, err = tx.Exec(`UPDATE content_type
+//     SET alias = $1, description = $2, icon = $3, thumbnail = $4, meta = $5, tabs = $6
 //     WHERE node_id = $7`, ct.Alias, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.Node.Id)
 //   corehelpers.PanicIf(err)
 //   //defer r2.Close()

@@ -1,6 +1,6 @@
 package lib
 
-type Menu struct{
-	Name string
+type Menu struct {
+	Name      string
 	MenuItems []*MenuItem
 }

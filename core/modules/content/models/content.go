@@ -1,58 +1,58 @@
 package models
 
 import (
-  //"fmt"
-  "encoding/json"
-  //"collexy/globals"
-  coreglobals "collexy/core/globals"
-  corehelpers "collexy/core/helpers"
-  "time"
-  "fmt"
-  //"net/http"
-  "html/template"
-  "strconv"
-  "log"
-  "database/sql"
-  // "strings"
-  "reflect"
-  //"errors"
-  "github.com/kennygrant/sanitize"
-  "net/url"
-  coremoduleuser "collexy/core/modules/user/models"
-  coremodulesettingsmodels "collexy/core/modules/settings/models"
+	//"fmt"
+	"encoding/json"
+	//"collexy/globals"
+	coreglobals "collexy/core/globals"
+	corehelpers "collexy/core/helpers"
+	"fmt"
+	"time"
+	//"net/http"
+	"database/sql"
+	"html/template"
+	"log"
+	"strconv"
+	// "strings"
+	"reflect"
+	//"errors"
+	coremodulesettingsmodels "collexy/core/modules/settings/models"
+	coremoduleuser "collexy/core/modules/user/models"
+	"github.com/kennygrant/sanitize"
+	"net/url"
 )
 
 type Content struct {
-  Id int `json:"id"`
-  Path string `json:"path"`
-  ParentId int `json:"parent_id,omitempty"`
-  Name string `json:"name"`
-  Alias string `json:"alias"`
-  CreatedBy int `json:"created_by"`
-  CreatedDate *time.Time `json:"created_date"`
-  ContentTypeId int `json:"content_type_id"` 
-  Meta map[string]interface{} `json:"meta,omitempty"`
-  PublicAccess *PublicAccess `json:"public_access,omitempty"`
-  UserPermissions []PermissionsContainer `json:"user_permissions,omitempty"`
-  UserGroupPermissions []PermissionsContainer `json:"user_group_permissions,omitempty"`
-  TypeId int `json:"type_id"`
-  // Additional fields (not persisted in db)
-  Url string `json:"url,omitempty"`
-  Domains []string `json:"domains,omitempty"`
-  ParentContentItems []*Content `json:"parent_content_items,omitempty"`
-  ChildContentItems []*Content `json:"child_content_items,omitempty"`
-  Template *coremodulesettingsmodels.Template `json:"template,omitempty"`
-  ContentType *coremodulesettingsmodels.ContentType `json:"content_type,omitempty"`
-  // Show bool `json:"show,omitempty"`
-  // OldName string `json:"old_name,omitempty"`
+	Id                   int                    `json:"id"`
+	Path                 string                 `json:"path"`
+	ParentId             int                    `json:"parent_id,omitempty"`
+	Name                 string                 `json:"name"`
+	Alias                string                 `json:"alias"`
+	CreatedBy            int                    `json:"created_by"`
+	CreatedDate          *time.Time             `json:"created_date"`
+	ContentTypeId        int                    `json:"content_type_id"`
+	Meta                 map[string]interface{} `json:"meta,omitempty"`
+	PublicAccess         *PublicAccess          `json:"public_access,omitempty"`
+	UserPermissions      []PermissionsContainer `json:"user_permissions,omitempty"`
+	UserGroupPermissions []PermissionsContainer `json:"user_group_permissions,omitempty"`
+	TypeId               int                    `json:"type_id"`
+	// Additional fields (not persisted in db)
+	Url                string                                `json:"url,omitempty"`
+	Domains            []string                              `json:"domains,omitempty"`
+	ParentContentItems []*Content                            `json:"parent_content_items,omitempty"`
+	ChildContentItems  []*Content                            `json:"child_content_items,omitempty"`
+	Template           *coremodulesettingsmodels.Template    `json:"template,omitempty"`
+	ContentType        *coremodulesettingsmodels.ContentType `json:"content_type,omitempty"`
+	// Show bool `json:"show,omitempty"`
+	// OldName string `json:"old_name,omitempty"`
 }
 
-func GetContent(queryStringParams url.Values, user *coremoduleuser.User) (contentSlice []Content){
+func GetContent(queryStringParams url.Values, user *coremoduleuser.User) (contentSlice []Content) {
 
-  db := coreglobals.Db
-  sqlStr := ""
-  // if(queryStringParams.Get("type-id") != nil){
-  sqlStr = `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	db := coreglobals.Db
+	sqlStr := ""
+	// if(queryStringParams.Get("type-id") != nil){
+	sqlStr = `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -65,198 +65,198 @@ content_type.icon AS ct_icon, content_type.thumbnail AS ct_thumbnail, content_ty
 content_type.tabs AS ct_tabs, content_type.type_id as ct_type_id 
 FROM content 
    JOIN content_type ON content.content_type_id = content_type.id`
-  
-  // if ?type-id=x&levels=x(,x..)
-  // else if ?type-id=x
-  // else if ?levels=x(,x..)
-  if(queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") != ""){
-      sqlStr = sqlStr + ` WHERE content.type_id=` + queryStringParams.Get("type-id") + ` and content.path ~ '*.*{`+queryStringParams.Get("levels") +`}'`
-  } else if(queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels")==""){
-      sqlStr = sqlStr + ` WHERE content.type_id=` + queryStringParams.Get("type-id")
-  } else if(queryStringParams.Get("type-id") == "" && queryStringParams.Get("levels") != ""){
-      sqlStr = sqlStr + ` WHERE content.path ~ '*.*{`+queryStringParams.Get("levels") +`}'`
-  }
 
-  // if((queryStringParams.Get("type-id")!="" || queryStringParams.Get("type-id")!="") && queryStringParams.Get("content-type")!=""){
-  if(queryStringParams.Get("content-type")!=""){
-    sqlStr = sqlStr + ` and content.content_type_id=` + queryStringParams.Get("content-type")
-  }
-  
-  rows, err := db.Query(sqlStr)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
+	// if ?type-id=x&levels=x(,x..)
+	// else if ?type-id=x
+	// else if ?levels=x(,x..)
+	if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") != "" {
+		sqlStr = sqlStr + ` WHERE content.type_id=` + queryStringParams.Get("type-id") + ` and content.path ~ '*.*{` + queryStringParams.Get("levels") + `}'`
+	} else if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") == "" {
+		sqlStr = sqlStr + ` WHERE content.type_id=` + queryStringParams.Get("type-id")
+	} else if queryStringParams.Get("type-id") == "" && queryStringParams.Get("levels") != "" {
+		sqlStr = sqlStr + ` WHERE content.path ~ '*.*{` + queryStringParams.Get("levels") + `}'`
+	}
 
-  var content_id, content_created_by, content_content_type_id, content_type_id int
-  var content_path, content_name, content_alias string
-  var content_parent_id sql.NullInt64
-  var content_created_date *time.Time
-  var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	// if((queryStringParams.Get("type-id")!="" || queryStringParams.Get("type-id")!="") && queryStringParams.Get("content-type")!=""){
+	if queryStringParams.Get("content-type") != "" {
+		sqlStr = sqlStr + ` and content.content_type_id=` + queryStringParams.Get("content-type")
+	}
 
-  var ct_id, ct_created_by, ct_type_id int
-  var ct_parent_id sql.NullInt64
-  var ct_created_date *time.Time
-  var ct_path, ct_name, ct_alias, ct_description string
-  var ct_tabs, ct_meta []byte
-  var ct_icon, ct_thumbnail sql.NullString
+	rows, err := db.Query(sqlStr)
+	corehelpers.PanicIf(err)
+	defer rows.Close()
 
-  for rows.Next(){
-      var content_type_icon_str, content_type_thumbnail_str string
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
 
-      // if(queryStringParams.Get("type-id")!=nil){
-      err := rows.Scan(&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-    &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-    &content_user_permissions, &content_user_group_permissions, &content_type_id,
-    &ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon, 
-    &ct_thumbnail, &ct_meta, &ct_tabs, &ct_type_id)
-      
-      corehelpers.PanicIf(err)
-      
-      if(ct_icon.Valid){
-        content_type_icon_str = ct_icon.String
-      }
+	var ct_id, ct_created_by, ct_type_id int
+	var ct_parent_id sql.NullInt64
+	var ct_created_date *time.Time
+	var ct_path, ct_name, ct_alias, ct_description string
+	var ct_tabs, ct_meta []byte
+	var ct_icon, ct_thumbnail sql.NullString
 
-      if(ct_thumbnail.Valid){
-        content_type_thumbnail_str = ct_thumbnail.String
-      }
+	for rows.Next() {
+		var content_type_icon_str, content_type_thumbnail_str string
 
-      var cpid int
-      if content_parent_id.Valid {
-        cpid = int(content_parent_id.Int64)
-      }
+		// if(queryStringParams.Get("type-id")!=nil){
+		err := rows.Scan(&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon,
+			&ct_thumbnail, &ct_meta, &ct_tabs, &ct_type_id)
 
-      var ctpid int
-      if ct_parent_id.Valid {
-        ctpid = int(ct_parent_id.Int64)
-      }
+		corehelpers.PanicIf(err)
 
-      var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-      user_perm = nil
-      user_group_perm = nil
-      json.Unmarshal(content_user_permissions, &user_perm)
-      json.Unmarshal(content_user_group_permissions, &user_group_perm)
+		if ct_icon.Valid {
+			content_type_icon_str = ct_icon.String
+		}
 
-      var content_metaMap map[string]interface{}
+		if ct_thumbnail.Valid {
+			content_type_thumbnail_str = ct_thumbnail.String
+		}
 
-      var public_access *PublicAccess
+		var cpid int
+		if content_parent_id.Valid {
+			cpid = int(content_parent_id.Int64)
+		}
 
-      json.Unmarshal(content_public_access, &public_access)
+		var ctpid int
+		if ct_parent_id.Valid {
+			ctpid = int(ct_parent_id.Int64)
+		}
 
-      json.Unmarshal(content_meta, &content_metaMap)
+		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		user_perm = nil
+		user_group_perm = nil
+		json.Unmarshal(content_user_permissions, &user_perm)
+		json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-      var tabs []coremodulesettingsmodels.Tab
-      var ct_metaMap map[string]interface{}
+		var content_metaMap map[string]interface{}
 
-      json.Unmarshal(ct_tabs, &tabs)
-      json.Unmarshal(ct_meta, &ct_metaMap)
+		var public_access *PublicAccess
 
-      var accessGranted bool = false
-      var accessDenied bool = false
+		json.Unmarshal(content_public_access, &public_access)
 
-      // if(err1 != nil){
-      //   log.Println("Unmarshal Error: " + err1.Error())
-      //   user_perm = nil
-      // }
+		json.Unmarshal(content_meta, &content_metaMap)
 
-      // if permissions are set on the node for a specific user
-      if(content_user_permissions != nil){
-        for i := 0; i < len(user_perm); i++ {
-          if(accessGranted){
-            break
-          }
-          if(user_perm[i].Id == user.Id){
-            if(accessGranted){
-              break
-            }
-            for j := 0; j < len(user_perm[i].Permissions); j++ {
-              if(accessGranted){
-                break
-              }
-              if(user_perm[i].Permissions[j] == "node_browse"){
-                //fmt.Println("woauw it worked!")
-                accessGranted = true
-                content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
-                // node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
-                content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
-                contentSlice = append(contentSlice,content)
-                break
-              }
-            }
-            if(!accessGranted){
-              accessDenied = true;
-            }
-          }
-        } 
-      } 
-      if(!accessGranted && !accessDenied){
-        // if no specific user node access has been specified, check node access per user_group
-        if(content_user_group_permissions != nil){
-          for i:= 0; i< len(user.UserGroupIds); i++ {
-            if(accessGranted){
-              break
-            }
-            for j := 0; j < len(user_group_perm); j++ {
-              if(accessGranted){
-                break
-              }
-              if(user_group_perm[j].Id == user.UserGroupIds[i]){
-                if(accessGranted){
-                  break
-                }
-                for k := 0; k < len(user_group_perm[j].Permissions); k++ {
-                  if(accessGranted){
-                    break
-                  }
-                  if(user_group_perm[j].Permissions[k] == "node_browse"){
-                    //fmt.Println("woauw it worked!")
-                    accessGranted = true
-                    content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
-                    content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-        content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
-                    contentSlice = append(contentSlice,content)
-                    break
-                  }
-                }
-                if(!accessGranted){
-                  accessDenied = true;
-                }
-              }
-            } 
-          }
-        }
-      }
+		var tabs []coremodulesettingsmodels.Tab
+		var ct_metaMap map[string]interface{}
 
-      // if no specific access has been granted per user_group either, use user groups default permissions
-      if(!accessGranted && !accessDenied){
-        if(user.UserGroups != nil){
-          for i:= 0; i< len(user.UserGroups); i++ {
-            if(accessGranted){
-              break
-            }
-            for j:= 0; j< len(user.UserGroups[i].Permissions); j++ {
-              if(user.UserGroups[i].Permissions[j] == "node_browse"){
-                accessGranted = true
-                content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
-                content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
-                contentSlice = append(contentSlice,content)
-                break
-              }
-            }
-            
-          }
-        }
-        
-      }
-  }
-  return
+		json.Unmarshal(ct_tabs, &tabs)
+		json.Unmarshal(ct_meta, &ct_metaMap)
+
+		var accessGranted bool = false
+		var accessDenied bool = false
+
+		// if(err1 != nil){
+		//   log.Println("Unmarshal Error: " + err1.Error())
+		//   user_perm = nil
+		// }
+
+		// if permissions are set on the node for a specific user
+		if content_user_permissions != nil {
+			for i := 0; i < len(user_perm); i++ {
+				if accessGranted {
+					break
+				}
+				if user_perm[i].Id == user.Id {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user_perm[i].Permissions); j++ {
+						if accessGranted {
+							break
+						}
+						if user_perm[i].Permissions[j] == "node_browse" {
+							//fmt.Println("woauw it worked!")
+							accessGranted = true
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+							// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+								content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							contentSlice = append(contentSlice, content)
+							break
+						}
+					}
+					if !accessGranted {
+						accessDenied = true
+					}
+				}
+			}
+		}
+		if !accessGranted && !accessDenied {
+			// if no specific user node access has been specified, check node access per user_group
+			if content_user_group_permissions != nil {
+				for i := 0; i < len(user.UserGroupIds); i++ {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user_group_perm); j++ {
+						if accessGranted {
+							break
+						}
+						if user_group_perm[j].Id == user.UserGroupIds[i] {
+							if accessGranted {
+								break
+							}
+							for k := 0; k < len(user_group_perm[j].Permissions); k++ {
+								if accessGranted {
+									break
+								}
+								if user_group_perm[j].Permissions[k] == "node_browse" {
+									//fmt.Println("woauw it worked!")
+									accessGranted = true
+									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+									content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+										content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+									contentSlice = append(contentSlice, content)
+									break
+								}
+							}
+							if !accessGranted {
+								accessDenied = true
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// if no specific access has been granted per user_group either, use user groups default permissions
+		if !accessGranted && !accessDenied {
+			if user.UserGroups != nil {
+				for i := 0; i < len(user.UserGroups); i++ {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
+						if user.UserGroups[i].Permissions[j] == "node_browse" {
+							accessGranted = true
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+								content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							contentSlice = append(contentSlice, content)
+							break
+						}
+					}
+
+				}
+			}
+
+		}
+	}
+	return
 }
 
-func GetContentById(id int) (content Content){
-  
-  db := coreglobals.Db
+func GetContentById(id int) (content Content) {
 
-  sqlStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	db := coreglobals.Db
+
+	sqlStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -287,79 +287,78 @@ LATERAL
 ) modified_content_type
 ON modified_content_type.id = content.content_type_id
 WHERE content.id=$1`
-  
-  var content_id, content_created_by, content_content_type_id, content_type_id int
-  var content_path, content_name, content_alias string
-  var content_parent_id sql.NullInt64
-  var content_created_date *time.Time
-  var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-  
 
-  var ct_id, ct_created_by, ct_type_id int
-  var ct_parent_id sql.NullInt64
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
 
-  var ct_path, ct_name, ct_alias, ct_description, ct_icon, ct_thumbnail string
-  var ct_tabs, ct_meta []byte
-  var ct_allowed_content_types []byte
+	var ct_id, ct_created_by, ct_type_id int
+	var ct_parent_id sql.NullInt64
 
-  row := db.QueryRow(sqlStr, id)
+	var ct_path, ct_name, ct_alias, ct_description, ct_icon, ct_thumbnail string
+	var ct_tabs, ct_meta []byte
+	var ct_allowed_content_types []byte
 
-  err:= row.Scan(
-      &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-      &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-      &content_user_permissions, &content_user_group_permissions, &content_type_id,
-      &ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by,
-      &ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_allowed_content_types, &ct_type_id)
+	row := db.QueryRow(sqlStr, id)
 
-  corehelpers.PanicIf(err)
+	err := row.Scan(
+		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by,
+		&ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_allowed_content_types, &ct_type_id)
 
-  var content_type_parent_id int
-  if ct_parent_id.Valid {
-    // use s.String
-    content_type_parent_id = int(ct_parent_id.Int64)
-  } else {
-     // NULL value
-  }
+	corehelpers.PanicIf(err)
 
-  var cpid int
-  if content_parent_id.Valid {
-    cpid = int(content_parent_id.Int64)
-  }
+	var content_type_parent_id int
+	if ct_parent_id.Valid {
+		// use s.String
+		content_type_parent_id = int(ct_parent_id.Int64)
+	} else {
+		// NULL value
+	}
 
-  var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-  user_perm = nil
-  user_group_perm = nil
-  json.Unmarshal(content_user_permissions, &user_perm)
-  json.Unmarshal(content_user_group_permissions, &user_group_perm)
+	var cpid int
+	if content_parent_id.Valid {
+		cpid = int(content_parent_id.Int64)
+	}
 
-  var allowed_content_types []coremodulesettingsmodels.ContentType
-  var tabs []coremodulesettingsmodels.Tab
-  var ct_metaMap map[string]interface{}
-  var content_metaMap map[string]interface{}
+	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	user_perm = nil
+	user_group_perm = nil
+	json.Unmarshal(content_user_permissions, &user_perm)
+	json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-  var public_access *PublicAccess
+	var allowed_content_types []coremodulesettingsmodels.ContentType
+	var tabs []coremodulesettingsmodels.Tab
+	var ct_metaMap map[string]interface{}
+	var content_metaMap map[string]interface{}
 
-  json.Unmarshal(content_public_access, &public_access)
+	var public_access *PublicAccess
 
-  json.Unmarshal(ct_allowed_content_types, &allowed_content_types)
-  json.Unmarshal(ct_tabs, &tabs)
-  json.Unmarshal(ct_meta, &ct_metaMap)
-  json.Unmarshal(content_meta, &content_metaMap)
+	json.Unmarshal(content_public_access, &public_access)
 
-  content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, nil, nil, allowed_content_types, ct_type_id}
+	json.Unmarshal(ct_allowed_content_types, &allowed_content_types)
+	json.Unmarshal(ct_tabs, &tabs)
+	json.Unmarshal(ct_meta, &ct_metaMap)
+	json.Unmarshal(content_meta, &content_metaMap)
 
-  content = Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, content_metaMap, public_access, user_perm, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, nil, nil, allowed_content_types, ct_type_id}
 
-  return
+	content = Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		content_content_type_id, content_metaMap, public_access, user_perm, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+
+	return
 }
 
-func GetContentByIdChildren(id int, user *coremoduleuser.User) (contentSlice []Content){
+func GetContentByIdChildren(id int, user *coremoduleuser.User) (contentSlice []Content) {
 
-  db := coreglobals.Db
-  sqlStr := ""
-  // if(queryStringParams.Get("type-id") != nil){
-  sqlStr = `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	db := coreglobals.Db
+	sqlStr := ""
+	// if(queryStringParams.Get("type-id") != nil){
+	sqlStr = `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -373,175 +372,175 @@ content_type.tabs AS ct_tabs, content_type.type_id as ct_type_id
 FROM content 
    JOIN content_type ON content.content_type_id = content_type.id
    WHERE content.parent_id=$1`
-  
-  rows, err := db.Query(sqlStr, id)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
 
-  var content_id, content_created_by, content_content_type_id, content_type_id int
-  var content_path, content_name, content_alias string
-  var content_parent_id sql.NullInt64
-  var content_created_date *time.Time
-  var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	rows, err := db.Query(sqlStr, id)
+	corehelpers.PanicIf(err)
+	defer rows.Close()
 
-  var ct_id, ct_created_by, ct_type_id int
-  var ct_parent_id sql.NullInt64
-  var ct_created_date *time.Time
-  var ct_path, ct_name, ct_alias, ct_description string
-  var ct_tabs, ct_meta []byte
-  var ct_icon, ct_thumbnail sql.NullString
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
 
-  for rows.Next(){
-      var content_type_icon_str, content_type_thumbnail_str string
+	var ct_id, ct_created_by, ct_type_id int
+	var ct_parent_id sql.NullInt64
+	var ct_created_date *time.Time
+	var ct_path, ct_name, ct_alias, ct_description string
+	var ct_tabs, ct_meta []byte
+	var ct_icon, ct_thumbnail sql.NullString
 
-      // if(queryStringParams.Get("type-id")!=nil){
-      err := rows.Scan(&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-    &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-    &content_user_permissions, &content_user_group_permissions, &content_type_id,
-    &ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon, 
-    &ct_thumbnail, &ct_meta, &ct_tabs, &ct_type_id)
-      
-      corehelpers.PanicIf(err)
-      
-      if(ct_icon.Valid){
-        content_type_icon_str = ct_icon.String
-      }
+	for rows.Next() {
+		var content_type_icon_str, content_type_thumbnail_str string
 
-      if(ct_thumbnail.Valid){
-        content_type_thumbnail_str = ct_thumbnail.String
-      }
+		// if(queryStringParams.Get("type-id")!=nil){
+		err := rows.Scan(&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon,
+			&ct_thumbnail, &ct_meta, &ct_tabs, &ct_type_id)
 
-      var cpid int
-      if content_parent_id.Valid {
-        cpid = int(content_parent_id.Int64)
-      }
+		corehelpers.PanicIf(err)
 
-      var ctpid int
-      if ct_parent_id.Valid {
-        ctpid = int(ct_parent_id.Int64)
-      }
+		if ct_icon.Valid {
+			content_type_icon_str = ct_icon.String
+		}
 
-      var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-      user_perm = nil
-      user_group_perm = nil
-      json.Unmarshal(content_user_permissions, &user_perm)
-      json.Unmarshal(content_user_group_permissions, &user_group_perm)
+		if ct_thumbnail.Valid {
+			content_type_thumbnail_str = ct_thumbnail.String
+		}
 
-      var content_metaMap map[string]interface{}
+		var cpid int
+		if content_parent_id.Valid {
+			cpid = int(content_parent_id.Int64)
+		}
 
-      var public_access *PublicAccess
+		var ctpid int
+		if ct_parent_id.Valid {
+			ctpid = int(ct_parent_id.Int64)
+		}
 
-      json.Unmarshal(content_public_access, &public_access)
+		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		user_perm = nil
+		user_group_perm = nil
+		json.Unmarshal(content_user_permissions, &user_perm)
+		json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-      json.Unmarshal(content_meta, &content_metaMap)
+		var content_metaMap map[string]interface{}
 
-      var tabs []coremodulesettingsmodels.Tab
-      var ct_metaMap map[string]interface{}
+		var public_access *PublicAccess
 
-      json.Unmarshal(ct_tabs, &tabs)
-      json.Unmarshal(ct_meta, &ct_metaMap)
+		json.Unmarshal(content_public_access, &public_access)
 
-      var accessGranted bool = false
-      var accessDenied bool = false
+		json.Unmarshal(content_meta, &content_metaMap)
 
-      // if(err1 != nil){
-      //   log.Println("Unmarshal Error: " + err1.Error())
-      //   user_perm = nil
-      // }
+		var tabs []coremodulesettingsmodels.Tab
+		var ct_metaMap map[string]interface{}
 
-      // if permissions are set on the node for a specific user
-      if(content_user_permissions != nil){
-        for i := 0; i < len(user_perm); i++ {
-          if(accessGranted){
-            break
-          }
-          if(user_perm[i].Id == user.Id){
-            if(accessGranted){
-              break
-            }
-            for j := 0; j < len(user_perm[i].Permissions); j++ {
-              if(accessGranted){
-                break
-              }
-              if(user_perm[i].Permissions[j] == "node_browse"){
-                //fmt.Println("woauw it worked!")
-                accessGranted = true
-                content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
-                // node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
-                content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
-                contentSlice = append(contentSlice,content)
-                break
-              }
-            }
-            if(!accessGranted){
-              accessDenied = true;
-            }
-          }
-        } 
-      } 
-      if(!accessGranted && !accessDenied){
-        // if no specific user node access has been specified, check node access per user_group
-        if(content_user_group_permissions != nil){
-          for i:= 0; i< len(user.UserGroupIds); i++ {
-            if(accessGranted){
-              break
-            }
-            for j := 0; j < len(user_group_perm); j++ {
-              if(accessGranted){
-                break
-              }
-              if(user_group_perm[j].Id == user.UserGroupIds[i]){
-                if(accessGranted){
-                  break
-                }
-                for k := 0; k < len(user_group_perm[j].Permissions); k++ {
-                  if(accessGranted){
-                    break
-                  }
-                  if(user_group_perm[j].Permissions[k] == "node_browse"){
-                    //fmt.Println("woauw it worked!")
-                    accessGranted = true
-                    content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
-                    content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-        content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
-                    contentSlice = append(contentSlice,content)
-                    break
-                  }
-                }
-                if(!accessGranted){
-                  accessDenied = true;
-                }
-              }
-            } 
-          }
-        }
-      }
+		json.Unmarshal(ct_tabs, &tabs)
+		json.Unmarshal(ct_meta, &ct_metaMap)
 
-      // if no specific access has been granted per user_group either, use user groups default permissions
-      if(!accessGranted && !accessDenied){
-        if(user.UserGroups != nil){
-          for i:= 0; i< len(user.UserGroups); i++ {
-            if(accessGranted){
-              break
-            }
-            for j:= 0; j< len(user.UserGroups[i].Permissions); j++ {
-              if(user.UserGroups[i].Permissions[j] == "node_browse"){
-                accessGranted = true
-                content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
-                content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
-                contentSlice = append(contentSlice,content)
-                break
-              }
-            }
-            
-          }
-        }
-        
-      }
-  }
-  return
+		var accessGranted bool = false
+		var accessDenied bool = false
+
+		// if(err1 != nil){
+		//   log.Println("Unmarshal Error: " + err1.Error())
+		//   user_perm = nil
+		// }
+
+		// if permissions are set on the node for a specific user
+		if content_user_permissions != nil {
+			for i := 0; i < len(user_perm); i++ {
+				if accessGranted {
+					break
+				}
+				if user_perm[i].Id == user.Id {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user_perm[i].Permissions); j++ {
+						if accessGranted {
+							break
+						}
+						if user_perm[i].Permissions[j] == "node_browse" {
+							//fmt.Println("woauw it worked!")
+							accessGranted = true
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+							// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+								content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							contentSlice = append(contentSlice, content)
+							break
+						}
+					}
+					if !accessGranted {
+						accessDenied = true
+					}
+				}
+			}
+		}
+		if !accessGranted && !accessDenied {
+			// if no specific user node access has been specified, check node access per user_group
+			if content_user_group_permissions != nil {
+				for i := 0; i < len(user.UserGroupIds); i++ {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user_group_perm); j++ {
+						if accessGranted {
+							break
+						}
+						if user_group_perm[j].Id == user.UserGroupIds[i] {
+							if accessGranted {
+								break
+							}
+							for k := 0; k < len(user_group_perm[j].Permissions); k++ {
+								if accessGranted {
+									break
+								}
+								if user_group_perm[j].Permissions[k] == "node_browse" {
+									//fmt.Println("woauw it worked!")
+									accessGranted = true
+									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+									content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+										content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+									contentSlice = append(contentSlice, content)
+									break
+								}
+							}
+							if !accessGranted {
+								accessDenied = true
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// if no specific access has been granted per user_group either, use user groups default permissions
+		if !accessGranted && !accessDenied {
+			if user.UserGroups != nil {
+				for i := 0; i < len(user.UserGroups); i++ {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
+						if user.UserGroups[i].Permissions[j] == "node_browse" {
+							accessGranted = true
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+								content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							contentSlice = append(contentSlice, content)
+							break
+						}
+					}
+
+				}
+			}
+
+		}
+	}
+	return
 }
 
 // func GetNodes(queryStringParams url.Values) (nodes []Node){
@@ -559,7 +558,7 @@ FROM content
 //   } else if(queryStringParams.Get("type-id") == "" && queryStringParams.Get("levels") != ""){
 //       sql = sql + ` WHERE content.path ~ '1.*{`+queryStringParams.Get("levels") +`}'`
 //   }
-  
+
 //   rows, err := db.Query(sql)
 //   corehelpers.PanicIf(err)
 //   defer rows.Close()
@@ -577,7 +576,6 @@ FROM content
 //   return
 // }
 
-
 // func GetNodeByIdChildren(id int) (nodes []Node){
 //   fmt.Println("GETNODEIDBYCHILDREN")
 //   db := coreglobals.Db
@@ -585,7 +583,7 @@ FROM content
 //   //querystr := "SELECT id, path, created_by, name, type_id, created_date FROM node WHERE parent_id=$1"
 
 //   querystr := `SELECT node.id, node.path, node.created_by, node.name, node.type_id, node.created_date, content_type.icon
-// FROM node 
+// FROM node
 // LEFT OUTER JOIN content
 // ON content.node_id = node.id
 // LEFT OUTER JOIN content_type
@@ -605,8 +603,6 @@ FROM content
 //   for rows.Next(){
 //     var content_type_icon_str string
 
-    
-
 //       err := rows.Scan(&id, &path, &created_by, &name, &type_id, &created_date, &content_type_icon)
 //       corehelpers.PanicIf(err)
 
@@ -625,60 +621,60 @@ FROM content
 // }
 
 //func (c *Content) TimeAgo(ti *time.Time) (t interface{}){
-func (c *Content) TimeAgo() (t interface{}){
-  // See http://golang.org/pkg/time/#Parse
-  //timeFormat := "2006-01-02 15:04 MST"
+func (c *Content) TimeAgo() (t interface{}) {
+	// See http://golang.org/pkg/time/#Parse
+	//timeFormat := "2006-01-02 15:04 MST"
 
-  var then time.Time = *c.CreatedDate
-  //var then time.Time = *ti
+	var then time.Time = *c.CreatedDate
+	//var then time.Time = *ti
 
-  //fmt.Println(then.Format(time.RFC3339))
-  // then, err := time.Parse(timeFormat, v)
-  // if err != nil {
-  //     fmt.Println(err)
-  //     return
-  // }
+	//fmt.Println(then.Format(time.RFC3339))
+	// then, err := time.Parse(timeFormat, v)
+	// if err != nil {
+	//     fmt.Println(err)
+	//     return
+	// }
 
-    duration := time.Since(then)
-    if(duration.Seconds() > 59){
-      fmt.Println("time >59 seconds")
-      if(duration.Minutes() > 59){
-        fmt.Println("time >59 minutes")
-        if(duration.Hours() > 72) {
-          fmt.Println("time >72 hours")
-          rofl := then.Format("Mon Jan _2, 2006")
-          t = rofl
-        } else {
-          t = strconv.FormatFloat(duration.Hours(), 'f', 0, 64) + " hours ago"
-        }
-      } else {
-        t = strconv.FormatFloat(duration.Minutes(), 'f', 0, 64) + " minutes ago"
-      }
-    } else {
-      t = strconv.FormatFloat(duration.Seconds(), 'f', 0, 64) + " seconds ago"
-    }
+	duration := time.Since(then)
+	if duration.Seconds() > 59 {
+		fmt.Println("time >59 seconds")
+		if duration.Minutes() > 59 {
+			fmt.Println("time >59 minutes")
+			if duration.Hours() > 72 {
+				fmt.Println("time >72 hours")
+				rofl := then.Format("Mon Jan _2, 2006")
+				t = rofl
+			} else {
+				t = strconv.FormatFloat(duration.Hours(), 'f', 0, 64) + " hours ago"
+			}
+		} else {
+			t = strconv.FormatFloat(duration.Minutes(), 'f', 0, 64) + " minutes ago"
+		}
+	} else {
+		t = strconv.FormatFloat(duration.Seconds(), 'f', 0, 64) + " seconds ago"
+	}
 
-  return
+	return
 }
 
-func (c *Content) StripHtmlTags(str string) (strippedStr string){
-  strippedStr = sanitize.HTML(str)
-  return
+func (c *Content) StripHtmlTags(str string) (strippedStr string) {
+	strippedStr = sanitize.HTML(str)
+	return
 }
 
-func (c *Content) GetSubstring(s string, start, offset int) (str string){
-  if(offset < len(s)){
-    str = s[start:offset]
-  } else {
-    str = s
-  }
-  return
+func (c *Content) GetSubstring(s string, start, offset int) (str string) {
+	if offset < len(s) {
+		str = s[start:offset]
+	} else {
+		str = s
+	}
+	return
 }
 
-func (c *Content) GetContentByDepth(start, offset, length int) (contentSlice []*Content){
-  db := coreglobals.Db
+func (c *Content) GetContentByDepth(start, offset, length int) (contentSlice []*Content) {
+	db := coreglobals.Db
 
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -731,98 +727,95 @@ JOIN
 ON heh.id = content.id
 WHERE content.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lquery`
 
-  rows, err := db.Query(queryStr, c.Path, start, offset, length)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
+	rows, err := db.Query(queryStr, c.Path, start, offset, length)
+	corehelpers.PanicIf(err)
+	defer rows.Close()
 
-  //row := db.QueryRow(queryStr, paramId)
-  for rows.Next(){
-    var content_id, content_created_by, content_content_type_id, content_type_id int
-    var content_path, content_name, content_alias string
-    var content_parent_id sql.NullInt64
-    var content_created_date *time.Time
-    var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-    var content_url sql.NullString
-    var content_domains coreglobals.StringSlice
+	//row := db.QueryRow(queryStr, paramId)
+	for rows.Next() {
+		var content_id, content_created_by, content_content_type_id, content_type_id int
+		var content_path, content_name, content_alias string
+		var content_parent_id sql.NullInt64
+		var content_created_date *time.Time
+		var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+		var content_url sql.NullString
+		var content_domains coreglobals.StringSlice
 
+		var template_id, template_created_by int
+		var template_path, template_name, template_alias string
+		var template_parent_id sql.NullInt64
+		var template_is_partial bool
+		var template_parent_templates []byte
 
-    var template_id, template_created_by int
-    var template_path, template_name, template_alias string
-    var template_parent_id sql.NullInt64
-    var template_is_partial bool
-    var template_parent_templates []byte
+		rows.Scan(
+			&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_url,
+			&content_domains,
+			&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
+			&template_created_by, &template_is_partial, &template_parent_templates)
 
+		/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+		//corehelpers.PanicIf(err)
+		switch {
+		case err == sql.ErrNoRows:
+			log.Printf("No content with that url.")
+		case err != nil:
+			log.Fatal(err)
+		default:
+			fmt.Printf("content domains is %v\n", content_domains)
+		}
 
-    rows.Scan(
-        &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-        &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-        &content_user_permissions, &content_user_group_permissions, &content_type_id,
-        &content_url, 
-        &content_domains,
-        &template_id, &template_path, &template_parent_id, &template_name, &template_alias, 
-        &template_created_by, &template_is_partial, &template_parent_templates)
+		var cpid int
+		if content_parent_id.Valid {
+			cpid = int(content_parent_id.Int64)
+		}
 
-    /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-    //corehelpers.PanicIf(err)
-    switch {
-      case err == sql.ErrNoRows:
-              log.Printf("No content with that url.")
-      case err != nil:
-              log.Fatal(err)
-      default:
-              fmt.Printf("content domains is %v\n", content_domains)
-      }
+		var content_url_str string
+		if content_url.Valid {
+			content_url_str = content_url.String
+		}
 
-    var cpid int
-    if content_parent_id.Valid {
-      cpid = int(content_parent_id.Int64)
-    }
+		var tpid int
+		if template_parent_id.Valid {
+			tpid = int(template_parent_id.Int64)
+		}
 
-    var content_url_str string
-    if content_url.Valid {
-      content_url_str = content_url.String
-    } 
+		var parent_templates_final []*coremodulesettingsmodels.Template
+		var meta map[string]interface{}
 
-    var tpid int
-    if template_parent_id.Valid {
-      tpid = int(template_parent_id.Int64)
-    }
+		json.Unmarshal(template_parent_templates, &parent_templates_final)
+		json.Unmarshal(content_meta, &meta)
 
-    var parent_templates_final []*coremodulesettingsmodels.Template
-    var meta map[string]interface{}
+		var public_access *PublicAccess
 
-    json.Unmarshal(template_parent_templates, &parent_templates_final)
-    json.Unmarshal(content_meta, &meta)
+		json.Unmarshal(content_public_access, &public_access)
 
-    var public_access *PublicAccess
+		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		user_perm = nil
+		user_group_perm = nil
+		json.Unmarshal(content_user_permissions, &user_perm)
+		json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-    json.Unmarshal(content_public_access, &public_access)
+		template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
-    var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-    user_perm = nil
-    user_group_perm = nil
-    json.Unmarshal(content_user_permissions, &user_perm)
-    json.Unmarshal(content_user_group_permissions, &user_group_perm)
+		content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+			content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+			content_url_str, content_domains, nil, nil, &template, nil}
+		// content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
+		contentSlice = append(contentSlice, content)
 
-    template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
-
-    content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-      content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
-      content_url_str, content_domains, nil, nil, &template, nil}
-      // content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
-      contentSlice = append(contentSlice, content)
-      
-    }
-  return
+	}
+	return
 }
 
+func (c *Content) GetLinkedContent(metaKey string, metaValue int) (contentSlice []*Content) {
+	metaValueStr := strconv.Itoa(metaValue)
 
-func (c *Content) GetLinkedContent(metaKey string, metaValue int) (contentSlice []*Content){
-  metaValueStr := strconv.Itoa(metaValue)
+	db := coreglobals.Db
 
-  db := coreglobals.Db
-
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -875,100 +868,98 @@ JOIN
 ON heh.id = content.id
 WHERE content.meta->$1 @> $2;`
 
-  rows, err := db.Query(queryStr, metaKey, metaValueStr)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
+	rows, err := db.Query(queryStr, metaKey, metaValueStr)
+	corehelpers.PanicIf(err)
+	defer rows.Close()
 
-  //row := db.QueryRow(queryStr, paramId)
-  for rows.Next(){
-    var content_id, content_created_by, content_content_type_id, content_type_id int
-    var content_path, content_name, content_alias string
-    var content_parent_id sql.NullInt64
-    var content_created_date *time.Time
-    var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-    var content_url sql.NullString
-    var content_domains coreglobals.StringSlice
+	//row := db.QueryRow(queryStr, paramId)
+	for rows.Next() {
+		var content_id, content_created_by, content_content_type_id, content_type_id int
+		var content_path, content_name, content_alias string
+		var content_parent_id sql.NullInt64
+		var content_created_date *time.Time
+		var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+		var content_url sql.NullString
+		var content_domains coreglobals.StringSlice
 
+		var template_id, template_created_by int
+		var template_path, template_name, template_alias string
+		var template_parent_id sql.NullInt64
+		var template_is_partial bool
+		var template_parent_templates []byte
 
-    var template_id, template_created_by int
-    var template_path, template_name, template_alias string
-    var template_parent_id sql.NullInt64
-    var template_is_partial bool
-    var template_parent_templates []byte
+		rows.Scan(
+			&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_url,
+			&content_domains,
+			&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
+			&template_created_by, &template_is_partial, &template_parent_templates)
 
+		/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+		//corehelpers.PanicIf(err)
+		switch {
+		case err == sql.ErrNoRows:
+			log.Printf("No content with that url.")
+		case err != nil:
+			log.Fatal(err)
+		default:
+			fmt.Printf("content domains is %v\n", content_domains)
+		}
 
-    rows.Scan(
-        &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-        &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-        &content_user_permissions, &content_user_group_permissions, &content_type_id,
-        &content_url, 
-        &content_domains,
-        &template_id, &template_path, &template_parent_id, &template_name, &template_alias, 
-        &template_created_by, &template_is_partial, &template_parent_templates)
+		var cpid int
+		if content_parent_id.Valid {
+			cpid = int(content_parent_id.Int64)
+		}
 
-    /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-    //corehelpers.PanicIf(err)
-    switch {
-      case err == sql.ErrNoRows:
-              log.Printf("No content with that url.")
-      case err != nil:
-              log.Fatal(err)
-      default:
-              fmt.Printf("content domains is %v\n", content_domains)
-      }
+		var content_url_str string
+		if content_url.Valid {
+			content_url_str = content_url.String
+		}
 
-    var cpid int
-    if content_parent_id.Valid {
-      cpid = int(content_parent_id.Int64)
-    }
+		var tpid int
+		if template_parent_id.Valid {
+			tpid = int(template_parent_id.Int64)
+		}
 
-    var content_url_str string
-    if content_url.Valid {
-      content_url_str = content_url.String
-    } 
+		var parent_templates_final []*coremodulesettingsmodels.Template
+		var meta map[string]interface{}
 
-    var tpid int
-    if template_parent_id.Valid {
-      tpid = int(template_parent_id.Int64)
-    }
+		json.Unmarshal(template_parent_templates, &parent_templates_final)
+		json.Unmarshal(content_meta, &meta)
 
-    var parent_templates_final []*coremodulesettingsmodels.Template
-    var meta map[string]interface{}
+		var public_access *PublicAccess
 
-    json.Unmarshal(template_parent_templates, &parent_templates_final)
-    json.Unmarshal(content_meta, &meta)
+		json.Unmarshal(content_public_access, &public_access)
 
-    var public_access *PublicAccess
+		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		user_perm = nil
+		user_group_perm = nil
+		json.Unmarshal(content_user_permissions, &user_perm)
+		json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-    json.Unmarshal(content_public_access, &public_access)
+		template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
-    var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-    user_perm = nil
-    user_group_perm = nil
-    json.Unmarshal(content_user_permissions, &user_perm)
-    json.Unmarshal(content_user_group_permissions, &user_group_perm)
+		content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+			content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+			content_url_str, content_domains, nil, nil, &template, nil}
+		// content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
+		contentSlice = append(contentSlice, content)
 
-    template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
-
-    content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-      content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
-      content_url_str, content_domains, nil, nil, &template, nil}
-      // content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
-    contentSlice = append(contentSlice, content)
-      
-    }
-  return
+	}
+	return
 }
 
-func (c *Content) HTML (str string) (html template.HTML){
-  html = template.HTML(fmt.Sprint(str))
-  return 
+func (c *Content) HTML(str string) (html template.HTML) {
+	html = template.HTML(fmt.Sprint(str))
+	return
 }
 
-func (c *Content) GetByContentTypeId(contentTypeId int) (contentSlice []*Content){
-  db := coreglobals.Db
+func (c *Content) GetByContentTypeId(contentTypeId int) (contentSlice []*Content) {
+	db := coreglobals.Db
 
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -1021,163 +1012,159 @@ JOIN
 ON heh.id = content.id
 WHERE content.content_type_id = $1;`
 
+	// master template
+	//var master_template_name string
 
+	rows, err := db.Query(queryStr, contentTypeId)
+	corehelpers.PanicIf(err)
+	defer rows.Close()
 
-  // master template
-  //var master_template_name string
+	//row := db.QueryRow(queryStr, paramId)
+	for rows.Next() {
+		var content_id, content_created_by, content_content_type_id, content_type_id int
+		var content_path, content_name, content_alias string
+		var content_parent_id sql.NullInt64
+		var content_created_date *time.Time
+		var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+		var content_url sql.NullString
+		var content_domains coreglobals.StringSlice
 
-  rows, err := db.Query(queryStr, contentTypeId)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
+		var template_id, template_created_by int
+		var template_path, template_name, template_alias string
+		var template_parent_id sql.NullInt64
+		var template_is_partial bool
+		var template_parent_templates []byte
 
-  //row := db.QueryRow(queryStr, paramId)
-  for rows.Next(){
-    var content_id, content_created_by, content_content_type_id, content_type_id int
-    var content_path, content_name, content_alias string
-    var content_parent_id sql.NullInt64
-    var content_created_date *time.Time
-    var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-    var content_url sql.NullString
-    var content_domains coreglobals.StringSlice
+		rows.Scan(
+			&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_url,
+			&content_domains,
+			&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
+			&template_created_by, &template_is_partial, &template_parent_templates)
 
+		/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+		//corehelpers.PanicIf(err)
+		switch {
+		case err == sql.ErrNoRows:
+			log.Printf("No content with that url.")
+		case err != nil:
+			log.Fatal(err)
+		default:
+			fmt.Printf("content domains is %v\n", content_domains)
+		}
 
-    var template_id, template_created_by int
-    var template_path, template_name, template_alias string
-    var template_parent_id sql.NullInt64
-    var template_is_partial bool
-    var template_parent_templates []byte
+		var cpid int
+		if content_parent_id.Valid {
+			cpid = int(content_parent_id.Int64)
+		}
 
+		var content_url_str string
+		if content_url.Valid {
+			content_url_str = content_url.String
+		}
 
-    rows.Scan(
-        &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-        &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-        &content_user_permissions, &content_user_group_permissions, &content_type_id,
-        &content_url, 
-        &content_domains,
-        &template_id, &template_path, &template_parent_id, &template_name, &template_alias, 
-        &template_created_by, &template_is_partial, &template_parent_templates)
+		var tpid int
+		if template_parent_id.Valid {
+			tpid = int(template_parent_id.Int64)
+		}
 
-    /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-    //corehelpers.PanicIf(err)
-    switch {
-      case err == sql.ErrNoRows:
-              log.Printf("No content with that url.")
-      case err != nil:
-              log.Fatal(err)
-      default:
-              fmt.Printf("content domains is %v\n", content_domains)
-      }
+		var parent_templates_final []*coremodulesettingsmodels.Template
+		var meta map[string]interface{}
 
-    var cpid int
-    if content_parent_id.Valid {
-      cpid = int(content_parent_id.Int64)
-    }
+		json.Unmarshal(template_parent_templates, &parent_templates_final)
+		json.Unmarshal(content_meta, &meta)
 
-    var content_url_str string
-    if content_url.Valid {
-      content_url_str = content_url.String
-    } 
+		var public_access *PublicAccess
 
-    var tpid int
-    if template_parent_id.Valid {
-      tpid = int(template_parent_id.Int64)
-    }
+		json.Unmarshal(content_public_access, &public_access)
 
-    var parent_templates_final []*coremodulesettingsmodels.Template
-    var meta map[string]interface{}
+		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		user_perm = nil
+		user_group_perm = nil
+		json.Unmarshal(content_user_permissions, &user_perm)
+		json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-    json.Unmarshal(template_parent_templates, &parent_templates_final)
-    json.Unmarshal(content_meta, &meta)
+		template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
-    var public_access *PublicAccess
+		content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+			content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+			content_url_str, content_domains, nil, nil, &template, nil}
+		// content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
+		contentSlice = append(contentSlice, content)
 
-    json.Unmarshal(content_public_access, &public_access)
-
-    var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-    user_perm = nil
-    user_group_perm = nil
-    json.Unmarshal(content_user_permissions, &user_perm)
-    json.Unmarshal(content_user_group_permissions, &user_group_perm)
-
-    template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
-
-    content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-      content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
-      content_url_str, content_domains, nil, nil, &template, nil}
-      // content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
-    contentSlice = append(contentSlice, content)
-      
-    }
-  return
+	}
+	return
 }
 
-func (c *Content) AppendSlice(orig []interface{}, elem interface{}) (slice []interface{}){
-  slice = append(orig, elem)
-  return
+func (c *Content) AppendSlice(orig []interface{}, elem interface{}) (slice []interface{}) {
+	slice = append(orig, elem)
+	return
 }
 
 func (c *Content) MkStruct() *Content {
-    return &Content{}
+	return &Content{}
 }
 
 func (c *Content) MkSlice(args ...interface{}) []interface{} {
-    return args
+	return args
 }
 
 // eq reports whether the first argument is equal to
 // any of the remaining arguments.
 func (c *Content) NotEq(args ...interface{}) bool {
-        if len(args) == 0 {
-                return true
-        }
-        x := args[0]
-        switch x := x.(type) {
-        case string, int, int64, byte, float32, float64:
-                for _, y := range args[1:] {
-                        if x == y {
-                                return false
-                        }
-                }
-                return true
-        }
+	if len(args) == 0 {
+		return true
+	}
+	x := args[0]
+	switch x := x.(type) {
+	case string, int, int64, byte, float32, float64:
+		for _, y := range args[1:] {
+			if x == y {
+				return false
+			}
+		}
+		return true
+	}
 
-        for _, y := range args[1:] {
-                if reflect.DeepEqual(x, y) {
-                        return false
-                }
-        }
-        return true
+	for _, y := range args[1:] {
+		if reflect.DeepEqual(x, y) {
+			return false
+		}
+	}
+	return true
 }
 
 // eq reports whether the first argument is equal to
 // any of the remaining arguments.
 func (c *Content) Eq(args ...interface{}) bool {
-        if len(args) == 0 {
-                return false
-        }
-        x := args[0]
-        switch x := x.(type) {
-        case string, int, int64, byte, float32, float64:
-                for _, y := range args[1:] {
-                        if x == y {
-                                return true
-                        }
-                }
-                return false
-        }
+	if len(args) == 0 {
+		return false
+	}
+	x := args[0]
+	switch x := x.(type) {
+	case string, int, int64, byte, float32, float64:
+		for _, y := range args[1:] {
+			if x == y {
+				return true
+			}
+		}
+		return false
+	}
 
-        for _, y := range args[1:] {
-                if reflect.DeepEqual(x, y) {
-                        return true
-                }
-        }
-        return false
+	for _, y := range args[1:] {
+		if reflect.DeepEqual(x, y) {
+			return true
+		}
+	}
+	return false
 }
 
-func (c *Content) GetHomeContentItem() (content *Content){
-  db := coreglobals.Db
+func (c *Content) GetHomeContentItem() (content *Content) {
+	db := coreglobals.Db
 
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -1232,88 +1219,84 @@ ON heh.id = content.id
 --WHERE cn.path <@ subltree($1,$2,$3)
   WHERE content.path ~ ltree2text(subltree($1,$2,$3))::lquery`
 
-  var content_id, content_created_by, content_content_type_id, content_type_id int
-  var content_path, content_name, content_alias string
-  var content_parent_id sql.NullInt64
-  var content_created_date *time.Time
-  var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-  var content_url sql.NullString
-  var content_domains coreglobals.StringSlice
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_url sql.NullString
+	var content_domains coreglobals.StringSlice
 
+	var template_id, template_created_by int
+	var template_path, template_name, template_alias string
+	var template_parent_id sql.NullInt64
+	var template_is_partial bool
+	var template_parent_templates []byte
 
-  var template_id, template_created_by int
-  var template_path, template_name, template_alias string
-  var template_parent_id sql.NullInt64
-  var template_is_partial bool
-  var template_parent_templates []byte
+	err := db.QueryRow(queryStr, c.Path, 0, 1).Scan(
+		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_url,
+		&content_domains,
+		&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
+		&template_created_by, &template_is_partial, &template_parent_templates)
 
+	/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+	//corehelpers.PanicIf(err)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No content with that url.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		fmt.Printf("content domains is %v\n", content_domains)
+	}
 
-  err := db.QueryRow(queryStr, c.Path, 0, 1).Scan(
-      &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-      &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-      &content_user_permissions, &content_user_group_permissions, &content_type_id,
-      &content_url, 
-      &content_domains,
-      &template_id, &template_path, &template_parent_id, &template_name, &template_alias, 
-      &template_created_by, &template_is_partial, &template_parent_templates)
+	var cpid int
+	if content_parent_id.Valid {
+		cpid = int(content_parent_id.Int64)
+	}
 
-  /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //corehelpers.PanicIf(err)
-  switch {
-    case err == sql.ErrNoRows:
-            log.Printf("No content with that url.")
-    case err != nil:
-            log.Fatal(err)
-    default:
-            fmt.Printf("content domains is %v\n", content_domains)
-    }
+	var content_url_str string
+	if content_url.Valid {
+		content_url_str = content_url.String
+	}
 
-  var cpid int
-  if content_parent_id.Valid {
-    cpid = int(content_parent_id.Int64)
-  }
+	var tpid int
+	if template_parent_id.Valid {
+		tpid = int(template_parent_id.Int64)
+	}
 
-  var content_url_str string
-  if content_url.Valid {
-    content_url_str = content_url.String
-  } 
+	var parent_templates_final []*coremodulesettingsmodels.Template
+	var meta map[string]interface{}
 
-  var tpid int
-  if template_parent_id.Valid {
-    tpid = int(template_parent_id.Int64)
-  }
+	json.Unmarshal(template_parent_templates, &parent_templates_final)
+	json.Unmarshal(content_meta, &meta)
 
-  var parent_templates_final []*coremodulesettingsmodels.Template
-  var meta map[string]interface{}
+	var public_access *PublicAccess
 
-  json.Unmarshal(template_parent_templates, &parent_templates_final)
-  json.Unmarshal(content_meta, &meta)
+	json.Unmarshal(content_public_access, &public_access)
 
-  var public_access *PublicAccess
+	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	user_perm = nil
+	user_group_perm = nil
+	json.Unmarshal(content_user_permissions, &user_perm)
+	json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-  json.Unmarshal(content_public_access, &public_access)
+	template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
-  var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-  user_perm = nil
-  user_group_perm = nil
-  json.Unmarshal(content_user_permissions, &user_perm)
-  json.Unmarshal(content_user_group_permissions, &user_group_perm)
+	content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+		content_url_str, content_domains, nil, nil, &template, nil}
 
-  template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
-
-  content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
-    content_url_str, content_domains, nil, nil, &template, nil}
-
-  return
+	return
 }
 
+func (c *Content) GetAncestors(offset, length int) (contentSlice []*Content) {
+	db := coreglobals.Db
 
-
-func (c *Content) GetAncestors(offset, length int) (contentSlice []*Content){
-  db := coreglobals.Db
-
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -1366,329 +1349,323 @@ JOIN
 ON heh.id = content.id
 WHERE content.path <@ subltree($1,$2,$3);`
 
+	// master template
+	//var master_template_name string
 
+	rows, err := db.Query(queryStr, c.Path, offset, length)
+	corehelpers.PanicIf(err)
+	defer rows.Close()
 
-  // master template
-  //var master_template_name string
+	//row := db.QueryRow(queryStr, paramId)
+	for rows.Next() {
+		var content_id, content_created_by, content_content_type_id, content_type_id int
+		var content_path, content_name, content_alias string
+		var content_parent_id sql.NullInt64
+		var content_created_date *time.Time
+		var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+		var content_url sql.NullString
+		var content_domains coreglobals.StringSlice
 
-  rows, err := db.Query(queryStr, c.Path, offset, length)
-  corehelpers.PanicIf(err)
-  defer rows.Close()
+		var template_id, template_created_by int
+		var template_path, template_name, template_alias string
+		var template_parent_id sql.NullInt64
+		var template_is_partial bool
+		var template_parent_templates []byte
 
-  //row := db.QueryRow(queryStr, paramId)
-  for rows.Next(){
-    var content_id, content_created_by, content_content_type_id, content_type_id int
-    var content_path, content_name, content_alias string
-    var content_parent_id sql.NullInt64
-    var content_created_date *time.Time
-    var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-    var content_url sql.NullString
-    var content_domains coreglobals.StringSlice
+		rows.Scan(
+			&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_url,
+			&content_domains,
+			&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
+			&template_created_by, &template_is_partial, &template_parent_templates)
 
+		/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+		//corehelpers.PanicIf(err)
+		switch {
+		case err == sql.ErrNoRows:
+			log.Printf("No content with that url.")
+		case err != nil:
+			log.Fatal(err)
+		default:
+			fmt.Printf("content domains is %v\n", content_domains)
+		}
 
-    var template_id, template_created_by int
-    var template_path, template_name, template_alias string
-    var template_parent_id sql.NullInt64
-    var template_is_partial bool
-    var template_parent_templates []byte
+		var cpid int
+		if content_parent_id.Valid {
+			cpid = int(content_parent_id.Int64)
+		}
 
+		var content_url_str string
+		if content_url.Valid {
+			content_url_str = content_url.String
+		}
 
-    rows.Scan(
-        &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-        &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-        &content_user_permissions, &content_user_group_permissions, &content_type_id,
-        &content_url, 
-        &content_domains,
-        &template_id, &template_path, &template_parent_id, &template_name, &template_alias, 
-        &template_created_by, &template_is_partial, &template_parent_templates)
+		var tpid int
+		if template_parent_id.Valid {
+			tpid = int(template_parent_id.Int64)
+		}
 
-    /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-    //corehelpers.PanicIf(err)
-    switch {
-      case err == sql.ErrNoRows:
-              log.Printf("No content with that url.")
-      case err != nil:
-              log.Fatal(err)
-      default:
-              fmt.Printf("content domains is %v\n", content_domains)
-      }
+		var parent_templates_final []*coremodulesettingsmodels.Template
+		var meta map[string]interface{}
 
-    var cpid int
-    if content_parent_id.Valid {
-      cpid = int(content_parent_id.Int64)
-    }
+		json.Unmarshal(template_parent_templates, &parent_templates_final)
+		json.Unmarshal(content_meta, &meta)
 
-    var content_url_str string
-    if content_url.Valid {
-      content_url_str = content_url.String
-    } 
+		var public_access *PublicAccess
 
-    var tpid int
-    if template_parent_id.Valid {
-      tpid = int(template_parent_id.Int64)
-    }
+		json.Unmarshal(content_public_access, &public_access)
 
-    var parent_templates_final []*coremodulesettingsmodels.Template
-    var meta map[string]interface{}
+		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		user_perm = nil
+		user_group_perm = nil
+		json.Unmarshal(content_user_permissions, &user_perm)
+		json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-    json.Unmarshal(template_parent_templates, &parent_templates_final)
-    json.Unmarshal(content_meta, &meta)
+		template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
-    var public_access *PublicAccess
+		content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+			content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+			content_url_str, content_domains, nil, nil, &template, nil}
+		// content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
+		contentSlice = append(contentSlice, content)
 
-    json.Unmarshal(content_public_access, &public_access)
+	}
+	return
+	//   db := coreglobals.Db
 
-    var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-    user_perm = nil
-    user_group_perm = nil
-    json.Unmarshal(content_user_permissions, &user_perm)
-    json.Unmarshal(content_user_group_permissions, &user_group_perm)
+	//   queryStr := `SELECT cn.id AS node_id, cn.path AS node_path, cn.created_by AS node_created_by, cn.name AS node_name, cn.node_type AS node_type,
+	//   cn.created_date AS node_created_date, cn.parent_id AS content_parent_id,
+	//   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta,
+	//   okidoki.content_url as content_url,
+	//   tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
+	//   tpl.name AS template_name, tpl.alias AS template_alias, tpl.created_by AS template_created_by,
+	//   tpl.is_partial AS template_is_partial, tpl.parent_templates as template_parent_templates,
+	//   heh.domains
+	// FROM content
+	// JOIN node AS cn
+	// ON content.node_id = cn.id
+	// JOIN
+	// (
+	//   SELECT my_template.*, res1.*
+	//   FROM template AS my_template,
+	//   LATERAL
+	//   (
+	//     -- SELECT array_to_json(array_agg(node)) AS parent_template_nodes
+	//     SELECT json_agg((SELECT x FROM (SELECT template.id, template.path, template.parent_id, template.name, template.alias, template.created_by, template.is_partial) x)) AS parent_templates
+	//     FROM template
+	//     WHERE path @> subpath(my_template.path,0,nlevel(my_template.path)-1)
+	//     ORDER BY my_template.path ASC
+	//   ) res1
+	// ) AS tpl
+	// ON (content.meta->>'template_id')::int = tpl.id
+	// JOIN
+	// (
+	//   SELECT *
+	//   FROM node as mynode,
+	//   LATERAL
+	//   (
+	//     SELECT string_agg(replace(lower(name), ' ', '-'), '/' ORDER BY path)content_url
+	//     FROM node
+	// --    JOIN "domain"
+	// --    ON "domain".node_id = node.id
+	//     WHERE path @> mynode.path AND nlevel(path)>2
+	//   ) ok
+	// )okidoki
+	// ON okidoki.id = cn.id
+	// -- JOIN domain
+	// -- ON ltree2text(subpath(cn.path,1,1)) = domain.node_id::text
+	// JOIN
+	// (
+	//   SELECT mynode.*, oki1.*
+	//   FROM node as mynode,
+	//   LATERAL
+	//   (
+	//     SELECT string_to_array(string_agg(elem,', '),', ')::varchar[] as domains
+	//     FROM content, jsonb_array_elements_text(meta->'domains') elem
+	//     WHERE ltree2text(subpath(mynode.path,1,1)) = content.node_id::text and nlevel(mynode.path) > 1
+	//     -- SELECT array_agg(name)domains
+	// --    FROM domain
+	// --    WHERE ltree2text(subpath(mynode.path,1,1)) = domain.node_id::text and nlevel(mynode.path) > 1
+	//   )oki1
+	// ) heh
+	// ON heh.id = cn.id
+	// --WHERE cn.path= subpath('1.42.46.47',0,nlevel(cn.path));
+	// WHERE cn.path <@ subltree($1,$2,$3)`
 
-    template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
+	//   rows, err := db.Query(queryStr, c.Node.Path, offset, length)
+	//   corehelpers.PanicIf(err)
+	//   defer rows.Close()
 
-    content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-      content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
-      content_url_str, content_domains, nil, nil, &template, nil}
-      // content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
-    contentSlice = append(contentSlice, content)
-      
-    }
-  return
-//   db := coreglobals.Db
+	//   //row := db.QueryRow(queryStr, paramId)
+	//   for rows.Next(){
 
-//   queryStr := `SELECT cn.id AS node_id, cn.path AS node_path, cn.created_by AS node_created_by, cn.name AS node_name, cn.node_type AS node_type, 
-//   cn.created_date AS node_created_date, cn.parent_id AS content_parent_id,
-//   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta,
-//   okidoki.content_url as content_url, 
-//   tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
-//   tpl.name AS template_name, tpl.alias AS template_alias, tpl.created_by AS template_created_by,
-//   tpl.is_partial AS template_is_partial, tpl.parent_templates as template_parent_templates,
-//   heh.domains
-// FROM content
-// JOIN node AS cn
-// ON content.node_id = cn.id
-// JOIN 
-// (
-//   SELECT my_template.*, res1.*
-//   FROM template AS my_template,
-//   LATERAL 
-//   (
-//     -- SELECT array_to_json(array_agg(node)) AS parent_template_nodes
-//     SELECT json_agg((SELECT x FROM (SELECT template.id, template.path, template.parent_id, template.name, template.alias, template.created_by, template.is_partial) x)) AS parent_templates
-//     FROM template
-//     WHERE path @> subpath(my_template.path,0,nlevel(my_template.path)-1)
-//     ORDER BY my_template.path ASC
-//   ) res1
-// ) AS tpl
-// ON (content.meta->>'template_id')::int = tpl.id
-// JOIN 
-// (
-//   SELECT * 
-//   FROM node as mynode,
-//   LATERAL
-//   (
-//     SELECT string_agg(replace(lower(name), ' ', '-'), '/' ORDER BY path)content_url
-//     FROM node
-// --    JOIN "domain"
-// --    ON "domain".node_id = node.id
-//     WHERE path @> mynode.path AND nlevel(path)>2
-//   ) ok
-// )okidoki
-// ON okidoki.id = cn.id
-// -- JOIN domain
-// -- ON ltree2text(subpath(cn.path,1,1)) = domain.node_id::text
-// JOIN
-// (
-//   SELECT mynode.*, oki1.*
-//   FROM node as mynode,
-//   LATERAL
-//   (
-//     SELECT string_to_array(string_agg(elem,', '),', ')::varchar[] as domains
-//     FROM content, jsonb_array_elements_text(meta->'domains') elem
-//     WHERE ltree2text(subpath(mynode.path,1,1)) = content.node_id::text and nlevel(mynode.path) > 1
-//     -- SELECT array_agg(name)domains
-// --    FROM domain
-// --    WHERE ltree2text(subpath(mynode.path,1,1)) = domain.node_id::text and nlevel(mynode.path) > 1
-//   )oki1
-// ) heh
-// ON heh.id = cn.id 
-// --WHERE cn.path= subpath('1.42.46.47',0,nlevel(cn.path));
-// WHERE cn.path <@ subltree($1,$2,$3)`
+	//   // node
+	//   var node_id, node_created_by, node_type int
+	//   var node_path, node_name string
+	//   var node_created_date time.Time
+	//   var content_parent_id sql.NullString
 
+	//   // content
+	//   var content_id, content_node_id, content_content_type_node_id int
+	//   var content_meta []byte
 
-//   rows, err := db.Query(queryStr, c.Node.Path, offset, length)
-//   corehelpers.PanicIf(err)
-//   defer rows.Close()
+	//   // template node
+	//   var template_id, template_created_by int
+	//   var template_path, template_name, template_alias string
+	//   var template_parent_id sql.NullInt64
+	//   var template_is_partial bool
+	//   var template_parent_templates []byte
 
-//   //row := db.QueryRow(queryStr, paramId)
-//   for rows.Next(){
+	//   //
+	//   var content_domains coreglobals.StringSlice
+	//   var content_url sql.NullString
 
-//   // node
-//   var node_id, node_created_by, node_type int
-//   var node_path, node_name string
-//   var node_created_date time.Time
-//   var content_parent_id sql.NullString
+	//   // master template
+	//   //var master_template_name string
+	//     rows.Scan(
+	//         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &content_parent_id,
+	//         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
+	//         &template_id,&template_path, &template_parent_id, &template_name, &template_alias, &template_created_by, &template_is_partial, &template_parent_templates,
+	//         &content_domains)
 
-//   // content
-//   var content_id, content_node_id, content_content_type_node_id int
-//   var content_meta []byte
+	//     /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+	//     //corehelpers.PanicIf(err)
 
-//   // template node
-//   var template_id, template_created_by int
-//   var template_path, template_name, template_alias string
-//   var template_parent_id sql.NullInt64 
-//   var template_is_partial bool
-//   var template_parent_templates []byte
+	//     var content_url_str string
+	//     if content_url.Valid {
+	//       // use s.String
+	//       content_url_str = content_url.String
+	//     } else {
+	//        // NULL value
+	//     }
 
-//   //
-//   var content_domains coreglobals.StringSlice
-//   var content_url sql.NullString
+	//     var content_parent_node_id int
+	//     if content_parent_id.Valid {
+	//       // use s.String
+	//       id, _ := strconv.Atoi(content_parent_id.String)
+	//       content_parent_node_id = id
+	//     } else {
+	//        // NULL value
+	//     }
 
-//   // master template
-//   //var master_template_name string
-//     rows.Scan(
-//         &node_id, &node_path, &node_created_by, &node_name, &node_type, &node_created_date, &content_parent_id,
-//         &content_id, &content_node_id, &content_content_type_node_id, &content_meta, &content_url,
-//         &template_id,&template_path, &template_parent_id, &template_name, &template_alias, &template_created_by, &template_is_partial, &template_parent_templates,
-//         &content_domains)
+	//     var tpid int
+	//     if template_parent_id.Valid {
+	//       tpid = int(template_parent_id.Int64)
+	//     } else {
+	//        // NULL value
+	//     }
 
-//     /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-//     //corehelpers.PanicIf(err)
+	//     var parent_templates_final []*coremodulesettingsmodels.Template
+	//     var meta map[string]interface{}
 
-//     var content_url_str string
-//     if content_url.Valid {
-//       // use s.String
-//       content_url_str = content_url.String
-//     } else {
-//        // NULL value
-//     }
+	//     json.Unmarshal(template_parent_templates, &parent_templates_final)
+	//     json.Unmarshal(content_meta, &meta)
+	//     //json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
+	//     //corehelpers.PanicIf(myerr)
 
-//     var content_parent_node_id int
-//     if content_parent_id.Valid {
-//       // use s.String
-//       id, _ := strconv.Atoi(content_parent_id.String)
-//       content_parent_node_id = id
-//     } else {
-//        // NULL value
-//     }
+	//     //fmt.Println("TEST::: BEGIN ::: ")
+	//     //fmt.Println(string(partial_template_nodes))
+	//     //fmt.Println("THIS IS::: WEIRD!!!! ::: ")
+	//     //fmt.Println(partial_template_nodes_slice)
+	//     //fmt.Println("TEST::: END :::")
 
-//     var tpid int
-//     if template_parent_id.Valid {
-//       tpid = int(template_parent_id.Int64)
-//     } else {
-//        // NULL value
-//     }
+	//     contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
+	//     //templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
+	//     //template := coremodulesettingsmodels.Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
+	//     template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
+	//     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
+	//     //template := &coremodulesettingsmodels.Template{}
+	//     content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
+	//     contentSlice = append(contentSlice, content)
 
-//     var parent_templates_final []*coremodulesettingsmodels.Template
-//     var meta map[string]interface{}
-
-//     json.Unmarshal(template_parent_templates, &parent_templates_final)
-//     json.Unmarshal(content_meta, &meta)
-//     //json.Unmarshal(partial_template_nodes, &partial_template_nodes_slice)
-//     //corehelpers.PanicIf(myerr)
-
-//     //fmt.Println("TEST::: BEGIN ::: ")
-//     //fmt.Println(string(partial_template_nodes))
-//     //fmt.Println("THIS IS::: WEIRD!!!! ::: ")
-//     //fmt.Println(partial_template_nodes_slice)
-//     //fmt.Println("TEST::: END :::")
-
-//     contentNode := Node{node_id, node_path, node_created_by, node_name, node_type, &node_created_date, content_parent_node_id, nil, nil, false, "", nil, nil, ""}
-//     //templateNode := Node{template_node_id," ",0, template_node_name,0,&time.Time{}, 0, parent_template_nodes_final, nil, false, "", nil, nil, ""}
-//     //template := coremodulesettingsmodels.Template{template_id, template_node_id, template_alias, parent_template_node_id, "", nil, nil, nil, template_is_partial, &templateNode}
-//     template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
-//     //templateNode := Node{template_node_id," ",0, template_node_name,0,time.Time{},parent_template_nodes_final, nil, false}
-//     //template := &coremodulesettingsmodels.Template{}
-//     content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
-//     contentSlice = append(contentSlice, content)
-    
-//   }
-//   return
+	//   }
+	//   return
 }
 
-func (c *Content) GetProperty(name string, fromLvl, toLvl int) (value string){
-  // var m2 map[string]string 
-  // m2[name] = name
-  db := coreglobals.Db
+func (c *Content) GetProperty(name string, fromLvl, toLvl int) (value string) {
+	// var m2 map[string]string
+	// m2[name] = name
+	db := coreglobals.Db
 
-  var propertyValue string
-  queryStr := `SELECT content.meta->>$1 as propertyValue
+	var propertyValue string
+	queryStr := `SELECT content.meta->>$1 as propertyValue
 FROM content
 WHERE path @> subpath($2,$3,$4)
 --WHERE node.path @> subpath($2,$3,nlevel(node.path)-$4)`
 
-  err := db.QueryRow(queryStr, name, c.Path, fromLvl, toLvl).Scan(
-        &propertyValue)
+	err := db.QueryRow(queryStr, name, c.Path, fromLvl, toLvl).Scan(
+		&propertyValue)
 
-  /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //corehelpers.PanicIf(err)
-  switch {
-    case err == sql.ErrNoRows:
-            log.Printf("No property with that name.")
-    case err != nil:
-            log.Fatal(err)
-    default:
-            value = propertyValue
-            // fmt.Printf("property name is: %v\n", propertyValue)
-    }
-  return
+	/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+	//corehelpers.PanicIf(err)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No property with that name.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		value = propertyValue
+		// fmt.Printf("property name is: %v\n", propertyValue)
+	}
+	return
 }
 
 // Can be useful when we want to generate breadcrumbs and menus
 //
-func (c *Content) GetProperty2(name, ltreeQuery string)(properties coreglobals.StringSlice){
-  db := coreglobals.Db
+func (c *Content) GetProperty2(name, ltreeQuery string) (properties coreglobals.StringSlice) {
+	db := coreglobals.Db
 
-//   queryStr := `SELECT json_agg(props.propertyValue) AS properties
-// FROM
-// (
-//   SELECT content.meta->$1 as propertyValue
-//   FROM node
-//   JOIN content
-//   ON content.node_id = node.id
-//   WHERE node.path ~ $2 -- eg. '1.9.*'
-// ) props`
+	//   queryStr := `SELECT json_agg(props.propertyValue) AS properties
+	// FROM
+	// (
+	//   SELECT content.meta->$1 as propertyValue
+	//   FROM node
+	//   JOIN content
+	//   ON content.node_id = node.id
+	//   WHERE node.path ~ $2 -- eg. '1.9.*'
+	// ) props`
 
-//   err := db.QueryRow(queryStr, name, ltreeQuery).Scan(
-//         &properties)
+	//   err := db.QueryRow(queryStr, name, ltreeQuery).Scan(
+	//         &properties)
 
-//   switch {
-//     case err == sql.ErrNoRows:
-//             log.Printf("No property with that name.")
-//     case err != nil:
-//             log.Fatal(err)
-//     default:
-//             fmt.Printf("properties are: %v\n", properties)
-//     }
-//   return
+	//   switch {
+	//     case err == sql.ErrNoRows:
+	//             log.Printf("No property with that name.")
+	//     case err != nil:
+	//             log.Fatal(err)
+	//     default:
+	//             fmt.Printf("properties are: %v\n", properties)
+	//     }
+	//   return
 
-    queryStr := `
+	queryStr := `
   SELECT content.meta->>$1 as propertyValue
   FROM content
   WHERE path ~ $2 -- eg. '1.9.*'`
 
-
-  rows, err := db.Query(queryStr, name, ltreeQuery)
-    if err != nil {
-            log.Fatal(err)
-    }
-    defer rows.Close()
-    for rows.Next() {
-            var propertyValue string
-            if err := rows.Scan(&propertyValue); err != nil {
-                    log.Fatal(err)
-            }
-            properties = append(properties, propertyValue)
-    }
-    if err := rows.Err(); err != nil {
-            log.Fatal(err)
-    }
-    return
+	rows, err := db.Query(queryStr, name, ltreeQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var propertyValue string
+		if err := rows.Scan(&propertyValue); err != nil {
+			log.Fatal(err)
+		}
+		properties = append(properties, propertyValue)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return
 }
 
 func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
-  str := fmt.Sprintf("This is a function inside the content, accessible from the template.<br>The content id is: %d<br>and the parameter value we passed is: %s<br>It gives us a convenient way to fetch additional content, such as the information of the home node - site title, site description social options etc.", c.Id, param1);
-  return template.HTML(str)
+	str := fmt.Sprintf("This is a function inside the content, accessible from the template.<br>The content id is: %d<br>and the parameter value we passed is: %s<br>It gives us a convenient way to fetch additional content, such as the information of the home node - site title, site description social options etc.", c.Id, param1)
+	return template.HTML(str)
 }
 
 // func DeleteContent(id int){
@@ -1708,12 +1685,11 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 
 // func (t *Content) Post(){
 
-
 //   tm, err := json.Marshal(t)
 //   corehelpers.PanicIf(err)
 //   fmt.Println("tm:::: ")
 //   fmt.Println(string(tm))
-  
+
 //   db := coreglobals.Db
 
 //   tx, err := db.Begin()
@@ -1735,10 +1711,10 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //   }
 
 //   // http://godoc.org/github.com/lib/pq
-//   // pq does not support the LastInsertId() method of the Result type in database/sql. 
-//   // To return the identifier of an INSERT (or UPDATE or DELETE), 
+//   // pq does not support the LastInsertId() method of the Result type in database/sql.
+//   // To return the identifier of an INSERT (or UPDATE or DELETE),
 //   // use the Postgres RETURNING clause with a standard Query or QueryRow call:
-  
+
 //   var node_id int64
 //   err = tx.QueryRow(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`, t.Node.Name, t.Node.NodeType, 1, t.Node.ParentId).Scan(&node_id)
 //   //res, err := tx.Exec(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4)`, t.Node.Name, 3, 1, t.ParentTemplateId)
@@ -1802,8 +1778,8 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //   // corehelpers.PanicIf(err)
 //   // //defer r1.Close()
 
-//   // _, err = tx.Exec(`UPDATE content 
-//   //   SET meta = $1 
+//   // _, err = tx.Exec(`UPDATE content
+//   //   SET meta = $1
 //   //   WHERE node_id = $2`, meta, c.Node.Id)
 //   // corehelpers.PanicIf(err)
 //   // //defer r2.Close()
@@ -1833,8 +1809,8 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //   corehelpers.PanicIf(err)
 //   //defer r1.Close()
 
-//   _, err = tx.Exec(`UPDATE content 
-//     SET meta = $1 
+//   _, err = tx.Exec(`UPDATE content
+//     SET meta = $1
 //     WHERE node_id = $2`, meta, c.Node.Id)
 //   corehelpers.PanicIf(err)
 //   //defer r2.Close()
@@ -1857,10 +1833,10 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //     if(c.ContentTypeId == 16){
 
 //       // check if node has children (SQL SELECT QUERY USING LTREE PATH)
-//       rows, err101 := tx.Query(`SELECT content.node_id as node_id, meta as content_meta 
-//         FROM content 
-//         JOIN node 
-//         ON node.id = content.node_id 
+//       rows, err101 := tx.Query(`SELECT content.node_id as node_id, meta as content_meta
+//         FROM content
+//         JOIN node
+//         ON node.id = content.node_id
 //         WHERE node.path <@ '1.` + strconv.Itoa(c.Node.Id) + `' AND node.path != '1.` + strconv.Itoa(c.Node.Id) + `'`)
 //       //, strconv.Itoa(c.Node.Id), strconv.Itoa(c.Node.Id)
 //       // if has children, iterate them
@@ -1889,8 +1865,8 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //         fmt.Println("TEST ::: TEST ::: ERR3")
 
 //         res = append(res,Lol{node_id, newPath})
-//         // _, err102 := tx.Exec(`UPDATE content 
-//         //   SET meta = json_object_update_key(meta::json, 'url', '$1'::text)::jsonb 
+//         // _, err102 := tx.Exec(`UPDATE content
+//         //   SET meta = json_object_update_key(meta::json, 'url', '$1'::text)::jsonb
 //         //   WHERE node_id=$2`, newUrl, node_id)
 //         // corehelpers.PanicIf(err102)
 //       }
@@ -1900,27 +1876,21 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //       fmt.Println("TEST ::: TEST ::: ERR4")
 //       for i := 0; i < len(res); i++ {
 //         fmt.Println(fmt.Sprintf("newpath: %s, node id: %v", res[i].NewPath, res[i].Id))
-//         _, err102 := tx.Exec(`UPDATE content 
-//           SET meta = json_object_update_key(meta::json, 'path', $1::text)::jsonb 
+//         _, err102 := tx.Exec(`UPDATE content
+//           SET meta = json_object_update_key(meta::json, 'path', $1::text)::jsonb
 //           WHERE node_id=$2`, string(res[i].NewPath), res[i].Id)
 //         corehelpers.PanicIf(err102)
 //       }
-      
 
-      
-      
-      
-      
-      
 //     }
 //   }
 
 //   tx.Commit()
 // }
 
-func GetBackendContentById(id int) (content Content){
-  db := coreglobals.Db
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+func GetBackendContentById(id int) (content Content) {
+	db := coreglobals.Db
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -2074,185 +2044,183 @@ LATERAL
 ) modified_content_type
 ON modified_content_type.id = content.content_type_id
 WHERE content.id=$1`
-  // queryStr :=
-  // `SELECT my_node.id as node_id, my_node.path as node_path, my_node.created_by as node_created_by, my_node.name as node_name, my_node.node_type as node_type, my_node.created_date as node_created_date, my_node.parent_id as content_parent_id,
-  //   content.id as content_id, content.node_id as content_node_id, content.content_type_node_id as content_content_type_node_id, content.meta as content_meta,
-  //   res.id as ct_id, res.node_id as ct_node_id, res.parent_content_type_node_id as ct_parent_content_type_node_id, res.alias as ct_alias,
-  //   res.description as ct_description, res.icon as ct_icon, res.thumbnail as ct_thumbnail, res.meta::json as ct_meta, res.ct_tabs as ct_tabs, res.parent_content_types as ct_parent_content_types
-  //   FROM content
-  //   JOIN node as my_node 
-  //   ON my_node.id = content.node_id
-  //   JOIN
-  //   LATERAL
-  //   (
-  //     SELECT my_content_type.*,ffgd.*,gf2.*
-  //     FROM content_type as my_content_type, node as my_content_type_node,
-  //     LATERAL 
-  //     (
-  //         SELECT array_to_json(array_agg(okidoki)) as parent_content_types
-  //         FROM (
-  //           SELECT c.id, c.node_id, c.alias, c.description, c.icon, c.thumbnail, c.parent_content_type_node_id, c.meta, gf.* as tabs
-  //           FROM content_type as c, node,
-  //         LATERAL (
-  //             select json_agg(row1) as tabs from((
-  //             select y.name, ss.properties
-  //             from json_to_recordset(
-  //           (
-  //               select * 
-  //               from json_to_recordset(
-  //             (
-  //                 SELECT json_agg(ggg)
-  //                 from(
-  //               SELECT tabs
-  //               FROM 
-  //               (   
-  //                   SELECT *
-  //                   FROM content_type as ct
-  //                   WHERE ct.id=c.id
-  //               ) dsfds
+	// queryStr :=
+	// `SELECT my_node.id as node_id, my_node.path as node_path, my_node.created_by as node_created_by, my_node.name as node_name, my_node.node_type as node_type, my_node.created_date as node_created_date, my_node.parent_id as content_parent_id,
+	//   content.id as content_id, content.node_id as content_node_id, content.content_type_node_id as content_content_type_node_id, content.meta as content_meta,
+	//   res.id as ct_id, res.node_id as ct_node_id, res.parent_content_type_node_id as ct_parent_content_type_node_id, res.alias as ct_alias,
+	//   res.description as ct_description, res.icon as ct_icon, res.thumbnail as ct_thumbnail, res.meta::json as ct_meta, res.ct_tabs as ct_tabs, res.parent_content_types as ct_parent_content_types
+	//   FROM content
+	//   JOIN node as my_node
+	//   ON my_node.id = content.node_id
+	//   JOIN
+	//   LATERAL
+	//   (
+	//     SELECT my_content_type.*,ffgd.*,gf2.*
+	//     FROM content_type as my_content_type, node as my_content_type_node,
+	//     LATERAL
+	//     (
+	//         SELECT array_to_json(array_agg(okidoki)) as parent_content_types
+	//         FROM (
+	//           SELECT c.id, c.node_id, c.alias, c.description, c.icon, c.thumbnail, c.parent_content_type_node_id, c.meta, gf.* as tabs
+	//           FROM content_type as c, node,
+	//         LATERAL (
+	//             select json_agg(row1) as tabs from((
+	//             select y.name, ss.properties
+	//             from json_to_recordset(
+	//           (
+	//               select *
+	//               from json_to_recordset(
+	//             (
+	//                 SELECT json_agg(ggg)
+	//                 from(
+	//               SELECT tabs
+	//               FROM
+	//               (
+	//                   SELECT *
+	//                   FROM content_type as ct
+	//                   WHERE ct.id=c.id
+	//               ) dsfds
 
-  //                 )ggg
-  //             )
-  //               ) as x(tabs json)
-  //           )
-  //             ) as y(name text, properties json),
-  //             LATERAL (
-  //           select json_agg(json_build_object('name',row.name,'order',row."order",'data_type_node_id',row.data_type_node_id,'data_type', json_build_object('id',row.data_type_id, 'node_id',row.data_type_node_id, 'alias', row.data_type_alias,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
-  //           from(
-  //               select name, "order", data_type.id as data_type_id, data_type_node_id, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
-  //               from json_to_recordset(properties) 
-  //               as k(name text, "order" int, data_type_node_id int, help_text text, description text)
-  //               JOIN data_type
-  //               ON data_type.node_id = k.data_type_node_id
-  //               )row
-  //             ) ss
-  //             ))row1
-  //         ) gf
-  //           where path @> subpath(my_content_type_node.path,0,nlevel(my_content_type_node.path)-1) and c.node_id = node.id
-  //         )okidoki
-  //     ) ffgd,
-  //     --
-  //     LATERAL 
-  //     (
-  //         SELECT okidoki.tabs as ct_tabs
-  //         FROM (
-  //           SELECT c.id as cid, gf.* as tabs
-  //           FROM content_type as c, node,
-  //         LATERAL (
-  //             select json_agg(row1) as tabs from((
-  //         select y.name, ss.properties
-  //         from json_to_recordset(
-  //         (
-  //       select * 
-  //       from json_to_recordset(
-  //           (
-  //         SELECT json_agg(ggg)
-  //         from(
-  //       SELECT tabs
-  //       FROM 
-  //       (   
-  //           SELECT *
-  //           FROM content_type as ct
-  //           WHERE ct.id=c.id
-  //       ) dsfds
+	//                 )ggg
+	//             )
+	//               ) as x(tabs json)
+	//           )
+	//             ) as y(name text, properties json),
+	//             LATERAL (
+	//           select json_agg(json_build_object('name',row.name,'order',row."order",'data_type_node_id',row.data_type_node_id,'data_type', json_build_object('id',row.data_type_id, 'node_id',row.data_type_node_id, 'alias', row.data_type_alias,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
+	//           from(
+	//               select name, "order", data_type.id as data_type_id, data_type_node_id, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
+	//               from json_to_recordset(properties)
+	//               as k(name text, "order" int, data_type_node_id int, help_text text, description text)
+	//               JOIN data_type
+	//               ON data_type.node_id = k.data_type_node_id
+	//               )row
+	//             ) ss
+	//             ))row1
+	//         ) gf
+	//           where path @> subpath(my_content_type_node.path,0,nlevel(my_content_type_node.path)-1) and c.node_id = node.id
+	//         )okidoki
+	//     ) ffgd,
+	//     --
+	//     LATERAL
+	//     (
+	//         SELECT okidoki.tabs as ct_tabs
+	//         FROM (
+	//           SELECT c.id as cid, gf.* as tabs
+	//           FROM content_type as c, node,
+	//         LATERAL (
+	//             select json_agg(row1) as tabs from((
+	//         select y.name, ss.properties
+	//         from json_to_recordset(
+	//         (
+	//       select *
+	//       from json_to_recordset(
+	//           (
+	//         SELECT json_agg(ggg)
+	//         from(
+	//       SELECT tabs
+	//       FROM
+	//       (
+	//           SELECT *
+	//           FROM content_type as ct
+	//           WHERE ct.id=c.id
+	//       ) dsfds
 
-  //         )ggg
-  //           )
-  //       ) as x(tabs json)
-  //         )
-  //         ) as y(name text, properties json),
-  //         LATERAL (
-  //       select json_agg(json_build_object('name',row.name,'order',row."order",'data_type_node_id', row.data_type_node_id,'data_type', json_build_object('id',row.data_type_id, 'node_id', row.data_type_node_id, 'alias', row.data_type_alias, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
-  //       from(
-  //     select name, "order", data_type.id as data_type_id, data_type_node_id, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
-  //     from json_to_recordset(properties) 
-  //     as k(name text, "order" int, data_type_node_id int, help_text text, description text)
-  //     JOIN data_type
-  //     ON data_type.node_id = k.data_type_node_id
-  //     )row
-  //         ) ss
-  //             ))row1
-  //         ) gf
-  //         WHERE c.id = my_content_type.id
-  //         )okidoki
-  //         limit 1
-  //     ) gf2
-  //     --
-  //     WHERE my_content_type_node.id = my_content_type.node_id
-  //   ) res
-  //   ON res.node_id = content.content_type_node_id
-  //   WHERE my_node.id=$1`
-  
+	//         )ggg
+	//           )
+	//       ) as x(tabs json)
+	//         )
+	//         ) as y(name text, properties json),
+	//         LATERAL (
+	//       select json_agg(json_build_object('name',row.name,'order',row."order",'data_type_node_id', row.data_type_node_id,'data_type', json_build_object('id',row.data_type_id, 'node_id', row.data_type_node_id, 'alias', row.data_type_alias, 'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) as properties
+	//       from(
+	//     select name, "order", data_type.id as data_type_id, data_type_node_id, data_type.alias as data_type_alias, data_type.html as data_type_html, help_text, description
+	//     from json_to_recordset(properties)
+	//     as k(name text, "order" int, data_type_node_id int, help_text text, description text)
+	//     JOIN data_type
+	//     ON data_type.node_id = k.data_type_node_id
+	//     )row
+	//         ) ss
+	//             ))row1
+	//         ) gf
+	//         WHERE c.id = my_content_type.id
+	//         )okidoki
+	//         limit 1
+	//     ) gf2
+	//     --
+	//     WHERE my_content_type_node.id = my_content_type.node_id
+	//   ) res
+	//   ON res.node_id = content.content_type_node_id
+	//   WHERE my_node.id=$1`
 
-  var content_id, content_created_by, content_content_type_id, content_type_id int
-  var content_path, content_name, content_alias string
-  var content_parent_id sql.NullInt64
-  var content_created_date *time.Time
-  var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-  
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
 
-  var ct_id, ct_created_by, ct_type_id int
-  var ct_parent_id sql.NullInt64
+	var ct_id, ct_created_by, ct_type_id int
+	var ct_parent_id sql.NullInt64
 
-  var ct_path, ct_name, ct_alias, ct_description, ct_icon, ct_thumbnail string
-  var ct_tabs, ct_meta []byte
-  var ct_parent_content_types []byte
+	var ct_path, ct_name, ct_alias, ct_description, ct_icon, ct_thumbnail string
+	var ct_tabs, ct_meta []byte
+	var ct_parent_content_types []byte
 
-  row := db.QueryRow(queryStr, id)
+	row := db.QueryRow(queryStr, id)
 
-  err:= row.Scan(
-      &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-      &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-      &content_user_permissions, &content_user_group_permissions, &content_type_id,
-      &ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by,
-      &ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_parent_content_types, &ct_type_id)
+	err := row.Scan(
+		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by,
+		&ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_parent_content_types, &ct_type_id)
 
-  corehelpers.PanicIf(err)
+	corehelpers.PanicIf(err)
 
-  var content_type_parent_id int
-  if ct_parent_id.Valid {
-    // use s.String
-    content_type_parent_id = int(ct_parent_id.Int64)
-  } else {
-     // NULL value
-  }
+	var content_type_parent_id int
+	if ct_parent_id.Valid {
+		// use s.String
+		content_type_parent_id = int(ct_parent_id.Int64)
+	} else {
+		// NULL value
+	}
 
-  var cpid int
-  if content_parent_id.Valid {
-    cpid = int(content_parent_id.Int64)
-  }
+	var cpid int
+	if content_parent_id.Valid {
+		cpid = int(content_parent_id.Int64)
+	}
 
-  var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-  user_perm = nil
-  user_group_perm = nil
-  json.Unmarshal(content_user_permissions, &user_perm)
-  json.Unmarshal(content_user_group_permissions, &user_group_perm)
+	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	user_perm = nil
+	user_group_perm = nil
+	json.Unmarshal(content_user_permissions, &user_perm)
+	json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-  var parent_content_types []coremodulesettingsmodels.ContentType
-  var tabs []coremodulesettingsmodels.Tab
-  var ct_metaMap map[string]interface{}
-  var content_metaMap map[string]interface{}
+	var parent_content_types []coremodulesettingsmodels.ContentType
+	var tabs []coremodulesettingsmodels.Tab
+	var ct_metaMap map[string]interface{}
+	var content_metaMap map[string]interface{}
 
-  var public_access *PublicAccess
+	var public_access *PublicAccess
 
-  json.Unmarshal(content_public_access, &public_access)
+	json.Unmarshal(content_public_access, &public_access)
 
-  json.Unmarshal(ct_parent_content_types, &parent_content_types)
-  json.Unmarshal(ct_tabs, &tabs)
-  json.Unmarshal(ct_meta, &ct_metaMap)
-  json.Unmarshal(content_meta, &content_metaMap)
+	json.Unmarshal(ct_parent_content_types, &parent_content_types)
+	json.Unmarshal(ct_tabs, &tabs)
+	json.Unmarshal(ct_meta, &ct_metaMap)
+	json.Unmarshal(content_meta, &content_metaMap)
 
-  content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_content_types, nil, ct_type_id}
+	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_content_types, nil, ct_type_id}
 
-  content = Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, content_metaMap, public_access, user_perm, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+	content = Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		content_content_type_id, content_metaMap, public_access, user_perm, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
 
-  return
+	return
 }
 
 func GetFrontendContentById(paramId int) (content *Content) {
-  db := coreglobals.Db
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	db := coreglobals.Db
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -2305,155 +2273,153 @@ JOIN
 ON heh.id = content.id 
 WHERE content.id = $1;`
 
-  var content_id, content_created_by, content_content_type_id, content_type_id int
-  var content_path, content_name, content_alias string
-  var content_parent_id sql.NullInt64
-  var content_created_date *time.Time
-  var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-  var content_url sql.NullString
-  var content_domains coreglobals.StringSlice
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_url sql.NullString
+	var content_domains coreglobals.StringSlice
 
+	var template_id, template_created_by int
+	var template_path, template_name, template_alias string
+	var template_parent_id sql.NullInt64
+	var template_is_partial bool
+	var template_parent_templates []byte
 
-  var template_id, template_created_by int
-  var template_path, template_name, template_alias string
-  var template_parent_id sql.NullInt64
-  var template_is_partial bool
-  var template_parent_templates []byte
+	err := db.QueryRow(queryStr, paramId).Scan(
+		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_url,
+		&content_domains,
+		&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
+		&template_created_by, &template_is_partial, &template_parent_templates)
 
+	/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+	//corehelpers.PanicIf(err)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No content with that url.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		fmt.Printf("content domains is %v\n", content_domains)
+	}
 
-  err := db.QueryRow(queryStr, paramId).Scan(
-      &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-      &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-      &content_user_permissions, &content_user_group_permissions, &content_type_id,
-      &content_url, 
-      &content_domains,
-      &template_id, &template_path, &template_parent_id, &template_name, &template_alias, 
-      &template_created_by, &template_is_partial, &template_parent_templates)
+	var cpid int
+	if content_parent_id.Valid {
+		cpid = int(content_parent_id.Int64)
+	}
 
-  /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //corehelpers.PanicIf(err)
-  switch {
-    case err == sql.ErrNoRows:
-            log.Printf("No content with that url.")
-    case err != nil:
-            log.Fatal(err)
-    default:
-            fmt.Printf("content domains is %v\n", content_domains)
-    }
+	var content_url_str string
+	if content_url.Valid {
+		content_url_str = content_url.String
+	}
 
-  var cpid int
-  if content_parent_id.Valid {
-    cpid = int(content_parent_id.Int64)
-  }
+	var tpid int
+	if template_parent_id.Valid {
+		tpid = int(template_parent_id.Int64)
+	}
 
-  var content_url_str string
-  if content_url.Valid {
-    content_url_str = content_url.String
-  } 
+	var parent_templates_final []*coremodulesettingsmodels.Template
+	var meta map[string]interface{}
 
-  var tpid int
-  if template_parent_id.Valid {
-    tpid = int(template_parent_id.Int64)
-  }
+	json.Unmarshal(template_parent_templates, &parent_templates_final)
+	json.Unmarshal(content_meta, &meta)
 
-  var parent_templates_final []*coremodulesettingsmodels.Template
-  var meta map[string]interface{}
+	var public_access *PublicAccess
 
-  json.Unmarshal(template_parent_templates, &parent_templates_final)
-  json.Unmarshal(content_meta, &meta)
+	json.Unmarshal(content_public_access, &public_access)
 
-  var public_access *PublicAccess
+	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	user_perm = nil
+	user_group_perm = nil
+	json.Unmarshal(content_user_permissions, &user_perm)
+	json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-  json.Unmarshal(content_public_access, &public_access)
+	template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
-  var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-  user_perm = nil
-  user_group_perm = nil
-  json.Unmarshal(content_user_permissions, &user_perm)
-  json.Unmarshal(content_user_group_permissions, &user_group_perm)
-
-  template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
-
-  content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
-    content_url_str, content_domains, nil, nil, &template, nil}
-  return
+	content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+		content_url_str, content_domains, nil, nil, &template, nil}
+	return
 }
 
 func GetFrontendContentByUrl(name, url string) (content *Content) {
-  db := coreglobals.Db
+	db := coreglobals.Db
 
-//   queryStr := `SELECT cn.id AS node_id, cn.path AS node_path, cn.created_by AS node_created_by, cn.name AS node_name, cn.node_type AS node_type,
-//   cn.created_date AS node_created_date, cn.parent_id AS content_parent_id,
-//   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta, okidoki.content_url as content_url, content.public_access as content_public_access, 
-//   tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias, tpl.partial_template_nodes,
-//   tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name,
-//   heh.domains
-// FROM content
-// JOIN node AS cn
-// ON content.node_id = cn.id
-// JOIN 
-// (
-//   SELECT my_node.*, res1.*
-//   FROM node AS my_node,
-//   LATERAL 
-//   (
-//     -- SELECT array_to_json(array_agg(node)) AS parent_template_nodes
-//     SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS parent_template_nodes
-//     FROM node
-//     WHERE path @> subpath(my_node.path,0,nlevel(my_node.path)-1) AND node_type=3 
-//     ORDER BY my_node.path ASC
-//   ) res1
-//   WHERE my_node.node_type = 3
-// ) AS tn
-// ON (content.meta->>'template_node_id')::int = tn.id
-// JOIN 
-// (
-//   SELECT template.*, res2.* 
-//   FROM template,
-//   LATERAL
-//   (
-//     SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS partial_template_nodes
-//     FROM node
-//     WHERE node.id = ANY(template.partial_template_node_ids)
-//     --WHERE node.id IN (SELECT unnest(template.partial_template_node_ids))
-//     ORDER BY template.node_id ASC
-//   ) res2 
-// ) AS tpl
-// ON tpl.node_id = tn.id
-// JOIN 
-// (
-//   SELECT * 
-//   FROM node as mynode,
-//   LATERAL
-//   (
-//     SELECT string_agg(replace(lower(name), ' ', '-'), '/' ORDER BY path)content_url
-//     FROM node
-// --    JOIN "domain"
-// --    ON "domain".node_id = node.id
-//     WHERE path @> mynode.path AND nlevel(path)>2
-//   ) ok
-// )okidoki
-// ON okidoki.id = cn.id
-// -- JOIN domain
-// -- ON ltree2text(subpath(cn.path,1,1)) = domain.node_id::text
-// JOIN
-// (
-//   SELECT mynode.*, oki1.*
-//   FROM node as mynode,
-//   LATERAL
-//   (
-//     SELECT string_to_array(string_agg(elem,', '),', ')::varchar[] as domains
-//     FROM content, jsonb_array_elements_text(meta->'domains') elem
-//     WHERE ltree2text(subpath(mynode.path,1,1)) = content.node_id::text and nlevel(mynode.path) > 1
-//     -- SELECT array_agg(name)domains
-// --    FROM domain
-// --    WHERE ltree2text(subpath(mynode.path,1,1)) = domain.node_id::text and nlevel(mynode.path) > 1
-//   )oki1
-// ) heh
-// ON heh.id = cn.id 
-// WHERE lower(cn.name) = $1;`
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	//   queryStr := `SELECT cn.id AS node_id, cn.path AS node_path, cn.created_by AS node_created_by, cn.name AS node_name, cn.node_type AS node_type,
+	//   cn.created_date AS node_created_date, cn.parent_id AS content_parent_id,
+	//   content.id AS content_id, content.node_id AS content_node_id, content.content_type_node_id AS content_content_type_node_id, content.meta AS content_meta, okidoki.content_url as content_url, content.public_access as content_public_access,
+	//   tpl.parent_template_node_id AS parent_template_node_id, tpl.alias AS template_alias, tpl.partial_template_nodes,
+	//   tn.id AS template_node_id, tn.parent_template_nodes AS parent_template_nodes, tn.name AS template_node_name,
+	//   heh.domains
+	// FROM content
+	// JOIN node AS cn
+	// ON content.node_id = cn.id
+	// JOIN
+	// (
+	//   SELECT my_node.*, res1.*
+	//   FROM node AS my_node,
+	//   LATERAL
+	//   (
+	//     -- SELECT array_to_json(array_agg(node)) AS parent_template_nodes
+	//     SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS parent_template_nodes
+	//     FROM node
+	//     WHERE path @> subpath(my_node.path,0,nlevel(my_node.path)-1) AND node_type=3
+	//     ORDER BY my_node.path ASC
+	//   ) res1
+	//   WHERE my_node.node_type = 3
+	// ) AS tn
+	// ON (content.meta->>'template_node_id')::int = tn.id
+	// JOIN
+	// (
+	//   SELECT template.*, res2.*
+	//   FROM template,
+	//   LATERAL
+	//   (
+	//     SELECT json_agg((SELECT x FROM (SELECT node.id, node.path, node.name, node.node_type, node.created_by, node.parent_id) x)) AS partial_template_nodes
+	//     FROM node
+	//     WHERE node.id = ANY(template.partial_template_node_ids)
+	//     --WHERE node.id IN (SELECT unnest(template.partial_template_node_ids))
+	//     ORDER BY template.node_id ASC
+	//   ) res2
+	// ) AS tpl
+	// ON tpl.node_id = tn.id
+	// JOIN
+	// (
+	//   SELECT *
+	//   FROM node as mynode,
+	//   LATERAL
+	//   (
+	//     SELECT string_agg(replace(lower(name), ' ', '-'), '/' ORDER BY path)content_url
+	//     FROM node
+	// --    JOIN "domain"
+	// --    ON "domain".node_id = node.id
+	//     WHERE path @> mynode.path AND nlevel(path)>2
+	//   ) ok
+	// )okidoki
+	// ON okidoki.id = cn.id
+	// -- JOIN domain
+	// -- ON ltree2text(subpath(cn.path,1,1)) = domain.node_id::text
+	// JOIN
+	// (
+	//   SELECT mynode.*, oki1.*
+	//   FROM node as mynode,
+	//   LATERAL
+	//   (
+	//     SELECT string_to_array(string_agg(elem,', '),', ')::varchar[] as domains
+	//     FROM content, jsonb_array_elements_text(meta->'domains') elem
+	//     WHERE ltree2text(subpath(mynode.path,1,1)) = content.node_id::text and nlevel(mynode.path) > 1
+	//     -- SELECT array_agg(name)domains
+	// --    FROM domain
+	// --    WHERE ltree2text(subpath(mynode.path,1,1)) = domain.node_id::text and nlevel(mynode.path) > 1
+	//   )oki1
+	// ) heh
+	// ON heh.id = cn.id
+	// WHERE lower(cn.name) = $1;`
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -2506,107 +2472,104 @@ JOIN
 ON heh.id = content.id 
 WHERE lower(content.name) = $1;`
 
-  var content_id, content_created_by, content_content_type_id, content_type_id int
-  var content_path, content_name, content_alias string
-  var content_parent_id sql.NullInt64
-  var content_created_date *time.Time
-  var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-  var content_url sql.NullString
-  var content_domains coreglobals.StringSlice
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_url sql.NullString
+	var content_domains coreglobals.StringSlice
 
+	var template_id, template_created_by int
+	var template_path, template_name, template_alias string
+	var template_parent_id sql.NullInt64
+	var template_is_partial bool
+	var template_parent_templates []byte
 
-  var template_id, template_created_by int
-  var template_path, template_name, template_alias string
-  var template_parent_id sql.NullInt64
-  var template_is_partial bool
-  var template_parent_templates []byte
+	err := db.QueryRow(queryStr, name).Scan(
+		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_url,
+		&content_domains,
+		&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
+		&template_created_by, &template_is_partial, &template_parent_templates)
 
+	/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+	//corehelpers.PanicIf(err)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No content with that url.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		fmt.Printf("content domains is %v\n", content_domains)
+	}
 
-  err := db.QueryRow(queryStr, name).Scan(
-      &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-      &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-      &content_user_permissions, &content_user_group_permissions, &content_type_id,
-      &content_url, 
-      &content_domains,
-      &template_id, &template_path, &template_parent_id, &template_name, &template_alias, 
-      &template_created_by, &template_is_partial, &template_parent_templates)
+	var cpid int
+	if content_parent_id.Valid {
+		cpid = int(content_parent_id.Int64)
+	}
 
-  /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //corehelpers.PanicIf(err)
-  switch {
-    case err == sql.ErrNoRows:
-            log.Printf("No content with that url.")
-    case err != nil:
-            log.Fatal(err)
-    default:
-            fmt.Printf("content domains is %v\n", content_domains)
-    }
+	var content_url_str string
+	if content_url.Valid {
+		content_url_str = content_url.String
+	}
 
-  var cpid int
-  if content_parent_id.Valid {
-    cpid = int(content_parent_id.Int64)
-  }
+	var tpid int
+	if template_parent_id.Valid {
+		tpid = int(template_parent_id.Int64)
+	}
 
-  var content_url_str string
-  if content_url.Valid {
-    content_url_str = content_url.String
-  } 
+	var parent_templates_final []*coremodulesettingsmodels.Template
+	var meta map[string]interface{}
 
-  var tpid int
-  if template_parent_id.Valid {
-    tpid = int(template_parent_id.Int64)
-  }
+	json.Unmarshal(template_parent_templates, &parent_templates_final)
+	json.Unmarshal(content_meta, &meta)
 
-  var parent_templates_final []*coremodulesettingsmodels.Template
-  var meta map[string]interface{}
+	var public_access *PublicAccess
 
-  json.Unmarshal(template_parent_templates, &parent_templates_final)
-  json.Unmarshal(content_meta, &meta)
+	json.Unmarshal(content_public_access, &public_access)
 
-  var public_access *PublicAccess
+	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	user_perm = nil
+	user_group_perm = nil
+	json.Unmarshal(content_user_permissions, &user_perm)
+	json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-  json.Unmarshal(content_public_access, &public_access)
+	template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
-  var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-  user_perm = nil
-  user_group_perm = nil
-  json.Unmarshal(content_user_permissions, &user_perm)
-  json.Unmarshal(content_user_group_permissions, &user_group_perm)
+	content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+		content_url_str, content_domains, nil, nil, &template, nil}
 
-  template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
+	for i := 0; i < len(content.Domains); i++ {
+		//fmt.Println("lol: " + content.Domains[i])
+		fullUrl := content.Domains[i] + "/" + content.Url
+		fmt.Println("Fullurl: " + fullUrl)
+		if url == fullUrl {
+			return
+		}
+	}
+	// for _, value := range content.Domains{
+	//   fmt.Println("lol: " + value)
+	//     fullUrl := value + "/" + content.Url
+	//     fmt.Println("Fullurl: " + fullUrl)
+	//     if(url == fullUrl){
+	//       return
+	//     }
+	// }
+	fmt.Println("YOU SHOULDN't SEE THIS IF THE URL IS RIGHT1")
+	fmt.Println("url: " + url)
 
-  content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
-    content_url_str, content_domains, nil, nil, &template, nil}
+	return nil
 
-  for i := 0; i < len(content.Domains); i++ {
-    //fmt.Println("lol: " + content.Domains[i])
-    fullUrl := content.Domains[i] + "/" + content.Url
-    fmt.Println("Fullurl: " + fullUrl)
-    if(url == fullUrl){
-      return
-    }
-  }
-  // for _, value := range content.Domains{
-  //   fmt.Println("lol: " + value)
-  //     fullUrl := value + "/" + content.Url
-  //     fmt.Println("Fullurl: " + fullUrl)
-  //     if(url == fullUrl){
-  //       return
-  //     }
-  // }
-  fmt.Println("YOU SHOULDN't SEE THIS IF THE URL IS RIGHT1")
-  fmt.Println("url: " + url)
-
-  return nil
-
-  
 }
 
 func GetFrontendContentByDomain(domain string) (content *Content) {
-  db := coreglobals.Db
+	db := coreglobals.Db
 
-  queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
 content.meta AS content_meta, content.public_access AS content_public_access,
@@ -2659,97 +2622,94 @@ JOIN
 ON heh.id = content.id 
 WHERE $1 = ANY(heh.domains) and nlevel(content.path) = 1;`
 
-  var content_id, content_created_by, content_content_type_id, content_type_id int
-  var content_path, content_name, content_alias string
-  var content_parent_id sql.NullInt64
-  var content_created_date *time.Time
-  var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
-  //var content_url sql.NullString
-  var content_domains coreglobals.StringSlice
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	//var content_url sql.NullString
+	var content_domains coreglobals.StringSlice
 
+	var template_id, template_created_by int
+	var template_path, template_name, template_alias string
+	var template_parent_id sql.NullInt64
+	var template_is_partial bool
+	var template_parent_templates []byte
 
-  var template_id, template_created_by int
-  var template_path, template_name, template_alias string
-  var template_parent_id sql.NullInt64
-  var template_is_partial bool
-  var template_parent_templates []byte
+	err := db.QueryRow(queryStr, domain).Scan(
+		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		//&content_url,
+		&content_domains,
+		&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
+		&template_created_by, &template_is_partial, &template_parent_templates)
 
-  err := db.QueryRow(queryStr, domain).Scan(
-      &content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by, 
-      &content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-      &content_user_permissions, &content_user_group_permissions, &content_type_id,
-      //&content_url, 
-      &content_domains,
-      &template_id, &template_path, &template_parent_id, &template_name, &template_alias, 
-      &template_created_by, &template_is_partial, &template_parent_templates)
+	/* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
+	//corehelpers.PanicIf(err)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("No content with that domain.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		fmt.Printf("content domains is %v\n", content_domains)
+	}
 
-  /* THIS IS IMPORTANT TO ACTIVATE AGAIN AT SOME POINT AND HANDLE ALL NULLS PROPERLY!!! */
-  //corehelpers.PanicIf(err)
-  switch {
-    case err == sql.ErrNoRows:
-            log.Printf("No content with that domain.")
-    case err != nil:
-            log.Fatal(err)
-    default:
-            fmt.Printf("content domains is %v\n", content_domains)
-    }
+	var cpid int
+	if content_parent_id.Valid {
+		cpid = int(content_parent_id.Int64)
+	}
 
-  var cpid int
-  if content_parent_id.Valid {
-    cpid = int(content_parent_id.Int64)
-  }
+	// var content_url_str string
+	// if content_url.Valid {
+	//   content_url_str = content_url.String
+	// }
 
-  // var content_url_str string
-  // if content_url.Valid {
-  //   content_url_str = content_url.String
-  // } 
+	var tpid int
+	if template_parent_id.Valid {
+		tpid = int(template_parent_id.Int64)
+	}
 
-  var tpid int
-  if template_parent_id.Valid {
-    tpid = int(template_parent_id.Int64)
-  }
+	var parent_templates_final []*coremodulesettingsmodels.Template
+	var meta map[string]interface{}
 
-  var parent_templates_final []*coremodulesettingsmodels.Template
-  var meta map[string]interface{}
+	json.Unmarshal(template_parent_templates, &parent_templates_final)
+	json.Unmarshal(content_meta, &meta)
 
-  json.Unmarshal(template_parent_templates, &parent_templates_final)
-  json.Unmarshal(content_meta, &meta)
+	var public_access *PublicAccess
 
-  var public_access *PublicAccess
+	json.Unmarshal(content_public_access, &public_access)
 
-  json.Unmarshal(content_public_access, &public_access)
+	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	user_perm = nil
+	user_group_perm = nil
+	json.Unmarshal(content_user_permissions, &user_perm)
+	json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-  var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
-  user_perm = nil
-  user_group_perm = nil
-  json.Unmarshal(content_user_permissions, &user_perm)
-  json.Unmarshal(content_user_group_permissions, &user_group_perm)
+	template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
-  template := coremodulesettingsmodels.Template{template_id,template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
+	content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id, "", content_domains, nil, nil, &template, nil}
 
-  content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date, 
-    content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id, "", content_domains, nil, nil, &template, nil}
-  
-  fmt.Println(content_domains)
+	fmt.Println(content_domains)
 
-  for _, value := range content.Domains{
-      // fullUrl := value + "/" + content.Url
-      // fmt.Println("Fullurl: " + fullUrl)
-      // if(url == fullUrl){
-      //   return
-      // }
-    if(value == domain){
-      return
-    }
-  }
-  fmt.Println("YOU SHOULDN't SEE THIS IF THE URL IS RIGHT")
-  //fmt.Println("url: " + url)
+	for _, value := range content.Domains {
+		// fullUrl := value + "/" + content.Url
+		// fmt.Println("Fullurl: " + fullUrl)
+		// if(url == fullUrl){
+		//   return
+		// }
+		if value == domain {
+			return
+		}
+	}
+	fmt.Println("YOU SHOULDN't SEE THIS IF THE URL IS RIGHT")
+	//fmt.Println("url: " + url)
 
-  return nil
+	return nil
 
-  
 }
-
 
 // type content Content
 
