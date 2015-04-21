@@ -185,8 +185,8 @@ contentTypeControllers.controller('ContentTypeEditCtrl', ['$scope', '$stateParam
   $scope.stateParams = $stateParams;
   if ($stateParams.id) {
 
-    $scope.node = ContentType.get({ id: $stateParams.id}, function(node){
-      
+    $scope.node = ContentType.get({extended: true},{ id: $stateParams.id}, function(node){
+      console.log(node)
     });
     //User.get({ userId: $stateParams.userId} , function(phone) {
   } else if ($stateParams.parent) {
@@ -209,11 +209,32 @@ contentTypeControllers.controller('ContentTypeEditCtrl', ['$scope', '$stateParam
   $scope.allTemplates = Template.query({},{},function(node){
     });
 
-  $scope.allContentTypes = ContentType.query({'type-id': '1'},{},function(node){
-    });
+  $scope.allContentTypes = ContentType.query({'type-id': '1'},{},function(allContentTypes){
+    var availableCompositeContentTypes = []
+    for(var i = 0; i < allContentTypes.length; i++){
+      if($scope.node.parent_content_types.containsId(allContentTypes[i].id)){
 
-  $scope.allMediaTypes = Node.query({'node-type': '7'},{},function(node){
-    });
+      } else{
+        availableCompositeContentTypes.push(allContentTypes[i])
+      }
+    }
+    $scope.availableCompositeContentTypes = availableCompositeContentTypes;
+    console.log(availableCompositeContentTypes)
+    // for(var i = 0; i < allContentTypes.length; j++){
+    //   if(allContentTypes[i].id == $scope.node.id){
+
+    //   } else {
+    //     for(var j= 0; i < $scope.node.parent_content_types.length; j++){
+    //       if(allContentTypes[i].id == $scope.node.parent_content_types[j]){
+
+    //       }
+    //     }
+    //   }
+    // }
+  });
+
+  // $scope.allMediaTypes = Node.query({'node-type': '7'},{},function(node){
+  //   });
   
   $scope.allDataTypes = DataType.query({},{},function(node){
     });

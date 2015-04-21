@@ -34,7 +34,7 @@ func (this *ContentTreeController) GetMenuForContent(w http.ResponseWriter, r *h
 		contentTypes := coremodulesettingsmodels.GetContentTypes(nil)
 
 		for _, ct := range contentTypes {
-			if ct.TypeId == 1 {
+			if ct.TypeId == 1 && ct.AllowAtRoot{
 				path := fmt.Sprintf("content.new({type_id:%d, content_type_id:%d})", 1, ct.Id)
 				//tempIdStr := strconv.Itoa(ctId)
 				item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}

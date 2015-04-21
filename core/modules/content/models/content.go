@@ -174,7 +174,7 @@ FROM content
 						if user_perm[i].Permissions[j] == "node_browse" {
 							//fmt.Println("woauw it worked!")
 							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
 							// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
 								content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
@@ -210,7 +210,7 @@ FROM content
 								if user_group_perm[j].Permissions[k] == "node_browse" {
 									//fmt.Println("woauw it worked!")
 									accessGranted = true
-									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
 									content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
 										content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
 									contentSlice = append(contentSlice, content)
@@ -236,7 +236,7 @@ FROM content
 					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
 						if user.UserGroups[i].Permissions[j] == "node_browse" {
 							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
 								content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
 							contentSlice = append(contentSlice, content)
@@ -280,7 +280,8 @@ LATERAL
       SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, c.type_id
       FROM content_type AS c
       --where path @> subpath(ct.path,0,nlevel(ct.path)-1)
-      WHERE ct.meta->'allowed_content_type_ids' @> ('' || c.id || '')::jsonb
+      --WHERE ct.meta->'allowed_content_type_ids' @> ('' || c.id || '')::jsonb
+      WHERE c.id = ANY(ct.allowed_content_type_ids::int[]) 
     )res1
   ) pct
   
@@ -345,7 +346,7 @@ WHERE content.id=$1`
 	json.Unmarshal(ct_meta, &ct_metaMap)
 	json.Unmarshal(content_meta, &content_metaMap)
 
-	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, nil, nil, allowed_content_types, ct_type_id}
+	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, nil, nil, allowed_content_types, ct_type_id, false, false, false, nil, nil, nil}
 
 	content = Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
 		content_content_type_id, content_metaMap, public_access, user_perm, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
@@ -465,7 +466,7 @@ FROM content
 						if user_perm[i].Permissions[j] == "node_browse" {
 							//fmt.Println("woauw it worked!")
 							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
 							// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
 								content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
@@ -501,7 +502,7 @@ FROM content
 								if user_group_perm[j].Permissions[k] == "node_browse" {
 									//fmt.Println("woauw it worked!")
 									accessGranted = true
-									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
 									content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
 										content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
 									contentSlice = append(contentSlice, content)
@@ -527,7 +528,7 @@ FROM content
 					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
 						if user.UserGroups[i].Permissions[j] == "node_browse" {
 							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id}
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
 								content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
 							contentSlice = append(contentSlice, content)
@@ -1897,12 +1898,12 @@ content.meta AS content_meta, content.public_access AS content_public_access,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
 content.type_id AS content_type_id,
   modified_content_type.id AS ct_id, modified_content_type.path AS ct_path, modified_content_type.parent_id AS ct_parent_id, modified_content_type.name as ct_name, modified_content_type.alias AS ct_alias,
-  modified_content_type.created_by as ct_created_by, modified_content_type.description AS ct_description, modified_content_type.icon AS ct_icon, modified_content_type.thumbnail AS ct_thumbnail, modified_content_type.meta::json AS ct_meta, modified_content_type.ct_tabs AS ct_tabs, modified_content_type.parent_content_types AS ct_parent_content_types, modified_content_type.type_id as ct_type_id
+  modified_content_type.created_by as ct_created_by, modified_content_type.description AS ct_description, modified_content_type.icon AS ct_icon, modified_content_type.thumbnail AS ct_thumbnail, modified_content_type.meta::json AS ct_meta, modified_content_type.ct_tabs AS ct_tabs, modified_content_type.parent_content_types AS ct_parent_content_types, modified_content_type.composite_content_types AS ct_composite_content_types, modified_content_type.type_id as ct_type_id
 FROM content
 JOIN
 LATERAL
 (
-  SELECT ct.*,pct.*,ct_tabs_with_dt.*
+  SELECT ct.*,pct.*,cct.*,ct_tabs_with_dt.*
   FROM content_type AS ct,
   -- Parent content types
   LATERAL 
@@ -1937,40 +1938,108 @@ LATERAL
           LATERAL 
           (
             SELECT json_agg(
-    json_build_object
-    (
-      'name',row.name,
-      'order',row."order",
-      'data_type_id',row.data_type_id,
-      'data_type', json_build_object
-      (
-        'id',row.data_type_id, 
-        'path',row.data_type_path, 
-        'parent_id', row.data_type_parent_id,
-        'name',row.data_type_name, 
-        'alias',row.data_type_alias, 
-        'created_by',row.data_type_created_by, 
-        --'created_date',row.data_type_created_date,
-        'html', row.data_type_html
-      ), 
-      'help_text', row.help_text, 
-      'description', row.description
-    )
+		    json_build_object
+		    (
+		      'name',row.name,
+		      'order',row."order",
+		      'data_type_id',row.data_type_id,
+		      'data_type', json_build_object
+		      (
+			'id',row.data_type_id, 
+			'path',row.data_type_path, 
+			'parent_id', row.data_type_parent_id,
+			'name',row.data_type_name, 
+			'alias',row.data_type_alias, 
+			'created_by',row.data_type_created_by, 
+			--'created_date',row.data_type_created_date,
+			'html', row.data_type_html
+		      ), 
+		      'help_text', row.help_text, 
+		      'description', row.description
+		    )
             ) AS properties
-    FROM(
-      SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
-      data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, help_text, description
-      FROM json_to_recordset(properties) 
-      AS k(name text, "order" int, data_type_id int, help_text text, description text)
-      JOIN data_type
-      ON data_type.id = k.data_type_id
-    )row
+	    FROM(
+		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
+		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, help_text, description
+		FROM json_to_recordset(properties) 
+		AS k(name text, "order" int, data_type_id int, help_text text, description text)
+		JOIN data_type
+		ON data_type.id = k.data_type_id
+	    )row
           ) ss
         )row1
       ) gf
       where path @> subpath(ct.path,0,nlevel(ct.path)-1)
     )res1
   ) pct,
+    -- Composite content types
+  LATERAL 
+  (
+    SELECT array_to_json(array_agg(res1)) AS composite_content_types
+    FROM 
+    (
+      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, gf.* AS tabs, c.type_id
+      FROM content_type AS c,
+      LATERAL 
+      (
+        SELECT json_agg(row1) AS tabs 
+        FROM 
+        (
+          SELECT y.name, ss.properties
+          FROM json_to_recordset (
+            (
+              SELECT * 
+              FROM json_to_recordset(
+                (
+                  SELECT json_agg(ggg)
+                  FROM 
+                  (
+                    SELECT ct.tabs
+                    FROM content_type AS ct
+                    WHERE ct.id=c.id
+                  )ggg
+                )
+              ) AS x(tabs json)
+            )
+          ) AS y(name text, properties json),
+          LATERAL 
+          (
+            SELECT json_agg(
+		    json_build_object
+		    (
+		      'name',row.name,
+		      'order',row."order",
+		      'data_type_id',row.data_type_id,
+		      'data_type', json_build_object
+		      (
+			'id',row.data_type_id, 
+			'path',row.data_type_path, 
+			'parent_id', row.data_type_parent_id,
+			'name',row.data_type_name, 
+			'alias',row.data_type_alias, 
+			'created_by',row.data_type_created_by, 
+			--'created_date',row.data_type_created_date,
+			'html', row.data_type_html
+		      ), 
+		      'help_text', row.help_text, 
+		      'description', row.description
+		    )
+            ) AS properties
+	    FROM(
+		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
+		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, help_text, description
+		FROM json_to_recordset(properties) 
+		AS k(name text, "order" int, data_type_id int, help_text text, description text)
+		JOIN data_type
+		ON data_type.id = k.data_type_id
+	    )row
+          ) ss
+        )row1
+      ) gf
+      --where path @> subpath(ct.path,0,nlevel(ct.path)-1)
+      WHERE id = ANY(ct.composite_content_type_ids)
+    )res1
+  ) cct,
   -- Tabs
   LATERAL 
   (
@@ -2005,34 +2074,34 @@ LATERAL
           LATERAL 
           (
             SELECT json_agg(
-    json_build_object
-    (
-      'name',row.name,
-      'order',row."order",
-      'data_type_id',row.data_type_id,
-      'data_type', json_build_object
-      (
-        'id',row.data_type_id, 
-        'path',row.data_type_path, 
-        'parent_id', row.data_type_parent_id,
-        'name',row.data_type_name, 
-        'alias',row.data_type_alias, 
-        'created_by',row.data_type_created_by, 
-        --'created_date',row.data_type_created_date,
-        'html', row.data_type_html
-      ), 
-      'help_text', row.help_text, 
-      'description', row.description
-    )
+		    json_build_object
+		    (
+		      'name',row.name,
+		      'order',row."order",
+		      'data_type_id',row.data_type_id,
+		      'data_type', json_build_object
+		      (
+			'id',row.data_type_id, 
+			'path',row.data_type_path, 
+			'parent_id', row.data_type_parent_id,
+			'name',row.data_type_name, 
+			'alias',row.data_type_alias, 
+			'created_by',row.data_type_created_by, 
+			--'created_date',row.data_type_created_date,
+			'html', row.data_type_html
+		      ), 
+		      'help_text', row.help_text, 
+		      'description', row.description
+		    )
             ) AS properties
-    FROM(
-      SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
-      data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, help_text, description
-      FROM json_to_recordset(properties) 
-      AS k(name text, "order" int, data_type_id int, help_text text, description text)
-      JOIN data_type
-      ON data_type.id = k.data_type_id
-    )row
+	    FROM(
+		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
+		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, help_text, description
+		FROM json_to_recordset(properties) 
+		AS k(name text, "order" int, data_type_id int, help_text text, description text)
+		JOIN data_type
+		ON data_type.id = k.data_type_id
+	    )row
           ) ss
         )row1
       ) gf
@@ -2164,7 +2233,7 @@ WHERE content.id=$1`
 
 	var ct_path, ct_name, ct_alias, ct_description, ct_icon, ct_thumbnail string
 	var ct_tabs, ct_meta []byte
-	var ct_parent_content_types []byte
+	var ct_parent_content_types, ct_composite_content_types []byte
 
 	row := db.QueryRow(queryStr, id)
 
@@ -2173,7 +2242,7 @@ WHERE content.id=$1`
 		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
 		&content_user_permissions, &content_user_group_permissions, &content_type_id,
 		&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by,
-		&ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_parent_content_types, &ct_type_id)
+		&ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_parent_content_types, &ct_composite_content_types, &ct_type_id)
 
 	corehelpers.PanicIf(err)
 
@@ -2196,7 +2265,7 @@ WHERE content.id=$1`
 	json.Unmarshal(content_user_permissions, &user_perm)
 	json.Unmarshal(content_user_group_permissions, &user_group_perm)
 
-	var parent_content_types []coremodulesettingsmodels.ContentType
+	var parent_content_types, composite_content_types []coremodulesettingsmodels.ContentType
 	var tabs []coremodulesettingsmodels.Tab
 	var ct_metaMap map[string]interface{}
 	var content_metaMap map[string]interface{}
@@ -2206,11 +2275,12 @@ WHERE content.id=$1`
 	json.Unmarshal(content_public_access, &public_access)
 
 	json.Unmarshal(ct_parent_content_types, &parent_content_types)
+	json.Unmarshal(ct_composite_content_types, &composite_content_types)
 	json.Unmarshal(ct_tabs, &tabs)
 	json.Unmarshal(ct_meta, &ct_metaMap)
 	json.Unmarshal(content_meta, &content_metaMap)
 
-	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_content_types, nil, ct_type_id}
+	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_content_types, nil, ct_type_id, false, false, false, nil, nil, composite_content_types}
 
 	content = Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
 		content_content_type_id, content_metaMap, public_access, user_perm, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}

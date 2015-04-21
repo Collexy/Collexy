@@ -10,15 +10,25 @@ Array.prototype.unique = function() {
     return a;
 };
 
-// Array.prototype.contains = function(obj) {
-//     var i = this.length;
-//     while (i--) {
-//         if (this[i] === obj) {
-//             return true;
-//         }
-//     }
-//     return false;
-// };
+Array.prototype.contains = function(obj) {
+    var i = this.length;
+    while (i--) {
+        if (this[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+};
+
+Array.prototype.containsId = function(id) {
+    var i = this.length;
+    while (i--) {
+        if (this[i].id === id) {
+            return true;
+        }
+    }
+    return false;
+};
 
 // self executing function here
 $(document).ready(function(){

@@ -66,7 +66,7 @@ func init() {
 
 	rDataTypeSection := lib.Route{"settings.dataType", "/data-type", "core/modules/settings/public/views/data-type/index.html", false}
 	rDataTypeTreeMethodEdit := lib.Route{"settings.dataType.edit", "/edit/:id", "core/modules/settings/public/views/data-type/edit.html", false}
-	rDataTypeTreeMethodNew := lib.Route{"settings.dataType.new", "/new?type&parent", "core/modules/settings/public/views/data-type/new.html", false}
+	rDataTypeTreeMethodNew := lib.Route{"settings.dataType.new", "/new", "core/modules/settings/public/views/data-type/new.html", false}
 
 	rTemplateSection := lib.Route{"settings.template", "/template", "core/modules/settings/public/views/template/index.html", false}
 	rTemplateTreeMethodEdit := lib.Route{"settings.template.edit", "/edit/:id", "core/modules/settings/public/views/template/edit.html", false}

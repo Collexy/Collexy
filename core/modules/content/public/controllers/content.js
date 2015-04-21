@@ -255,6 +255,13 @@ function ContentTreeCtrlEdit($scope, $stateParams, Content, Template, ContentTyp
             }
           }
         }
+        if(data.content_type.composite_content_types != null){
+          for(var i = 0; i < data.content_type.composite_content_types.length; i++){
+            if(data.content_type.composite_content_types[i].tabs != null){
+              tabs = tabs.concat(data.content_type.composite_content_types[i].tabs).unique();
+            }
+          }
+        }
         console.log(tabs);
         $scope.tabs = tabs;
         $scope.currentTab = tabs[0].name;

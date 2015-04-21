@@ -56,9 +56,45 @@
         <div ng-show="currentTab == 'structure'">
             <table>
                 <tr>
+                    <td>Allow at root</td>
+                    <td>
+                        <input type="checkbox" ng-model="node.allow_at_root" ng-true-value="true" ng-false-value="false">
+                        <label> Yes</label>
+                    </td>
+                    <td>Allow this content type in the root</td>
+                </tr>
+                <tr>
+                    <td>Is Container</td>
+                    <td>
+                        <input type="checkbox" ng-model="node.is_container" ng-true-value="true" ng-false-value="false">
+                        <label> Yes</label>
+                    </td>
+                    <td>If this field is checked, your container content type will show child items in a list view</td>
+                </tr>
+                <tr>
+                    <td>Is Abstract</td>
+                    <td>
+                        <input type="checkbox" ng-model="node.is_abstract" ng-true-value="true" ng-false-value="false">
+                        <label> Yes</label>
+                    </td>
+                    <td>If this field is checked, your container content type is abstract</td>
+                </tr>
+                <tr>
+                    <td>Composite content types</td>
+                    <td>
+                        <div ng-repeat="ctype in availableCompositeContentTypes"><label><input type="checkbox" checklist-model="node.composite_content_type_ids" checklist-value="ctype.id"></label> {{ctype.name}}</div>
+                        <!-- <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" ng-model="node.meta.allowed_content_type_ids" ng-true-value="ctype.id" ng-false-value=""></label> {{ctype.name}}</div> -->
+                        <br>
+                          <button type="button" ng-click="checkAll()">check all</button>
+                          <button type="button" ng-click="uncheckAll()">uncheck all</button>
+                    </td>
+                    <td>Content of this type will "inherit" tabs and properties from its composite types</td>
+                </tr>
+                <tr>
                     <td>Allowed content types</td>
                     <td>
-                        <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" checklist-model="node.meta.allowed_content_type_ids" checklist-value="ctype.id"></label> {{ctype.name}}</div>
+                        <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" checklist-model="node.allowed_content_type_ids" checklist-value="ctype.id"></label> {{ctype.name}}</div>
+                        <!-- <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" ng-model="node.meta.allowed_content_type_ids" ng-true-value="ctype.id" ng-false-value=""></label> {{ctype.name}}</div> -->
                         <br>
                           <button type="button" ng-click="checkAll()">check all</button>
                           <button type="button" ng-click="uncheckAll()">uncheck all</button>

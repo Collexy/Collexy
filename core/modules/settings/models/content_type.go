@@ -16,21 +16,27 @@ import (
 )
 
 type ContentType struct {
-	Id                  int                    `json:"id"`
-	Path                string                 `json:"path"`
-	ParentId            int                    `json:"parent_id,omitempty"`
-	Name                string                 `json:"name"`
-	Alias               string                 `json:"alias"`
-	CreatedBy           int                    `json:"created_by"`
-	CreatedDate         *time.Time             `json:"created_date"`
-	Description         string                 `json:"description,omitempty"`
-	Icon                string                 `json:"icon,omitempty"`
-	Thumbnail           string                 `json:"thumbnail,omitempty"`
-	Meta                map[string]interface{} `json:"meta,omitempty"`
-	Tabs                []Tab                  `json:"tabs,omitempty"`
-	ParentContentTypes  []ContentType          `json:"parent_content_types,omitempty"`
-	AllowedContentTypes []ContentType          `json:"allowed_content_types,omitempty"`
-	TypeId              int                    `json:"type_id"`
+	Id                      int                    `json:"id"`
+	Path                    string                 `json:"path"`
+	ParentId                int                    `json:"parent_id,omitempty"`
+	Name                    string                 `json:"name"`
+	Alias                   string                 `json:"alias"`
+	CreatedBy               int                    `json:"created_by"`
+	CreatedDate             *time.Time             `json:"created_date"`
+	Description             string                 `json:"description,omitempty"`
+	Icon                    string                 `json:"icon,omitempty"`
+	Thumbnail               string                 `json:"thumbnail,omitempty"`
+	Meta                    map[string]interface{} `json:"meta,omitempty"`
+	Tabs                    []Tab                  `json:"tabs,omitempty"`
+	ParentContentTypes      []ContentType          `json:"parent_content_types,omitempty"`
+	AllowedContentTypes     []ContentType          `json:"allowed_content_types,omitempty"`
+	TypeId                  int                    `json:"type_id"`
+	AllowAtRoot             bool                   `json:"allow_at_root"`
+	IsContainer             bool                   `json:"is_container"`
+	IsAbstract              bool                   `json:"is_abstract"`
+	AllowedContentTypeIds   []int                  `json:"allowed_content_type_ids,omitempty"`
+	CompositeContentTypeIds []int                  `json:"composite_content_type_ids,omitempty"`
+	CompositeContentTypes   []ContentType          `json:"composite_content_types,omitempty"`
 }
 
 func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType) {
@@ -41,7 +47,9 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
         content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
         content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail,
         content_type.meta as content_type_meta, content_type.tabs as content_type_tabs, 
-        content_type.type_id as content_type_type_id
+        content_type.type_id as content_type_type_id, content_type.allow_at_root AS content_type_allow_at_root,
+        content_type.is_container AS content_type_is_container, content_type.is_abstract as content_type_is_abstract,
+        content_type.allowed_content_type_ids AS content_type_allowed_content_type_ids 
         FROM content_type`
 
 	if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") != "" {
@@ -69,13 +77,17 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
 		var content_type_description, content_type_icon, content_type_thumbnail string
 		var content_type_created_date *time.Time
 
+		var content_type_allow_at_root, content_type_is_container, content_type_is_abstract bool
+		var content_type_allowed_content_type_ids coreglobals.IntSlice
+
 		var content_type_parent_id sql.NullInt64
 
 		var content_type_tabs, content_type_meta []byte
 
 		if err := rows.Scan(&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name,
 			&content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description,
-			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id); err != nil {
+			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id,
+			&content_type_allow_at_root, &content_type_is_container, &content_type_is_abstract, &content_type_allowed_content_type_ids); err != nil {
 			log.Fatal(err)
 		}
 
@@ -92,7 +104,7 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
 		json.Unmarshal(content_type_tabs, &tabs)
 		json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
+		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, nil, nil}
 		contentTypes = append(contentTypes, contentType)
 	}
 	if err := rows.Err(); err != nil {
@@ -153,7 +165,7 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
 		json.Unmarshal(content_type_tabs, &tabs)
 		json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
+		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id, false, false, false, nil, nil, nil}
 		contentTypes = append(contentTypes, contentType)
 	}
 	if err := rows.Err(); err != nil {
@@ -165,13 +177,17 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
 func GetContentTypeExtendedById(id int) (contentType ContentType) {
 
 	querystr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, content_type.alias as member_alias, content_type.created_by as content_type_created_by,  content_type.created_date as content_type_created_date, content_type.description as content_type_description, content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail, content_type.meta as content_type_meta,
-res.mt_tabs as content_type_tabs, res.parent_content_types as content_type_parent_content_types, content_type.type_id as content_type_type_id
+res.mt_tabs as content_type_tabs, res.parent_content_types as content_type_parent_content_types, res.composite_content_types as content_type_composite_content_types, content_type.type_id as content_type_type_id,
+content_type.allow_at_root AS content_type_allow_at_root, 
+content_type.is_container AS content_type_is_container, content_type.is_abstract as content_type_is_abstract, 
+content_type.allowed_content_type_ids AS content_type_allowed_content_type_ids, content_type.composite_content_type_ids AS content_type_composite_content_type_ids 
 FROM content_type  
 JOIN
 LATERAL
 (
-    SELECT my_content_type.*,ffgd.*,gf2.*
+    SELECT my_content_type.*,ffgd.*,cct.*, gf2.*
     FROM content_type as my_content_type,
+    -- parent content types
     LATERAL 
     (
         SELECT array_to_json(array_agg(okidoki)) AS parent_content_types
@@ -218,7 +234,55 @@ LATERAL
             where path @> subpath(my_content_type.path,0,nlevel(my_content_type.path)-1)
         )okidoki
     ) ffgd,
-    --
+    -- composite content types
+    LATERAL 
+    (
+        SELECT array_to_json(array_agg(okidoki)) AS composite_content_types
+        FROM (
+            SELECT mt.id, mt.path, mt.parent_id, mt.name, mt.alias, mt.created_by, mt.created_date, mt.description, mt.icon, mt.meta, gf.* AS tabs
+            FROM content_type AS mt,
+            LATERAL 
+            (
+                SELECT json_agg(row1) AS tabs FROM(
+                (
+                    SELECT y.name, ss.properties
+                    FROM json_to_recordset(
+                    (
+                        SELECT * 
+                        FROM json_to_recordset(
+                        (
+                            SELECT json_agg(ggg)
+                            FROM(
+                                SELECT tabs
+                                FROM 
+                                (   
+                                    SELECT *
+                                    FROM content_type AS ct
+                                    WHERE ct.id=mt.id
+                                ) dsfds
+                            )ggg
+                        )
+                        ) AS x(tabs json)
+                    )
+                    ) AS y(name text, properties json),
+                    LATERAL (
+                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id, 'path',row.data_type_path, 'parent_id', row.data_type_parent_id,'name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
+                        FROM(
+                            SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.created_date as data_type_created_date, data_type.html AS data_type_html, help_text, description
+                            FROM json_to_recordset(properties) 
+                            AS k(name text, "order" int, data_type_id int, help_text text, description text)
+                            JOIN data_type
+                            ON data_type.id = k.data_type_id
+                        )row
+                    ) ss
+                )
+                )row1
+            ) gf
+            --where path @> subpath(my_content_type.path,0,nlevel(my_content_type.path)-1)
+            WHERE id = ANY(my_content_type.composite_content_type_ids)
+        )okidoki
+    ) cct,
+    -- tabs
     LATERAL 
     (
         SELECT okidoki.tabs AS mt_tabs
@@ -276,8 +340,12 @@ WHERE content_type.id=$1`
 
 	var content_type_parent_id sql.NullInt64
 
+	var content_type_allow_at_root, content_type_is_container, content_type_is_abstract bool
+	var content_type_allowed_content_type_ids, content_type_composite_content_type_ids coreglobals.IntSlice
+
+
 	var content_type_tabs, content_type_meta []byte
-	var content_type_parent_content_types []byte
+	var content_type_parent_content_types, content_type_composite_content_types []byte
 
 	db := coreglobals.Db
 
@@ -285,7 +353,9 @@ WHERE content_type.id=$1`
 
 	err := row.Scan(
 		&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, &content_type_alias,
-		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_parent_content_types, &content_type_type_id)
+		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, 
+		&content_type_tabs, &content_type_parent_content_types, &content_type_composite_content_types, &content_type_type_id, &content_type_allow_at_root, &content_type_is_container, 
+		&content_type_is_abstract, &content_type_allowed_content_type_ids, &content_type_composite_content_type_ids)
 
 	var parent_content_type_id int
 	if content_type_parent_id.Valid {
@@ -294,11 +364,12 @@ WHERE content_type.id=$1`
 		// NULL value
 	}
 
-	var parent_content_types []ContentType
+	var parent_content_types, composite_content_types []ContentType
 	var tabs []Tab
 	var content_type_metaMap map[string]interface{}
 
 	json.Unmarshal(content_type_parent_content_types, &parent_content_types)
+	json.Unmarshal(content_type_composite_content_types, &composite_content_types)
 	json.Unmarshal(content_type_tabs, &tabs)
 	json.Unmarshal(content_type_meta, &content_type_metaMap)
 
@@ -308,7 +379,7 @@ WHERE content_type.id=$1`
 	case err != nil:
 		log.Fatal(err)
 	default:
-		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_type_id}
+		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_type_id, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, content_type_composite_content_type_ids, composite_content_types}
 	}
 
 	return
@@ -360,7 +431,7 @@ func GetContentTypeById(id int) (contentType ContentType) {
 	case err != nil:
 		log.Fatal(err)
 	default:
-		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id}
+		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id, false, false, false, nil, nil, nil}
 	}
 
 	return
