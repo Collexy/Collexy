@@ -1,6 +1,6 @@
-var sessionService = angular.module('sessionService', []);
+angular.module("myApp").service('sessionService', sessionService)
 
-sessionService.service('sessionService', function($rootScope) {
+function sessionService($rootScope) {
     var userSession
 
     this.setUser = function(u){
@@ -10,4 +10,19 @@ sessionService.service('sessionService', function($rootScope) {
     this.getUser = function(){
     	return userSession;
     }
-});
+}
+
+
+// var sessionService = angular.module('sessionService', []);
+
+// sessionService.service('sessionService', function($rootScope) {
+//     var userSession
+
+//     this.setUser = function(u){
+//     	userSession = u
+//     }
+
+//     this.getUser = function(){
+//     	return userSession;
+//     }
+// });

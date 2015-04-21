@@ -131,7 +131,7 @@
                                     <tr ng-repeat="prop in tab.properties">
                                         <td><input type="text" ng-model="prop.name"></td>
                                         <td>
-                                            <select ng-model="prop.data_type_node_id" ng-options="dt.node_id as aliasOrNodeName(dt.alias,dt.node.name) for dt in allDataTypes">
+                                            <select ng-model="prop.data_type_id" ng-options="dt.id as aliasOrNodeName(dt.alias,dt.node.name) for dt in allDataTypes">
                                                 <!-- <option ng-repeat="dt in allDataTypes" value="{{dt.node.id}}">{{dt.alias != "" && dt.alias || dt.node.name}}</option> -->
                                             </select>
                                         </td>
