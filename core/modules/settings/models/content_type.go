@@ -192,7 +192,7 @@ LATERAL
     (
         SELECT array_to_json(array_agg(okidoki)) AS parent_content_types
         FROM (
-            SELECT mt.id, mt.path, mt.parent_id, mt.name, mt.alias, mt.created_by, mt.created_date, mt.description, mt.icon, mt.meta, gf.* AS tabs
+            SELECT mt.id, mt.path, mt.parent_id, mt.name, mt.alias, mt.created_by, mt.description, mt.icon, mt.meta, gf.* AS tabs, mt.type_id, mt.allow_at_root, mt.is_container, mt.is_abstract 
             FROM content_type AS mt,
             LATERAL 
             (
@@ -239,7 +239,7 @@ LATERAL
     (
         SELECT array_to_json(array_agg(okidoki)) AS composite_content_types
         FROM (
-            SELECT mt.id, mt.path, mt.parent_id, mt.name, mt.alias, mt.created_by, mt.created_date, mt.description, mt.icon, mt.meta, gf.* AS tabs
+            SELECT mt.id, mt.path, mt.parent_id, mt.name, mt.alias, mt.created_by, mt.description, mt.icon, mt.meta, gf.* AS tabs
             FROM content_type AS mt,
             LATERAL 
             (

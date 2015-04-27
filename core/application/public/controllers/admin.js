@@ -1,7 +1,7 @@
 angular.module("myApp").controller("AdminContentCtrl", AdminContentCtrl);
 angular.module("myApp").controller("AdminMenuCtrl", AdminMenuCtrl);
 
-function AdminContentCtrl($scope, $interpolate, sessionService, $state) {
+function AdminContentCtrl($scope, $interpolate, sessionService, $state, $document) {
     //$scope.users = User.query();
     $scope.state = $state;
     $scope.userSession = sessionService.userSession;
@@ -60,6 +60,62 @@ function AdminContentCtrl($scope, $interpolate, sessionService, $state) {
         //alert(hasPermissions)
         return hasPermissions;
     }
+    $scope.interpolate = function(value) {
+        return $interpolate(value)($scope);
+    };
+    $scope.aliasOrName = function aliasOrName(alias, name) {
+        if (alias != null && alias != "") {
+            return alias;
+        }
+        return name;
+    }
+    $scope.filteredArray = function(allArray, allowedArray, allCompareOn, allowedCompareOn) {
+        var filteredArray = [];
+        if (allCompareOn != null) {
+            if (allowedCompareOn != null) {
+                for (var i = 0; i < allArray.length; i++) {
+                    for (var j = 0; j < allowedArray.length; j++) {
+                        if (allowedArray[j][allowedCompareOn] == allArray[i][allCompareOn]) {
+                            filteredArray.push(allArray[i])
+                        }
+                    }
+                }
+            } else {
+                for (var i = 0; i < allArray.length; i++) {
+                    if (allowedArray.contains(allArray[i][allCompareOn])) {
+                        filteredArray.push(allArray[i])
+                    }
+                }
+            }
+        } else if (allowedCompareOn != null) {
+            for (var i = 0; i < allArray.length; i++) {
+                for (var j = 0; j < allowedArray.length; j++) {
+                    if (allowedArray[j][allowedCompareOn] == allArray[i]) {
+                        filteredArray.push(allArray[i])
+                    }
+                }
+            }
+        } else {
+            for (var i = 0; i < allArray.length; i++) {
+                if (allowedArray.contains(allArray[i])) {
+                    filteredArray.push(allArray[i])
+                }
+            }
+        }
+        return filteredArray;
+    };
+    // lookin, for item, filter by collection
+    // $scope.filteredTemplates = function(allItemsCollection, item, allowedCollection) {
+    //     return allItemsCollection.filter(function(item) {
+    //         return allowedCollection.indexOf(item.id) !== -1;
+    //     });
+    // };
+    // $scope.filteredTemplates = function() {
+    //     return $scope.allTemplates.filter(function(template) {
+    //         return $scope.data.content_type.meta.allowed_template_ids.indexOf(template.id) !== -1;
+    //     });
+    // };
+    $document.bind('click', handleClickEvent);
 }
 
 function AdminMenuCtrl($scope, $state, Section) {
@@ -123,23 +179,23 @@ function AdminMenuCtrl($scope, $state, Section) {
                 });
                 $scope.currentSectionAlias = "sectionContent";
             } else {
-                var hasSubs = false;
-                for (var i = 0; i < subMenuItems.length; i++) {
-                    if (id == subMenuItems[i].parent_id) {
-                        hasSubs = true;
-                        break;
-                    }
-                }
-                if (!hasSubs) {
-                    angular.element('#adminsubmenucontainer').removeClass("expanded1");
-                    angular.element('#adminsubmenucontainer').addClass("collapse1");
-                    angular.forEach(angular.element(".submenu-margin-top"), function(value, key) {
-                        var a = angular.element(value);
-                        a.removeClass('submenu-margin-top');
-                        a.addClass('nosubmenu-margin-top');
-                    });
-                }
-                $scope.currentSectionAlias = alias;
+                // var hasSubs = false;
+                // for (var i = 0; i < subMenuItems.length; i++) {
+                //     if (id == subMenuItems[i].parent_id) {
+                //         hasSubs = true;
+                //         break;
+                //     }
+                // }
+                // if (!hasSubs) {
+                //     angular.element('#adminsubmenucontainer').removeClass("expanded1");
+                //     angular.element('#adminsubmenucontainer').addClass("collapse1");
+                //     angular.forEach(angular.element(".submenu-margin-top"), function(value, key) {
+                //         var a = angular.element(value);
+                //         a.removeClass('submenu-margin-top');
+                //         a.addClass('nosubmenu-margin-top');
+                //     });
+                // }
+                // $scope.currentSectionAlias = alias;
             }
         }
     }
@@ -153,3 +209,10 @@ function AdminMenuCtrl($scope, $state, Section) {
 //      $scope.userSession = newValue;
 //     },true);
 // }]);
+function handleClickEvent(event) {
+    $oLay = angular.element(document.getElementById('overlay'));
+    //scope.currentItem = null;
+    $oLay.css({
+        display: 'none'
+    })
+}

@@ -1,4 +1,4 @@
-<div ng-controller="DirectoryTreeCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin ng-right-click="getEntityInfo()" ng-context-menu="showOptions(rootNode,$event)">
+<div ng-controller="DirectoryTreeCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin ng-right-click="showOptions(data,$event)">
 	<div id="list-container" class="scroller" perfect-scroll>
 		<div id="list" >
 		<!-- 	<div context-menu class="panel panel-default position-fixed" 
@@ -9,49 +9,25 @@
 		</div>
 	</div>
 	<div id="overlay">
-	<!-- {{currentItem}} -->
-	    <!-- {{currentItem}} 
-	    <p>Context menu for {{currentItem.info.name}}</p>-->
-	    <!-- <ul class="context-menu">
-	        <li ng-repeat="item in contextMenu" class="context-sub-menu">
-	            <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && !isDefined(item, 'sub_menu')">
-	                <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.url)}}">{{item.name}}</a>
-	                <a ng-if="item.is_dialog == true" ng-click="clickToOpen(item)">{{item.name}}</a>
+	<!-- {{contextMenu}} -->
+	    <ul class="context-menu">
+	    	<li ng-repeat="item in contextMenu" class="context-sub-menu">
+	    		<span ng-if="!isDefined(item, 'items')">
+	                <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.path)}}">{{item.name}}</a>
+	                <a ng-if="item.is_dialog == true" ng-click-dialog="item">{{item.name}}</a>
 	            </span>
-	            <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && isDefined(item, 'sub_menu')">
+	            <span ng-if="isDefined(item, 'items')">
 	                <a>{{item.name}}</a>
 	                 <ul showonhoverparent>
-	                 	<li ng-repeat="subitem in item.sub_menu.items">
-
-	                 		<span class="icon-container"><i ng-class="subitem.icon"></i></span>
-		                    <a ng-if="subitem.is_dialog == false" ui-sref="{{interpolate(subitem.url)}}">{{subitem.name}}</a>
-	                		<a ng-if="subitem.is_dialog == true" ng-click="clickToOpen(subitem)">{{subitem.name}}</a>
-		                </li>
-
+	                    <li ng-repeat="subitem in item.items">
+	                        <span class="icon-container"><i ng-class="subitem.css_class"></i></span>
+	                        <a ng-if="subitem.is_dialog == false" ui-sref="{{interpolate(subitem.path)}}">{{subitem.name}}</a>
+	                        <a ng-if="subitem.is_dialog == true" ng-click-dialog="subitem">{{subitem.name}}</a>
+	                		<!-- <a ng-if="subitem.is_dialog == true" ng-click="clickToOpen(subitem)">{{subitem.name}}</a> -->
+	                    </li>
 	                </ul>
 	            </span>
-	        </li>
-	    </ul> -->
-	    <ul class="context-menu">
-	        <li ng-if="currentItem.info.is_dir" class="context-sub-menu">
-	        	<span>
-	            	<a>New</a>
-
-		            <ul showonhoverparent>
-		                <li >
-		                	<span class="icon-container"><i class="fa fa-file-o fa-fw"></i></span>
-		                    <a ui-sref="settings.script.new({type:'file', parent:currentItem.path})">File</a>
-		                </li>
-		                <li >
-		                	<span class="icon-container"><i class="fa fa-folder-o fa-fw"></i></span>
-		                    <a ui-sref="settings.script.new({type:'folder', parent:currentItem.path})">Folder</a>
-		                </li>
-		            </ul>
-	            </span>
-	        </li>
-	        <li ng-if="currentItem.path != rootNode.path" class="context-sub-menu">
-	            <a ng-click="clickToOpen('core/modules/settings/public/views/script/delete.html')">Delete</a>
-	        </li>
+	    	</li>
 	    </ul>
 	</div>
 </div>

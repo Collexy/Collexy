@@ -1,9 +1,11 @@
 angular.module("myApp").controller("DirectoryTreeCtrl", DirectoryTreeCtrl);
-angular.module("myApp").controller("DirectoryTreeCtrlEdit", DirectoryTreeCtrlEdit);
+angular.module("myApp").controller("DirectoryEditCtrl", DirectoryEditCtrl);
+angular.module("myApp").controller("DirectoryDeleteCtrl", DirectoryDeleteCtrl);
 
-function DirectoryTreeCtrl($scope, $stateParams, $state, Directory, ngDialog) {
+function DirectoryTreeCtrl($scope, $stateParams, $state, Directory, DirectoryContextMenu) {
     //$scope.rootdir = $state.current.data.rootdir;
     $scope.rootdir = $state.current.name.split(".")[1] + "s";
+    
     //alert(rootdir);
     var directoryNodes;
     Directory.query({
@@ -16,21 +18,13 @@ function DirectoryTreeCtrl($scope, $stateParams, $state, Directory, ngDialog) {
     }, function(err) {
         // ERROR
     });
-    $scope.clickToOpen = function(url) {
-        ngDialog.open({
-            template: url,
-            scope: $scope
-        });
-    };
-    $scope.deleteNode = function(item) {
-        //alert("deleteNode")
-        Directory.delete({
-            'rootdir': rootdir,
-            name: item.info.name
-        }, function() {
-            console.log("content and node record deleted with nodeId: " + item.entity.node.id)
-        })
-    };
+    // $scope.clickToOpen = function(url) {
+    //     ngDialog.open({
+    //         template: url,
+    //         scope: $scope
+    //     });
+    // };
+    
     var offset = {
         // left: 40,
         // top: -80
@@ -39,6 +33,8 @@ function DirectoryTreeCtrl($scope, $stateParams, $state, Directory, ngDialog) {
     }
     var $oLay = angular.element(document.getElementById('overlay'))
     $scope.showOptions = function(item, $event) {
+        
+
         console.log("showoptions")
         var overlayDisplay;
         // if ($scope.currentItem === item){
@@ -64,11 +60,45 @@ function DirectoryTreeCtrl($scope, $stateParams, $state, Directory, ngDialog) {
             top: $event.clientY + offset.top + 'px',
             display: overlayDisplay
         }
+        $scope.getEntityInfo(item)
         $oLay.css(overLayCSS)
+        $event.preventDefault();
+        $event.stopPropagation();
+    }
+
+    $scope.getEntityInfo = function(currentItem){
+        console.log(currentItem)
+        if (currentItem == undefined) {
+            currentItem = {
+                path: "root",
+                info: { name: "root", is_dir: true}
+            }
+            //scope.currentItem = currentItem;
+        }
+
+        if(typeof currentItem.info.is_dir == 'undefined'){
+            currentItem.info["is_dir"] = false;
+        }
+        
+        DirectoryContextMenu.query({
+            rootdir: $scope.rootdir,
+            // name: addslashes(currentItem.path)
+            name: currentItem.path,
+            is_dir: currentItem.info.is_dir
+        }, {}, function() {}).$promise.then(function(data) {
+            console.log($scope.rootdir)
+            //console.log(data)
+            //var parentScope = element.parent().parent().parent().parent().parent().parent().parent().scope();
+            //scope.$parent.$parent.$parent.$parent.$parent.contextMenu = data;
+            //var s = angular.element(document.getElementsByClassName('outer-list-container')[0]).scope()
+            $scope.contextMenu = data;
+            //console.log(scope.$parent.$parent.$parent.$parent.$parent)
+            //scope.currentItem = currentItem;
+        });
     }
 }
 
-function DirectoryTreeCtrlEdit($scope, $stateParams, Directory, $state) {
+function DirectoryEditCtrl($scope, $stateParams, Directory, $state) {
     //console.log($state.current)
     $scope.rootdir = $state.current.name.split(".")[1] + "s";
     if ($scope.rootdir == 'stylesheets') {
@@ -134,9 +164,9 @@ function DirectoryTreeCtrlEdit($scope, $stateParams, Directory, $state) {
     }
     //alert( $scope.type);
     $scope.currentTab = $scope.type;
-    $scope.toggleTab = function(item, $event) {
-        $scope.currentTab = item;
-    }
+    // $scope.toggleTab = function(item, $event) {
+    //     $scope.currentTab = item;
+    // }
     $scope.updateName = function(name) {
         $scope.data.path = $scope.data.parent + "\\" + name;
     }
@@ -189,4 +219,25 @@ function DirectoryTreeCtrlEdit($scope, $stateParams, Directory, $state) {
             //User.update($scope.user, success, failure);
         }
     }
+}
+/**
+ * @ngdoc controller
+ * @name DirectoryDeleteCtrl
+ * @function
+ * @description
+ * The controller for deleting files and file directories
+ */
+function DirectoryDeleteCtrl($scope, $stateParams, Directory) {
+    console.log($scope.currentItem)
+    $scope.delete = function(item) {
+        
+        $scope.currentItem = item;
+        console.log(item)
+        Directory.delete({
+            'rootdir': rootdir,
+            name: item.info.name
+        }, function() {
+            console.log("directory file/folder with name: " + item.info.name + " deleted")
+        })
+    };
 }

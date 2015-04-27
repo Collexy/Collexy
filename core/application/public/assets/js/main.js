@@ -1,3 +1,7 @@
+// function addslashes( str ) {
+//     return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+// }
+
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
@@ -37,6 +41,16 @@ Array.prototype.containsId = function(id) {
     }
     return false;
 };
+
+// Array.prototype.containsTest = function(target, compareOnProp) {
+//     var i = this.length;
+//     while (i--) {
+//         if (this[i][compareOnProp] === target) {
+//             return true;
+//         }
+//     }
+//     return false;
+// };
 
 // self executing function here
 $(document).ready(function(){

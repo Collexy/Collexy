@@ -26,6 +26,7 @@ func init() {
 	subr.HandleFunc("/api/content/{id:.*}", http.HandlerFunc(contentApiController.GetBackendContentById)).Methods("GET")
 	//privateApiRouter.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.PutContent)).Methods("PUT")
 
+	subr.HandleFunc("/api/media/{id:.*}/contextmenu", http.HandlerFunc(contentTreeController.GetMenuForMedia)).Methods("GET")
 	subr.HandleFunc("/api/media/{id:.*}", http.HandlerFunc(contentApiController.GetBackendContentById)).Methods("GET")
 
 	// Setup FileServer for the settings module

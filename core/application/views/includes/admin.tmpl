@@ -14,8 +14,8 @@
 <link href="public/lib/codemirror-5.0/lib/codemirror.css" rel="stylesheet">
 <link href="public/lib/perfect-scrollbar-0.6.1/css/perfect-scrollbar.min.css" rel="stylesheet">
 <link href="public/assets/css/admin.css" rel="stylesheet">
-
 {{end}}
+
 {{define "body"}}
 <div id="wrap">
 	<div id="header">
@@ -24,31 +24,9 @@
 	
 	<div id="admin-content" class="">
 		<div class="container">
-			<!-- <div ng-include src="'public/views/admin/admin-top-user-info.html'"></div> -->
-			
-
 			<div ng-controller="AdminContentCtrl" ui-view></div>
 		</div>
-		<!-- <div id="admin-footer">
-			<p>Thank you for creating with <a href="https://github.com/codeish/collexy">Collexy</a></p>
-		</div> -->
 	</div>
-	<!-- <div id="adminmenucontainer" class="column">
-		<nav id="adminmenu">
-			<ul>
-				{{if .HasUser}}
-					<li><a ui-sref="adminLogout" ui-sref-active="active"><i class="fa fa-sign-out fa-fw"></i><span>Logout</span></a></li>
-				{{else}}
-					<li><a ui-sref="adminLogin" ui-sref-active="active"><i class="fa fa-sign-in fa-fw"></i><span>Login</span></a></li>
-				{{end}}
-				<li><a ui-sref="adminDashboard" ui-sref-active="active"><i class="fa fa-dashboard fa-fw"></i><span>Dashboard</span></a></li>
-				<li><a ui-sref="adminContent" ui-sref-active="active"><i class="fa fa-newspaper-o fa-fw"></i><span>Content</span></a></li>
-				<li><a ui-sref="adminMedia" ui-sref-active="active"><i class="fa fa-file-image-o fa-fw"></i><span>Media</span></a></li>
-				<li><a ui-sref="adminUsers" ui-sref-active="active"><i class="fa fa-users fa-fw"></i><span>Users</span></a></li>
-				<li><a ui-sref="adminSettings" ui-sref-active="active"><i class="fa fa-gear fa-fw"></i><span>Settings</span></a></li>
-			</ul>
-		</nav>
-	</div> -->
 	
 	
 </div>
@@ -104,10 +82,8 @@
 <script src="core/modules/member/public/controllers/member-group.js"></script>
 <script src="core/modules/user/public/controllers/user-group.js"></script>
 
-
 <script src="public/lib/ngDialog/ngDialog.js"></script>
 
 <!-- Directives -->
 <script src="public/directives/checklist-model.js"></script>
-
 {{end}}

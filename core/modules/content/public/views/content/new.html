@@ -1,8 +1,8 @@
-<div ng-controller="ContentTreeCtrlEdit">
+<div ng-controller="ContentEditCtrl" class="collexy-controller">
     <form role="form" ng-submit="submit()">
         <h4>New</h4>
         <!-- <p>data: {{data}}</p> -->
-        <input type="text" ng-model="data.node.name">
+        <input type="text" ng-model="data.name">
         <!-- <pre>
         {{node}}
             {{node.ctm.tabs}}
@@ -15,7 +15,7 @@
             <!-- <li class="active"><a href="">Meta</a></li>
             <li><a href="#">Properties</a></li> -->
             <!-- <li ng-repeat="tab in [{name: 'tab1', properties: [{name: 'prop1', order: 1, data_type: 1, help_text: 'help text', description: 'description'}]}, {name: 'tab2', properties: [{name: 'prop2', order: 1, data_type: 1, help_text: 'help text2', description: 'description2'}, {name: 'prop3', order: 2, data_type: 1, help_text: 'help text3', description: 'description3'}]}] track by tab.name">{{tab.name}}</li> -->
-            <li ng-repeat="tab in tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li>
+            <li ng-repeat="tab in tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" collexy-toggle-tab="toggleTab(tab.name)">{{tab.name}}</a></li>
         </ul>
         
         <div ng-repeat="tab in tabs  | unique: name" ng-show="currentTab == tab.name">
@@ -23,43 +23,43 @@
             <table>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Parent Node ID:</td>
-                    <td><input type="number" ng-model="data.node.parent_id"/></td>
+                    <td><input type="number" ng-model="data.parent_id"/></td>
                     <td></td>
                 </tr>
                 <!-- <tr ng-if="tab.name=='Properties'">
                     <td>Id:</td>
-                    <td>{{data.node.id}}</td>
+                    <td>{{data.id}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Created By:</td>
-                    <td>{{data.node.created_by}}</td>
+                    <td>{{data.created_by}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Created Date:</td>
-                    <td>{{data.node.created_date}}</td>
+                    <td>{{data.created_date}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Last updated date:</td>
-                    <td>{{data.node.updated_date}}</td>
+                    <td>{{data.updated_date}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Node Type:</td>
-                    <td>{{data.node.node_type}}</td>
+                    <td>{{data.node_type}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Node Path:</td>
-                    <td>{{data.node.path}}</td>
+                    <td>{{data.path}}</td>
                     <td></td>
                 </tr> -->
                 <tr ng-if="tab.name=='Properties'">
                     <td>Template:</td>
                     <td>
-                        <select ng-model="data.meta.template_node_id" ng-options="t.node_id as aliasOrNodeName(t.alias,t.node.name) for t in filteredTemplates(allTemplates)">
+                        <select ng-model="data.meta.template_id" ng-options="t.node_id as aliasOrName(t.alias,t.name) for t in filteredArray(allTemplates, data.content_type.meta.allowed_template_ids,'id')">
                         </select>
                     </td>
                     <td></td>

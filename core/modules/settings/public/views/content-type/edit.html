@@ -1,13 +1,13 @@
-<div ng-controller="ContentTypeEditCtrl">
+<div ng-controller="ContentTypeEditCtrl" class="collexy-controller">
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
         <input type="text" ng-model="node.name">
 
         <ul class="admin-tabs">
-            <li ng-class="(currentTab=='content-type') ? 'active' : ''"><a href="#content-type" ng-click="toggleTab('content-type')">Content Type</a></li>
-            <li ng-class="(currentTab=='structure') ? 'active' : ''"><a href="#structure" ng-click="toggleTab('structure')">Structure</a></li>
-            <li ng-class="(currentTab=='tabs') ? 'active' : ''"><a href="#tabs" ng-click="toggleTab('tabs')">Tabs</a></li>
+            <li ng-class="(currentTab=='content-type') ? 'active' : ''"><a href="#content-type" collexy-toggle-tab="toggleTab('content-type')">Content Type</a></li>
+            <li ng-class="(currentTab=='structure') ? 'active' : ''"><a href="#structure" collexy-toggle-tab="toggleTab('structure')">Structure</a></li>
+            <li ng-class="(currentTab=='tabs') ? 'active' : ''"><a href="#tabs" collexy-toggle-tab="toggleTab('tabs')">Tabs</a></li>
             <!-- <li ng-repeat="tab in node.ct.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
         </ul>
         <div ng-show="currentTab == 'content-type'">
@@ -131,7 +131,7 @@
                                     <tr ng-repeat="prop in tab.properties">
                                         <td><input type="text" ng-model="prop.name"></td>
                                         <td>
-                                            <select ng-model="prop.data_type_id" ng-options="dt.id as aliasOrNodeName(dt.alias,dt.node.name) for dt in allDataTypes">
+                                            <select ng-model="prop.data_type_id" ng-options="dt.id as aliasOrName(dt.alias,dt.name) for dt in allDataTypes">
                                                 <!-- <option ng-repeat="dt in allDataTypes" value="{{dt.node.id}}">{{dt.alias != "" && dt.alias || dt.node.name}}</option> -->
                                             </select>
                                         </td>
@@ -165,32 +165,32 @@
             <table>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Id:</td>
-                    <td>{{node.node.id}}</td>
+                    <td>{{node.id}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Created By:</td>
-                    <td>{{node.node.created_by}}</td>
+                    <td>{{node.created_by}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Created Date:</td>
-                    <td>{{node.node.created_date}}</td>
+                    <td>{{node.created_date}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Last updated date:</td>
-                    <td>{{node.node.updated_date}}</td>
+                    <td>{{node.updated_date}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Node Type:</td>
-                    <td>{{node.node.node_type}}</td>
+                    <td>{{node.node_type}}</td>
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Node Path:</td>
-                    <td>{{node.node.path}}</td>
+                    <td>{{node.path}}</td>
                     <td></td>
                 </tr>
 
@@ -210,7 +210,7 @@
             <label>Id: {{node.id}}</label><br>
             <label>Created By: {{node.created_by}}</label><br>
             <label>Created Date: {{node.created_date}}</label><br>
-            <label>Node Type: {{node.node_type}}</label><br>
+            <label>Node Type: {{node_type}}</label><br>
             <label>Node Path: {{node.path}}</label><br>
             <label>Name</label>
             <input type="text" ng-model="node.name" name="name" class="form-control"><br>

@@ -27,6 +27,7 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                         "abstract": true,
                         //"views":{}
                         "templateUrl": value.template_url
+                        //"reloadOnSearch": true
                     };
                     $stateProviderRef.state(value.state, state);
                 } else {
@@ -36,6 +37,7 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                         //"abstract": value.abstract,
                         //"views":{}
                         "templateUrl": value.template_url
+                        //"reloadOnSearch": true
                     };
                     $stateProviderRef.state(value.state, state);
                 }
@@ -253,70 +255,169 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
             });
         }
     };
-}).directive('ngContextMenu', function($parse, $compile, $document) {
+}).directive('ngContextMenu', function($parse, $compile, $document, $injector) {
     var offset = {
         left: 40,
         top: -20
     }
-    return function(scope, element, attrs) {
-        //console.log(scope.menuOptions);
-        var template = "<ul>\
-    				<li ng-repeat='option in currentItem.nodes'>\
-    					<a>{{ option.label }}\
-    						<ul ng-if='option.nodes' style='padding: 1em 0; list-style-type: none;'>\
-    							<li ng-repeat='child in option.nodes'>\
-									<a>{{ child.label }}</a>\
-								</li>\
-							</ul>\
-						</a>\
-					</li>\
-				</ul>";
-        //var lol = '<ul><li ng-repeat="option in currentItem.nodes"><a>{{ option.label }} <ul ng-if="option.nodes" style="padding: 1em 0; list-style-type: none;"><li ng-repeat="child in option.nodes"><a>{{ child.label }}</a></li></ul></a></li></ul>';
-        var $oLay = angular.element(document.getElementById('overlay'))
-        var fn = $parse(attrs.ngContextMenu);
-        // scope.showOptions = function (item,$event) {       
-        //     var overlayDisplay;
-        //     if (scope.currentItem === item) {
-        //         scope.currentItem = null;
-        //          overlayDisplay='none'
-        //     }else{
-        //          scope.currentItem = item;
-        //         overlayDisplay='block'
-        //     }
-        //     var overLayCSS = {
-        //         left: $event.clientX + offset.left + 'px',
-        //         top: $event.clientY + offset.top + 'px',
-        //         display: overlayDisplay
-        //     }
-        //      $oLay.css(overLayCSS)
-        // }
-        element.bind('contextmenu', function(event) {
-            //alert(scope.currentItem);
-            $oLay = angular.element(document.getElementById('overlay'))
-            scope.$apply(function() {
-                if (scope.getEntityInfo != undefined) scope.getEntityInfo(scope.data);
-                event.preventDefault();
-                event.stopPropagation();
-                //$oLay.html('<p>showing options for: {{currentItem.label}}</p>').show();
-                fn(scope, {
-                    $event: event
+    return {
+        scope: false,
+        link: function(scope, element, attrs) {
+            var parentControllerScope = element.closest('.collexy-controller').scope()
+            parentControllerScope.$watch("contextMenu", function(newValue, oldValue) {
+                parentControllerScope.contextMenu = newValue;
+                //alert($scope.contextMenu)
+            }, true);
+            //console.log(scope.$parent)
+            var fn = $parse(attrs.ngContextMenu);
+            var $oLay = angular.element(document.getElementById('overlay'))
+            var offset = {
+                left: 0,
+                top: -76
+            }
+            scope.showOptions = function(item, $event) {
+                console.log("showoptions")
+                var overlayDisplay;
+                if ($oLay.css("display") == "block") {
+                    parentControllerScope.currentItem = null;
+                    overlayDisplay = 'none'
+                } else {
+                    parentControllerScope.currentItem = item;
+                    overlayDisplay = 'block'
+                }
+                if (angular.element(document.getElementById('adminsubmenucontainer')).hasClass('expanded1')) {
+                    offset = {
+                        left: 0,
+                        top: -121
+                    }
+                }
+                var overLayCSS = {
+                    left: $event.clientX + offset.left + 'px',
+                    top: $event.clientY + offset.top + 'px',
+                    display: overlayDisplay
+                }
+                $oLay.css(overLayCSS)
+            }
+            scope.getEntityInfo = function(currentItem) {
+                console.log("getEntityInfo")
+                //alert(parentControllerScope.ContextMenuServiceName)
+                var serviceName = parentControllerScope.ContextMenuServiceName;
+                //console.log(currentItem)
+                if (currentItem == undefined) {
+                    currentItem = {
+                        id: 0
+                    }
+                    //scope.currentItem = currentItem;
+                }
+                // console.log(currentItem)
+                var myService = $injector.get(serviceName);
+                myService.query({
+                    id: currentItem.id
+                }, function() {}).$promise.then(function(data) {
+                    //console.log(data)
+                    //var parentScope = element.parent().parent().parent().parent().parent().parent().parent().scope();
+                    //scope.$parent.$parent.$parent.$parent.$parent.contextMenu = data;
+                    //var s = angular.element(document.getElementsByClassName('outer-list-container')[0]).scope()
+                    parentControllerScope.contextMenu = data;
+                    //console.log(scope.$parent.$parent.$parent.$parent.$parent)
+                    //scope.currentItem = currentItem;
                 });
-                // $oLay.html(template).show();
-                // $compile($oLay.contents())(scope);
-                //     if(scope.currentItem!= null)
-                //      if('nodes' in scope.currentItem)
-                // console.log(scope.currentItem.nodes)
+            }
+            // scope.showOptions = function (item,$event) {       
+            //     var overlayDisplay;
+            //     if (scope.currentItem === item) {
+            //         scope.currentItem = null;
+            //          overlayDisplay='none'
+            //     }else{
+            //          scope.currentItem = item;
+            //         overlayDisplay='block'
+            //     }
+            //     var overLayCSS = {
+            //         left: $event.clientX + offset.left + 'px',
+            //         top: $event.clientY + offset.top + 'px',
+            //         display: overlayDisplay
+            //     }
+            //      $oLay.css(overLayCSS)
+            // }
+            element.bind('contextmenu', function(event) {
+                //scope.showOptions(item,)
+                //$oLay = angular.element(document.getElementById('overlay'))
+                scope.$apply(function() {
+                    if (scope.getEntityInfo != undefined) scope.getEntityInfo(scope.data);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    //$oLay.html('<p>showing options for: {{currentItem.label}}</p>').show();
+                    fn(scope, {
+                        $event: event
+                    });
+                    //element.append($compile(overlayTemplate)(scope))
+                    // $oLay.html(template).show();
+                    // $compile($oLay.contents())(scope);
+                    //     if(scope.currentItem!= null)
+                    //      if('nodes' in scope.currentItem)
+                    // console.log(scope.currentItem.nodes)
+                });
             });
-        });
 
-        function handleClickEvent(event) {
-            //scope.currentItem = null;
-            $oLay.css({
-                display: 'none'
-            })
+            function handleClickEvent(event) {
+                //scope.currentItem = null;
+                $oLay.css({
+                    display: 'none'
+                })
+            }
+            $document.bind('click', handleClickEvent);
         }
-        $document.bind('click', handleClickEvent);
-    };
+    }
+}).directive('ngClickDialog', function($parse, ngDialog) {
+    return function($scope, element, attr) {
+        var item = $parse(attr.ngClickDialog)($scope)
+        element.bind('click', function(event) {
+            ngDialog.open({
+                template: item.url,
+                scope: $scope
+            });
+        })
+    }
+}).directive('ngExpandCollapse', function($parse, $injector) {
+    return function($scope, element, attr) {
+        var parentControllerScope = element.closest('.collexy-controller').scope()
+        var item = $parse(attr.ngExpandCollapse)($scope)
+        element.bind('click', function(event) {
+            //alert("lol")
+            $scope.expand_collapse(item)
+        })
+        $scope.expand_collapse = function(data) {
+            var serviceName = parentControllerScope.EntityChildrenServiceName;
+            if (!data.show) {
+                if (data.nodes == undefined) {
+                    data.nodes = [];
+                }
+                if (data.nodes.length == 0) {
+                    // REST API call to fetch the current node's immediate children
+                    var myService = $injector.get(serviceName);
+                    data.nodes = myService.query({
+                        id: data.id
+                    }, function(node) {
+                        //console.log(node)
+                    });
+                }
+            }
+            data.show = !data.show;
+        }
+    }
+}).directive('collexyToggleTab', function($parse) {
+    return function($scope, element, attrs) {
+        var fn = $parse(attrs.collexyToggleTab);
+        element.bind('click', function(event) {
+            fn($scope, {
+                $event: event
+            });
+        })
+        $scope.toggleTab = function(item, $event) {
+            var parentControllerScope = element.closest('.collexy-controller').scope()
+            parentControllerScope.currentTab = item;
+        }
+    }
 })
 // Would IsolateScope be better here? 
 // Rather than relying on a controller function? 
@@ -418,7 +519,17 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
             });
         }
     }
-});
+}).directive('ngRightClick', function($parse) {
+    return function(scope, element, attrs) {
+        var fn = $parse(attrs.ngRightClick);
+        element.bind('contextmenu', function(event) {
+            scope.$apply(function() {
+                event.preventDefault();
+                fn(scope, {$event:event});
+            });
+        });
+    };
+});;
 // .directive('ngContextMenu', [
 // 	'$parse',
 //     '$document',

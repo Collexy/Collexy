@@ -1,12 +1,12 @@
-<div ng-controller="TemplateTreeCtrlEdit">
+<div ng-controller="TemplateEditCtrl" class="collexy-controller">
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
         <input type="text" ng-model="node.name">
 
         <ul class="admin-tabs">
-            <li ng-class="(currentTab=='template') ? 'active' : ''"><a href="#template" ng-click="toggleTab('template')">Template</a></li>
-            <li ng-class="(currentTab=='properties') ? 'active' : ''"><a href="#properties" ng-click="toggleTab('properties')">Properties</a></li>
+            <li ng-class="(currentTab=='template') ? 'active' : ''"><a href="#template" collexy-toggle-tab="toggleTab('template')">Template</a></li>
+            <li ng-class="(currentTab=='properties') ? 'active' : ''"><a href="#properties" collexy-toggle-tab="toggleTab('properties')">Properties</a></li>
             <!-- <li ng-repeat="tab in node.ct.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
         </ul>
         <div ng-show="currentTab == 'template'">
@@ -37,22 +37,11 @@
                 <tr>
                     <td>Parent Template</td>
                     <td>
-                        <select ng-model="node.parent_template_node_id" ng-options="t.node_id as aliasOrNodeName(t.alias,t.node.name) for t in allTemplates">
+                        <select ng-model="node.parent_id" ng-options="t.id as aliasOrName(t.alias,t.name) for t in allTemplates">
                         </select>
                     </td>
                 </tr>
-                <tr>
-                    <td>Included templates</td>
-                    <td>
-                    {{node.partial_template_node_ids}}
-                        <select ng-model="node.partial_template_node_ids" multiple ng-multiple="true" ng-options="tpl.node_id as aliasOrNodeName(tpl.alias,tpl.node.name) for tpl in allTemplates">
-                            <!-- <option ng-repeat="tpl in allTemplates" ng-selected="isSelected(node.partial_template_node_ids, tpl.node_id)" value="{{tpl.node_id}}">{{aliasOrNodeName(tpl.alias,tpl.node.name)}}</option> -->
-                            <!-- <option value="sidebar-2">Sidebar 2</option>
-                            <option value="sidebar-3">Sidebar 3</option>
-                            <option value="sidebar-4">Sidebar 4</option> -->
-                        </select>
-                    </td>
-                </tr>
+                
                 <!-- <tr>
                     <td>Template file</td>
                     <td>

@@ -1,27 +1,29 @@
-<div ng-controller="MediaTreeCtrl" class="nosubmenu-margin-top outer-list-container" top-nav-margin ng-right-click="getEntityInfo()" ng-context-menu="showOptions(rootNode,$event)">
+<div ng-controller="MediaTreeCtrl" class="nosubmenu-margin-top outer-list-container collexy-controller" top-nav-margin ng-context-menu="showOptions(data,$event)">
 	<div id="list-container" class="scroller" perfect-scroll>
 		<div id="list" class="nosubmenu-margin-top" top-nav-margin>
 			<div ng-include src="'core/modules/content/public/views/media/list.html'"></div>
 		</div>
 	</div>
 	<div id="overlay">
+	<!-- {{contextMenu}} -->
 	    <ul class="context-menu">
-	        <li ng-repeat="item in contextMenu" class="context-sub-menu">
-
-	            <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && !isDefined(item, 'sub_menu')">
-	                <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.url)}}">{{item.name}}</a>
-	                <a ng-if="item.is_dialog == true" ng-click="clickToOpen(item)">{{item.name}}</a>
+	    	<li ng-repeat="item in contextMenu" class="context-sub-menu">
+	    		<span ng-if="!isDefined(item, 'items')">
+	                <a ng-if="item.is_dialog == false" ui-sref="{{interpolate(item.path)}}">{{item.name}}</a>
+	                <a ng-if="item.is_dialog == true" ng-click-dialog="item">{{item.name}}</a>
 	            </span>
-	            <span ng-if="currentItem.allowedPermissions.indexOf(item.permission) > -1 && isDefined(item, 'sub_menu')">
+	            <span ng-if="isDefined(item, 'items')">
 	                <a>{{item.name}}</a>
 	                 <ul showonhoverparent>
-	                    <li ng-repeat="ct in currentItem.entity.allowedContentTypes">
-	                        <span class="icon-container"><i ng-class="ct.icon"></i></span>
-	                        <a ui-sref="media.new({node_type:2, content_type_node_id: ct.node.id, parent_id:{{currentItem.id}}})">{{ct.alias}}</a>
+	                    <li ng-repeat="subitem in item.items">
+	                        <span class="icon-container"><i ng-class="subitem.css_class"></i></span>
+	                        <a ng-if="subitem.is_dialog == false" ui-sref="{{interpolate(subitem.path)}}">{{subitem.name}}</a>
+	                        <a ng-if="subitem.is_dialog == true" ng-click-dialog="subitem">{{subitem.name}}</a>
+	                		<!-- <a ng-if="subitem.is_dialog == true" ng-click="clickToOpen(subitem)">{{subitem.name}}</a> -->
 	                    </li>
 	                </ul>
 	            </span>
-	        </li>
+	    	</li>
 	    </ul>
 	</div>
 </div>

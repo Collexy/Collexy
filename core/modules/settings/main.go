@@ -19,23 +19,33 @@ func init() {
 	templateApiController := coremodulesettingscontrollers.TemplateApiController{}
 	directoryApiController := coremodulesettingscontrollers.DirectoryApiController{}
 
+	contentTypeTreeController := coremodulesettingscontrollers.ContentTypeTreeController{}
+	dataTypeTreeController := coremodulesettingscontrollers.DataTypeTreeController{}
+	templateTreeController := coremodulesettingscontrollers.TemplateTreeController{}
+	directoryTreeController := coremodulesettingscontrollers.DirectoryTreeController{}
+
 	privateApiRouter := coreglobals.PrivateApiRouter
 	subrPrivate := privateApiRouter.PathPrefix("/").Subrouter()
 
 	// m.Get("/api/content-type/extended/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.GetContentTypeExtendedByNodeId))
+	subrPrivate.HandleFunc("/api/content-type/{id:.*}/contextmenu", http.HandlerFunc(contentTypeTreeController.GetMenuForContentType)).Methods("GET")
 	subrPrivate.HandleFunc("/api/content-type/{id:.*}/children", http.HandlerFunc(contentTypeApiController.GetByIdChildren)).Methods("GET")
 	subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/content-type", http.HandlerFunc(contentTypeApiController.Get)).Methods("GET")
+
+	subrPrivate.HandleFunc("/api/media-type/{id:.*}/contextmenu", http.HandlerFunc(contentTypeTreeController.GetMenuForMediaType)).Methods("GET")
 	//m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypeByNodeId)) // not sure about this
 	//m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypes)) // not sure about this
 	//privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.PutContentType)).Methods("PUT")
 	//privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.Post)).Methods("POST")
 
+	subrPrivate.HandleFunc("/api/data-type/{id:.*}/contextmenu", http.HandlerFunc(dataTypeTreeController.GetMenuForDataType)).Methods("GET")
 	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/data-type", http.HandlerFunc(dataTypeApiController.Get)).Methods("GET") // not sure about this
 	//privateApiRouter.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
 	//privateApiRouter.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Post)).Methods("POST")
 
+	subrPrivate.HandleFunc("/api/template/{id:.*}/contextmenu", http.HandlerFunc(templateTreeController.GetMenuForTemplate)).Methods("GET")
 	subrPrivate.HandleFunc("/api/template/{id:.*}/children", http.HandlerFunc(templateApiController.GetByIdChildren)).Methods("GET")
 	subrPrivate.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
 	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.GetById)).Methods("GET")
@@ -44,6 +54,7 @@ func init() {
 	// privateApiRouter.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PostTemplate)).Methods("POST")
 
 	// Directory
+	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}/{is_dir:.*}/contextmenu", http.HandlerFunc(directoryTreeController.GetMenuForDirectory)).Methods("GET")
 	subrPrivate.HandleFunc("/api/directory/upload-file-test", http.HandlerFunc(directoryApiController.UploadFileTest)).Methods("POST")
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Post)).Methods("POST")
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Put)).Methods("PUT")
@@ -58,11 +69,11 @@ func init() {
 
 	rContentTypeSection := lib.Route{"settings.contentType", "/content-type", "core/modules/settings/public/views/content-type/index.html", false}
 	rContentTypeTreeMethodEdit := lib.Route{"settings.contentType.edit", "/edit/:id", "core/modules/settings/public/views/content-type/edit.html", false}
-	rContentTypeTreeMethodNew := lib.Route{"settings.contentType.new", "/new?type&parent", "core/modules/settings/public/views/content-type/new.html", false}
+	rContentTypeTreeMethodNew := lib.Route{"settings.contentType.new", "/new?type_id&parent_id", "core/modules/settings/public/views/content-type/new.html", false}
 
 	rMediaTypeSection := lib.Route{"settings.mediaType", "/media-type", "core/modules/settings/public/views/media-type/index.html", false}
 	rMediaTypeTreeMethodEdit := lib.Route{"settings.mediaType.edit", "/edit/:id", "core/modules/settings/public/views/media-type/edit.html", false}
-	rMediaTypeTreeMethodNew := lib.Route{"settings.mediaType.new", "/new?type&parent", "core/modules/settings/public/views/media-type/new.html", false}
+	rMediaTypeTreeMethodNew := lib.Route{"settings.mediaType.new", "/new?type_id&parent_id", "core/modules/settings/public/views/media-type/new.html", false}
 
 	rDataTypeSection := lib.Route{"settings.dataType", "/data-type", "core/modules/settings/public/views/data-type/index.html", false}
 	rDataTypeTreeMethodEdit := lib.Route{"settings.dataType.edit", "/edit/:id", "core/modules/settings/public/views/data-type/edit.html", false}
@@ -70,7 +81,7 @@ func init() {
 
 	rTemplateSection := lib.Route{"settings.template", "/template", "core/modules/settings/public/views/template/index.html", false}
 	rTemplateTreeMethodEdit := lib.Route{"settings.template.edit", "/edit/:id", "core/modules/settings/public/views/template/edit.html", false}
-	rTemplateTreeMethodNew := lib.Route{"settings.template.new", "/new?type&parent", "core/modules/settings/public/views/template/new.html", false}
+	rTemplateTreeMethodNew := lib.Route{"settings.template.new", "/new?parent_id", "core/modules/settings/public/views/template/new.html", false}
 
 	rScriptSection := lib.Route{"settings.script", "/script", "core/modules/settings/public/views/script/index.html", false}
 	rScriptTreeMethodEdit := lib.Route{"settings.script.edit", "/edit/:name", "core/modules/settings/public/views/script/edit.html", false}

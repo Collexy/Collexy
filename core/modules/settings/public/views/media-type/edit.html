@@ -1,11 +1,11 @@
-<div ng-controller="MediaTypeTreeCtrlEdit">
+<div ng-controller="MediaTypeEditCtrl" class="collexy-controller">
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
         <input type="text" ng-model="node.name">
         <ul class="admin-tabs">
-            <li ng-class="(currentTab=='content-type') ? 'active' : ''"><a href="#content-type" ng-click="toggleTab('content-type')">Content Type</a></li>
-            <li ng-class="(currentTab=='structure') ? 'active' : ''"><a href="#structure" ng-click="toggleTab('structure')">Structure</a></li>
-            <li ng-class="(currentTab=='tabs') ? 'active' : ''"><a href="#tabs" ng-click="toggleTab('tabs')">Tabs</a></li>
+            <li ng-class="(currentTab=='content-type') ? 'active' : ''"><a href="#content-type" collexy-toggle-tab="toggleTab('content-type')">Content Type</a></li>
+            <li ng-class="(currentTab=='structure') ? 'active' : ''"><a href="#structure" collexy-toggle-tab="toggleTab('structure')">Structure</a></li>
+            <li ng-class="(currentTab=='tabs') ? 'active' : ''"><a href="#tabs" collexy-toggle-tab="toggleTab('tabs')">Tabs</a></li>
             <!-- <li ng-repeat="tab in node.ct.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
         </ul>
         <div ng-show="currentTab == 'content-type'">
@@ -30,29 +30,22 @@
                     <td><textarea ng-model="node.description"></textarea></td>
                     <td>Notes about the content type1.</td>
                 </tr>
-                <!-- <tr>
-                                        <td>Allowed templates</td>
-                                        <td>
-                                                <div ng-repeat="tmpl in allTemplates"><label><input type="checkbox" checklist-model="node.meta.allowed_templates_node_id" checklist-value="tmpl.id"></label> {{tmpl.name}}</div>
-                                                <br>
-                                                <button ng-click="checkAll()">check all</button>
-                                                <button ng-click="uncheckAll()">uncheck all</button>
-                                        </td>
-                                        <td>Content of this type will inherit these template options</td>
-                                </tr>
-                                <tr>
-                                        <td>Default template</td>
-                                        <td>
-                                                <select ng-model="node.meta.template_node_id">
-                                                        <option ng-repeat="tmpl in allTemplates" value="{{tmpl.id}}">{{tmpl.name}}</option>
-                                                </select>
-                                        </td>
-                                        <td>This template will be selected by default when creating a new entity of this content type.</td>
-                </tr> -->
+                
             </table>
         </div>
         <div ng-show="currentTab == 'structure'">
             <table>
+                <tr>
+                    <td>Composite media types</td>
+                    <td>
+                        <div ng-repeat="ctype in availableCompositeMediaTypes"><label><input type="checkbox" checklist-model="node.composite_content_type_ids" checklist-value="ctype.id"></label> {{ctype.name}}</div>
+                        <!-- <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" ng-model="node.meta.allowed_content_type_ids" ng-true-value="ctype.id" ng-false-value=""></label> {{ctype.name}}</div> -->
+                        <br>
+                          <button type="button" ng-click="checkAll()">check all</button>
+                          <button type="button" ng-click="uncheckAll()">uncheck all</button>
+                    </td>
+                    <td>Media of this type will "inherit" tabs and properties from its composite types</td>
+                </tr>
                 <tr>
                     <td>Allowed media types</td>
                     <td>
@@ -93,7 +86,7 @@
                                 <tr ng-repeat="prop in tab.properties">
                                     <td><input type="text" ng-model="prop.name"></td>
                                     <td>
-                                        <select ng-model="prop.data_type_node_id" ng-options="dt.node_id as aliasOrNodeName(dt.alias,dt.node.name) for dt in allDataTypes">
+                                        <select ng-model="prop.data_type_node_id" ng-options="dt.node_id as aliasOrName(dt.alias,dt.node.name) for dt in allDataTypes">
                                             <!-- <option ng-repeat="dt in allDataTypes" value="{{dt.node.id}}">{{dt.alias != "" && dt.alias || dt.node.name}}</option> -->
                                         </select>
                                     </td>
