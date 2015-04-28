@@ -78,6 +78,60 @@ func GetMemberTypes() (memberTypes []*MemberType) {
 	return
 }
 
+func GetMemberTypesByIdChildren(id int) (memberTypes []*MemberType) {
+	db := coreglobals.Db
+
+	rows, err := db.Query(`SELECT member_type.id as member_type_id, member_type.path as member_type_path, 
+        member_type.parent_id as member_type_parent_id, member_type.name as member_type_name, 
+        member_type.alias as member_alias, member_type.created_by as member_type_created_by, 
+        member_type.created_date as member_type_created_date, member_type.description as member_type_description, 
+        member_type.icon as member_type_icon, member_type.meta as member_type_meta, 
+        member_type.tabs as member_type_tabs
+        FROM member_type WHERE parent_id=$1`,id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var member_type_id, member_type_created_by int
+		var member_type_path, member_type_name, member_type_alias string
+		var member_type_description, member_type_icon string
+		var member_type_created_date *time.Time
+
+		var member_type_parent_id sql.NullInt64
+
+		var member_type_tabs, member_type_meta []byte
+
+		if err := rows.Scan(&member_type_id, &member_type_path, &member_type_parent_id, &member_type_name,
+			&member_type_alias, &member_type_created_by, &member_type_created_date, &member_type_description,
+			&member_type_icon, &member_type_meta, &member_type_tabs); err != nil {
+			log.Fatal(err)
+		}
+
+		var parent_member_type_id int
+		if member_type_parent_id.Valid {
+			parent_member_type_id = int(member_type_parent_id.Int64)
+		} else {
+			// NULL value
+		}
+
+		var tabs []coremodulesettingsmodels.Tab
+		var member_type_metaMap map[string]interface{}
+
+		json.Unmarshal(member_type_tabs, &tabs)
+		json.Unmarshal(member_type_meta, &member_type_metaMap)
+
+		memberType := &MemberType{member_type_id, member_type_path, parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_metaMap, tabs, nil}
+		memberTypes = append(memberTypes, memberType)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return
+}
+
 func GetMemberTypeExtendedById(id int) (memberType MemberType) {
 
 	querystr := `SELECT member_type.id as member_type_id, member_type.path as member_type_path, member_type.parent_id as member_type_parent_id, member_type.name as member_type_name, member_type.alias as member_alias, member_type.created_by as member_type_created_by,  member_type.created_date as member_type_created_date, member_type.description as member_type_description, member_type.icon as member_type_icon, member_type.meta as member_type_meta,

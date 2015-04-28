@@ -1,0 +1,38 @@
+<div ng-controller="UserGroupEditCtrl" class="collexy-controller">
+    <form role="form" ng-submit="submit()">
+        <h4>Edit</h4>
+
+        <input type="text" ng-model="data.name">
+
+        <ul class="admin-tabs">
+            <li ng-class="(currentTab=='properties') ? 'active' : ''"><a href="#properties" collexy-toggle-tab="toggleTab('properties')">Properties</a></li>
+            
+        </ul>
+        <div ng-show="currentTab == 'properties'">
+            <table>
+                <tr>
+                    <td>Id:</td>
+                    <td><input type="text" ng-model="data.id"></td>
+                    <td></td>
+                </tr>
+                <!-- <tr>
+                    <td>Name:</td>
+                    <td><input type="text" ng-model="data.name"></td>
+                    <td></td>
+                </tr> -->
+<!--                 <tr>
+                    <td>Alias:</td>
+                    <td><input type="text" ng-model="data.alias"></td>
+                    <td></td>
+                </tr> -->
+                <tr>
+                    <td>Permission:</td>
+                    <td>{{data.permissions}}</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        
+        <button class="btn" type="submit">Update User Group &raquo;</button>
+    </form>
+</div>

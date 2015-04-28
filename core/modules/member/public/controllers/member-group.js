@@ -1,5 +1,6 @@
 angular.module("myApp").controller("MemberGroupListCtrl", MemberGroupListCtrl);
 angular.module("myApp").controller("MemberGroupEditCtrl", MemberGroupEditCtrl);
+angular.module("myApp").controller('MemberGroupDeleteCtrl', MemberGroupDeleteCtrl);
 /**
  * @ngdoc controller
  * @name ContentTreeCtrl
@@ -8,6 +9,7 @@ angular.module("myApp").controller("MemberGroupEditCtrl", MemberGroupEditCtrl);
  * The controller for deleting content
  */
 function MemberGroupListCtrl($scope, MemberGroup) {
+    $scope.ContextMenuServiceName = "MemberGroupContextMenu"
     $scope.tree = MemberGroup.query();
 }
 
@@ -45,11 +47,22 @@ function MemberGroupEditCtrl($scope, $stateParams, MemberGroup) {
             MemberGroup.create($scope.entity, success, failure);
         }
     }
-    $scope.aliasOrName = function(alias, name) {
-        if (alias != null && alias != "") {
-            return alias;
-        }
-        return name;
-    }
+
 }
-var memberGroupControllers = angular.module('memberGroupControllers', []);
+/**
+ * @ngdoc controller
+ * @name MemberGroupDeleteCtrl
+ * @function
+ * @description
+ * The controller for deleting a member group
+ */
+function MemberGroupDeleteCtrl($scope, $stateParams, MemberGroup) {
+    $scope.delete = function(item) {
+        console.log(item)
+        MemberGroup.delete({
+            id: item.id
+        }, function() {
+            console.log("member group record with id: " + item.id + " deleted")
+        })
+    };
+}

@@ -1,0 +1,181 @@
+<div ng-controller="MemberTypeEditCtrl" class="collexy-controller">
+    <form role="form" ng-submit="submit()">
+        <h4>New</h4>
+
+        <input type="text" ng-model="entity.name">
+
+        <ul class="admin-tabs">
+            <li ng-class="(currentTab=='member-type') ? 'active' : ''"><a href="#member-type" collexy-toggle-tab="toggleTab('member-type')">Member Type</a></li>
+            <li ng-class="(currentTab=='tabs') ? 'active' : ''"><a href="#tabs" collexy-toggle-tab="toggleTab('tabs')">Tabs</a></li>
+            <!-- <li ng-repeat="tab in node.ct.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
+        </ul>
+        <div ng-show="currentTab == 'member-type'">
+            <table>
+                <tr>
+                    <td>Alias</td>
+                    <td><input type="text" ng-model="entity.alias"></td>
+                    <td>Overrides site title if entered bla bla bla</td>
+                </tr>
+                <tr>
+                    <td>Icon</td>
+                    <td><input type="text" ng-model="entity.icon"></td>
+                    <td>Icon</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td><textarea ng-model="entity.description"></textarea></td>
+                    <td>Notes about the content type1.</td>
+                </tr>
+                <!-- <tr>
+                    <td>Allowed templates</td>
+                    <td>
+                        <div ng-repeat="tmpl in allTemplates"><label><input type="checkbox" checklist-model="entity.meta.allowed_templates_id" checklist-value="tmpl.id"></label> {{tmpl.name}}</div>
+                        <br>
+                          <button ng-click="checkAll()">check all</button>
+                          <button ng-click="uncheckAll()">uncheck all</button>
+                    </td>
+                    <td>Content of this type will inherit these template options</td>
+                </tr>
+                <tr>
+                    <td>Default template</td>
+                    <td>
+                        <select ng-model="entity.meta.template_id">
+                            <option ng-repeat="tmpl in allTemplates" value="{{tmpl.id}}">{{tmpl.name}}</option>
+                        </select>
+                    </td>
+                    <td>This template will be selected by default when creating a new entity of this content type.</td>
+                </tr> -->
+            </table>
+        </div>
+<!--         <div ng-show="currentTab == 'structure'">
+            <table>
+                <tr>
+                    <td>Allowed content types</td>
+                    <td>
+                        <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" checklist-model="entity.meta.allowed_content_types_id" checklist-value="ctype.id"></label> {{ctype.name}}</div>
+                        <br>
+                          <button type="button" ng-click="checkAll()">check all</button>
+                          <button type="button" ng-click="uncheckAll()">uncheck all</button>
+                    </td>
+                    <td>Content of this type will only allow child content of these types</td>
+                </tr>
+            </table>
+        </div> -->
+        <div ng-show="currentTab == 'tabs'">
+            <table>
+                
+                    <thead>
+                        <tr>
+                            <th>Tab name</th>
+                            <th>Properties</th>
+                        </tr>
+                        
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="tab in entity.tabs">
+                            <td><input type="text" ng-model="tab.name"/></td>
+                            <td>
+                                <table>
+                                    <thead>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <!-- <th>HTML</th> -->
+                                        <th>Description</th>
+                                        <th>Help text</th>
+                                        <th>Order</th>
+                                        <th>Required</th>
+                                        
+                                    </thead>
+                                    <tr ng-repeat="prop in tab.properties">
+                                        <td><input type="text" ng-model="prop.name"></td>
+                                        <td>
+                                            <select ng-model="prop.data_type_id" ng-options="dt.id as dt.name for dt in allDataTypes">
+                                                <!-- <option ng-repeat="dt in allDataTypes" value="{{dt.node.id}}">{{dt.alias != "" && dt.alias || dt.node.name}}</option> -->
+                                            </select>
+                                        </td>
+                                        <!-- <td><textarea ng-model="prop.data_type.html"></textarea></td> -->
+                                        <td><textarea ng-model="prop.description"></textarea></td>
+                                        <td><textarea ng-model="prop.help_text"></textarea></td>
+                                        <td><input type="number" ng-model="prop.order"></td>
+                                        <td><input type="checkbox"></td>
+                                        
+                                        <!-- <td><div wrap-input></div><td> -->
+                                        <!-- <td><div wrap-input><input type="text" ng-model="node.media.meta[prop.name]"/></div></td> -->
+                                        <!-- <td><input type="text" ng-model="prop.name"></td> -->
+                                        <!-- <td compile ng-bind-html="prop.data_type.Html | unsafe"></td> -->
+                                    </tr>
+                                    <td>
+                                        <td>
+                                            <button type="button" ng-click="addProp(tab.name)">Add new property</button>
+                                        </td>
+                                    </td>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+            <br>
+            <button type="button" ng-click="addTab()">Add new tab</button>
+            <!-- <button ng-click="uncheckAll()">uncheck all</button> -->
+        </div>
+        
+        <!-- <div ng-repeat="tab in node.ct.tabs  | unique: name" ng-show="currentTab == tab.name">
+            <table>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Id:</td>
+                    <td>{{node.node.id}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Created By:</td>
+                    <td>{{node.node.created_by}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Created Date:</td>
+                    <td>{{node.node.created_date}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Last updated date:</td>
+                    <td>{{node.node.updated_date}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Node Type:</td>
+                    <td>{{node.node.node_type}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Node Path:</td>
+                    <td>{{node.node.path}}</td>
+                    <td></td>
+                </tr>
+
+                <tr ng-repeat="prop in tab.properties">
+                    <td>{{prop.name}}</td>
+
+                    <td compile ng-bind-html="prop.data_type.Html | unsafe"></td>
+                    <td>
+                        <img ng-if="node.content.meta[prop.name] === node.content.meta.url && node.content.meta[prop.name] != '' && node.content.meta[prop.name] != null" ng-src="{{node.content.meta.url}}" width="75" height="75">
+                        <span ng-if="node.content.meta[prop.name] !== node.content.meta.url">{{value.description}}</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+         -->
+        <!-- <form role="form" ng-submit="submit()">
+            <label>Id: {{node.id}}</label><br>
+            <label>Created By: {{node.created_by}}</label><br>
+            <label>Created Date: {{node.created_date}}</label><br>
+            <label>Node Type: {{node.node_type}}</label><br>
+            <label>Node Path: {{node.path}}</label><br>
+            <label>Name</label>
+            <input type="text" ng-model="node.name" name="name" class="form-control"><br>
+            
+            <button class="btn" type="submit">Update Node &raquo;</button>
+        </form> -->
+        <div ui-view></div>
+        <button class="btn" type="submit">Update Member Type &raquo;</button>
+    </form>
+</div>

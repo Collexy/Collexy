@@ -55,15 +55,7 @@ func (this *MemberTreeController) GetMenuForMember(w http.ResponseWriter, r *htt
 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
 	// Permissions should be added again
-	// if id == 0 {
-	// 	cmiNew := ContextMenuItem{"Create", "member.new", "", "", false, nil, "node_create"}
-	// 	cmItems = append(cmItems, cmiNew)
-	// } else {
-	// 	cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/member/public/views/member/delete.html", true, nil, ""}
-	// 	cmiNew := ContextMenuItem{"Create", "member.new", "", "", false, nil, "node_create"}
-	// 	cmItems = append(cmItems, cmiNew)
-	// 	cmItems = append(cmItems, cmiDel)
-	// }
+	
 
 	res, err := json.Marshal(cmItems)
 	corehelpers.PanicIf(err)

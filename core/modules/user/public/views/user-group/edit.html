@@ -1,11 +1,11 @@
-<div ng-controller="UserGroupEditCtrl">
+<div ng-controller="UserGroupEditCtrl" class="collexy-controller">
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
         <input type="text" ng-model="data.name">
 
         <ul class="admin-tabs">
-            <li ng-class="(currentTab=='properties') ? 'active' : ''"><a href="#properties" ng-click="toggleTab('properties')">Properties</a></li>
+            <li ng-class="(currentTab=='properties') ? 'active' : ''"><a href="#properties" collexy-toggle-tab="toggleTab('properties')">Properties</a></li>
             
         </ul>
         <div ng-show="currentTab == 'properties'">

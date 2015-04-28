@@ -1,13 +1,13 @@
 <script type="text/ng-template"  id="tree_item_renderer.html">
-        <i ng-click="expand_collapse(user)" class="fa fa-user fa-fw"></i>
-        <a ui-sref="user.edit({id:user.id})"  ui-sref-active="active" ng-right-click="getUserInfo()" ng-context-menu="showOptions(user,$event)">{{user.username}}</a>
+        <i ng-expand-collapse="data" class="fa fa-user fa-fw"></i>
+        <a ui-sref="user.edit({id:data.id})"  ui-sref-active="active" ng-context-menu="showOptions(data,$event)">{{data.username}}</a>
 </script>
 
 
     <h4>Users</h4>
     <div class="admin-tree-container">
 		<ul class="admin-tree">
-			<li ng-repeat="user in users" ng-include="'tree_item_renderer.html'"></li>
+			<li ng-repeat="data in users" ng-include="'tree_item_renderer.html'"></li>
 			<!-- <li><a href="">Link 1</a></li> -->
 		</ul>
 	</div>

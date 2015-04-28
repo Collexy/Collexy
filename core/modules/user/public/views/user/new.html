@@ -1,0 +1,81 @@
+<div ng-controller="UserEditCtrl" class="collexy-controller">
+    <form role="form" ng-submit="submit()">
+        <h4>New</h4>
+
+        <input type="text" ng-model="data.username">
+
+        <ul class="admin-tabs">
+           <!--  <li ng-repeat="tab in user_type.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
+            <!-- <li ng-class="(currentTab=='user.username') ? 'active' : ''"><a href="#{{user.username}}" ng-click="toggleTab('user.username')">{{user.username}}</a></li> -->
+            <li class="active"><a href="#{{data.username}}" collexy-toggle-tab="toggleTab(data.username)">{{data.username}}</a></li>
+        </ul>
+
+        <!-- <table ng-show="currentTab == 'data.username'"> -->
+
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td><input type="text" ng-model="data.username"/></td>
+                
+            </tr>
+            <tr>
+                <td>First Name:</td>
+                <td><input type="text" ng-model="data.first_name"/></td>
+                
+            </tr>
+            <tr>
+                <td>Last Name:</td>
+                <td><input type="text" ng-model="data.last_name"/></td>
+                
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td>
+                    <!-- <select ng-model="data.status" ng-options="opt as opt.label for opt in options"> -->
+                    <select ng-model="data.status">
+                        <option value="0">Disabled</option>
+                        <option value="1">Enabled</option>
+                    </select>
+                    <!-- <input type="number" ng-model="data.status"/> -->
+                </td>
+                
+            </tr>
+            <tr>
+                <td>User Group Ids:</td>
+                <td>
+                    <table>
+                        <thead>
+                            <th>Available Groups</th>
+                            <th></th>
+                            <th>Selected Groups</th>
+                        </thead>
+                        <tr>
+                            <td>
+                                
+                                <select multiple="true" ng-model="available" ng-options="item as item.name for item in availableUserGroups"></select>
+                            </td>
+                            <td>
+                                <button ng-click="moveItem(available[0], availableUserGroups, selectedUserGroups)">--></button><br>
+                                <button ng-click="moveItem(selected[0], selectedUserGroups, availableUserGroups)"><--</button>
+                            </td>
+                            <td>
+                                <select multiple="true" ng-model="selected" ng-options="item as item.name for item in selectedUserGroups"></select>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- key as value for (key , value) in data //data.user_group_ids -->
+                    
+                    <!-- {{availableUserGroups}}<br>
+                    {{selectedUserGroups}}<br> -->
+                    
+                    {{data.user_group_ids}}
+                </td>
+               
+            </tr>
+            
+            
+        </table>
+        <div ui-view></div>
+        <button class="btn" type="submit">Update User &raquo;</button>
+    </form>
+</div>

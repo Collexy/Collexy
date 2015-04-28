@@ -61,6 +61,23 @@ func (this *MemberTypeApiController) GetById(w http.ResponseWriter, r *http.Requ
 
 }
 
+func (this *MemberTypeApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+	idStr := params["id"]
+	id, _ := strconv.Atoi(idStr)
+
+	//user := coremoduleuser.GetLoggedInUser(r)
+
+	memberTypes := models.GetMemberTypesByIdChildren(id)
+
+	res, err := json.Marshal(memberTypes)
+	corehelpers.PanicIf(err)
+
+	fmt.Fprintf(w, "%s", res)
+}
+
 // func (this *MemberTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Member-Type", "application/json")
 

@@ -1,21 +1,23 @@
 angular.module("myApp").controller("MemberTypeListCtrl", MemberTypeListCtrl);
 angular.module("myApp").controller("MemberTypeEditCtrl", MemberTypeEditCtrl);
+angular.module("myApp").controller("MemberTypeDeleteCtrl", MemberTypeDeleteCtrl);
 /**
  * @ngdoc controller
- * @name ContentTreeCtrl
+ * @name MemberTypeListCtrl
  * @function
  * @description
- * The controller for deleting content
+ * The controller for the member type tree
  */
 function MemberTypeListCtrl($scope, MemberType) {
+    $scope.ContextMenuServiceName = "MemberTypeContextMenu"
     $scope.tree = MemberType.query();
 }
 /**
  * @ngdoc controller
- * @name ContentTreeCtrl
+ * @name MemberTypeEditCtrl
  * @function
  * @description
- * The controller for deleting content
+ * The controller for editing a member type
  */
 function MemberTypeEditCtrl($scope, $stateParams, MemberType, DataType) {
     $scope.currentTab = 'member-type';
@@ -58,15 +60,6 @@ function MemberTypeEditCtrl($scope, $stateParams, MemberType, DataType) {
             MemberType.create($scope.entity, success, failure);
         }
     }
-    $scope.aliasOrName = function(alias, name) {
-        if (alias != null && alias != "") {
-            return alias;
-        }
-        return name;
-    }
-    $scope.toggleTab = function(item, $event) {
-        $scope.currentTab = item;
-    }
     $scope.addTab = function() {
         if ('tabs' in $scope.entity) {} else {
             $scope.node["tabs"] = [];
@@ -99,4 +92,21 @@ function MemberTypeEditCtrl($scope, $stateParams, MemberType, DataType) {
             }
         }
     }
+}
+/**
+ * @ngdoc controller
+ * @name MemberTypeDeleteCtrl
+ * @function
+ * @description
+ * The controller for deleting member type
+ */
+function MemberTypeDeleteCtrl($scope, $stateParams, MemberType) {
+    $scope.delete = function(item) {
+        console.log(item)
+        MemberType.delete({
+            id: item.id
+        }, function() {
+            console.log("member type record with id: " + item.id + " deleted")
+        })
+    };
 }

@@ -20,6 +20,8 @@ func init() {
 	memberTypeApiController := coremodulemembercontrollers.MemberTypeApiController{}
 
 	memberTreeController := coremodulemembercontrollers.MemberTreeController{}
+	memberGroupTreeController := coremodulemembercontrollers.MemberGroupTreeController{}
+	memberTypeTreeController := coremodulemembercontrollers.MemberTypeTreeController{}
 
 	// Member
 	subrPublic.HandleFunc("/api/public/member/login", http.HandlerFunc(memberApiController.Login)).Methods("POST")
@@ -29,12 +31,15 @@ func init() {
 	subrPrivate.HandleFunc("/api/member/{id:.*}", http.HandlerFunc(memberApiController.GetById)).Methods("GET")
 
 	// Member Group
+	subrPrivate.HandleFunc("/api/member-group/{id:.*}/contextmenu", http.HandlerFunc(memberGroupTreeController.GetMenuForMemberGroup)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-group", http.HandlerFunc(memberGroupApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-group/{id:.*}", http.HandlerFunc(memberGroupApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-group", http.HandlerFunc(memberGroupApiController.Post)).Methods("POST")
 	subrPrivate.HandleFunc("/api/member-group/{id:.*}", http.HandlerFunc(memberGroupApiController.Put)).Methods("PUT")
 
 	// Member type
+	subrPrivate.HandleFunc("/api/member-type/{id:.*}/contextmenu", http.HandlerFunc(memberTypeTreeController.GetMenuForMemberType)).Methods("GET")
+	subrPrivate.HandleFunc("/api/member-type/{id:.*}/children", http.HandlerFunc(memberTypeApiController.GetByIdChildren)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-type", http.HandlerFunc(memberTypeApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-type/{id:.*}", http.HandlerFunc(memberTypeApiController.GetById)).Methods("GET")
 	// privateApiRouter.HandleFunc("/api/member-type", http.HandlerFunc(memberTypeApiController.Post)).Methods("POST")
@@ -53,7 +58,7 @@ func init() {
 
 	rMemberTypeSection := lib.Route{"member.memberType", "/member-type", "core/modules/member/public/views/member-type/index.html", false}
 	rMemberTypeTreeMethodEdit := lib.Route{"member.memberType.edit", "/edit/:id", "core/modules/member/public/views/member-type/edit.html", false}
-	rMemberTypeTreeMethodNew := lib.Route{"member.memberType.new", "/new", "core/modules/member/public/views/member-type/new.html", false}
+	rMemberTypeTreeMethodNew := lib.Route{"member.memberType.new", "/new?parent_id", "core/modules/member/public/views/member-type/new.html", false}
 
 	// setup trees
 	routesMemberTree := []lib.Route{rMemberTreeMethodEdit, rMemberTreeMethodNew}

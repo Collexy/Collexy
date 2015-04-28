@@ -2,6 +2,8 @@ angular.module("myApp").service('Member', ["$resource", Member]);
 angular.module("myApp").service('MemberGroup', ["$resource", MemberGroup]);
 angular.module("myApp").service('MemberType', ["$resource", MemberType]);
 angular.module("myApp").service('MemberContextMenu', ["$resource", MemberContextMenu]);
+angular.module("myApp").service('MemberGroupContextMenu', ["$resource", MemberGroupContextMenu]);
+angular.module("myApp").service('MemberTypeContextMenu', ["$resource", MemberTypeContextMenu]);
 
 
 function Member($resource) {
@@ -75,6 +77,36 @@ function MemberType($resource) {
 
 function MemberContextMenu($resource) {
     return $resource('/api/member/:id/contextmenu', {}, {
+        //query: { method: 'GET', params: { id: 'id' }, isArray: true },
+        update: {
+            method: 'PUT',
+            isArray: false
+        },
+        create: {
+            method: 'POST',
+            isArray: false
+        }
+        // delete: { method: 'delete', isArray: false }
+    });
+}
+
+function MemberGroupContextMenu($resource) {
+    return $resource('/api/member-group/:id/contextmenu', {}, {
+        //query: { method: 'GET', params: { id: 'id' }, isArray: true },
+        update: {
+            method: 'PUT',
+            isArray: false
+        },
+        create: {
+            method: 'POST',
+            isArray: false
+        }
+        // delete: { method: 'delete', isArray: false }
+    });
+}
+
+function MemberTypeContextMenu($resource) {
+    return $resource('/api/member-type/:id/contextmenu', {}, {
         //query: { method: 'GET', params: { id: 'id' }, isArray: true },
         update: {
             method: 'PUT',

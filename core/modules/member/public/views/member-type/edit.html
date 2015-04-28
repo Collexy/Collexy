@@ -1,12 +1,12 @@
-<div ng-controller="MemberTypeEditCtrl">
+<div ng-controller="MemberTypeEditCtrl" class="collexy-controller">
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
         <input type="text" ng-model="entity.name">
 
         <ul class="admin-tabs">
-            <li ng-class="(currentTab=='member-type') ? 'active' : ''"><a href="#member-type" ng-click="toggleTab('member-type')">Member Type</a></li>
-            <li ng-class="(currentTab=='tabs') ? 'active' : ''"><a href="#tabs" ng-click="toggleTab('tabs')">Tabs</a></li>
+            <li ng-class="(currentTab=='member-type') ? 'active' : ''"><a href="#member-type" collexy-toggle-tab="toggleTab('member-type')">Member Type</a></li>
+            <li ng-class="(currentTab=='tabs') ? 'active' : ''"><a href="#tabs" collexy-toggle-tab="toggleTab('tabs')">Tabs</a></li>
             <!-- <li ng-repeat="tab in node.ct.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
         </ul>
         <div ng-show="currentTab == 'member-type'">

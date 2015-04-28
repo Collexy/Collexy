@@ -3,6 +3,7 @@ angular.module("myApp").controller("UserListCtrl", UserListCtrl);
 angular.module("myApp").controller("UserEditCtrl", UserEditCtrl);
 angular.module("myApp").controller("UserProfileCtrl", UserProfileCtrl);
 angular.module("myApp").controller("UserLoginCtrl", UserLoginCtrl);
+angular.module("myApp").controller('UserDeleteCtrl', UserDeleteCtrl);
 /**
  * @ngdoc controller
  * @name ContentTreeCtrl
@@ -20,7 +21,8 @@ function UserCtrl($scope, $state) {
  * @description
  * The controller for deleting content
  */
-function UserListCtrl($scope, $stateParams, User, sessionService, $interpolate, ngDialog) {
+function UserListCtrl($scope, $stateParams, User) {
+    $scope.ContextMenuServiceName = "UserContextMenu"
     $scope.users = User.query();
 }
 /**
@@ -260,4 +262,22 @@ function MainCtrl($scope) {
 
 function UserCtrl($scope) {
     $scope.users = ['user1', 'user2', 'user3'];
+}
+
+/**
+ * @ngdoc controller
+ * @name MemberDeleteCtrl
+ * @function
+ * @description
+ * The controller for deleting a member
+ */
+function UserDeleteCtrl($scope, $stateParams, User) {
+    $scope.delete = function(item) {
+        console.log(item)
+        User.delete({
+            id: item.id
+        }, function() {
+            console.log("user record with id: " + item.id + " deleted")
+        })
+    };
 }
