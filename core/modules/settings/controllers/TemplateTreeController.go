@@ -29,7 +29,7 @@ func (this *TemplateTreeController) GetMenuForTemplate(w http.ResponseWriter, r 
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
 	// Permissions should be added again
 	if id == 0 {
-		path := "settings.template.new"
+		path := "settings.template.new({parent_id:null})"
 		cmiNew := ContextMenuItem{"Create", path, "", "", false, nil, "node_create"}
 		cmItems = append(cmItems, cmiNew)
 	} else {

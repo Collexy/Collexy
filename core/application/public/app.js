@@ -263,7 +263,13 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
     return {
         scope: false,
         link: function(scope, element, attrs) {
-            var parentControllerScope = element.closest('.collexy-controller').scope()
+            var parentControllerScope = "";
+            if(element.hasClass('collexy-controller')){
+                parentControllerScope = element.scope();
+            } else {
+                parentControllerScope = element.closest('.collexy-controller').scope()
+            }
+
             parentControllerScope.$watch("contextMenu", function(newValue, oldValue) {
                 parentControllerScope.contextMenu = newValue;
                 //alert($scope.contextMenu)

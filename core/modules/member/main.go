@@ -19,9 +19,12 @@ func init() {
 	memberGroupApiController := coremodulemembercontrollers.MemberGroupApiController{}
 	memberTypeApiController := coremodulemembercontrollers.MemberTypeApiController{}
 
+	memberTreeController := coremodulemembercontrollers.MemberTreeController{}
+
 	// Member
 	subrPublic.HandleFunc("/api/public/member/login", http.HandlerFunc(memberApiController.Login)).Methods("POST")
 
+	subrPrivate.HandleFunc("/api/member/{id:.*}/contextmenu", http.HandlerFunc(memberTreeController.GetMenuForMember)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member", http.HandlerFunc(memberApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member/{id:.*}", http.HandlerFunc(memberApiController.GetById)).Methods("GET")
 
@@ -42,7 +45,7 @@ func init() {
 	// setup routes
 	rMemberSection := lib.Route{"member", "/admin/member", "core/modules/member/public/views/member/index.html", false}
 	rMemberTreeMethodEdit := lib.Route{"member.edit", "/edit/:id", "core/modules/member/public/views/member/edit.html", false}
-	rMemberTreeMethodNew := lib.Route{"member.new", "/new", "core/modules/member/public/views/member/new.html", false}
+	rMemberTreeMethodNew := lib.Route{"member.new", "/new?member_type_id", "core/modules/member/public/views/member/new.html", false}
 
 	rMemberGroupSection := lib.Route{"member.memberGroup", "/member-group", "core/modules/member/public/views/member-group/index.html", false}
 	rMemberGroupTreeMethodEdit := lib.Route{"member.memberGroup.edit", "/edit/:id", "core/modules/member/public/views/member-group/edit.html", false}
