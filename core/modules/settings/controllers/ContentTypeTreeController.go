@@ -23,7 +23,6 @@ func (this *ContentTypeTreeController) GetMenuForContentType(w http.ResponseWrit
 
 	//Name, Path, Url, IsDialog, Items
 
-
 	// TODO
 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
@@ -56,7 +55,6 @@ func (this *ContentTypeTreeController) GetMenuForMediaType(w http.ResponseWriter
 	var cmItems []ContextMenuItem
 
 	//Name, Path, Url, IsDialog, Items
-
 
 	// TODO
 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level

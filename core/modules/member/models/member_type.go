@@ -87,7 +87,7 @@ func GetMemberTypesByIdChildren(id int) (memberTypes []*MemberType) {
         member_type.created_date as member_type_created_date, member_type.description as member_type_description, 
         member_type.icon as member_type_icon, member_type.meta as member_type_meta, 
         member_type.tabs as member_type_tabs
-        FROM member_type WHERE parent_id=$1`,id)
+        FROM member_type WHERE parent_id=$1`, id)
 
 	if err != nil {
 		log.Fatal(err)

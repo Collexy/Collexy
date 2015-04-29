@@ -49,7 +49,7 @@ func (this *DirectoryTreeController) GetMenuForDirectory(w http.ResponseWriter, 
 		itemFolder := ContextMenuItem{"folder", pathFolder, "fa fa-folder-o fa-fw", "", false, nil, ""}
 		cmiNew.Items = append(cmiNew.Items, itemFile)
 		cmiNew.Items = append(cmiNew.Items, itemFolder)
-		
+
 		cmiDelPath := fmt.Sprintf("core/modules/settings/public/views/%s/delete.html", rootdir1)
 		cmiDel := ContextMenuItem{"Delete", "", "", cmiDelPath, true, nil, ""}
 		if len(cmiNew.Items) > 0 && isDir {
@@ -60,12 +60,11 @@ func (this *DirectoryTreeController) GetMenuForDirectory(w http.ResponseWriter, 
 
 	//Name, Path, Url, IsDialog, Items
 
-
 	// TODO
 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
 	// Permissions should be added again
-	
+
 	res, err := json.Marshal(cmItems)
 	corehelpers.PanicIf(err)
 

@@ -34,7 +34,7 @@ func (this *ContentTreeController) GetMenuForContent(w http.ResponseWriter, r *h
 		contentTypes := coremodulesettingsmodels.GetContentTypes(nil)
 
 		for _, ct := range contentTypes {
-			if ct.TypeId == 1 && ct.AllowAtRoot{
+			if ct.TypeId == 1 && ct.AllowAtRoot {
 				path := fmt.Sprintf("content.new({type_id:%d, content_type_id:%d, parent_id:null})", 1, ct.Id)
 				//tempIdStr := strconv.Itoa(ctId)
 				item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}
@@ -98,7 +98,7 @@ func (this *ContentTreeController) GetMenuForMedia(w http.ResponseWriter, r *htt
 		contentTypes := coremodulesettingsmodels.GetContentTypes(nil)
 
 		for _, ct := range contentTypes {
-			if ct.TypeId == 2 && ct.AllowAtRoot{
+			if ct.TypeId == 2 && ct.AllowAtRoot {
 				path := fmt.Sprintf("media.new({type_id:%d, content_type_id:%d})", 2, ct.Id)
 				//tempIdStr := strconv.Itoa(ctId)
 				item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}
@@ -108,7 +108,7 @@ func (this *ContentTreeController) GetMenuForMedia(w http.ResponseWriter, r *htt
 		if len(cmiNew.Items) > 0 {
 			cmItems = append(cmItems, cmiNew)
 		}
-		
+
 	} else {
 		c := models.GetContentById(id)
 

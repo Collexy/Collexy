@@ -21,10 +21,9 @@ func (this *UserTreeController) GetMenuForUser(w http.ResponseWriter, r *http.Re
 	id, _ := strconv.Atoi(idStr)
 
 	var cmItems []ContextMenuItem
-	
+
 	cmiNew := ContextMenuItem{"Create", "user.new", "", "", false, nil, "node_create"}
 	cmItems = append(cmItems, cmiNew)
-		
 
 	if id != 0 {
 		cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/user/public/views/user/delete.html", true, nil, ""}
@@ -32,12 +31,10 @@ func (this *UserTreeController) GetMenuForUser(w http.ResponseWriter, r *http.Re
 	}
 	//Name, Path, Url, IsDialog, Items
 
-
 	// TODO
 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
 	// Permissions should be added again
-	
 
 	res, err := json.Marshal(cmItems)
 	corehelpers.PanicIf(err)

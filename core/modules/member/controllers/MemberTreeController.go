@@ -28,21 +28,21 @@ func (this *MemberTreeController) GetMenuForMember(w http.ResponseWriter, r *htt
 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
 	// Permissions should be added again
-	
-		memberTypes := coremodulemembermodels.GetMemberTypes()
 
-		for _, mt := range memberTypes {
-			//if mt.TypeId == 1 {
-			// if mt.TypeId == 1 && mt.AllowAtRoot{
-				path := fmt.Sprintf("member.new({member_type_id:%d})", mt.Id)
-				//tempIdStr := strconv.Itoa(ctId)
-				item := ContextMenuItem{mt.Name, path, mt.Icon, "", false, nil, ""}
-				cmiNew.Items = append(cmiNew.Items, item)
-			//}
-		}
-		if len(cmiNew.Items) > 0 {
-			cmItems = append(cmItems, cmiNew)
-		}
+	memberTypes := coremodulemembermodels.GetMemberTypes()
+
+	for _, mt := range memberTypes {
+		//if mt.TypeId == 1 {
+		// if mt.TypeId == 1 && mt.AllowAtRoot{
+		path := fmt.Sprintf("member.new({member_type_id:%d})", mt.Id)
+		//tempIdStr := strconv.Itoa(ctId)
+		item := ContextMenuItem{mt.Name, path, mt.Icon, "", false, nil, ""}
+		cmiNew.Items = append(cmiNew.Items, item)
+		//}
+	}
+	if len(cmiNew.Items) > 0 {
+		cmItems = append(cmItems, cmiNew)
+	}
 
 	if id != 0 {
 		cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/member/public/views/member/delete.html", true, nil, ""}
@@ -50,12 +50,10 @@ func (this *MemberTreeController) GetMenuForMember(w http.ResponseWriter, r *htt
 	}
 	//Name, Path, Url, IsDialog, Items
 
-
 	// TODO
 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
 	// Permissions should be added again
-	
 
 	res, err := json.Marshal(cmItems)
 	corehelpers.PanicIf(err)

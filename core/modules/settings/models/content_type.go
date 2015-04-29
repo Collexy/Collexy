@@ -343,7 +343,6 @@ WHERE content_type.id=$1`
 	var content_type_allow_at_root, content_type_is_container, content_type_is_abstract bool
 	var content_type_allowed_content_type_ids, content_type_composite_content_type_ids coreglobals.IntSlice
 
-
 	var content_type_tabs, content_type_meta []byte
 	var content_type_parent_content_types, content_type_composite_content_types []byte
 
@@ -353,8 +352,8 @@ WHERE content_type.id=$1`
 
 	err := row.Scan(
 		&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, &content_type_alias,
-		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, 
-		&content_type_tabs, &content_type_parent_content_types, &content_type_composite_content_types, &content_type_type_id, &content_type_allow_at_root, &content_type_is_container, 
+		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta,
+		&content_type_tabs, &content_type_parent_content_types, &content_type_composite_content_types, &content_type_type_id, &content_type_allow_at_root, &content_type_is_container,
 		&content_type_is_abstract, &content_type_allowed_content_type_ids, &content_type_composite_content_type_ids)
 
 	var parent_content_type_id int
