@@ -1,0 +1,40 @@
+<div ng-controller="Collexy.DataTypeEditor.ContentPicker">
+    <h1>Content picker editor</h1>
+    <p>Select content type below</p>
+    <pre>{{contentTypes}}</pre>
+    <pre>{{entity.meta.content_type_id}}</pre>
+    <select ng-model="entity.meta.content_type_id" ng-options="convertToInt(ct.id) as ct.alias for ct in contentTypes"></select>
+    <!-- <select>
+    	<option>Collexy.DataTypeEditor.ContentPicker</option>
+    	<option>Collexy.DataTypeEditor.MediaPicker</option>
+    </select> -->
+</div>
+
+<script type="text/javascript-lazy">
+	// $controllerProviderRef.register('Collexy.DataTypeEditor.ContentPicker', function($scope, ContentType)
+	// {
+	// 	// alert("lol")
+	// 	$scope.contentTypes = ContentType.query();
+
+	// 	// Content.query({
+	//  //        'type-id': '1',
+	//  //        'content-type': $scope.entity.meta.content_type_id
+	//  //    }, {}, function(contentNodes) {
+	//  //        var parentControllerScope = element.closest('.collexy-controller').scope()
+	//  //        parentControllerScope.contentNodes = contentNodes;
+	//  //    });
+
+	// 	$scope.convertToInt = function(id){
+	// 	    return parseInt(id, 10);
+	// 	};
+	// });
+
+
+
+	// // angular.module("myApp").controller("Collexy.DataTypeEditor.ContentPicker", CollexyDataTypeEditorContentPicker);
+
+	// // function CollexyDataTypeEditorContentPicker($scope, ContentType){
+	// // 	console.log("lol")
+	// // 	$scope.contentTypes = ContentType.query();
+	// // }
+</script>

@@ -40,6 +40,16 @@
                         .CodeMirror { border: 1px solid #ddd; }
                     </style>
                 </tr>
+                <tr>
+                    <td>Data Type Editor</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                       <select ng-model="entity.editor_alias" ng-options="dte.alias as dte.name for dte in dataTypeEditors" ng-change="dataTypeEditorChanged()"></select>
+                       <div id="data-type-editor-container"><div ng-include model="selectedDataTypeEditor" src="selectedDataTypeEditor.path"></div></div>
+                    </td>
+                </tr>
             </table>
         </div>
         <div ui-view></div>

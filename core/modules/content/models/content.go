@@ -1952,7 +1952,9 @@ LATERAL
 			'alias',row.data_type_alias, 
 			'created_by',row.data_type_created_by, 
 			--'created_date',row.data_type_created_date,
-			'html', row.data_type_html
+			'html', row.data_type_html,
+			'editor_alias', row.data_type_editor_alias,
+			'meta', row.data_type_meta
 		      ), 
 		      'help_text', row.help_text, 
 		      'description', row.description
@@ -1960,7 +1962,8 @@ LATERAL
             ) AS properties
 	    FROM(
 		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
-		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, help_text, description
+		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, data_type.editor_alias as data_type_editor_alias,
+		data_type.meta as data_type_meta, help_text, description
 		FROM json_to_recordset(properties) 
 		AS k(name text, "order" int, data_type_id int, help_text text, description text)
 		JOIN data_type
@@ -2019,7 +2022,9 @@ LATERAL
 			'alias',row.data_type_alias, 
 			'created_by',row.data_type_created_by, 
 			--'created_date',row.data_type_created_date,
-			'html', row.data_type_html
+			'html', row.data_type_html,
+			'editor_alias', row.data_type_editor_alias,
+			'meta', row.data_type_meta
 		      ), 
 		      'help_text', row.help_text, 
 		      'description', row.description
@@ -2027,7 +2032,8 @@ LATERAL
             ) AS properties
 	    FROM(
 		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
-		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, help_text, description
+		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, data_type.editor_alias as data_type_editor_alias,
+		data_type.meta as data_type_meta, help_text, description
 		FROM json_to_recordset(properties) 
 		AS k(name text, "order" int, data_type_id int, help_text text, description text)
 		JOIN data_type
@@ -2088,7 +2094,9 @@ LATERAL
 			'alias',row.data_type_alias, 
 			'created_by',row.data_type_created_by, 
 			--'created_date',row.data_type_created_date,
-			'html', row.data_type_html
+			'html', row.data_type_html,
+			'editor_alias', row.data_type_editor_alias,
+			'meta', row.data_type_meta
 		      ), 
 		      'help_text', row.help_text, 
 		      'description', row.description
@@ -2096,7 +2104,8 @@ LATERAL
             ) AS properties
 	    FROM(
 		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
-		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, help_text, description
+		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, data_type.editor_alias as data_type_editor_alias,
+		data_type.meta as data_type_meta, help_text, description
 		FROM json_to_recordset(properties) 
 		AS k(name text, "order" int, data_type_id int, help_text text, description text)
 		JOIN data_type

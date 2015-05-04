@@ -105,14 +105,14 @@ function DirectoryEditCtrl($scope, $stateParams, Directory, $state) {
         $scope.editorOptions = {
             lineWrapping: true,
             lineNumbers: true,
-            readOnly: 'nocursor',
+            //readOnly: 'nocursor',
             mode: 'css',
         };
     } else {
         $scope.editorOptions = {
             lineWrapping: true,
             lineNumbers: true,
-            readOnly: 'nocursor',
+            //readOnly: 'nocursor',
             mode: 'javascript',
         };
     }

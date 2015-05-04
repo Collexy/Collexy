@@ -28,7 +28,7 @@ function TemplateEditCtrl($scope, $stateParams, Template) {
     $scope.editorOptions = {
         lineWrapping: true,
         lineNumbers: true,
-        readOnly: 'nocursor',
+        //readOnly: 'nocursor',
         mode: 'htmlmixed',
     };
     $scope.currentTab = 'template';

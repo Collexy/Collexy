@@ -22,13 +22,14 @@ import (
 	"collexy/core/lib"
 	"strings"
 	// _ "collexy/core/modules/mytest"
+	_ "collexy/core/modules/settings"
+	_ "collexy/core/modules/member"
+	_ "collexy/core/modules/user"
+	coremoduleusermodels "collexy/core/modules/user/models"
 	_ "collexy/core/modules/content"
 	coremodulecontentcontrollers "collexy/core/modules/content/controllers"
 	coremodulecontentmodels "collexy/core/modules/content/models"
-	_ "collexy/core/modules/member"
-	_ "collexy/core/modules/settings"
-	_ "collexy/core/modules/user"
-	coremoduleusermodels "collexy/core/modules/user/models"
+	
 )
 
 func executeDatabaseInstallScript(site_title, username, password, email string, privacy bool) (err error) {
@@ -377,6 +378,8 @@ func APIstuff() {
 	sectionApiController := controllers.SectionApiController{}
 	routeApiController := controllers.RouteApiController{}
 
+	dataTypeEditorApiController := controllers.DataTypeEditorApiController{}
+
 	//menuApiController := controllers.MenuApiController{}
 
 	//menuLinkApiController := controllers.MenuLinkApiController{}
@@ -395,11 +398,22 @@ func APIstuff() {
 
 	//publicApiRouter.HandleFunc("/api/public/contextmenutest/{nodeType:.*}", http.HandlerFunc(models.CmTest)).Methods("GET")
 
+	// temp only
+	privateApiRouter.HandleFunc("/api/data-type-editor/{alias:.*}", http.HandlerFunc(dataTypeEditorApiController.GetByAlias)).Methods("GET")
+	privateApiRouter.HandleFunc("/api/data-type-editor", http.HandlerFunc(dataTypeEditorApiController.Get)).Methods("GET")
+
 	http.Handle("/api/public/", publicApiRouter)
 	http.Handle("/api/", context.ClearHandler(Middleware(privateApiRouter)))
 }
 
 func Main() {
+
+	// temp DataTypeEditor stuff
+	// should eventually be a field in each module
+	dteContentPicker := lib.DataTypeEditor{"Collexy Content Picker Data Type Editor", "Collexy.DataTypeEditor.ContentPicker", "core/modules/settings/public/views/data-type/editor/content-picker.html"}
+	coreglobals.DataTypeEditors = append(coreglobals.DataTypeEditors, dteContentPicker)
+
+	// temp end
 
 	APIstuff()
 

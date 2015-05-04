@@ -26,12 +26,12 @@ function ContentTreeCtrl($scope, Content) {
  * The controller for editing content
  */
 function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType) {
-    Content.query({
-        'type-id': '1',
-        'content-type': 9
-    }, {}, function(contentNodes) {
-        $scope.contentNodes = contentNodes;
-    });
+    // Content.query({
+    //     'type-id': '1',
+    //     'content-type': 9
+    // }, {}, function(contentNodes) {
+    //     $scope.contentNodes = contentNodes;
+    // });
     Template.query({}, {}, function(allTemplates) {
         $scope.allTemplates = allTemplates;
     });

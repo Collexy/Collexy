@@ -1,8 +1,10 @@
 'use strict';
 var $stateProviderRef = null;
 var $urlRouterProviderRef = null;
+var $controllerProviderRef = null;
 // Declare app level module which depends on components
-angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'checklist-model', 'ngDialog', 'ui.codemirror', 'perfect_scrollbar']).config(function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $provide) {
+angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'checklist-model', 'ngDialog', 'ui.codemirror', 'perfect_scrollbar']).config(function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $provide, $controllerProvider) {
+    $controllerProviderRef = $controllerProvider
     $urlRouterProviderRef = $urlRouterProvider;
     $stateProvider.state('login', {
         url: '/admin/login',
@@ -535,7 +537,20 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
             });
         });
     };
-});;
+})
+.directive('script', function() {
+    return {
+      restrict: 'E',
+      scope: false,
+      link: function(scope, elem, attr) {
+        if (attr.type === 'text/javascript-lazy') {
+          var code = elem.text();
+          var f = new Function(code);
+          f();
+        }
+      }
+    };
+  });
 // .directive('ngContextMenu', [
 // 	'$parse',
 //     '$document',

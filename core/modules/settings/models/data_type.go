@@ -1,7 +1,7 @@
 package models
 
 import (
-	//"encoding/json"
+	"encoding/json"
 	//corehelpers "collexy/core/helpers"
 	coreglobals "collexy/core/globals"
 	"time"
@@ -22,12 +22,14 @@ type DataType struct {
 	CreatedBy   int        `json:"created_by,omitempty"`
 	CreatedDate *time.Time `json:"created_date,omitempty"`
 	Html        string     `json:"html,omitempty"`
+	EditorAlias string     `json:"editor_alias,omitempty"`
+	Meta        map[string]interface{} `json:"meta,omitempty"`
 }
 
 func GetDataTypes() (dataTypes []*DataType) {
 	db := coreglobals.Db
 
-	rows, err := db.Query(`SELECT id, path, parent_id, name, alias, created_by, created_date, html 
+	rows, err := db.Query(`SELECT id, path, parent_id, name, alias, created_by, created_date, html, editor_alias, meta 
         FROM data_type`)
 	if err != nil {
 		log.Fatal(err)
@@ -39,9 +41,10 @@ func GetDataTypes() (dataTypes []*DataType) {
 		var path, name, alias string
 		var created_date *time.Time
 		var parent_id sql.NullInt64
-		var html sql.NullString
+		var html, editor_alias sql.NullString
+		var meta []byte
 
-		if err := rows.Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &html); err != nil {
+		if err := rows.Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &html, &editor_alias, &meta); err != nil {
 			log.Fatal(err)
 		}
 
@@ -57,7 +60,17 @@ func GetDataTypes() (dataTypes []*DataType) {
 			html_str = html.String
 		}
 
-		dataType := &DataType{id, path, pid, name, alias, created_by, created_date, html_str}
+		var editor_alias_str string
+
+		if editor_alias.Valid {
+			editor_alias_str = editor_alias.String
+		}
+
+		var data_type_metaMap map[string]interface{}
+
+		json.Unmarshal(meta, &data_type_metaMap)
+
+		dataType := &DataType{id, path, pid, name, alias, created_by, created_date, html_str, editor_alias_str, data_type_metaMap}
 		dataTypes = append(dataTypes, dataType)
 	}
 	if err := rows.Err(); err != nil {
@@ -73,10 +86,11 @@ func GetDataTypeById(id int) (dataType *DataType) {
 	var path, name, alias string
 	var created_date *time.Time
 	var parent_id sql.NullInt64
-	var html sql.NullString
+	var html, editor_alias sql.NullString
+	var meta []byte
 
-	err := db.QueryRow(`SELECT id, path, parent_id, name, alias, created_by, created_date, html 
-        FROM data_type WHERE id=$1`, id).Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &html)
+	err := db.QueryRow(`SELECT id, path, parent_id, name, alias, created_by, created_date, html, editor_alias, meta
+        FROM data_type WHERE id=$1`, id).Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &html, &editor_alias, &meta)
 	switch {
 	case err == sql.ErrNoRows:
 		log.Printf("No data type with that ID.")
@@ -95,7 +109,17 @@ func GetDataTypeById(id int) (dataType *DataType) {
 			html_str = html.String
 		}
 
-		dataType = &DataType{id, path, pid, name, alias, created_by, created_date, html_str}
+		var editor_alias_str string
+
+		if editor_alias.Valid {
+			editor_alias_str = editor_alias.String
+		}
+
+		var data_type_metaMap map[string]interface{}
+
+		json.Unmarshal(meta, &data_type_metaMap)
+
+		dataType = &DataType{id, path, pid, name, alias, created_by, created_date, html_str, editor_alias_str, data_type_metaMap}
 	}
 	return
 }

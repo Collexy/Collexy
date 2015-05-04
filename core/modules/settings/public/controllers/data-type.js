@@ -19,11 +19,11 @@ function DataTypeTreeCtrl($scope, DataType) {
  * @description
  * The controller for editing a data type
  */
-function DataTypeEditCtrl($scope, $stateParams, DataType) {
+function DataTypeEditCtrl($scope, $stateParams, DataType, DataTypeEditor, $compile) {
     $scope.editorOptions = {
         lineWrapping: true,
         lineNumbers: true,
-        readOnly: 'nocursor',
+        //readOnly: 'nocursor',
         mode: 'htmlmixed',
     };
     $scope.currentTab = 'data-type';
@@ -31,9 +31,41 @@ function DataTypeEditCtrl($scope, $stateParams, DataType) {
     if ($stateParams.id) {
         $scope.entity = DataType.get({
             id: $stateParams.id
-        }, function(node) {});
+        }, function(entity) {
+            $scope.selectedDataTypeEditor = DataTypeEditor.get({
+                alias: entity.editor_alias
+            }, function() {});
+        });
     }
-    
+    $scope.dataTypeEditors = DataTypeEditor.query()
+    if (typeof $scope.selectedDataTypeEditor == 'undefined') {
+        $scope.selectedDataTypeEditor = {
+            name: "Temp",
+            alias: "temp",
+            path: "core/modules/settings/public/views/data-type/editor/temp.html"
+        }
+        //alert($scope.selectedDataTypeEditor.path)
+    }
+    $scope.dataTypeEditorChanged = function() {
+        //alert($scope.entity.data_type_editor_alias)
+        $scope.selectedDataTypeEditor = DataTypeEditor.get({
+            alias: $scope.entity.editor_alias
+        }, function(data) {
+            //alert(data.path)
+        });
+    }
+    // $scope.$watch("selectedDataTypeEditor", function(newValue, oldValue) {
+    //             $scope.selectedDataTypeEditor = newValue;
+    //             if(typeof $scope.selectedDataTypeEditor !== 'undefined'){
+    //                 angular.element($('#data-type-editor-container > div')).attr("src", $scope.selectedDataTypeEditor.path);
+    //             }
+    //             // //alert($scope.selectedDataTypeEditor.path)
+    //             // var htmlcontent = $('#data-type-editor-container');
+    //             // if(typeof $scope.selectedDataTypeEditor !== 'undefined'){
+    //             //     htmlcontent.load($scope.selectedDataTypeEditor.path)
+    //             //     $compile(htmlcontent.contents())($scope);
+    //             // }
+    //         }, true);
     // $scope.readFile = function() {
     //   var file = $scope.entity.dt.Path;
     //   for(var i = 0; i < $scope.node.tmpl.length; i++){

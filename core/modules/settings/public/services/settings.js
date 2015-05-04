@@ -10,13 +10,13 @@ angular.module("myApp").service('DirectoryContextMenu', ["$resource", DirectoryC
 
 function DataType($resource) {
     return $resource('/api/data-type/:id', {}, {
-        query: {
-            method: 'GET',
-            params: {
-                id: ''
-            },
-            isArray: true
-        },
+        // query: {
+        //     method: 'GET',
+        //     params: {
+        //         id: ''
+        //     },
+        //     isArray: true
+        // },
         update: {
             method: 'PUT',
             isArray: false
