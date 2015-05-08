@@ -25,6 +25,8 @@ function DataTypeEditCtrl($scope, $stateParams, DataType, DataTypeEditor, $compi
         lineNumbers: true,
         //readOnly: 'nocursor',
         mode: 'htmlmixed',
+        indentUnit: 4,
+        tabMode: 'spaces',
     };
     $scope.currentTab = 'data-type';
     $scope.stateParams = $stateParams;

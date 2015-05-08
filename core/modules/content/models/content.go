@@ -544,6 +544,204 @@ FROM content
 	return
 }
 
+func GetContentByIdParents(id int, user *coremoduleuser.User) (contentSlice []Content) {
+
+	db := coreglobals.Db
+	sqlStr := ""
+	// if(queryStringParams.Get("type-id") != nil){
+	sqlStr = `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
+content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
+content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
+content.meta AS content_meta, content.public_access AS content_public_access,
+content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
+content.type_id AS content_type_id,
+content_type.id AS ct_id, content_type.path AS ct_path, content_type.parent_id AS ct_parent_id,
+content_type.name AS ct_name, content_type.alias AS ct_alias, content_type.created_by AS ct_created_by,
+content_type.created_date AS ct_created_date, content_type.description AS ct_description,
+content_type.icon AS ct_icon, content_type.thumbnail AS ct_thumbnail, content_type.meta AS ct_meta,
+content_type.tabs AS ct_tabs, content_type.type_id as ct_type_id 
+FROM content 
+JOIN content_type 
+ON content.content_type_id = content_type.id
+WHERE content.path @> 
+(
+	SELECT path
+	FROM
+	content
+	WHERE
+	id = $1
+) ORDER BY content.path`
+
+	rows, err := db.Query(sqlStr, id)
+	corehelpers.PanicIf(err)
+	defer rows.Close()
+
+	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_path, content_name, content_alias string
+	var content_parent_id sql.NullInt64
+	var content_created_date *time.Time
+	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+
+	var ct_id, ct_created_by, ct_type_id int
+	var ct_parent_id sql.NullInt64
+	var ct_created_date *time.Time
+	var ct_path, ct_name, ct_alias, ct_description string
+	var ct_tabs, ct_meta []byte
+	var ct_icon, ct_thumbnail sql.NullString
+
+	for rows.Next() {
+		var content_type_icon_str, content_type_thumbnail_str string
+
+		// if(queryStringParams.Get("type-id")!=nil){
+		err := rows.Scan(&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
+			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon,
+			&ct_thumbnail, &ct_meta, &ct_tabs, &ct_type_id)
+
+		corehelpers.PanicIf(err)
+
+		if ct_icon.Valid {
+			content_type_icon_str = ct_icon.String
+		}
+
+		if ct_thumbnail.Valid {
+			content_type_thumbnail_str = ct_thumbnail.String
+		}
+
+		var cpid int
+		if content_parent_id.Valid {
+			cpid = int(content_parent_id.Int64)
+		}
+
+		var ctpid int
+		if ct_parent_id.Valid {
+			ctpid = int(ct_parent_id.Int64)
+		}
+
+		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		user_perm = nil
+		user_group_perm = nil
+		json.Unmarshal(content_user_permissions, &user_perm)
+		json.Unmarshal(content_user_group_permissions, &user_group_perm)
+
+		var content_metaMap map[string]interface{}
+
+		var public_access *PublicAccess
+
+		json.Unmarshal(content_public_access, &public_access)
+
+		json.Unmarshal(content_meta, &content_metaMap)
+
+		var tabs []coremodulesettingsmodels.Tab
+		var ct_metaMap map[string]interface{}
+
+		json.Unmarshal(ct_tabs, &tabs)
+		json.Unmarshal(ct_meta, &ct_metaMap)
+
+		var accessGranted bool = false
+		var accessDenied bool = false
+
+		// if(err1 != nil){
+		//   log.Println("Unmarshal Error: " + err1.Error())
+		//   user_perm = nil
+		// }
+
+		// if permissions are set on the node for a specific user
+		if content_user_permissions != nil {
+			for i := 0; i < len(user_perm); i++ {
+				if accessGranted {
+					break
+				}
+				if user_perm[i].Id == user.Id {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user_perm[i].Permissions); j++ {
+						if accessGranted {
+							break
+						}
+						if user_perm[i].Permissions[j] == "node_browse" {
+							//fmt.Println("woauw it worked!")
+							accessGranted = true
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+							// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+								content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							contentSlice = append(contentSlice, content)
+							break
+						}
+					}
+					if !accessGranted {
+						accessDenied = true
+					}
+				}
+			}
+		}
+		if !accessGranted && !accessDenied {
+			// if no specific user node access has been specified, check node access per user_group
+			if content_user_group_permissions != nil {
+				for i := 0; i < len(user.UserGroupIds); i++ {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user_group_perm); j++ {
+						if accessGranted {
+							break
+						}
+						if user_group_perm[j].Id == user.UserGroupIds[i] {
+							if accessGranted {
+								break
+							}
+							for k := 0; k < len(user_group_perm[j].Permissions); k++ {
+								if accessGranted {
+									break
+								}
+								if user_group_perm[j].Permissions[k] == "node_browse" {
+									//fmt.Println("woauw it worked!")
+									accessGranted = true
+									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+									content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+										content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+									contentSlice = append(contentSlice, content)
+									break
+								}
+							}
+							if !accessGranted {
+								accessDenied = true
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// if no specific access has been granted per user_group either, use user groups default permissions
+		if !accessGranted && !accessDenied {
+			if user.UserGroups != nil {
+				for i := 0; i < len(user.UserGroups); i++ {
+					if accessGranted {
+						break
+					}
+					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
+						if user.UserGroups[i].Permissions[j] == "node_browse" {
+							accessGranted = true
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+								content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							contentSlice = append(contentSlice, content)
+							break
+						}
+					}
+
+				}
+			}
+
+		}
+	}
+	return
+}
+
 // func GetNodes(queryStringParams url.Values) (nodes []Node){
 
 //   db := coreglobals.Db
@@ -1792,6 +1990,23 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //   Id int64
 //   NewPath string
 // }
+
+func (c *Content) Update(){
+
+	db := coreglobals.Db
+
+	meta, _ := json.Marshal(c.Meta)
+
+	sqlStr := `UPDATE content 
+	SET name=$1, alias=$2, meta=$3 
+ 	WHERE id=$4;`
+
+ 	_, err := db.Exec(sqlStr, c.Name, c.Alias, meta, c.Id)
+
+ 	corehelpers.PanicIf(err)
+
+  	log.Println("media updated successfully")
+}
 
 // func (c *Content) Update(){
 

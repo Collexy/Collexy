@@ -2,6 +2,11 @@
 //     return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
 // }
 
+function pathToUrl(text) {
+	text = text.replace(/\\/g, '/');
+	return text;
+}
+
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }

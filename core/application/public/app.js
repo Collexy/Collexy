@@ -3,7 +3,7 @@ var $stateProviderRef = null;
 var $urlRouterProviderRef = null;
 var $controllerProviderRef = null;
 // Declare app level module which depends on components
-angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'checklist-model', 'ngDialog', 'ui.codemirror', 'perfect_scrollbar']).config(function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $provide, $controllerProvider) {
+angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'checklist-model', 'ngDialog', 'ui.codemirror', 'perfect_scrollbar', 'ui.sortable']).config(function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $provide, $controllerProvider) {
     $controllerProviderRef = $controllerProvider
     $urlRouterProviderRef = $urlRouterProvider;
     $stateProvider.state('login', {
@@ -435,22 +435,42 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         return {
             restrict: 'A',
             link: function(scope, elm, attrs) {
-                if (typeof(scope.test) == undefined) {
-                    scope.test = {
-                        "files": []
-                    }
-                }
-                if (typeof(scope.test.files) !== undefined) {
-                    scope.test["files"] = []
-                }
-                elm.bind('change', function() {
-                    $parse(attrs.fileInput).assign(scope, elm[0].files)
-                    scope.$apply()
+                elm.bind('change', function(ev) {
+                    var files = ev.target.files;
+                    //emit event upward
+                    scope.$emit("filesSelected", { files: files });  
+
+                    // $parse(attrs.fileInput).assign(scope, elm[0].files)
+                    // scope.$apply()
+                    
                 })
             }
         }
     }
-]).directive('showonhoverparent', function() {
+])
+// .directive('fileInput', ['$parse',
+//     function($parse) {
+//         return {
+//             restrict: 'A',
+//             link: function(scope, elm, attrs) {
+//                 if (typeof(scope.test) == undefined) {
+//                     scope.test = {
+//                         "files": []
+//                     }
+//                 }
+//                 if (typeof(scope.test.files) !== undefined) {
+//                     scope.test["files"] = []
+//                 }
+//                 elm.bind('change', function() {
+//                     $parse(attrs.fileInput).assign(scope, elm[0].files)
+//                     scope.$apply()
+//                     console.log(scope.test)
+//                 })
+//             }
+//         }
+//     }
+// ])
+.directive('showonhoverparent', function() {
     return {
         link: function(scope, element, attrs) {
             element.parent().parent().bind('mouseenter', function() {

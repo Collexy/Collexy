@@ -30,6 +30,8 @@ function TemplateEditCtrl($scope, $stateParams, Template) {
         lineNumbers: true,
         //readOnly: 'nocursor',
         mode: 'htmlmixed',
+        indentUnit: 4,
+        tabMode: 'spaces',
     };
     $scope.currentTab = 'template';
     $scope.stateParams = $stateParams;

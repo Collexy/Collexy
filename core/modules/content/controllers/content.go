@@ -76,6 +76,23 @@ func (this *ContentApiController) GetByIdChildren(w http.ResponseWriter, r *http
 	fmt.Fprintf(w, "%s", res)
 }
 
+func (this *ContentApiController) GetByIdParents(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+	idStr := params["id"]
+	id, _ := strconv.Atoi(idStr)
+
+	user := coremoduleuser.GetLoggedInUser(r)
+
+	content := models.GetContentByIdParents(id, user)
+
+	res, err := json.Marshal(content)
+	corehelpers.PanicIf(err)
+
+	fmt.Fprintf(w, "%s", res)
+}
+
 type TestData struct {
 	Data    *TestStruct
 	HasUser bool
@@ -177,28 +194,28 @@ func (this *ContentApiController) RenderAdminTemplate(w http.ResponseWriter, nam
 //     }
 // }
 
-// func (this *ContentApiController) PutContent(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Content-Type", "application/json")
+func (this *ContentApiController) PutContent(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
 
-//     if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-//         var hasPermission bool = false
-//         hasPermission = user.HasPermissions([]string{"content_update"})
-//         if(hasPermission){
-//             content := models.Content{}
+    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+        var hasPermission bool = false
+        hasPermission = user.HasPermissions([]string{"content_update"})
+        if(hasPermission){
+            content := models.Content{}
 
-//             err := json.NewDecoder(r.Body).Decode(&content)
+            err := json.NewDecoder(r.Body).Decode(&content)
 
-//             if err != nil {
-//                 http.Error(w, "Bad Request", 400)
-//             }
+            if err != nil {
+                http.Error(w, "Bad Request", 400)
+            }
 
-//             content.Update()
-//         } else {
-//             fmt.Fprintf(w,"You do not have permission to update content")
-//         }
+            content.Update()
+        } else {
+            fmt.Fprintf(w,"You do not have permission to update content")
+        }
 
-//     }
-// }
+    }
+}
 
 // func (this *ContentApiController) Delete(w http.ResponseWriter, r *http.Request){
 //     w.Header().Set("Content-Type", "application/json")

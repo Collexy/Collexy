@@ -380,6 +380,8 @@ func APIstuff() {
 
 	dataTypeEditorApiController := controllers.DataTypeEditorApiController{}
 
+	fileApiController := controllers.FileApiController{}
+
 	//menuApiController := controllers.MenuApiController{}
 
 	//menuLinkApiController := controllers.MenuLinkApiController{}
@@ -402,6 +404,8 @@ func APIstuff() {
 	privateApiRouter.HandleFunc("/api/data-type-editor/{alias:.*}", http.HandlerFunc(dataTypeEditorApiController.GetByAlias)).Methods("GET")
 	privateApiRouter.HandleFunc("/api/data-type-editor", http.HandlerFunc(dataTypeEditorApiController.Get)).Methods("GET")
 
+	privateApiRouter.HandleFunc("/api/file", http.HandlerFunc(fileApiController.Delete)).Methods("DELETE")
+
 	http.Handle("/api/public/", publicApiRouter)
 	http.Handle("/api/", context.ClearHandler(Middleware(privateApiRouter)))
 }
@@ -411,7 +415,9 @@ func Main() {
 	// temp DataTypeEditor stuff
 	// should eventually be a field in each module
 	dteContentPicker := lib.DataTypeEditor{"Collexy Content Picker Data Type Editor", "Collexy.DataTypeEditor.ContentPicker", "core/modules/settings/public/views/data-type/editor/content-picker.html"}
-	coreglobals.DataTypeEditors = append(coreglobals.DataTypeEditors, dteContentPicker)
+	dteRadioButtonList := lib.DataTypeEditor{"Collexy Radio Button List Data Type Editor", "Collexy.DataTypeEditor.RadioButtonList", "core/modules/settings/public/views/data-type/editor/radio-button-list.html"}
+	
+	coreglobals.DataTypeEditors = append(coreglobals.DataTypeEditors, []lib.DataTypeEditor{dteContentPicker, dteRadioButtonList}...)
 
 	// temp end
 

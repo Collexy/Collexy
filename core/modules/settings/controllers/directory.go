@@ -27,49 +27,28 @@ func (this *DirectoryApiController) UploadFileTest(w http.ResponseWriter, r *htt
 	w.Header().Set("Content-Type", "multipart/mixed; boundary=frontier")
 	fmt.Println("UPLOAD FILE TEST:::")
 
-	params := mux.Vars(r)
+	queryStrParams := r.URL.Query();
 
-	path := params["path"]
+	path := queryStrParams.Get("path")
+
 	fmt.Println("path: " + path)
-	//fmt.Println(req)
-	// hah, err := ioutil.ReadAll(r.Body);
-
-	// if err != nil {
-	//     fmt.Fprintf(w, "%s", err)
-	// }
-
-	// fmt.Fprintf(w,"%s",hah)
-	// file, handler, err := r.FormFile("file")
-	file, _, err := r.FormFile("file")
+	
+	file, handler, err := r.FormFile("file")
 	if err != nil {
 		fmt.Println(err)
 	}
+	defer file.Close()
+
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
 		fmt.Println(err)
 	}
-	//err = ioutil.WriteFile("media\\"+handler.Filename, data, 0777)
-	err = ioutil.WriteFile(path, data, 0777)
+
+	err = ioutil.WriteFile(path + "\\" + handler.Filename, data, 0777)
 
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	// w.Header().Set("Content-Type", "application/json")
-
-	// fileNode := models.FileNode{}
-
-	// // var lol map[string]interface{}
-	// // json.NewDecoder(r.Body).Decode(&lol)
-	// // fmt.Println(lol)
-
-	// err := json.NewDecoder(r.Body).Decode(&fileNode)
-
-	// if err != nil {
-	//     http.Error(w, "Bad Request1", 400)
-	// }
-
-	// fileNode.Post()
 
 }
 

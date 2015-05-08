@@ -137,6 +137,11 @@ function MediaTypeEditCtrl($scope, $stateParams, ContentType, DataType) {
             }
         }
     }
+    
+    // $scope.$watch("test", function(newValue, oldValue) {
+    //             $scope.test = newValue;
+    //             console.log(newValue)
+    //         }, true);
 }
 /**
  * @ngdoc controller

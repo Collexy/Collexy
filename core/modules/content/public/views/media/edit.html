@@ -56,6 +56,11 @@
                     <td><input type="number" ng-model="data.parent_id"/></td>
                     <td></td>
                 </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Location:</td>
+                    <td>{{location}}</td>
+                    <td></td>
+                </tr>
         
 
                 <tr ng-repeat="prop in tab.properties">

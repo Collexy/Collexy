@@ -107,6 +107,8 @@ function DirectoryEditCtrl($scope, $stateParams, Directory, $state) {
             lineNumbers: true,
             //readOnly: 'nocursor',
             mode: 'css',
+            indentUnit: 4,
+            tabMode: 'spaces',
         };
     } else {
         $scope.editorOptions = {
@@ -114,6 +116,8 @@ function DirectoryEditCtrl($scope, $stateParams, Directory, $state) {
             lineNumbers: true,
             //readOnly: 'nocursor',
             mode: 'javascript',
+            indentUnit: 4,
+            tabMode: 'spaces',
         };
     }
     //alert(rootdir);

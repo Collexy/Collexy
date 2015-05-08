@@ -3,6 +3,7 @@
 angular.module("myApp").service('Route', ["$resource", Route]);
 angular.module("myApp").service('Section', ["$resource", Section]);
 angular.module("myApp").service('DataTypeEditor', ["$resource", DataTypeEditor]);
+angular.module("myApp").service('FileService', ["$resource", FileService]);
 
 function Route($resource) {
     //return $resource('/api/node/node-type', {nodeTypeId: "@nodeTypeId", levels: "@levels"}, {
@@ -59,5 +60,22 @@ function DataTypeEditor($resource) {
             isArray: false
         }
         // delete: { method: 'delete', isArray: false }
+    });
+}
+
+
+function FileService($resource) {
+    //return $resource('/api/node/node-type', {nodeTypeId: "@nodeTypeId", levels: "@levels"}, {
+    return $resource('/api/file', {}, {
+        //query: { method: 'GET', isArray: true },
+        update: {
+            method: 'PUT',
+            isArray: false
+        },
+        create: {
+            method: 'POST',
+            isArray: false
+        },
+        delete: { method: 'DELETE' }
     });
 }

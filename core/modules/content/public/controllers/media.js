@@ -25,13 +25,13 @@ function MediaTreeCtrl($scope, Content) {
  * @description
  * The controller for editing media
  */
-function MediaEditCtrl($scope, $http, $stateParams, Content, Template, ContentType) {
+function MediaEditCtrl($scope, $http, $stateParams, Content, Template, ContentType, ContentParents) {
     // Tabs
     var tabs = [];
     $scope.stateParams = $stateParams;
     if ($stateParams.id) {
         // Edit
-        $scope.data = Content.get({
+        Content.get({
             id: $stateParams.id
         }, function(data) {
             if (data.content_type.tabs != null) {
@@ -54,6 +54,36 @@ function MediaEditCtrl($scope, $http, $stateParams, Content, Template, ContentTy
             console.log(tabs);
             $scope.tabs = tabs;
             $scope.currentTab = tabs[0].name;
+            $scope.data = data;
+
+            console.log("lol")
+            console.log(data.path)
+            ContentParents.query(
+                {
+                    "id": data.parent_id
+                }, function(){}).$promise.then(function(contentParents){
+                        var location = "media\\";
+                        for(var i = 0; i < contentParents.length; i++){
+                            location = location + contentParents[i].name;
+                            if(i != contentParents.length-1){
+                                location = location + "\\"
+                            }
+                        }
+                        $scope.location = location;
+                        $scope.location_url = pathToUrl(location)
+                        console.log(location)
+                    }, 
+                    function(){
+                        //error
+                        var location = "media";
+                        $scope.location = location;
+                        $scope.location_url = pathToUrl(location)
+                        console.log(location)
+                    }
+                )
+
+            $scope.originalData = angular.copy(data);
+            $scope.latestData = angular.copy(data);
         });
     } else {
         // New
@@ -115,44 +145,39 @@ function MediaEditCtrl($scope, $http, $stateParams, Content, Template, ContentTy
                 }
             }
         }
+        $scope.originalData = angular.copy(data);
+        $scope.latestData = angular.copy(data);
     }
+    
+    
     // $scope.filesChanged = function(elm){
     //   $scope.files=elm.files
     //   $scope.$apply();
     //   console.log("mediaControllers scope: ")
     // console.log($scope.files);
     // }
+    // $scope.files = [];
+    // $scope.persistedFiles = [pathToUrl("media\\Sample Images\\TXT\\pic04.jpg")];
+
     $scope.test = {
         files: undefined
     }
-    $scope.upload = function(escapedPath) {
-        console.log($scope.test.files)
-        var fd = new FormData() // put these 3 lines in a service
-        angular.forEach($scope.test.files, function(file) {
-            fd.append('file', file)
-        })
-        $http.post('/api/directory/upload-file-test?path=' + escapedPath, fd, {
-            transformRequest: angular.identity, // returns first argument it is passed
-            headers: {
-                'Content-Type': undefined
-            } //multipart/form-data
-        }).success(function(d) {
-            console.log(d)
-            console.log("works?")
-        })
-    }
+
+    // $scope.submit = function() {
+    //     $scope.$emit("formSubmit"); 
+    // }
+
     $scope.submit = function() {
         console.log("submit")
 
         function success(response) {
             console.log("success", response)
-            var escapedPath = replaceAll(response.meta.path, '\\', '%5C');
-            //console.log($scope.test.files);
-            if ($scope.test.files.length > 0) {
-                $scope.upload(escapedPath);
-            }
-            //$scope.upload(escapedPath);
-            //$location.path("/admin/users");
+            var escapedPath = replaceAll($scope.location, '\\', '%5C');
+            
+            $scope.$broadcast("formSubmitSuccess");  
+            // if ($scope.files.length > 0) {
+            //     $scope.upload(escapedPath);
+            // }
         }
 
         function failure(response) {
