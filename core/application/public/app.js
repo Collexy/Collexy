@@ -434,16 +434,91 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
     function($parse) {
         return {
             restrict: 'A',
-            link: function(scope, elm, attrs) {
+            link: function($scope, elm, attrs) {
                 elm.bind('change', function(ev) {
                     var files = ev.target.files;
                     //emit event upward
-                    scope.$emit("filesSelected", { files: files });  
+                    $scope.$emit("filesSelected", { files: files });  
 
                     // $parse(attrs.fileInput).assign(scope, elm[0].files)
                     // scope.$apply()
                     
                 })
+
+                var propName = attrs.propName;
+
+                // alert(attrs.propName);
+
+                $scope.$on("formSubmitSuccess", function (event, args) {
+                    // alert("formSubmitSuccess event")
+                    var escapedPath = replaceAll($scope.location, '\\', '%5C');
+                    if(typeof $scope.files != 'undefined'){
+                        if($scope.files.length > 0){
+                            $scope.upload(escapedPath);
+
+                            if(typeof $scope.originalData.meta[propName].persisted_files != undefined){
+                                if($scope.originalData.meta[propName].persisted_files.length > 0){
+                                    $scope.deleteFiles($scope.location, $scope.originalData.meta[propName].persisted_files);
+                                }
+                            }
+                        } else {
+                            if(typeof $scope.originalData.meta[propName].persisted_files != undefined){
+                                if($scope.originalData.meta[propName].persisted_files.length > 0){
+                                    if($scope.clearFiles){
+                                        $scope.deleteFiles($scope.location, $scope.originalData.meta[propName].persisted_files);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if(typeof $scope.originalData.meta[propName].persisted_files != undefined){
+                            if($scope.originalData.meta[propName].persisted_files.length > 0){
+                                if($scope.clearFiles){
+                                    $scope.deleteFiles($scope.location, $scope.originalData.meta[propName].persisted_files);
+                                }
+                            }
+                        }
+                    }
+                    
+
+                    // if(typeof $scope.data.meta != 'undefined'){
+                    //  if(typeof $scope.data.meta["file_upload"] != 'undefined'){
+                    //      if(typeof $scope.data.meta["file_upload"].persisted_files != 'undefined'){
+                    //          if($scope.data.meta["file_upload"].persisted_files.length > 0){
+                    //              for(var i = 0; i < $scope.data.meta["file_upload"].persisted_files.length; i++){
+                    //                  var isSameAsOrig = false;
+                    //                  if($scope.data.meta["file_upload"].persisted_files[i] == $scope.originalData.meta["file_upload"].persisted_files[i]){
+                    //                      var isSameAsOrig = false;
+                    //                  }
+                    //                  if(!isSameAsOrig){
+
+                    //                  }
+                    //              }
+                    //          }
+                    //      }
+                    //  }
+                    // }
+                    
+                    
+                    // $scope.$apply(function () {
+                        
+                    // })
+                });
+
+                $scope.$on("filesSelected", function (event, args) {
+                    $scope.$apply(function () {
+                        console.log("lol")
+                        console.log(args.files)
+                        $scope.files = args.files;
+                        var files = [];
+                        for(var i = 0; i< args.files.length; i++){
+                            //$scope.files.push({ alias: $scope.data.alias, file: args.files[i] });
+                            files.push(args.files[i].name)
+                        }
+                        $scope.data.meta[propName]["persisted_files"] = files;
+                        $scope.latestData = $scope.data;
+                    })
+                });
             }
         }
     }

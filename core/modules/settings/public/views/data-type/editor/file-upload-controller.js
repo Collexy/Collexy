@@ -43,61 +43,61 @@ function CollexyDataTypeEditorFileUploadController($scope, ContentType, $http, F
         // $scope.data.meta["file_upload"].persisted_files = [];
     }
 
-    $scope.$on("formSubmitSuccess", function (event, args) {
-    	// alert("formSubmitSuccess event")
-    	var escapedPath = replaceAll($scope.location, '\\', '%5C');
-    	if(typeof $scope.files != 'undefined'){
-    		if($scope.files.length > 0){
-    			$scope.upload(escapedPath);
+    // $scope.$on("formSubmitSuccess", function (event, args) {
+    // 	// alert("formSubmitSuccess event")
+    // 	var escapedPath = replaceAll($scope.location, '\\', '%5C');
+    // 	if(typeof $scope.files != 'undefined'){
+    // 		if($scope.files.length > 0){
+    // 			$scope.upload(escapedPath);
 
-    			if(typeof $scope.originalData.meta["file_upload"].persisted_files != undefined){
-		    		if($scope.originalData.meta["file_upload"].persisted_files.length > 0){
-		    			$scope.deleteFiles($scope.location, $scope.originalData.meta["file_upload"].persisted_files);
-		    		}
-		    	}
-    		} else {
-    			if(typeof $scope.originalData.meta["file_upload"].persisted_files != undefined){
-		    		if($scope.originalData.meta["file_upload"].persisted_files.length > 0){
-		    			if($scope.clearFiles){
-		    				$scope.deleteFiles($scope.location, $scope.originalData.meta["file_upload"].persisted_files);
-		    			}
-		    		}
-		    	}
-    		}
-    	} else {
-    		if(typeof $scope.originalData.meta["file_upload"].persisted_files != undefined){
-	    		if($scope.originalData.meta["file_upload"].persisted_files.length > 0){
-	    			if($scope.clearFiles){
-	    				$scope.deleteFiles($scope.location, $scope.originalData.meta["file_upload"].persisted_files);
-	    			}
-	    		}
-	    	}
-    	}
+    // 			if(typeof $scope.originalData.meta["file_upload"].persisted_files != undefined){
+		  //   		if($scope.originalData.meta["file_upload"].persisted_files.length > 0){
+		  //   			$scope.deleteFiles($scope.location, $scope.originalData.meta["file_upload"].persisted_files);
+		  //   		}
+		  //   	}
+    // 		} else {
+    // 			if(typeof $scope.originalData.meta["file_upload"].persisted_files != undefined){
+		  //   		if($scope.originalData.meta["file_upload"].persisted_files.length > 0){
+		  //   			if($scope.clearFiles){
+		  //   				$scope.deleteFiles($scope.location, $scope.originalData.meta["file_upload"].persisted_files);
+		  //   			}
+		  //   		}
+		  //   	}
+    // 		}
+    // 	} else {
+    // 		if(typeof $scope.originalData.meta["file_upload"].persisted_files != undefined){
+	   //  		if($scope.originalData.meta["file_upload"].persisted_files.length > 0){
+	   //  			if($scope.clearFiles){
+	   //  				$scope.deleteFiles($scope.location, $scope.originalData.meta["file_upload"].persisted_files);
+	   //  			}
+	   //  		}
+	   //  	}
+    // 	}
     	
 
-    	// if(typeof $scope.data.meta != 'undefined'){
-    	// 	if(typeof $scope.data.meta["file_upload"] != 'undefined'){
-    	// 		if(typeof $scope.data.meta["file_upload"].persisted_files != 'undefined'){
-    	// 			if($scope.data.meta["file_upload"].persisted_files.length > 0){
-    	// 				for(var i = 0; i < $scope.data.meta["file_upload"].persisted_files.length; i++){
-    	// 					var isSameAsOrig = false;
-    	// 					if($scope.data.meta["file_upload"].persisted_files[i] == $scope.originalData.meta["file_upload"].persisted_files[i]){
-    	// 						var isSameAsOrig = false;
-    	// 					}
-    	// 					if(!isSameAsOrig){
+    // 	// if(typeof $scope.data.meta != 'undefined'){
+    // 	// 	if(typeof $scope.data.meta["file_upload"] != 'undefined'){
+    // 	// 		if(typeof $scope.data.meta["file_upload"].persisted_files != 'undefined'){
+    // 	// 			if($scope.data.meta["file_upload"].persisted_files.length > 0){
+    // 	// 				for(var i = 0; i < $scope.data.meta["file_upload"].persisted_files.length; i++){
+    // 	// 					var isSameAsOrig = false;
+    // 	// 					if($scope.data.meta["file_upload"].persisted_files[i] == $scope.originalData.meta["file_upload"].persisted_files[i]){
+    // 	// 						var isSameAsOrig = false;
+    // 	// 					}
+    // 	// 					if(!isSameAsOrig){
 
-    	// 					}
-    	// 				}
-    	// 			}
-    	// 		}
-    	// 	}
-    	// }
+    // 	// 					}
+    // 	// 				}
+    // 	// 			}
+    // 	// 		}
+    // 	// 	}
+    // 	// }
     	
     	
-        // $scope.$apply(function () {
+    //     // $scope.$apply(function () {
         	
-        // })
-    });
+    //     // })
+    // });
 
 	$scope.deleteFiles = function(location, filesArray){
 		alert("deleteFiles() fired");
@@ -147,20 +147,20 @@ function CollexyDataTypeEditorFileUploadController($scope, ContentType, $http, F
 
   //   }
     
- 	$scope.$on("filesSelected", function (event, args) {
-        $scope.$apply(function () {
-        	console.log("lol")
-        	console.log(args.files)
-        	$scope.files = args.files;
-        	var files = [];
-            for(var i = 0; i< args.files.length; i++){
-            	//$scope.files.push({ alias: $scope.data.alias, file: args.files[i] });
-            	files.push(args.files[i].name)
-            }
-            $scope.data.meta["file_upload"]["persisted_files"] = files;
-            $scope.latestData = $scope.data;
-        })
-    });
+ 	// $scope.$on("filesSelected", function (event, args) {
+  //       $scope.$apply(function () {
+  //       	console.log("lol")
+  //       	console.log(args.files)
+  //       	$scope.files = args.files;
+  //       	var files = [];
+  //           for(var i = 0; i< args.files.length; i++){
+  //           	//$scope.files.push({ alias: $scope.data.alias, file: args.files[i] });
+  //           	files.push(args.files[i].name)
+  //           }
+  //           $scope.data.meta["file_upload"]["persisted_files"] = files;
+  //           $scope.latestData = $scope.data;
+  //       })
+  //   });
 
 
     // $scope.$on("filesSelected", function (event, args) {
