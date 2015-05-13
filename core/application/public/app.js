@@ -445,7 +445,7 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                     
                 })
 
-                var propName = attrs.propName;
+                //var propName = attrs.propName;
 
                 // alert(attrs.propName);
 
@@ -455,28 +455,33 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                     if(typeof $scope.files != 'undefined'){
                         if($scope.files.length > 0){
                             $scope.upload(escapedPath);
-
-                            if(typeof $scope.originalData.meta[propName].persisted_files != undefined){
-                                if($scope.originalData.meta[propName].persisted_files.length > 0){
-                                    $scope.deleteFiles($scope.location, $scope.originalData.meta[propName].persisted_files);
-                                }
+                            // if(typeof $scope.originalData.meta[propName] != 'undefined'){
+                            if(typeof $scope.originalData.meta["attached_file"] != 'undefined'){
+                                $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
+                                // if(typeof $scope.originalData.meta["attached_file"].persisted_files != 'undefined'){
+                                //     if($scope.originalData.meta["attached_file"].persisted_files.length > 0){
+                                //         $scope.deleteFiles($scope.location, $scope.originalData.meta["attached_file"].persisted_files);
+                                //     }
+                                // }
                             }
                         } else {
-                            if(typeof $scope.originalData.meta[propName].persisted_files != undefined){
-                                if($scope.originalData.meta[propName].persisted_files.length > 0){
-                                    if($scope.clearFiles){
-                                        $scope.deleteFiles($scope.location, $scope.originalData.meta[propName].persisted_files);
-                                    }
-                                }
+                            if(typeof $scope.originalData.meta["attached_file"] != 'undefined'){
+                                $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
+                                // if($scope.originalData.meta["attached_file"].persisted_files.length > 0){
+                                //     if($scope.clearFiles){
+                                //         $scope.deleteFiles($scope.location, $scope.originalData.meta["attached_file"].persisted_files);
+                                //     }
+                                // }
                             }
                         }
                     } else {
-                        if(typeof $scope.originalData.meta[propName].persisted_files != undefined){
-                            if($scope.originalData.meta[propName].persisted_files.length > 0){
-                                if($scope.clearFiles){
-                                    $scope.deleteFiles($scope.location, $scope.originalData.meta[propName].persisted_files);
-                                }
-                            }
+                        if(typeof $scope.originalData.meta["attached_file"] != 'undefined'){
+                            $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
+                            // if($scope.originalData.meta["attached_file"].persisted_files.length > 0){
+                            //     if($scope.clearFiles){
+                            //         $scope.deleteFiles($scope.location, $scope.originalData.meta["attached_file"].persisted_files);
+                            //     }
+                            // }
                         }
                     }
                     
@@ -510,12 +515,13 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                         console.log("lol")
                         console.log(args.files)
                         $scope.files = args.files;
-                        var files = [];
-                        for(var i = 0; i< args.files.length; i++){
-                            //$scope.files.push({ alias: $scope.data.alias, file: args.files[i] });
-                            files.push(args.files[i].name)
-                        }
-                        $scope.data.meta[propName]["persisted_files"] = files;
+                        // var files = [];
+                        // for(var i = 0; i< args.files.length; i++){
+                        //     //$scope.files.push({ alias: $scope.data.alias, file: args.files[i] });
+                        //     // files.push(args.files[i].name)
+                        //     files.push(args.files[i])
+                        // }
+                        $scope.data.meta["attached_file"] = args.files[0];
                         $scope.latestData = $scope.data;
                     })
                 });
@@ -523,6 +529,20 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         }
     }
 ])
+
+// .directive('folderBrowser', ['$parse',
+//     function($parse) {
+//         return {
+//             restrict: 'A',
+//             link: function($scope, elm, attrs) {
+//                 var propName = attrs.propName;
+
+//                 $scope.data.meta[propName]
+//             }
+//         }
+//     }
+// ])
+
 // .directive('fileInput', ['$parse',
 //     function($parse) {
 //         return {

@@ -1,0 +1,21 @@
+{
+	"items": [
+		{
+			"content_id": 16,
+			"domains": ["localhost:8080"],
+			"url": "media/Sample Images/TXT/pic04.jpg",
+			"login_page": 22,
+			"access_denied_page": 3,
+			"member_groups": [1]
+		},
+		{
+			"content_id": 17,
+			"domains": ["localhost:8080"],
+			"url": "media/Sample Images/TXT/pic05.jpg",
+			"login_page": 22,
+			"access_denied_page": 3,
+			"member_groups": [1]
+		}
+	]
+	
+}

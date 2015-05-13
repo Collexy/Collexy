@@ -10,3 +10,19 @@ type Config struct {
 	SslMode    string `json:"ssl_mode,omitempty"`
 	Id404      int    `json:"id_404,omitempty"`
 }
+
+var Maccess MediaAccess
+
+type MediaAccess struct {
+	Items     []MediaAccessItem `json:"items,omitempty"`
+}
+
+type MediaAccessItem struct {
+	ContentId	int	`json:"content_id,omitempty"`
+	Domains     []string `json:"domains,omitempty"`
+	Url     string `json:"url,omitempty"`
+	LoginPage int `json:"login_page,omitempty"`
+	AccessDeniedPage     int `json:"access_denied_page,omitempty"`
+	MemberGroups    []int `json:"member_groups,omitempty"`
+}
+

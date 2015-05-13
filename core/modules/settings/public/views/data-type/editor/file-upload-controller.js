@@ -35,9 +35,20 @@ function CollexyDataTypeEditorFileUploadController($scope, ContentType, $http, F
     	if(isTrue){
     		//clear the current files
         	$scope.files = [];
-        	$scope.data.meta["file_upload"].persisted_files = [];
+        	// $scope.data.meta["attached_file"] = [];
+            delete $scope.data.meta["attached_file"];
     	} else {
-    		$scope.data.meta["file_upload"].persisted_files = $scope.originalData.meta["file_upload"].persisted_files;
+            
+            if(typeof $scope.originalData.meta["attached_file"] != 'undefined'){
+                $scope.data.meta["attached_file"] = $scope.originalData.meta["attached_file"];
+            }
+            // if(typeof $scope.data.meta["file_upload"] == 'undefined'){
+            //     $scope.data.meta["file_upload"] = {};
+            // }
+            // if(typeof $scope.originalData.meta["file_upload"] != 'undefined'){
+            //     $scope.data.meta["file_upload"]["persisted_files"] = $scope.originalData.meta["file_upload"].persisted_files;
+            // }
+    		
     	}
         
         // $scope.data.meta["file_upload"].persisted_files = [];
@@ -99,14 +110,14 @@ function CollexyDataTypeEditorFileUploadController($scope, ContentType, $http, F
     //     // })
     // });
 
-	$scope.deleteFiles = function(location, filesArray){
-		alert("deleteFiles() fired");
-		console.log(filesArray)
+	$scope.deleteFile = function(location, fileToDelete){
+		alert("deleteFile() fired");
+		console.log(fileToDelete)
 			FileService.delete({
 				path: location,
-				fileName: filesArray[0]
+				fileName: fileToDelete.name
 			}, function(){
-				console.log("Location: " + location + " with filename: " + filesArray[0] + " has successfully been deleted");
+				console.log("Location: " + location + " with filename: " + fileToDelete.name + " has successfully been deleted");
 			})
 		// for(var i = 0; filesArray.length; i++){
 		// 	FileService.delete({
