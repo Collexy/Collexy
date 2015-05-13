@@ -579,6 +579,8 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 				h.ServeHTTP(w, r)
 			}
 			
+		} else {
+			h.ServeHTTP(w, r)
 		}
 
 		
