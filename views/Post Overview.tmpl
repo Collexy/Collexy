@@ -8,7 +8,7 @@
 							<div class="content">
 								{{range $content := .Data.Content.GetAncestors 0 1}}
 								<!-- Content -->
-									{{if $content.Eq $content.ContentTypeNodeId 3}}
+									{{if $content.Eq $content.ContentTypeId 3}}
 										{{if $content.Meta.is_featured}}
 										<article class="box page-content">
 
