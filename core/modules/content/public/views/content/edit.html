@@ -16,6 +16,9 @@
             <li><a href="#">Properties</a></li> -->
             <!-- <li ng-repeat="tab in [{name: 'tab1', properties: [{name: 'prop1', order: 1, data_type: 1, help_text: 'help text', description: 'description'}]}, {name: 'tab2', properties: [{name: 'prop2', order: 1, data_type: 1, help_text: 'help text2', description: 'description2'}, {name: 'prop3', order: 2, data_type: 1, help_text: 'help text3', description: 'description3'}]}] track by tab.name">{{tab.name}}</li> -->
             <li ng-repeat="tab in tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" collexy-toggle-tab="toggleTab(tab.name)">{{tab.name}}</a></li>
+            <li ng-class="(currentTab==access) ? 'active' : ''">
+                <a href="#access" collexy-toggle-tab="toggleTab(access)">Access</a>
+            </li>
         </ul>
         
         <div ng-repeat="tab in tabs  | unique: name" ng-show="currentTab == tab.name" >
@@ -82,6 +85,211 @@
                 </tr>
                 <!-- <p>{{tab.name}} fields</p>
                 <p>{{tab.properties}}</p> -->
+            </table>
+        </div>
+
+        <div ng-show="currentTab == access">
+            <table>
+                <tr>
+                    <td>Public Access</td>
+                    <td style="width: 70%;">
+                        <h4>Members</h4>
+                        <table>
+                            <thead>
+                                <th>Available</th>
+                                <th>Selected</th>
+                            </thead>
+                            <tr>
+                                <td>
+                                    <select multiple="true" ng-model="available" ng-options="item as item.username for item in availableMembers"></select>
+                                </td>
+                                <td>
+                                    <button ng-click="moveItem(available[0], availableMembers, selectedMembers)">--></button><br>
+                                    <button ng-click="moveItem(selected[0], selectedMembers, availableMembers)"><--</button>
+                                </td>
+                                <td>
+                                    <select multiple="true" ng-model="selected" ng-options="item as item.username for item in selectedMembers"></select>
+                                </td>
+                            </tr>
+                        </table>
+                        <h4>Groups</h4>
+                        <table>
+                            <thead>
+                                <th>Available</th>
+                                <th>Selected</th>
+                            </thead>
+                            <tr>
+                                <td>
+                                    
+                                    <select multiple="true" ng-model="available" ng-options="item as item.name for item in availableMemberGroups"></select>
+                                </td>
+                                <td>
+                                    <button ng-click="moveItem(available[0], availableMemberGroups, selectedMemberGroups)">--></button><br>
+                                    <button ng-click="moveItem(selected[0], selectedMemberGroups, availableMemberGroups)"><--</button>
+                                </td>
+                                <td>
+                                    <select multiple="true" ng-model="selected" ng-options="item as item.name for item in selectedMemberGroups"></select>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Backend User Node Permissions</td>
+                    <td style="width:70%;">
+                        <h4>Users</h4>
+                        {{data.user_permissions}}
+                        <table>
+                            <tr>
+                                <td ng-repeat="user in allUsers">
+                                    <strong>{{user.username}}</strong>
+                                    <ul class="stripped-list">
+                                        <li ng-repeat="p in allPermissions">
+                                            <label>
+                                                <input type="checkbox" checklist-model="data.user_permissions[user.id].permissions" checklist-value="p.name"> {{p.name}}
+                                            </label>
+                                        </li>
+                                        <!-- TEMPORARY SOLUTION ONLY!!!!!!! until changes in user_group_permission in db to "id": { "permissions" : []} structure-->
+                                        <!-- <li ng-repeat="p in allPermissions">
+                                            <span ng-repeat="temp in data.user_permissions" ng-if="temp.id==user.id">
+                                                <label><input type="checkbox" checklist-model="data.user_permissions[$index].permissions" checklist-value="p.name"> {{p.name}}</label>
+                                            </span>
+                                            
+                                        </li> -->
+                                        <!-- <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li> -->
+                                    </ul>
+                                </td>
+                                <!-- TEMPORARY SOLUTION ONLY!!!!!!! until changes in user_group_permission in db to "id": { "permissions" : []} structure-->
+                                <!-- <td ng-repeat="user in usersWithoutPermissions">
+                                    <strong>{{user.username}}</strong>
+                                    <ul class="stripped-list">
+
+                                        
+                                        <li ng-repeat="p in allPermissions">
+                                            <span>
+                                                <label><input type="checkbox" checklist-model="data.user_permissions[data.user_permissions.length + $parent.$index].permissions" checklist-value="p.name"> {{p.name}}</label>
+                                            </span>
+                                            
+                                        </li>
+                                    </ul>
+                                </td> -->
+                                
+                            </tr>
+                        </table>
+                        <h4>Groups</h4>
+                        {{data.user_group_permissions}}
+                        <table>
+                            <tr>
+                                <td ng-repeat="ug in allUserGroups">
+                                    <strong>{{ug.name}}</strong>
+                                    <ul class="stripped-list">
+                                        <li ng-repeat="p in allPermissions"><label><input type="checkbox" checklist-model="data.user_group_permissions[ug.id].permissions" checklist-value="p.name"> {{p.name}}</label></li>
+
+                                        <!-- TEMPORARY SOLUTION ONLY!!!!!!! until changes in user_group_permission in db to "id": { "permissions" : []} structure-->
+                                        <!-- <li ng-repeat="p in allPermissions">
+                                            <span ng-repeat="temp in data.user_group_permissions" ng-if="temp.id==ug.id">
+                                                <label><input type="checkbox" checklist-model="data.user_group_permissions[$index].permissions" checklist-value="p.name"> {{p.name}}</label>
+                                            </span>
+                                            
+                                        </li> -->
+                                    </ul>
+                                </td>
+                                <!-- TEMPORARY SOLUTION ONLY!!!!!!! until changes in user_group_permission in db to "id": { "permissions" : []} structure-->
+                                <!-- <td ng-repeat="ug in userGroupsWithoutPermissions">
+                                    <strong>{{ug.name}}</strong>
+                                    <ul class="stripped-list">
+
+                                        
+                                        <li ng-repeat="p in allPermissions">
+                                            <span>
+                                                <label><input type="checkbox" checklist-model="data.user_group_permissions" checklist-value="{'id': ug.id, 'permissions': [p.name]}"> {{p.name}}</label>
+                                            </span>
+                                            
+                                        </li>
+                                    </ul>
+                                </td> -->
+                                <!-- <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td> -->
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
             </table>
         </div>
         

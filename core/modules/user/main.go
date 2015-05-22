@@ -18,6 +18,8 @@ func init() {
 	userApiController := coremoduleusercontrollers.UserApiController{}
 	userGroupApiController := coremoduleusercontrollers.UserGroupApiController{}
 
+	permissionApiController := coremoduleusercontrollers.PermissionApiController{}
+
 	userTreeController := coremoduleusercontrollers.UserTreeController{}
 	userGroupTreeController := coremoduleusercontrollers.UserGroupTreeController{}
 
@@ -32,6 +34,8 @@ func init() {
 	subrPrivate.HandleFunc("/api/user-group/{id:.*}/contextmenu", http.HandlerFunc(userGroupTreeController.GetMenuForUserGroup)).Methods("GET")
 	subrPrivate.HandleFunc("/api/user-group", http.HandlerFunc(userGroupApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.GetById)).Methods("GET")
+
+	subrPrivate.HandleFunc("/api/permission", http.HandlerFunc(permissionApiController.Get)).Methods("GET")
 
 	///
 

@@ -12,3 +12,7 @@ type PermissionsContainer struct {
 	Id          int                     `json:"id"`
 	Permissions coreglobals.StringSlice `json:"permissions"` //map[string]struct{} `json:"permissions"`
 }
+
+type PermissionTest struct {
+	Permissions coreglobals.StringSlice `json:"permissions"` //map[string]struct{} `json:"permissions"`
+}

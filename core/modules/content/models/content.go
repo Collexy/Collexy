@@ -33,8 +33,10 @@ type Content struct {
 	ContentTypeId        int                    `json:"content_type_id"`
 	Meta                 map[string]interface{} `json:"meta,omitempty"`
 	PublicAccess         *PublicAccess          `json:"public_access,omitempty"`
-	UserPermissions      []PermissionsContainer `json:"user_permissions,omitempty"`
-	UserGroupPermissions []PermissionsContainer `json:"user_group_permissions,omitempty"`
+	UserPermissions      map[string]*PermissionTest `json:"user_permissions,omitempty"`
+	UserGroupPermissions map[string]*PermissionTest `json:"user_group_permissions,omitempty"`
+	// UserPermissions      []PermissionsContainer `json:"user_permissions,omitempty"`
+	// UserGroupPermissions []PermissionsContainer `json:"user_group_permissions,omitempty"`
 	TypeId               int                    `json:"type_id"`
 	// Additional fields (not persisted in db)
 	Url                string                                `json:"url,omitempty"`
@@ -129,7 +131,9 @@ FROM content
 			ctpid = int(ct_parent_id.Int64)
 		}
 
-		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		// var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		var user_perm, user_group_perm map[string]*PermissionTest
+
 		user_perm = nil
 		user_group_perm = nil
 		json.Unmarshal(content_user_permissions, &user_perm)
@@ -156,38 +160,63 @@ FROM content
 		//   log.Println("Unmarshal Error: " + err1.Error())
 		//   user_perm = nil
 		// }
-
+		userIdStr := strconv.Itoa(user.Id)
 		// if permissions are set on the node for a specific user
-		if content_user_permissions != nil {
-			for i := 0; i < len(user_perm); i++ {
-				if accessGranted {
-					break
-				}
-				if user_perm[i].Id == user.Id {
+		if(content_user_permissions != nil){
+			if(user_perm[userIdStr] != nil){
+				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
 					}
-					for j := 0; j < len(user_perm[i].Permissions); j++ {
-						if accessGranted {
-							break
-						}
-						if user_perm[i].Permissions[j] == "node_browse" {
-							//fmt.Println("woauw it worked!")
-							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
-							// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
-							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-								content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
-							contentSlice = append(contentSlice, content)
-							break
-						}
+					if user_perm[userIdStr].Permissions[i] == "node_browse" {
+						//fmt.Println("woauw it worked!")
+						accessGranted = true
+						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+						content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+							content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+						contentSlice = append(contentSlice, content)
+						break
 					}
-					if !accessGranted {
-						accessDenied = true
-					}
+				}
+				if !accessGranted {
+					accessDenied = true
 				}
 			}
 		}
+
+		// // if permissions are set on the node for a specific user
+		// if content_user_permissions != nil {
+		// 	for i := 0; i < len(user_perm); i++ {
+		// 		if accessGranted {
+		// 			break
+		// 		}
+		// 		if user_perm[i].Id == user.Id {
+		// 			if accessGranted {
+		// 				break
+		// 			}
+		// 			for j := 0; j < len(user_perm[i].Permissions); j++ {
+		// 				if accessGranted {
+		// 					break
+		// 				}
+		// 				if user_perm[i].Permissions[j] == "node_browse" {
+		// 					//fmt.Println("woauw it worked!")
+		// 					accessGranted = true
+		// 					content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+		// 					// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+		// 					content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		// 						content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+		// 					contentSlice = append(contentSlice, content)
+		// 					break
+		// 				}
+		// 			}
+		// 			if !accessGranted {
+		// 				accessDenied = true
+		// 			}
+		// 		}
+		// 	}
+		// }
+
 		if !accessGranted && !accessDenied {
 			// if no specific user node access has been specified, check node access per user_group
 			if content_user_group_permissions != nil {
@@ -195,36 +224,76 @@ FROM content
 					if accessGranted {
 						break
 					}
-					for j := 0; j < len(user_group_perm); j++ {
+				// for j := 0; j < len(user_group_perm); j++ {
+				// 	if accessGranted {
+				// 		break
+				// 	}
+					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
+					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
 							break
 						}
-						if user_group_perm[j].Id == user.UserGroupIds[i] {
+						for j := 0; j < len(user_group_perm[userGroupIdStr].Permissions); j++ {
 							if accessGranted {
 								break
 							}
-							for k := 0; k < len(user_group_perm[j].Permissions); k++ {
-								if accessGranted {
-									break
-								}
-								if user_group_perm[j].Permissions[k] == "node_browse" {
-									//fmt.Println("woauw it worked!")
-									accessGranted = true
-									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
-									content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-										content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
-									contentSlice = append(contentSlice, content)
-									break
-								}
-							}
-							if !accessGranted {
-								accessDenied = true
+							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
+								//fmt.Println("woauw it worked!")
+								accessGranted = true
+								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+								content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+									content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+								contentSlice = append(contentSlice, content)
+								break
 							}
 						}
+						if !accessGranted {
+							accessDenied = true
+						}
 					}
+				// }
 				}
 			}
+			
 		}
+
+		// if !accessGranted && !accessDenied {
+		// 	// if no specific user node access has been specified, check node access per user_group
+		// 	if content_user_group_permissions != nil {
+		// 		for i := 0; i < len(user.UserGroupIds); i++ {
+		// 			if accessGranted {
+		// 				break
+		// 			}
+		// 			for j := 0; j < len(user_group_perm); j++ {
+		// 				if accessGranted {
+		// 					break
+		// 				}
+		// 				if user_group_perm[j].Id == user.UserGroupIds[i] {
+		// 					if accessGranted {
+		// 						break
+		// 					}
+		// 					for k := 0; k < len(user_group_perm[j].Permissions); k++ {
+		// 						if accessGranted {
+		// 							break
+		// 						}
+		// 						if user_group_perm[j].Permissions[k] == "node_browse" {
+		// 							//fmt.Println("woauw it worked!")
+		// 							accessGranted = true
+		// 							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+		// 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		// 								content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+		// 							contentSlice = append(contentSlice, content)
+		// 							break
+		// 						}
+		// 					}
+		// 					if !accessGranted {
+		// 						accessDenied = true
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		// if no specific access has been granted per user_group either, use user groups default permissions
 		if !accessGranted && !accessDenied {
@@ -326,7 +395,7 @@ WHERE content.id=$1`
 		cpid = int(content_parent_id.Int64)
 	}
 
-	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
 	user_group_perm = nil
 	json.Unmarshal(content_user_permissions, &user_perm)
@@ -421,7 +490,7 @@ FROM content
 			ctpid = int(ct_parent_id.Int64)
 		}
 
-		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
 		user_group_perm = nil
 		json.Unmarshal(content_user_permissions, &user_perm)
@@ -449,37 +518,65 @@ FROM content
 		//   user_perm = nil
 		// }
 
+		userIdStr := strconv.Itoa(user.Id)
+		
 		// if permissions are set on the node for a specific user
-		if content_user_permissions != nil {
-			for i := 0; i < len(user_perm); i++ {
-				if accessGranted {
-					break
-				}
-				if user_perm[i].Id == user.Id {
+		if(content_user_permissions != nil){
+			if(user_perm[userIdStr] != nil){
+				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
 					}
-					for j := 0; j < len(user_perm[i].Permissions); j++ {
-						if accessGranted {
-							break
-						}
-						if user_perm[i].Permissions[j] == "node_browse" {
-							//fmt.Println("woauw it worked!")
-							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
-							// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
-							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-								content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
-							contentSlice = append(contentSlice, content)
-							break
-						}
+					if user_perm[userIdStr].Permissions[i] == "node_browse" {
+						//fmt.Println("woauw it worked!")
+						accessGranted = true
+						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+						content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+							content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+						contentSlice = append(contentSlice, content)
+						break
 					}
-					if !accessGranted {
-						accessDenied = true
-					}
+				}
+				if !accessGranted {
+					accessDenied = true
 				}
 			}
 		}
+
+		
+
+		// if permissions are set on the node for a specific user
+		// if content_user_permissions != nil {
+		// 	for i := 0; i < len(user_perm); i++ {
+		// 		if accessGranted {
+		// 			break
+		// 		}
+		// 		if user_perm[i].Id == user.Id {
+		// 			if accessGranted {
+		// 				break
+		// 			}
+		// 			for j := 0; j < len(user_perm[i].Permissions); j++ {
+		// 				if accessGranted {
+		// 					break
+		// 				}
+		// 				if user_perm[i].Permissions[j] == "node_browse" {
+		// 					//fmt.Println("woauw it worked!")
+		// 					accessGranted = true
+		// 					content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+		// 					// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+		// 					content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		// 						content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+		// 					contentSlice = append(contentSlice, content)
+		// 					break
+		// 				}
+		// 			}
+		// 			if !accessGranted {
+		// 				accessDenied = true
+		// 			}
+		// 		}
+		// 	}
+		// }
 		if !accessGranted && !accessDenied {
 			// if no specific user node access has been specified, check node access per user_group
 			if content_user_group_permissions != nil {
@@ -487,36 +584,75 @@ FROM content
 					if accessGranted {
 						break
 					}
-					for j := 0; j < len(user_group_perm); j++ {
+				// for j := 0; j < len(user_group_perm); j++ {
+				// 	if accessGranted {
+				// 		break
+				// 	}
+					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
+					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
 							break
 						}
-						if user_group_perm[j].Id == user.UserGroupIds[i] {
+						for j := 0; j < len(user_group_perm[userGroupIdStr].Permissions); j++ {
 							if accessGranted {
 								break
 							}
-							for k := 0; k < len(user_group_perm[j].Permissions); k++ {
-								if accessGranted {
-									break
-								}
-								if user_group_perm[j].Permissions[k] == "node_browse" {
-									//fmt.Println("woauw it worked!")
-									accessGranted = true
-									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
-									content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-										content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
-									contentSlice = append(contentSlice, content)
-									break
-								}
-							}
-							if !accessGranted {
-								accessDenied = true
+							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
+								//fmt.Println("woauw it worked!")
+								accessGranted = true
+								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+								content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+									content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+								contentSlice = append(contentSlice, content)
+								break
 							}
 						}
+						if !accessGranted {
+							accessDenied = true
+						}
 					}
+				// }
 				}
 			}
+			
 		}
+		// if !accessGranted && !accessDenied {
+		// 	// if no specific user node access has been specified, check node access per user_group
+		// 	if content_user_group_permissions != nil {
+		// 		for i := 0; i < len(user.UserGroupIds); i++ {
+		// 			if accessGranted {
+		// 				break
+		// 			}
+		// 			for j := 0; j < len(user_group_perm); j++ {
+		// 				if accessGranted {
+		// 					break
+		// 				}
+		// 				if user_group_perm[j].Id == user.UserGroupIds[i] {
+		// 					if accessGranted {
+		// 						break
+		// 					}
+		// 					for k := 0; k < len(user_group_perm[j].Permissions); k++ {
+		// 						if accessGranted {
+		// 							break
+		// 						}
+		// 						if user_group_perm[j].Permissions[k] == "node_browse" {
+		// 							//fmt.Println("woauw it worked!")
+		// 							accessGranted = true
+		// 							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+		// 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		// 								content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+		// 							contentSlice = append(contentSlice, content)
+		// 							break
+		// 						}
+		// 					}
+		// 					if !accessGranted {
+		// 						accessDenied = true
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		// if no specific access has been granted per user_group either, use user groups default permissions
 		if !accessGranted && !accessDenied {
@@ -619,7 +755,7 @@ WHERE content.path @>
 			ctpid = int(ct_parent_id.Int64)
 		}
 
-		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
 		user_group_perm = nil
 		json.Unmarshal(content_user_permissions, &user_perm)
@@ -647,37 +783,32 @@ WHERE content.path @>
 		//   user_perm = nil
 		// }
 
+		userIdStr := strconv.Itoa(user.Id)
+		
 		// if permissions are set on the node for a specific user
-		if content_user_permissions != nil {
-			for i := 0; i < len(user_perm); i++ {
-				if accessGranted {
-					break
-				}
-				if user_perm[i].Id == user.Id {
+		if(content_user_permissions != nil){
+			if(user_perm[userIdStr] != nil){
+				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
 					}
-					for j := 0; j < len(user_perm[i].Permissions); j++ {
-						if accessGranted {
-							break
-						}
-						if user_perm[i].Permissions[j] == "node_browse" {
-							//fmt.Println("woauw it worked!")
-							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
-							// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
-							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-								content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
-							contentSlice = append(contentSlice, content)
-							break
-						}
+					if user_perm[userIdStr].Permissions[i] == "node_browse" {
+						//fmt.Println("woauw it worked!")
+						accessGranted = true
+						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+						content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+							content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+						contentSlice = append(contentSlice, content)
+						break
 					}
-					if !accessGranted {
-						accessDenied = true
-					}
+				}
+				if !accessGranted {
+					accessDenied = true
 				}
 			}
 		}
+
 		if !accessGranted && !accessDenied {
 			// if no specific user node access has been specified, check node access per user_group
 			if content_user_group_permissions != nil {
@@ -685,36 +816,107 @@ WHERE content.path @>
 					if accessGranted {
 						break
 					}
-					for j := 0; j < len(user_group_perm); j++ {
+				// for j := 0; j < len(user_group_perm); j++ {
+				// 	if accessGranted {
+				// 		break
+				// 	}
+					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
+					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
 							break
 						}
-						if user_group_perm[j].Id == user.UserGroupIds[i] {
+						for j := 0; j < len(user_group_perm[userGroupIdStr].Permissions); j++ {
 							if accessGranted {
 								break
 							}
-							for k := 0; k < len(user_group_perm[j].Permissions); k++ {
-								if accessGranted {
-									break
-								}
-								if user_group_perm[j].Permissions[k] == "node_browse" {
-									//fmt.Println("woauw it worked!")
-									accessGranted = true
-									content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
-									content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-										content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
-									contentSlice = append(contentSlice, content)
-									break
-								}
-							}
-							if !accessGranted {
-								accessDenied = true
+							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
+								//fmt.Println("woauw it worked!")
+								accessGranted = true
+								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+								content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+									content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+								contentSlice = append(contentSlice, content)
+								break
 							}
 						}
+						if !accessGranted {
+							accessDenied = true
+						}
 					}
+				// }
 				}
 			}
+			
 		}
+
+		// // if permissions are set on the node for a specific user
+		// if content_user_permissions != nil {
+		// 	for i := 0; i < len(user_perm); i++ {
+		// 		if accessGranted {
+		// 			break
+		// 		}
+		// 		if user_perm[i].Id == user.Id {
+		// 			if accessGranted {
+		// 				break
+		// 			}
+		// 			for j := 0; j < len(user_perm[i].Permissions); j++ {
+		// 				if accessGranted {
+		// 					break
+		// 				}
+		// 				if user_perm[i].Permissions[j] == "node_browse" {
+		// 					//fmt.Println("woauw it worked!")
+		// 					accessGranted = true
+		// 					content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+		// 					// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
+		// 					content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		// 						content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+		// 					contentSlice = append(contentSlice, content)
+		// 					break
+		// 				}
+		// 			}
+		// 			if !accessGranted {
+		// 				accessDenied = true
+		// 			}
+		// 		}
+		// 	}
+		// }
+		// if !accessGranted && !accessDenied {
+		// 	// if no specific user node access has been specified, check node access per user_group
+		// 	if content_user_group_permissions != nil {
+		// 		for i := 0; i < len(user.UserGroupIds); i++ {
+		// 			if accessGranted {
+		// 				break
+		// 			}
+		// 			for j := 0; j < len(user_group_perm); j++ {
+		// 				if accessGranted {
+		// 					break
+		// 				}
+		// 				if user_group_perm[j].Id == user.UserGroupIds[i] {
+		// 					if accessGranted {
+		// 						break
+		// 					}
+		// 					for k := 0; k < len(user_group_perm[j].Permissions); k++ {
+		// 						if accessGranted {
+		// 							break
+		// 						}
+		// 						if user_group_perm[j].Permissions[k] == "node_browse" {
+		// 							//fmt.Println("woauw it worked!")
+		// 							accessGranted = true
+		// 							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+		// 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
+		// 								content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+		// 							contentSlice = append(contentSlice, content)
+		// 							break
+		// 						}
+		// 					}
+		// 					if !accessGranted {
+		// 						accessDenied = true
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		// if no specific access has been granted per user_group either, use user groups default permissions
 		if !accessGranted && !accessDenied {
@@ -991,7 +1193,7 @@ WHERE content.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lq
 
 		json.Unmarshal(content_public_access, &public_access)
 
-		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
 		user_group_perm = nil
 		json.Unmarshal(content_user_permissions, &user_perm)
@@ -1132,7 +1334,7 @@ WHERE content.meta->$1 @> $2;`
 
 		json.Unmarshal(content_public_access, &public_access)
 
-		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
 		user_group_perm = nil
 		json.Unmarshal(content_user_permissions, &user_perm)
@@ -1279,7 +1481,7 @@ WHERE content.content_type_id = $1;`
 
 		json.Unmarshal(content_public_access, &public_access)
 
-		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
 		user_group_perm = nil
 		json.Unmarshal(content_user_permissions, &user_perm)
@@ -1477,7 +1679,7 @@ ON heh.id = content.id
 
 	json.Unmarshal(content_public_access, &public_access)
 
-	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
 	user_group_perm = nil
 	json.Unmarshal(content_user_permissions, &user_perm)
@@ -1616,7 +1818,7 @@ WHERE content.path <@ subltree($1,$2,$3);`
 
 		json.Unmarshal(content_public_access, &public_access)
 
-		var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
 		user_group_perm = nil
 		json.Unmarshal(content_user_permissions, &user_perm)
@@ -2483,7 +2685,7 @@ WHERE content.id=$1`
 		cpid = int(content_parent_id.Int64)
 	}
 
-	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
 	user_group_perm = nil
 	json.Unmarshal(content_user_permissions, &user_perm)
@@ -2626,7 +2828,7 @@ WHERE content.id = $1;`
 
 	json.Unmarshal(content_public_access, &public_access)
 
-	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
 	user_group_perm = nil
 	json.Unmarshal(content_user_permissions, &user_perm)
@@ -2825,7 +3027,7 @@ WHERE lower(content.name) = $1;`
 
 	json.Unmarshal(content_public_access, &public_access)
 
-	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
 	user_group_perm = nil
 	json.Unmarshal(content_user_permissions, &user_perm)
@@ -2975,7 +3177,7 @@ WHERE $1 = ANY(heh.domains) and nlevel(content.path) = 1;`
 
 	json.Unmarshal(content_public_access, &public_access)
 
-	var user_perm, user_group_perm []PermissionsContainer // map[string]PermissionsContainer
+	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
 	user_group_perm = nil
 	json.Unmarshal(content_user_permissions, &user_perm)

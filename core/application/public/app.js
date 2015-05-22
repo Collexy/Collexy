@@ -1,7 +1,9 @@
 'use strict';
+
 var $stateProviderRef = null;
 var $urlRouterProviderRef = null;
 var $controllerProviderRef = null;
+
 // Declare app level module which depends on components
 angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'checklist-model', 'ngDialog', 'ui.codemirror', 'perfect_scrollbar', 'ui.sortable']).config(function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $provide, $controllerProvider) {
     $controllerProviderRef = $controllerProvider
@@ -146,7 +148,8 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
             //alert("stateChangeStart")
             // if (toState != null && toState.data.access != null && toState.data.access.requiredAuthentication) {
-            if ($cookies.sessionauth != null) {
+            if ($cookies.get('sessionauth') != null) {
+                
                 // 		if("permissions" in toState.data){
                 var user = authenticationService.get({
                     sid: $cookies.sessionauth

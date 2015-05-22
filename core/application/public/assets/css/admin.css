@@ -628,3 +628,8 @@ div[class*='col-'] + div[class*='col-'] {
     /* IE8 
     -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(SizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476)";*/
 }
+
+.stripped-list {
+	padding-left: 0; 
+	list-style-type: none;"
+}

@@ -25,7 +25,7 @@ function ContentTreeCtrl($scope, Content) {
  * @description
  * The controller for editing content
  */
-function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType) {
+function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType, Member, MemberGroup, User, UserGroup, Permission) {
     // Content.query({
     //     'type-id': '1',
     //     'content-type': 9
@@ -63,6 +63,188 @@ function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType) {
             console.log(tabs);
             $scope.tabs = tabs;
             $scope.currentTab = tabs[0].name;
+
+            
+            Member.query({}, function(){
+
+            }).$promise.then(function(members){
+                
+                $scope.allMembers = members;
+
+                var availableMembers = [];
+                var selectedMembers = [];
+
+                if(typeof data.public_access != 'undefined'){
+                    if(typeof data.public_access.members != 'undefined'){
+                        for (var i = 0; i < data.public_access.members.length; i++) {
+                            for (var j = 0; j < members.length; j++) {
+                                //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
+                                if (data.public_access.members[i] != members[j].id) {
+                                    availableMembers.push(members[j])
+                                } else {
+                                    selectedMembers.push(members[j])
+                                }
+                            }
+                        }
+                    }
+                }
+                availableMembers.unique();
+                selectedMembers.unique();
+                $scope.availableMembers = availableMembers;
+                $scope.selectedMembers = selectedMembers;
+
+                if(selectedMembers.length == 0){
+                    $scope.availableMembers = members;
+
+                }
+
+            }, function(){
+                // error
+            })
+            
+            MemberGroup.query({}, function(){
+
+            }).$promise.then(function(memberGroups){
+                
+                $scope.allMemberGroups = memberGroups;
+
+                var availableMemberGroups = [];
+                var selectedMemberGroups = [];
+
+                if(typeof data.public_access != 'undefined'){
+                    if(typeof data.public_access.groups != 'undefined'){
+                        for (var i = 0; i < data.public_access.groups.length; i++) {
+                            for (var j = 0; j < memberGroups.length; j++) {
+                                //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
+                                if (data.public_access.groups[i] != memberGroups[j].id) {
+                                    availableMemberGroups.push(memberGroups[j])
+                                } else {
+                                    selectedMemberGroups.push(memberGroups[j])
+                                }
+                            }
+                        }
+                    }
+                }
+                availableMemberGroups.unique();
+                selectedMemberGroups.unique();
+                $scope.availableMemberGroups = availableMemberGroups;
+                $scope.selectedMemberGroups = selectedMemberGroups;
+
+                if(selectedMemberGroups.length == 0){
+                    $scope.availableMemberGroups = memberGroups;
+
+                }
+
+            }, function(){
+                // error
+            })
+            
+
+            
+
+            User.query({}, function(){
+
+            }).$promise.then(function(users){
+                $scope.allUsers = users;
+
+                var usersWithoutPermissions = [];
+                var usersWithPermissions = [];
+
+                if(typeof data.user_permissions !== 'undefined'){
+                    for (var i = 0; i < data.user_permissions.length; i++) {
+                        for (var j = 0; j < users.length; j++) {
+                            //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
+                            if (data.user_permissions[i].id != users[j].id) {
+                                usersWithoutPermissions.push(users[j])
+                            } else {
+                                usersWithPermissions.push(users[j])
+                            }
+                        }
+                    }
+                    usersWithoutPermissions.unique();
+                    usersWithPermissions.unique();
+                    $scope.usersWithoutPermissions = usersWithoutPermissions;
+                    $scope.usersWithPermissions = usersWithPermissions;
+                } else {
+                    $scope.usersWithoutPermissions = users;
+                }
+                
+            });
+
+            UserGroup.query({}, function(){
+
+            }).$promise.then(function(userGroups){
+                
+                $scope.allUserGroups = userGroups;
+
+                var userGroupsWithoutPermissions = [];
+                var userGroupsWithPermissions = [];
+
+                if(typeof data.user_group_permissions !== 'undefined'){
+                    for (var i = 0; i < data.user_group_permissions.length; i++) {
+                        for (var j = 0; j < userGroups.length; j++) {
+                            //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
+                            if (data.user_group_permissions[i].id == userGroups[j].id) {
+                                userGroupsWithPermissions.push(userGroups[j])
+                                if(userGroupsWithoutPermissions.indexOf(userGroups[j]) > -1){
+                                    userGroupsWithoutPermissions.splice(userGroupsWithoutPermissions.indexOf(userGroups[j]),1)
+                                }
+                                break;
+
+                            } else {
+                                userGroupsWithoutPermissions.push(userGroups[j])
+                            }
+                        }
+                    }
+                    userGroupsWithoutPermissions.unique();
+                    userGroupsWithPermissions.unique();
+                    $scope.userGroupsWithoutPermissions = userGroupsWithoutPermissions.unique();
+                    $scope.userGroupsWithPermissions = userGroupsWithPermissions.unique();
+                } else {
+                    $scope.userGroupsWithoutPermissions = userGroups.unique();
+                }
+
+            });
+
+            Permission.query({}, function(){
+
+            }).$promise.then(function(permissions){
+                
+                $scope.allPermissions = permissions;
+
+            });
+
+            // UserGroup.query({}, function(){
+
+            // }).$promise.then(function(userGroups){
+                
+            //     $scope.allUserGroups = userGroups;
+            //     var availableUserGroups = [];
+            //     var selectedUserGroups = [];
+            //     for (var i = 0; i < data.user_group_permissions.length; i++) {
+            //         for (var j = 0; j < userGroups.length; j++) {
+            //             //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
+            //             if (data.user_group_permissions[i] != userGroups[j].id) {
+            //                 availableUserGroups.push(userGroups[j])
+            //             } else {
+            //                 selectedUserGroups.push(userGroups[j])
+            //             }
+            //         }
+            //     }
+            //     availableUserGroups.unique();
+            //     selectedUserGroups.unique();
+            //     $scope.availableUserGroups = availableUserGroups;
+            //     $scope.selectedUserGroups = selectedUserGroups;
+
+            //     if(selectedUserGroups.length == 0){
+            //         $scope.availableUserGroups = allUserGroups;
+
+            //     }
+
+            // }, function(){
+            //     // error
+            // })
+            
         });
     } else {
         // New
@@ -124,7 +306,84 @@ function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType) {
                 }
             }
         }
+
+
     }
+
+    $scope.$watch("data", function(newValue, oldValue) {
+        if(typeof $scope.data.user_group_permissions != 'undefined'){
+            //alert($scope.data.user_group_permissions.length)
+            for(var k in $scope.data.user_group_permissions){
+                if(newValue.user_group_permissions[k].permissions.length == 0){
+                    delete newValue.user_group_permissions[k];
+                }
+            }
+            
+            $scope.data = newValue;
+        }
+
+        if(typeof $scope.data.user_permissions != 'undefined'){
+            //alert($scope.data.user_group_permissions.length)
+            for(var k in $scope.data.user_permissions){
+                if(newValue.user_permissions[k].permissions.length == 0){
+                    delete newValue.user_permissions[k];
+                }
+            }
+            
+            $scope.data = newValue;
+        }
+        
+    }, true);
+
+    // User.get({
+    //     id: $stateParams.id
+    // }, function() {}).$promise.then(function(data) {
+    //     $scope.data = data;
+    //     $scope.currentTab = data.username;
+    //     UserGroup.query().$promise.then(function(userGroups) {
+    //         $scope.allUserGroups = userGroups;
+    //         var availableUserGroups = [];
+    //         var selectedUserGroups = [];
+    //         for (var i = 0; i < data.user_group_ids.length; i++) {
+    //             for (var j = 0; j < userGroups.length; j++) {
+    //                 //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
+    //                 if (data.user_group_ids[i] != userGroups[j].id) {
+    //                     availableUserGroups.push(userGroups[j])
+    //                 } else {
+    //                     selectedUserGroups.push(userGroups[j])
+    //                 }
+    //             }
+    //         }
+    //         availableUserGroups.unique();
+    //         selectedUserGroups.unique();
+    //         $scope.availableUserGroups = availableUserGroups;
+    //         $scope.selectedUserGroups = selectedUserGroups;
+    //     }, function() {
+    //         //ERR
+    //     })
+    // }, function() {
+    //     // ERR
+    // });
+    // $scope.moveItem = function(item, from, to) {
+    //     alert("moveitem")
+    //     var idx = from.indexOf(item);
+    //     if (idx != -1) {
+    //         from.splice(idx, 1);
+    //         to.push(item);
+    //     }
+    //     var user_group_ids = [];
+    //     for (var i = 0; i < $scope.selectedUserGroups.length; i++) {
+    //         user_group_ids.push($scope.selectedUserGroups[i].id);
+    //     }
+    //     $scope.data.user_group_ids = user_group_ids;
+    // };
+    // $scope.moveAll = function(from, to) {
+    //     angular.forEach(from, function(item) {
+    //         to.push(item);
+    //     });
+    //     from.length = 0;
+    // };
+
     //
     // Update / Create
     $scope.submit = function() {

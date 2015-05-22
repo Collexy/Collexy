@@ -229,7 +229,7 @@ function UserLoginCtrl($scope, $http, $window, $location, $state, authentication
             $timeout(function() {
                 /* do stuff with $cookies here. */
                 var usr = authenticationService.get({
-                    sid: $cookies.sessionauth
+                    sid: $cookies.get('sessionauth')
                 }, function(usr) {
                     if (usr) {
                         window.location.reload(true);
