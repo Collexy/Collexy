@@ -27,6 +27,7 @@ import (
 	_ "collexy/core/modules/user"
 	coremoduleusermodels "collexy/core/modules/user/models"
 	coremodulemembermodels "collexy/core/modules/member/models"
+	_ "collexy/core/modules/media"
 	_ "collexy/core/modules/content"
 	coremodulecontentcontrollers "collexy/core/modules/content/controllers"
 	coremodulecontentmodels "collexy/core/modules/content/models"
@@ -371,7 +372,6 @@ func Middleware(h http.Handler) http.Handler {
 }
 
 func APIstuff() {
-
 	// Setup API controllers
 	// nodeApiController := controllers.NodeApiController{}
 

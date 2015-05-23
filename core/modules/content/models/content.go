@@ -32,12 +32,13 @@ type Content struct {
 	CreatedDate          *time.Time             `json:"created_date"`
 	ContentTypeId        int                    `json:"content_type_id"`
 	Meta                 map[string]interface{} `json:"meta,omitempty"`
-	PublicAccess         *PublicAccess          `json:"public_access,omitempty"`
+	// PublicAccess         *PublicAccess          `json:"public_access,omitempty"`
+	PublicAccessMembers  map[string]interface{} `json:"public_access_members,omitempty"`
+	PublicAccessMemberGroups  map[string]interface{} `json:"public_access_member_groups,omitempty"`
 	UserPermissions      map[string]*PermissionTest `json:"user_permissions,omitempty"`
 	UserGroupPermissions map[string]*PermissionTest `json:"user_group_permissions,omitempty"`
 	// UserPermissions      []PermissionsContainer `json:"user_permissions,omitempty"`
 	// UserGroupPermissions []PermissionsContainer `json:"user_group_permissions,omitempty"`
-	TypeId               int                    `json:"type_id"`
 	// Additional fields (not persisted in db)
 	Url                string                                `json:"url,omitempty"`
 	Domains            []string                              `json:"domains,omitempty"`
@@ -57,25 +58,21 @@ func GetContent(queryStringParams url.Values, user *coremoduleuser.User) (conten
 	sqlStr = `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, 
+content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 content_type.id AS ct_id, content_type.path AS ct_path, content_type.parent_id AS ct_parent_id,
 content_type.name AS ct_name, content_type.alias AS ct_alias, content_type.created_by AS ct_created_by,
 content_type.created_date AS ct_created_date, content_type.description AS ct_description,
 content_type.icon AS ct_icon, content_type.thumbnail AS ct_thumbnail, content_type.meta AS ct_meta,
-content_type.tabs AS ct_tabs, content_type.type_id as ct_type_id 
+content_type.tabs AS ct_tabs
 FROM content 
    JOIN content_type ON content.content_type_id = content_type.id`
 
 	// if ?type-id=x&levels=x(,x..)
 	// else if ?type-id=x
 	// else if ?levels=x(,x..)
-	if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") != "" {
-		sqlStr = sqlStr + ` WHERE content.type_id=` + queryStringParams.Get("type-id") + ` and content.path ~ '*.*{` + queryStringParams.Get("levels") + `}'`
-	} else if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") == "" {
-		sqlStr = sqlStr + ` WHERE content.type_id=` + queryStringParams.Get("type-id")
-	} else if queryStringParams.Get("type-id") == "" && queryStringParams.Get("levels") != "" {
+	if queryStringParams.Get("levels") != "" {
 		sqlStr = sqlStr + ` WHERE content.path ~ '*.*{` + queryStringParams.Get("levels") + `}'`
 	}
 
@@ -88,13 +85,13 @@ FROM content
 	corehelpers.PanicIf(err)
 	defer rows.Close()
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 
-	var ct_id, ct_created_by, ct_type_id int
+	var ct_id, ct_created_by int
 	var ct_parent_id sql.NullInt64
 	var ct_created_date *time.Time
 	var ct_path, ct_name, ct_alias, ct_description string
@@ -106,10 +103,10 @@ FROM content
 
 		// if(queryStringParams.Get("type-id")!=nil){
 		err := rows.Scan(&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+			&content_user_permissions, &content_user_group_permissions,
 			&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon,
-			&ct_thumbnail, &ct_meta, &ct_tabs, &ct_type_id)
+			&ct_thumbnail, &ct_meta, &ct_tabs)
 
 		corehelpers.PanicIf(err)
 
@@ -141,9 +138,15 @@ FROM content
 
 		var content_metaMap map[string]interface{}
 
-		var public_access *PublicAccess
+		// var public_access *PublicAccess
 
-		json.Unmarshal(content_public_access, &public_access)
+		// json.Unmarshal(content_public_access, &public_access)
+
+		var public_access_members map[string]interface{}
+		var public_access_member_groups map[string]interface{}
+
+		json.Unmarshal(content_public_access_members, &public_access_members)
+		json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 		json.Unmarshal(content_meta, &content_metaMap)
 
@@ -171,10 +174,10 @@ FROM content
 					if user_perm[userIdStr].Permissions[i] == "node_browse" {
 						//fmt.Println("woauw it worked!")
 						accessGranted = true
-						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
 						content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-							content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, user_perm, nil, "", nil, nil, nil, nil, &content_type}
 						contentSlice = append(contentSlice, content)
 						break
 					}
@@ -240,9 +243,9 @@ FROM content
 							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
 								//fmt.Println("woauw it worked!")
 								accessGranted = true
-								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 								content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-									content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+									content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, nil, user_group_perm, "", nil, nil, nil, nil, &content_type}
 								contentSlice = append(contentSlice, content)
 								break
 							}
@@ -305,9 +308,9 @@ FROM content
 					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
 						if user.UserGroups[i].Permissions[j] == "node_browse" {
 							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-								content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+								content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, nil, nil, "", nil, nil, nil, nil, &content_type}
 							contentSlice = append(contentSlice, content)
 							break
 						}
@@ -328,12 +331,11 @@ func GetContentById(id int) (content Content) {
 	sqlStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
   modified_content_type.id AS ct_id, modified_content_type.path AS ct_path, modified_content_type.parent_id AS ct_parent_id, modified_content_type.name as ct_name, modified_content_type.alias AS ct_alias,
   modified_content_type.created_by as ct_created_by, modified_content_type.description AS ct_description, modified_content_type.icon AS ct_icon, modified_content_type.thumbnail AS ct_thumbnail, 
-  modified_content_type.meta::json AS ct_meta, modified_content_type.tabs AS ct_tabs, modified_content_type.allowed_content_types AS ct_allowed_content_types, modified_content_type.type_id as ct_type_id
+  modified_content_type.meta::json AS ct_meta, modified_content_type.tabs AS ct_tabs, modified_content_type.allowed_content_types AS ct_allowed_content_types 
 FROM content
 JOIN
 LATERAL
@@ -346,7 +348,7 @@ LATERAL
     SELECT array_to_json(array_agg(res1)) AS allowed_content_types
     FROM 
     (
-      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, c.type_id
+      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, 
       FROM content_type AS c
       --where path @> subpath(ct.path,0,nlevel(ct.path)-1)
       --WHERE ct.meta->'allowed_content_type_ids' @> ('' || c.id || '')::jsonb
@@ -358,13 +360,13 @@ LATERAL
 ON modified_content_type.id = content.content_type_id
 WHERE content.id=$1`
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 
-	var ct_id, ct_created_by, ct_type_id int
+	var ct_id, ct_created_by int
 	var ct_parent_id sql.NullInt64
 
 	var ct_path, ct_name, ct_alias, ct_description, ct_icon, ct_thumbnail string
@@ -375,10 +377,10 @@ WHERE content.id=$1`
 
 	err := row.Scan(
 		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+		&content_user_permissions, &content_user_group_permissions,
 		&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by,
-		&ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_allowed_content_types, &ct_type_id)
+		&ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_allowed_content_types)
 
 	corehelpers.PanicIf(err)
 
@@ -406,19 +408,25 @@ WHERE content.id=$1`
 	var ct_metaMap map[string]interface{}
 	var content_metaMap map[string]interface{}
 
-	var public_access *PublicAccess
+	// var public_access *PublicAccess
 
-	json.Unmarshal(content_public_access, &public_access)
+	// json.Unmarshal(content_public_access, &public_access)
+
+	var public_access_members map[string]interface{}
+	var public_access_member_groups map[string]interface{}
+
+	json.Unmarshal(content_public_access_members, &public_access_members)
+	json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 	json.Unmarshal(ct_allowed_content_types, &allowed_content_types)
 	json.Unmarshal(ct_tabs, &tabs)
 	json.Unmarshal(ct_meta, &ct_metaMap)
 	json.Unmarshal(content_meta, &content_metaMap)
 
-	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, nil, nil, allowed_content_types, ct_type_id, false, false, false, nil, nil, nil}
+	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, nil, nil, allowed_content_types, false, false, false, nil, nil, nil, 0, nil}
 
 	content = Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-		content_content_type_id, content_metaMap, public_access, user_perm, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+		content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, user_perm, user_group_perm, "", nil, nil, nil, nil, &content_type}
 
 	return
 }
@@ -431,14 +439,13 @@ func GetContentByIdChildren(id int, user *coremoduleuser.User) (contentSlice []C
 	sqlStr = `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 content_type.id AS ct_id, content_type.path AS ct_path, content_type.parent_id AS ct_parent_id,
 content_type.name AS ct_name, content_type.alias AS ct_alias, content_type.created_by AS ct_created_by,
 content_type.created_date AS ct_created_date, content_type.description AS ct_description,
 content_type.icon AS ct_icon, content_type.thumbnail AS ct_thumbnail, content_type.meta AS ct_meta,
-content_type.tabs AS ct_tabs, content_type.type_id as ct_type_id 
+content_type.tabs AS ct_tabs 
 FROM content 
    JOIN content_type ON content.content_type_id = content_type.id
    WHERE content.parent_id=$1`
@@ -447,13 +454,13 @@ FROM content
 	corehelpers.PanicIf(err)
 	defer rows.Close()
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 
-	var ct_id, ct_created_by, ct_type_id int
+	var ct_id, ct_created_by int
 	var ct_parent_id sql.NullInt64
 	var ct_created_date *time.Time
 	var ct_path, ct_name, ct_alias, ct_description string
@@ -465,10 +472,10 @@ FROM content
 
 		// if(queryStringParams.Get("type-id")!=nil){
 		err := rows.Scan(&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+			&content_user_permissions, &content_user_group_permissions,
 			&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon,
-			&ct_thumbnail, &ct_meta, &ct_tabs, &ct_type_id)
+			&ct_thumbnail, &ct_meta, &ct_tabs)
 
 		corehelpers.PanicIf(err)
 
@@ -498,9 +505,15 @@ FROM content
 
 		var content_metaMap map[string]interface{}
 
-		var public_access *PublicAccess
+		// var public_access *PublicAccess
 
-		json.Unmarshal(content_public_access, &public_access)
+		// json.Unmarshal(content_public_access, &public_access)
+
+		var public_access_members map[string]interface{}
+		var public_access_member_groups map[string]interface{}
+
+		json.Unmarshal(content_public_access_members, &public_access_members)
+		json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 		json.Unmarshal(content_meta, &content_metaMap)
 
@@ -530,10 +543,10 @@ FROM content
 					if user_perm[userIdStr].Permissions[i] == "node_browse" {
 						//fmt.Println("woauw it worked!")
 						accessGranted = true
-						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
 						content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-							content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, user_perm, nil, "", nil, nil, nil, nil, &content_type}
 						contentSlice = append(contentSlice, content)
 						break
 					}
@@ -600,9 +613,9 @@ FROM content
 							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
 								//fmt.Println("woauw it worked!")
 								accessGranted = true
-								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 								content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-									content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+									content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, nil, user_group_perm, "", nil, nil, nil, nil, &content_type}
 								contentSlice = append(contentSlice, content)
 								break
 							}
@@ -664,9 +677,9 @@ FROM content
 					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
 						if user.UserGroups[i].Permissions[j] == "node_browse" {
 							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-								content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+								content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, nil, nil, "", nil, nil, nil, nil, &content_type}
 							contentSlice = append(contentSlice, content)
 							break
 						}
@@ -688,14 +701,13 @@ func GetContentByIdParents(id int, user *coremoduleuser.User) (contentSlice []Co
 	sqlStr = `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 content_type.id AS ct_id, content_type.path AS ct_path, content_type.parent_id AS ct_parent_id,
 content_type.name AS ct_name, content_type.alias AS ct_alias, content_type.created_by AS ct_created_by,
 content_type.created_date AS ct_created_date, content_type.description AS ct_description,
 content_type.icon AS ct_icon, content_type.thumbnail AS ct_thumbnail, content_type.meta AS ct_meta,
-content_type.tabs AS ct_tabs, content_type.type_id as ct_type_id 
+content_type.tabs AS ct_tabs 
 FROM content 
 JOIN content_type 
 ON content.content_type_id = content_type.id
@@ -712,13 +724,13 @@ WHERE content.path @>
 	corehelpers.PanicIf(err)
 	defer rows.Close()
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 
-	var ct_id, ct_created_by, ct_type_id int
+	var ct_id, ct_created_by int
 	var ct_parent_id sql.NullInt64
 	var ct_created_date *time.Time
 	var ct_path, ct_name, ct_alias, ct_description string
@@ -730,10 +742,10 @@ WHERE content.path @>
 
 		// if(queryStringParams.Get("type-id")!=nil){
 		err := rows.Scan(&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+			&content_user_permissions, &content_user_group_permissions,
 			&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon,
-			&ct_thumbnail, &ct_meta, &ct_tabs, &ct_type_id)
+			&ct_thumbnail, &ct_meta, &ct_tabs)
 
 		corehelpers.PanicIf(err)
 
@@ -763,9 +775,15 @@ WHERE content.path @>
 
 		var content_metaMap map[string]interface{}
 
-		var public_access *PublicAccess
+		// var public_access *PublicAccess
 
-		json.Unmarshal(content_public_access, &public_access)
+		// json.Unmarshal(content_public_access, &public_access)
+
+		var public_access_members map[string]interface{}
+		var public_access_member_groups map[string]interface{}
+
+		json.Unmarshal(content_public_access_members, &public_access_members)
+		json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 		json.Unmarshal(content_meta, &content_metaMap)
 
@@ -795,10 +813,10 @@ WHERE content.path @>
 					if user_perm[userIdStr].Permissions[i] == "node_browse" {
 						//fmt.Println("woauw it worked!")
 						accessGranted = true
-						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+						content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
 						content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-							content_content_type_id, content_metaMap, public_access, user_perm, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+							content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, user_perm, nil, "", nil, nil, nil, nil, &content_type}
 						contentSlice = append(contentSlice, content)
 						break
 					}
@@ -832,9 +850,9 @@ WHERE content.path @>
 							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
 								//fmt.Println("woauw it worked!")
 								accessGranted = true
-								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+								content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 								content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-									content_content_type_id, content_metaMap, public_access, nil, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+									content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, nil, user_group_perm, "", nil, nil, nil, nil, &content_type}
 								contentSlice = append(contentSlice, content)
 								break
 							}
@@ -928,9 +946,9 @@ WHERE content.path @>
 					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
 						if user.UserGroups[i].Permissions[j] == "node_browse" {
 							accessGranted = true
-							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, ct_type_id, false, false, false, nil, nil, nil}
+							content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, content_type_icon_str, content_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 							content := Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-								content_content_type_id, content_metaMap, public_access, nil, nil, content_type_id, "", nil, nil, nil, nil, &content_type}
+								content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, nil, nil, "", nil, nil, nil, nil, &content_type}
 							contentSlice = append(contentSlice, content)
 							break
 						}
@@ -1078,9 +1096,8 @@ func (c *Content) GetContentByDepth(start, offset, length int) (contentSlice []*
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 okidoki.content_url as content_url,
 heh.domains AS content_domains,
 tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
@@ -1134,11 +1151,11 @@ WHERE content.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lq
 
 	//row := db.QueryRow(queryStr, paramId)
 	for rows.Next() {
-		var content_id, content_created_by, content_content_type_id, content_type_id int
+		var content_id, content_created_by, content_content_type_id int
 		var content_path, content_name, content_alias string
 		var content_parent_id sql.NullInt64
 		var content_created_date *time.Time
-		var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+		var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 		var content_url sql.NullString
 		var content_domains coreglobals.StringSlice
 
@@ -1150,8 +1167,8 @@ WHERE content.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lq
 
 		rows.Scan(
 			&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+			&content_user_permissions, &content_user_group_permissions,
 			&content_url,
 			&content_domains,
 			&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
@@ -1189,9 +1206,15 @@ WHERE content.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lq
 		json.Unmarshal(template_parent_templates, &parent_templates_final)
 		json.Unmarshal(content_meta, &meta)
 
-		var public_access *PublicAccess
+		// var public_access *PublicAccess
 
-		json.Unmarshal(content_public_access, &public_access)
+		// json.Unmarshal(content_public_access, &public_access)
+
+		var public_access_members map[string]interface{}
+		var public_access_member_groups map[string]interface{}
+
+		json.Unmarshal(content_public_access_members, &public_access_members)
+		json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
@@ -1202,7 +1225,7 @@ WHERE content.path ~ (ltree2text(subltree($1,$2,$3))||'.*{,'||$4::text||'}')::lq
 		template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
 		content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-			content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+			content_content_type_id, meta, public_access_members, public_access_member_groups, user_perm, user_group_perm,
 			content_url_str, content_domains, nil, nil, &template, nil}
 		// content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
 		contentSlice = append(contentSlice, content)
@@ -1219,9 +1242,8 @@ func (c *Content) GetLinkedContent(metaKey string, metaValue int) (contentSlice 
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 okidoki.content_url as content_url,
 heh.domains AS content_domains,
 tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
@@ -1275,11 +1297,11 @@ WHERE content.meta->$1 @> $2;`
 
 	//row := db.QueryRow(queryStr, paramId)
 	for rows.Next() {
-		var content_id, content_created_by, content_content_type_id, content_type_id int
+		var content_id, content_created_by, content_content_type_id int
 		var content_path, content_name, content_alias string
 		var content_parent_id sql.NullInt64
 		var content_created_date *time.Time
-		var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+		var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 		var content_url sql.NullString
 		var content_domains coreglobals.StringSlice
 
@@ -1291,8 +1313,8 @@ WHERE content.meta->$1 @> $2;`
 
 		rows.Scan(
 			&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+			&content_user_permissions, &content_user_group_permissions,
 			&content_url,
 			&content_domains,
 			&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
@@ -1330,9 +1352,15 @@ WHERE content.meta->$1 @> $2;`
 		json.Unmarshal(template_parent_templates, &parent_templates_final)
 		json.Unmarshal(content_meta, &meta)
 
-		var public_access *PublicAccess
+		// var public_access *PublicAccess
 
-		json.Unmarshal(content_public_access, &public_access)
+		// json.Unmarshal(content_public_access, &public_access)
+
+		var public_access_members map[string]interface{}
+		var public_access_member_groups map[string]interface{}
+
+		json.Unmarshal(content_public_access_members, &public_access_members)
+		json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
@@ -1343,7 +1371,7 @@ WHERE content.meta->$1 @> $2;`
 		template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
 		content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-			content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+			content_content_type_id, meta, public_access_members, public_access_member_groups, user_perm, user_group_perm,
 			content_url_str, content_domains, nil, nil, &template, nil}
 		// content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
 		contentSlice = append(contentSlice, content)
@@ -1363,9 +1391,8 @@ func (c *Content) GetByContentTypeId(contentTypeId int) (contentSlice []*Content
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 okidoki.content_url as content_url,
 heh.domains AS content_domains,
 tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
@@ -1422,11 +1449,11 @@ WHERE content.content_type_id = $1;`
 
 	//row := db.QueryRow(queryStr, paramId)
 	for rows.Next() {
-		var content_id, content_created_by, content_content_type_id, content_type_id int
+		var content_id, content_created_by, content_content_type_id int
 		var content_path, content_name, content_alias string
 		var content_parent_id sql.NullInt64
 		var content_created_date *time.Time
-		var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+		var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 		var content_url sql.NullString
 		var content_domains coreglobals.StringSlice
 
@@ -1438,8 +1465,8 @@ WHERE content.content_type_id = $1;`
 
 		rows.Scan(
 			&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+			&content_user_permissions, &content_user_group_permissions,
 			&content_url,
 			&content_domains,
 			&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
@@ -1477,9 +1504,15 @@ WHERE content.content_type_id = $1;`
 		json.Unmarshal(template_parent_templates, &parent_templates_final)
 		json.Unmarshal(content_meta, &meta)
 
-		var public_access *PublicAccess
+		// var public_access *PublicAccess
 
-		json.Unmarshal(content_public_access, &public_access)
+		// json.Unmarshal(content_public_access, &public_access)
+
+		var public_access_members map[string]interface{}
+		var public_access_member_groups map[string]interface{}
+
+		json.Unmarshal(content_public_access_members, &public_access_members)
+		json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
@@ -1490,7 +1523,7 @@ WHERE content.content_type_id = $1;`
 		template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
 		content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-			content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+			content_content_type_id, meta, public_access_members, public_access_member_groups, user_perm, user_group_perm,
 			content_url_str, content_domains, nil, nil, &template, nil}
 		// content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
 		contentSlice = append(contentSlice, content)
@@ -1568,9 +1601,8 @@ func (c *Content) GetHomeContentItem() (content *Content) {
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 okidoki.content_url as content_url,
 heh.domains AS content_domains,
 tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
@@ -1620,11 +1652,11 @@ ON heh.id = content.id
 --WHERE cn.path <@ subltree($1,$2,$3)
   WHERE content.path ~ ltree2text(subltree($1,$2,$3))::lquery`
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 	var content_url sql.NullString
 	var content_domains coreglobals.StringSlice
 
@@ -1636,8 +1668,8 @@ ON heh.id = content.id
 
 	err := db.QueryRow(queryStr, c.Path, 0, 1).Scan(
 		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+		&content_user_permissions, &content_user_group_permissions,
 		&content_url,
 		&content_domains,
 		&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
@@ -1675,9 +1707,15 @@ ON heh.id = content.id
 	json.Unmarshal(template_parent_templates, &parent_templates_final)
 	json.Unmarshal(content_meta, &meta)
 
-	var public_access *PublicAccess
+	// var public_access *PublicAccess
 
-	json.Unmarshal(content_public_access, &public_access)
+	// json.Unmarshal(content_public_access, &public_access)
+
+	var public_access_members map[string]interface{}
+	var public_access_member_groups map[string]interface{}
+
+	json.Unmarshal(content_public_access_members, &public_access_members)
+	json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
@@ -1688,7 +1726,7 @@ ON heh.id = content.id
 	template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
 	content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-		content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+		content_content_type_id, meta, public_access_members, public_access_member_groups, user_perm, user_group_perm,
 		content_url_str, content_domains, nil, nil, &template, nil}
 
 	return
@@ -1700,9 +1738,8 @@ func (c *Content) GetAncestors(offset, length int) (contentSlice []*Content) {
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 okidoki.content_url as content_url,
 heh.domains AS content_domains,
 tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
@@ -1759,11 +1796,11 @@ WHERE content.path <@ subltree($1,$2,$3);`
 
 	//row := db.QueryRow(queryStr, paramId)
 	for rows.Next() {
-		var content_id, content_created_by, content_content_type_id, content_type_id int
+		var content_id, content_created_by, content_content_type_id int
 		var content_path, content_name, content_alias string
 		var content_parent_id sql.NullInt64
 		var content_created_date *time.Time
-		var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+		var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 		var content_url sql.NullString
 		var content_domains coreglobals.StringSlice
 
@@ -1775,8 +1812,8 @@ WHERE content.path <@ subltree($1,$2,$3);`
 
 		rows.Scan(
 			&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-			&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-			&content_user_permissions, &content_user_group_permissions, &content_type_id,
+			&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+			&content_user_permissions, &content_user_group_permissions,
 			&content_url,
 			&content_domains,
 			&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
@@ -1814,9 +1851,15 @@ WHERE content.path <@ subltree($1,$2,$3);`
 		json.Unmarshal(template_parent_templates, &parent_templates_final)
 		json.Unmarshal(content_meta, &meta)
 
-		var public_access *PublicAccess
+		// var public_access *PublicAccess
 
-		json.Unmarshal(content_public_access, &public_access)
+		// json.Unmarshal(content_public_access, &public_access)
+
+		var public_access_members map[string]interface{}
+		var public_access_member_groups map[string]interface{}
+
+		json.Unmarshal(content_public_access_members, &public_access_members)
+		json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 		user_perm = nil
@@ -1827,7 +1870,7 @@ WHERE content.path <@ subltree($1,$2,$3);`
 		template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
 		content := &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-			content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+			content_content_type_id, meta, public_access_members, public_access_member_groups, user_perm, user_group_perm,
 			content_url_str, content_domains, nil, nil, &template, nil}
 		// content := &Content{content_id, content_node_id, content_content_type_node_id, meta, contentNode, coremodulesettingsmodels.ContentType{}, &template, nil, content_url_str, content_domains,nil}
 		contentSlice = append(contentSlice, content)
@@ -2311,11 +2354,13 @@ func GetBackendContentById(id int) (content Content) {
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
   modified_content_type.id AS ct_id, modified_content_type.path AS ct_path, modified_content_type.parent_id AS ct_parent_id, modified_content_type.name as ct_name, modified_content_type.alias AS ct_alias,
-  modified_content_type.created_by as ct_created_by, modified_content_type.description AS ct_description, modified_content_type.icon AS ct_icon, modified_content_type.thumbnail AS ct_thumbnail, modified_content_type.meta::json AS ct_meta, modified_content_type.ct_tabs AS ct_tabs, modified_content_type.parent_content_types AS ct_parent_content_types, modified_content_type.composite_content_types AS ct_composite_content_types, modified_content_type.type_id as ct_type_id
+  modified_content_type.created_by as ct_created_by, modified_content_type.description AS ct_description, modified_content_type.icon AS ct_icon, modified_content_type.thumbnail AS ct_thumbnail, 
+  modified_content_type.meta::json AS ct_meta, modified_content_type.ct_tabs AS ct_tabs, modified_content_type.parent_content_types AS ct_parent_content_types, 
+  modified_content_type.composite_content_types AS ct_composite_content_types,
+  modified_content_type.template_id as ct_template_id, modified_content_type.allowed_template_ids as ct_allowed_template_ids 
 FROM content
 JOIN
 LATERAL
@@ -2328,7 +2373,7 @@ LATERAL
     SELECT array_to_json(array_agg(res1)) AS parent_content_types
     FROM 
     (
-      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, gf.* AS tabs, c.type_id
+      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, gf.* AS tabs
       FROM content_type AS c,
       LATERAL 
       (
@@ -2398,7 +2443,7 @@ LATERAL
     SELECT array_to_json(array_agg(res1)) AS composite_content_types
     FROM 
     (
-      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, gf.* AS tabs, c.type_id
+      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, gf.* AS tabs
       FROM content_type AS c,
       LATERAL 
       (
@@ -2648,27 +2693,29 @@ WHERE content.id=$1`
 	//   ON res.node_id = content.content_type_node_id
 	//   WHERE my_node.id=$1`
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 
-	var ct_id, ct_created_by, ct_type_id int
-	var ct_parent_id sql.NullInt64
+	var ct_id, ct_created_by int
+	var ct_parent_id, ct_template_id sql.NullInt64
 
 	var ct_path, ct_name, ct_alias, ct_description, ct_icon, ct_thumbnail string
 	var ct_tabs, ct_meta []byte
 	var ct_parent_content_types, ct_composite_content_types []byte
+	var ct_allowed_template_ids coreglobals.IntSlice
 
 	row := db.QueryRow(queryStr, id)
 
 	err := row.Scan(
 		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+		&content_user_permissions, &content_user_group_permissions,
 		&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by,
-		&ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_parent_content_types, &ct_composite_content_types, &ct_type_id)
+		&ct_description, &ct_icon, &ct_thumbnail, &ct_meta, &ct_tabs, &ct_parent_content_types, &ct_composite_content_types,
+		&ct_template_id, &ct_allowed_template_ids)
 
 	corehelpers.PanicIf(err)
 
@@ -2685,6 +2732,11 @@ WHERE content.id=$1`
 		cpid = int(content_parent_id.Int64)
 	}
 
+	var template_id int
+	if ct_template_id.Valid {
+		template_id = int(ct_template_id.Int64)
+	}
+
 	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
 	user_group_perm = nil
@@ -2696,9 +2748,15 @@ WHERE content.id=$1`
 	var ct_metaMap map[string]interface{}
 	var content_metaMap map[string]interface{}
 
-	var public_access *PublicAccess
+	// var public_access *PublicAccess
 
-	json.Unmarshal(content_public_access, &public_access)
+	// json.Unmarshal(content_public_access, &public_access)
+
+	var public_access_members map[string]interface{}
+	var public_access_member_groups map[string]interface{}
+
+	json.Unmarshal(content_public_access_members, &public_access_members)
+	json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 	json.Unmarshal(ct_parent_content_types, &parent_content_types)
 	json.Unmarshal(ct_composite_content_types, &composite_content_types)
@@ -2706,10 +2764,10 @@ WHERE content.id=$1`
 	json.Unmarshal(ct_meta, &ct_metaMap)
 	json.Unmarshal(content_meta, &content_metaMap)
 
-	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_content_types, nil, ct_type_id, false, false, false, nil, nil, composite_content_types}
+	content_type := coremodulesettingsmodels.ContentType{ct_id, ct_path, content_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_content_types, nil, false, false, false, nil, nil, composite_content_types, template_id, ct_allowed_template_ids}
 
 	content = Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-		content_content_type_id, content_metaMap, public_access, user_perm, user_group_perm, content_type_id, "", nil, nil, nil, nil, &content_type}
+		content_content_type_id, content_metaMap, public_access_members, public_access_member_groups, user_perm, user_group_perm, "", nil, nil, nil, nil, &content_type}
 
 	return
 }
@@ -2719,9 +2777,8 @@ func GetFrontendContentById(paramId int) (content *Content) {
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 okidoki.content_url as content_url,
 heh.domains AS content_domains,
 tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
@@ -2769,11 +2826,11 @@ JOIN
 ON heh.id = content.id 
 WHERE content.id = $1;`
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 	var content_url sql.NullString
 	var content_domains coreglobals.StringSlice
 
@@ -2785,8 +2842,8 @@ WHERE content.id = $1;`
 
 	err := db.QueryRow(queryStr, paramId).Scan(
 		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+		&content_user_permissions, &content_user_group_permissions,
 		&content_url,
 		&content_domains,
 		&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
@@ -2824,9 +2881,15 @@ WHERE content.id = $1;`
 	json.Unmarshal(template_parent_templates, &parent_templates_final)
 	json.Unmarshal(content_meta, &meta)
 
-	var public_access *PublicAccess
+	// var public_access *PublicAccess
 
-	json.Unmarshal(content_public_access, &public_access)
+	// json.Unmarshal(content_public_access, &public_access)
+
+	var public_access_members map[string]interface{}
+	var public_access_member_groups map[string]interface{}
+
+	json.Unmarshal(content_public_access_members, &public_access_members)
+	json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
@@ -2837,7 +2900,7 @@ WHERE content.id = $1;`
 	template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
 	content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-		content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+		content_content_type_id, meta, public_access_members, public_access_member_groups, user_perm, user_group_perm,
 		content_url_str, content_domains, nil, nil, &template, nil}
 	return
 }
@@ -2918,9 +2981,8 @@ func GetFrontendContentByUrl(name, url string) (content *Content) {
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 okidoki.content_url as content_url,
 heh.domains AS content_domains,
 tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
@@ -2968,11 +3030,11 @@ JOIN
 ON heh.id = content.id 
 WHERE lower(content.name) = $1;`
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 	var content_url sql.NullString
 	var content_domains coreglobals.StringSlice
 
@@ -2984,8 +3046,8 @@ WHERE lower(content.name) = $1;`
 
 	err := db.QueryRow(queryStr, name).Scan(
 		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+		&content_user_permissions, &content_user_group_permissions,
 		&content_url,
 		&content_domains,
 		&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
@@ -3023,9 +3085,15 @@ WHERE lower(content.name) = $1;`
 	json.Unmarshal(template_parent_templates, &parent_templates_final)
 	json.Unmarshal(content_meta, &meta)
 
-	var public_access *PublicAccess
+	// var public_access *PublicAccess
 
-	json.Unmarshal(content_public_access, &public_access)
+	// json.Unmarshal(content_public_access, &public_access)
+
+	var public_access_members map[string]interface{}
+	var public_access_member_groups map[string]interface{}
+
+	json.Unmarshal(content_public_access_members, &public_access_members)
+	json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 
 	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
@@ -3036,7 +3104,7 @@ WHERE lower(content.name) = $1;`
 	template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
 	content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-		content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id,
+		content_content_type_id, meta, public_access_members, public_access_member_groups, user_perm, user_group_perm,
 		content_url_str, content_domains, nil, nil, &template, nil}
 
 	for i := 0; i < len(content.Domains); i++ {
@@ -3068,9 +3136,8 @@ func GetFrontendContentByDomain(domain string) (content *Content) {
 	queryStr := `SELECT content.id AS content_id, content.path AS content_path, content.parent_id AS content_parent_id,
 content.name AS content_name, content.alias AS content_alias, content.created_by AS content_created_by, 
 content.created_date AS content_created_date, content.content_type_id AS content_content_type_id,
-content.meta AS content_meta, content.public_access AS content_public_access,
+content.meta AS content_meta, content.public_access_members AS content_public_access_members, content.public_Access_member_groups AS content_public_access_member_groups,
 content.user_permissions AS content_user_permissions, content.user_group_permissions AS content_user_group_permissions,
-content.type_id AS content_type_id,
 --okidoki.content_url as content_url,
 heh.domains AS content_domains,
 tpl.id AS template_id, tpl.path AS template_path, tpl.parent_id AS template_parent_id,
@@ -3118,11 +3185,11 @@ JOIN
 ON heh.id = content.id 
 WHERE $1 = ANY(heh.domains) and nlevel(content.path) = 1;`
 
-	var content_id, content_created_by, content_content_type_id, content_type_id int
+	var content_id, content_created_by, content_content_type_id int
 	var content_path, content_name, content_alias string
 	var content_parent_id sql.NullInt64
 	var content_created_date *time.Time
-	var content_meta, content_public_access, content_user_permissions, content_user_group_permissions []byte
+	var content_meta, content_public_access_members, content_public_access_member_groups, content_user_permissions, content_user_group_permissions []byte
 	//var content_url sql.NullString
 	var content_domains coreglobals.StringSlice
 
@@ -3134,8 +3201,8 @@ WHERE $1 = ANY(heh.domains) and nlevel(content.path) = 1;`
 
 	err := db.QueryRow(queryStr, domain).Scan(
 		&content_id, &content_path, &content_parent_id, &content_name, &content_alias, &content_created_by,
-		&content_created_date, &content_content_type_id, &content_meta, &content_public_access,
-		&content_user_permissions, &content_user_group_permissions, &content_type_id,
+		&content_created_date, &content_content_type_id, &content_meta, &content_public_access_members, &content_public_access_member_groups,
+		&content_user_permissions, &content_user_group_permissions,
 		//&content_url,
 		&content_domains,
 		&template_id, &template_path, &template_parent_id, &template_name, &template_alias,
@@ -3173,10 +3240,15 @@ WHERE $1 = ANY(heh.domains) and nlevel(content.path) = 1;`
 	json.Unmarshal(template_parent_templates, &parent_templates_final)
 	json.Unmarshal(content_meta, &meta)
 
-	var public_access *PublicAccess
+	// var public_access *PublicAccess
 
-	json.Unmarshal(content_public_access, &public_access)
+	// json.Unmarshal(content_public_access, &public_access)
 
+	var public_access_members map[string]interface{}
+	var public_access_member_groups map[string]interface{}
+
+	json.Unmarshal(content_public_access_members, &public_access_members)
+	json.Unmarshal(content_public_access_member_groups, &public_access_member_groups)
 	var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
 	user_perm = nil
 	user_group_perm = nil
@@ -3186,7 +3258,7 @@ WHERE $1 = ANY(heh.domains) and nlevel(content.path) = 1;`
 	template := coremodulesettingsmodels.Template{template_id, template_path, tpid, template_name, template_alias, template_created_by, &time.Time{}, template_is_partial, "", parent_templates_final}
 
 	content = &Content{content_id, content_path, cpid, content_name, content_alias, content_created_by, content_created_date,
-		content_content_type_id, meta, public_access, user_perm, user_group_perm, content_type_id, "", content_domains, nil, nil, &template, nil}
+		content_content_type_id, meta, public_access_members, public_access_member_groups, user_perm, user_group_perm, "", content_domains, nil, nil, &template, nil}
 
 	fmt.Println(content_domains)
 

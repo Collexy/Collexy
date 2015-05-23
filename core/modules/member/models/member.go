@@ -33,7 +33,7 @@ type Member struct {
 	Groups         []*MemberGroup         `json:"groups,omitempty"`
 }
 
-func (m *Member) Groups2PublicAccess(contentGroups []int) bool {
+func (m *Member) Groups2PublicAccess(contentGroups map[string]interface{}) bool {
 	for _, contentGroup := range contentGroups {
 		for _, memberGroup := range m.Groups {
 			if contentGroup == memberGroup.Id {
@@ -43,6 +43,17 @@ func (m *Member) Groups2PublicAccess(contentGroups []int) bool {
 	}
 	return false
 }
+
+// func (m *Member) Groups2PublicAccess(contentGroups []int) bool {
+// 	for _, contentGroup := range contentGroups {
+// 		for _, memberGroup := range m.Groups {
+// 			if contentGroup == memberGroup.Id {
+// 				return true
+// 			}
+// 		}
+// 	}
+// 	return false
+// }
 
 //SetPassword takes a plaintext password and hashes it with bcrypt and sets the
 //password field to the hash.

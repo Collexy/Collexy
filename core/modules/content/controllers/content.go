@@ -318,22 +318,50 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
 			//     this.RenderTemplate(w, templateName, content, nil)
 			// }
 
+			// if member := coremodulemembermodels.GetLoggedInMember(r); member != nil {
+			// 	if content.PublicAccess != nil {
+			// 		if corehelpers.IntInSlice(member.Id, content.PublicAccess.Members) {
+			// 			this.RenderTemplate(w, templateName, content, member)
+			// 		} else if member.Groups2PublicAccess(content.PublicAccess.Groups) {
+			// 			this.RenderTemplate(w, templateName, content, member)
+			// 		} else {
+			// 			fmt.Println("Member do have access to this content")
+			// 			coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
+			// 			this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
+			// 		}
+			// 	} else {
+			// 		this.RenderTemplate(w, templateName, content, member)
+			// 	}
+			// } else {
+			// 	if content.PublicAccess != nil {
+
+
 			if member := coremodulemembermodels.GetLoggedInMember(r); member != nil {
-				if content.PublicAccess != nil {
-					if corehelpers.IntInSlice(member.Id, content.PublicAccess.Members) {
-						this.RenderTemplate(w, templateName, content, member)
-					} else if member.Groups2PublicAccess(content.PublicAccess.Groups) {
-						this.RenderTemplate(w, templateName, content, member)
+					if content.PublicAccessMembers != nil || content.PublicAccessMemberGroups != nil {
+						memberIdstr := strconv.Itoa(member.Id)
+						if content.PublicAccessMembers[memberIdstr] != nil {
+							this.RenderTemplate(w, templateName, content, member)
+						} else if member.Groups2PublicAccess(content.PublicAccessMemberGroups) {
+							this.RenderTemplate(w, templateName, content, member)
+						} else {
+							fmt.Println("You do not seem to have access to this content")
+							coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
+							this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
+						}
+						// if corehelpers.IntInSlice(member.Id, content.PublicAccess.Members) {
+						// 	this.RenderTemplate(w, templateName, content, member)
+						// } else if member.Groups2PublicAccess(content.PublicAccess.Groups) {
+						// 	this.RenderTemplate(w, templateName, content, member)
+						// } else {
+						// 	fmt.Println("You do not seem to have access to this content")
+						// 	coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
+						// 	this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
+						// }
 					} else {
-						fmt.Println("Member do have access to this content")
-						coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
-						this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
+						this.RenderTemplate(w, templateName, content, member)
 					}
-				} else {
-					this.RenderTemplate(w, templateName, content, member)
-				}
 			} else {
-				if content.PublicAccess != nil {
+				if content.PublicAccessMembers != nil || content.PublicAccessMemberGroups != nil {
 					fmt.Println("Member do have access to this content")
 					coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
 					this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)

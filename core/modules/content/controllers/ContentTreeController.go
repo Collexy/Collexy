@@ -34,8 +34,8 @@ func (this *ContentTreeController) GetMenuForContent(w http.ResponseWriter, r *h
 		contentTypes := coremodulesettingsmodels.GetContentTypes(nil)
 
 		for _, ct := range contentTypes {
-			if ct.TypeId == 1 && ct.AllowAtRoot {
-				path := fmt.Sprintf("content.new({type_id:%d, content_type_id:%d, parent_id:null})", 1, ct.Id)
+			if ct.AllowAtRoot {
+				path := fmt.Sprintf("content.new({content_type_id:%d, parent_id:null})", ct.Id)
 				//tempIdStr := strconv.Itoa(ctId)
 				item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}
 				cmiNew.Items = append(cmiNew.Items, item)
@@ -60,7 +60,7 @@ func (this *ContentTreeController) GetMenuForContent(w http.ResponseWriter, r *h
 		// }
 
 		for _, ct := range c.ContentType.AllowedContentTypes {
-			path := fmt.Sprintf("content.new({type_id:%d, content_type_id:%d, parent_id:%d})", c.TypeId, ct.Id, c.Id)
+			path := fmt.Sprintf("content.new({content_type_id:%d, parent_id:%d})", ct.Id, c.Id)
 			//tempIdStr := strconv.Itoa(ctId)
 			item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}
 			cmiNew.Items = append(cmiNew.Items, item)
@@ -78,70 +78,70 @@ func (this *ContentTreeController) GetMenuForContent(w http.ResponseWriter, r *h
 	fmt.Fprintf(w, "%s", res)
 }
 
-func (this *ContentTreeController) GetMenuForMedia(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// func (this *ContentTreeController) GetMenuForMedia(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+// 	params := mux.Vars(r)
+// 	idStr := params["id"]
+// 	id, _ := strconv.Atoi(idStr)
 
-	var cmItems []ContextMenuItem
+// 	var cmItems []ContextMenuItem
 
-	//Name, Path, Url, IsDialog, Items
-	cmiNew := ContextMenuItem{"Create", "", "", "", false, nil, "node_create"}
+// 	//Name, Path, Url, IsDialog, Items
+// 	cmiNew := ContextMenuItem{"Create", "", "", "", false, nil, "node_create"}
 
-	// TODO
-	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
-	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
-	// Permissions should be added again
-	if id == 0 {
-		contentTypes := coremodulesettingsmodels.GetContentTypes(nil)
+// 	// TODO
+// 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
+// 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
+// 	// Permissions should be added again
+// 	if id == 0 {
+// 		contentTypes := coremodulesettingsmodels.GetContentTypes(nil)
 
-		for _, ct := range contentTypes {
-			if ct.TypeId == 2 && ct.AllowAtRoot {
-				path := fmt.Sprintf("media.new({type_id:%d, content_type_id:%d})", 2, ct.Id)
-				//tempIdStr := strconv.Itoa(ctId)
-				item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}
-				cmiNew.Items = append(cmiNew.Items, item)
-			}
-		}
-		if len(cmiNew.Items) > 0 {
-			cmItems = append(cmItems, cmiNew)
-		}
+// 		for _, ct := range contentTypes {
+// 			if ct.TypeId == 2 && ct.AllowAtRoot {
+// 				path := fmt.Sprintf("media.new({type_id:%d, content_type_id:%d})", 2, ct.Id)
+// 				//tempIdStr := strconv.Itoa(ctId)
+// 				item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}
+// 				cmiNew.Items = append(cmiNew.Items, item)
+// 			}
+// 		}
+// 		if len(cmiNew.Items) > 0 {
+// 			cmItems = append(cmItems, cmiNew)
+// 		}
 
-	} else {
-		c := models.GetContentById(id)
+// 	} else {
+// 		c := models.GetContentById(id)
 
-		// var myIntSlice []int
+// 		// var myIntSlice []int
 
-		// s := reflect.ValueOf(c.ContentType.Meta["allowed_content_type_ids"])
+// 		// s := reflect.ValueOf(c.ContentType.Meta["allowed_content_type_ids"])
 
-		// for i := 0; i < s.Len(); i++ {
-		//  myinterface := s.Index(i).Interface()
-		//  lol := reflect.ValueOf(myinterface).Float()
-		//     fmt.Println(lol)
+// 		// for i := 0; i < s.Len(); i++ {
+// 		//  myinterface := s.Index(i).Interface()
+// 		//  lol := reflect.ValueOf(myinterface).Float()
+// 		//     fmt.Println(lol)
 
-		//     myIntSlice = append(myIntSlice,int(lol))
-		// }
+// 		//     myIntSlice = append(myIntSlice,int(lol))
+// 		// }
 
-		for _, ct := range c.ContentType.AllowedContentTypes {
-			path := fmt.Sprintf("media.new({type_id:%d, content_type_id:%d, parent_id:%d})", c.TypeId, ct.Id, c.Id)
-			//tempIdStr := strconv.Itoa(ctId)
-			item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}
-			cmiNew.Items = append(cmiNew.Items, item)
-		}
-		cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/content/public/views/media/delete.html", true, nil, ""}
-		if len(cmiNew.Items) > 0 {
-			cmItems = append(cmItems, cmiNew)
-		}
-		cmItems = append(cmItems, cmiDel)
-	}
+// 		for _, ct := range c.ContentType.AllowedContentTypes {
+// 			path := fmt.Sprintf("media.new({type_id:%d, content_type_id:%d, parent_id:%d})", c.TypeId, ct.Id, c.Id)
+// 			//tempIdStr := strconv.Itoa(ctId)
+// 			item := ContextMenuItem{ct.Name, path, ct.Icon, "", false, nil, ""}
+// 			cmiNew.Items = append(cmiNew.Items, item)
+// 		}
+// 		cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/content/public/views/media/delete.html", true, nil, ""}
+// 		if len(cmiNew.Items) > 0 {
+// 			cmItems = append(cmItems, cmiNew)
+// 		}
+// 		cmItems = append(cmItems, cmiDel)
+// 	}
 
-	res, err := json.Marshal(cmItems)
-	corehelpers.PanicIf(err)
+// 	res, err := json.Marshal(cmItems)
+// 	corehelpers.PanicIf(err)
 
-	fmt.Fprintf(w, "%s", res)
-}
+// 	fmt.Fprintf(w, "%s", res)
+// }
 
 type ContextMenuItem struct {
 	Name       string            `json:"name,omitempty"`

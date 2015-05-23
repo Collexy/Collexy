@@ -1,6 +1,7 @@
 <div ng-controller="ContentTypeEditCtrl" class="collexy-controller">
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
+        <!-- <pre>{{node}}</pre> -->
 
         <input type="text" ng-model="node.name">
 
@@ -35,7 +36,7 @@
                 <tr>
                     <td>Allowed templates</td>
                     <td>
-                        <div ng-repeat="tmpl in allTemplates"><label><input type="checkbox" checklist-model="node.meta.allowed_template_ids" checklist-value="tmpl.id"></label> {{tmpl.name}}</div>
+                        <div ng-repeat="tmpl in allTemplates"><label><input type="checkbox" checklist-model="node.allowed_template_ids" checklist-value="tmpl.id"></label> {{tmpl.name}}</div>
                         <br>
                           <button ng-click="checkAll()">check all</button>
                           <button ng-click="uncheckAll()">uncheck all</button>
@@ -45,8 +46,8 @@
                 <tr>
                     <td>Default template</td>
                     <td>
-                        <select ng-model="node.meta.template_id">
-                            <option ng-repeat="tmpl in allTemplates" value="{{tmpl.id}}">{{tmpl.name}}</option>
+                        <select ng-model="node.template_id" ng-options="tmpl.id as tmpl.name for tmpl in allTemplates">
+                            <!-- <option ng-repeat="tmpl in allTemplates" value="{{tmpl.id}}">{{tmpl.name}}</option> -->
                         </select>
                     </td>
                     <td>This template will be selected by default when creating a new entity of this content type.</td>

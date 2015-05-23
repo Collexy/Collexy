@@ -1,0 +1,26 @@
+<script type="text/ng-template"  id="tree_item_renderer.html">
+    
+    
+       
+        <i ng-expand-collapse="data" class="fa" ng-class="data.show == true ? 'fa-caret-down' : 'fa-caret-right'"></i>
+        <i ng-class="data.media_type.icon"></i>
+        
+        
+        <a ui-sref="media.edit({id:data.id})"  ui-sref-active="active" ng-context-menu="showOptions(data,$event)">{{data.name}} ({{data.path}})</a>
+        
+        <ul ng-show="data.show">
+            <li ng-repeat="data in data.nodes" ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+
+</script>
+
+    
+    <h4>Media</h4>
+    <div class="admin-tree-container">
+        <!-- <ul class="admin-tree" ng-context-menu="showOptions(rootNode,$event)"> -->
+        <ul class="admin-tree" >
+            <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+    </div>
+    
+

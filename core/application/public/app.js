@@ -152,7 +152,7 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                 
                 // 		if("permissions" in toState.data){
                 var user = authenticationService.get({
-                    sid: $cookies.sessionauth
+                    sid: $cookies.get('sessionauth') 
                 }, function(user) {
                     // 				console.log(user)
                     // 				var userPermissions = [];

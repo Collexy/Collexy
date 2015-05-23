@@ -30,13 +30,14 @@ type ContentType struct {
 	Tabs                    []Tab                  `json:"tabs,omitempty"`
 	ParentContentTypes      []ContentType          `json:"parent_content_types,omitempty"`
 	AllowedContentTypes     []ContentType          `json:"allowed_content_types,omitempty"`
-	TypeId                  int                    `json:"type_id"`
 	AllowAtRoot             bool                   `json:"allow_at_root"`
 	IsContainer             bool                   `json:"is_container"`
 	IsAbstract              bool                   `json:"is_abstract"`
 	AllowedContentTypeIds   []int                  `json:"allowed_content_type_ids,omitempty"`
 	CompositeContentTypeIds []int                  `json:"composite_content_type_ids,omitempty"`
 	CompositeContentTypes   []ContentType          `json:"composite_content_types,omitempty"`
+    TemplateId              int                    `json:"template_id,omitempty"`
+    AllowedTemplateIds      []int                  `json:"allowed_template_ids,omitempty"`
 }
 
 func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType) {
@@ -47,16 +48,13 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
         content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
         content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail,
         content_type.meta as content_type_meta, content_type.tabs as content_type_tabs, 
-        content_type.type_id as content_type_type_id, content_type.allow_at_root AS content_type_allow_at_root,
+        content_type.allow_at_root AS content_type_allow_at_root,
         content_type.is_container AS content_type_is_container, content_type.is_abstract as content_type_is_abstract,
-        content_type.allowed_content_type_ids AS content_type_allowed_content_type_ids 
+        content_type.allowed_content_type_ids AS content_type_allowed_content_type_ids,
+        content_type.template_id as content_type_template_id, content_type.allowed_template_ids as content_type_allowed_template_ids 
         FROM content_type`
 
-	if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") != "" {
-		sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id") + ` and content_type.path ~ '*.*{` + queryStringParams.Get("levels") + `}'`
-	} else if queryStringParams.Get("type-id") != "" && queryStringParams.Get("levels") == "" {
-		sqlStr = sqlStr + ` WHERE content_type.type_id=` + queryStringParams.Get("type-id")
-	} else if queryStringParams.Get("type-id") == "" && queryStringParams.Get("levels") != "" {
+	if queryStringParams.Get("levels") != "" {
 		sqlStr = sqlStr + ` WHERE content_type.path ~ '*.*{` + queryStringParams.Get("levels") + `}'`
 	}
 
@@ -72,22 +70,23 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
 	defer rows.Close()
 
 	for rows.Next() {
-		var content_type_id, content_type_created_by, content_type_type_id int
+		var content_type_id, content_type_created_by int
 		var content_type_path, content_type_name, content_type_alias string
 		var content_type_description, content_type_icon, content_type_thumbnail string
 		var content_type_created_date *time.Time
 
 		var content_type_allow_at_root, content_type_is_container, content_type_is_abstract bool
-		var content_type_allowed_content_type_ids coreglobals.IntSlice
+		var content_type_allowed_content_type_ids, content_type_allowed_template_ids coreglobals.IntSlice
 
-		var content_type_parent_id sql.NullInt64
+		var content_type_parent_id, content_type_template_id sql.NullInt64
 
 		var content_type_tabs, content_type_meta []byte
 
 		if err := rows.Scan(&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name,
 			&content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description,
-			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id,
-			&content_type_allow_at_root, &content_type_is_container, &content_type_is_abstract, &content_type_allowed_content_type_ids); err != nil {
+			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs,
+			&content_type_allow_at_root, &content_type_is_container, &content_type_is_abstract, &content_type_allowed_content_type_ids,
+            &content_type_template_id, &content_type_allowed_template_ids); err != nil {
 			log.Fatal(err)
 		}
 
@@ -98,13 +97,18 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
 			// NULL value
 		}
 
+        var template_id int
+        if content_type_template_id.Valid {
+            template_id = int(content_type_template_id.Int64)
+        }
+
 		var tabs []Tab
 		var content_type_metaMap map[string]interface{}
 
 		json.Unmarshal(content_type_tabs, &tabs)
 		json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, nil, nil}
+		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, nil, nil, template_id, content_type_allowed_template_ids}
 		contentTypes = append(contentTypes, contentType)
 	}
 	if err := rows.Err(); err != nil {
@@ -120,8 +124,7 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
         content_type.alias as member_alias, content_type.created_by as content_type_created_by, 
         content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
         content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail,
-        content_type.meta as content_type_meta, content_type.tabs as content_type_tabs, 
-        content_type.type_id as content_type_type_id
+        content_type.meta as content_type_meta, content_type.tabs as content_type_tabs 
         FROM content_type
         WHERE content_type.parent_id=$1`
 
@@ -137,7 +140,7 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var content_type_id, content_type_created_by, content_type_type_id int
+		var content_type_id, content_type_created_by int
 		var content_type_path, content_type_name, content_type_alias string
 		var content_type_description, content_type_icon, content_type_thumbnail string
 		var content_type_created_date *time.Time
@@ -148,7 +151,7 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
 
 		if err := rows.Scan(&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name,
 			&content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description,
-			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id); err != nil {
+			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs); err != nil {
 			log.Fatal(err)
 		}
 
@@ -165,7 +168,7 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
 		json.Unmarshal(content_type_tabs, &tabs)
 		json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id, false, false, false, nil, nil, nil}
+		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 		contentTypes = append(contentTypes, contentType)
 	}
 	if err := rows.Err(); err != nil {
@@ -177,10 +180,11 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
 func GetContentTypeExtendedById(id int) (contentType ContentType) {
 
 	querystr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, content_type.parent_id as content_type_parent_id, content_type.name as content_type_name, content_type.alias as member_alias, content_type.created_by as content_type_created_by,  content_type.created_date as content_type_created_date, content_type.description as content_type_description, content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail, content_type.meta as content_type_meta,
-res.mt_tabs as content_type_tabs, res.parent_content_types as content_type_parent_content_types, res.composite_content_types as content_type_composite_content_types, content_type.type_id as content_type_type_id,
+res.mt_tabs as content_type_tabs, res.parent_content_types as content_type_parent_content_types, res.composite_content_types as content_type_composite_content_types, 
 content_type.allow_at_root AS content_type_allow_at_root, 
 content_type.is_container AS content_type_is_container, content_type.is_abstract as content_type_is_abstract, 
-content_type.allowed_content_type_ids AS content_type_allowed_content_type_ids, content_type.composite_content_type_ids AS content_type_composite_content_type_ids 
+content_type.allowed_content_type_ids AS content_type_allowed_content_type_ids, content_type.composite_content_type_ids AS content_type_composite_content_type_ids,
+content_type.template_id as content_type_template_id, content_type.allowed_template_ids as content_type_allowed_template_ids  
 FROM content_type  
 JOIN
 LATERAL
@@ -192,7 +196,7 @@ LATERAL
     (
         SELECT array_to_json(array_agg(okidoki)) AS parent_content_types
         FROM (
-            SELECT mt.id, mt.path, mt.parent_id, mt.name, mt.alias, mt.created_by, mt.description, mt.icon, mt.meta, gf.* AS tabs, mt.type_id, mt.allow_at_root, mt.is_container, mt.is_abstract 
+            SELECT mt.id, mt.path, mt.parent_id, mt.name, mt.alias, mt.created_by, mt.description, mt.icon, mt.meta, gf.* AS tabs, mt.allow_at_root, mt.is_container, mt.is_abstract 
             FROM content_type AS mt,
             LATERAL 
             (
@@ -333,15 +337,15 @@ ON res.id = content_type.id
 WHERE content_type.id=$1`
 
 	// node
-	var content_type_id, content_type_created_by, content_type_type_id int
+	var content_type_id, content_type_created_by int
 	var content_type_path, content_type_name, content_type_alias string
 	var content_type_description, content_type_icon, content_type_thumbnail string
 	var content_type_created_date *time.Time
 
-	var content_type_parent_id sql.NullInt64
+	var content_type_parent_id, content_type_template_id sql.NullInt64
 
 	var content_type_allow_at_root, content_type_is_container, content_type_is_abstract bool
-	var content_type_allowed_content_type_ids, content_type_composite_content_type_ids coreglobals.IntSlice
+	var content_type_allowed_content_type_ids, content_type_composite_content_type_ids, content_type_allowed_template_ids coreglobals.IntSlice
 
 	var content_type_tabs, content_type_meta []byte
 	var content_type_parent_content_types, content_type_composite_content_types []byte
@@ -353,8 +357,9 @@ WHERE content_type.id=$1`
 	err := row.Scan(
 		&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, &content_type_alias,
 		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta,
-		&content_type_tabs, &content_type_parent_content_types, &content_type_composite_content_types, &content_type_type_id, &content_type_allow_at_root, &content_type_is_container,
-		&content_type_is_abstract, &content_type_allowed_content_type_ids, &content_type_composite_content_type_ids)
+		&content_type_tabs, &content_type_parent_content_types, &content_type_composite_content_types, &content_type_allow_at_root, &content_type_is_container,
+		&content_type_is_abstract, &content_type_allowed_content_type_ids, &content_type_composite_content_type_ids,
+        &content_type_template_id, &content_type_allowed_template_ids)
 
 	var parent_content_type_id int
 	if content_type_parent_id.Valid {
@@ -362,6 +367,11 @@ WHERE content_type.id=$1`
 	} else {
 		// NULL value
 	}
+
+    var template_id int
+    if content_type_template_id.Valid {
+        template_id = int(content_type_template_id.Int64)
+    }
 
 	var parent_content_types, composite_content_types []ContentType
 	var tabs []Tab
@@ -378,7 +388,7 @@ WHERE content_type.id=$1`
 	case err != nil:
 		log.Fatal(err)
 	default:
-		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_type_id, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, content_type_composite_content_type_ids, composite_content_types}
+		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, content_type_composite_content_type_ids, composite_content_types, template_id, content_type_allowed_template_ids}
 	}
 
 	return
@@ -390,11 +400,11 @@ func GetContentTypeById(id int) (contentType ContentType) {
     content_type.alias as member_alias, content_type.created_by as content_type_created_by, 
     content_type.created_date as content_type_created_date, content_type.description as content_type_description, 
     content_type.icon as content_type_icon, content_type.thumbnail as content_type_thumbnail, content_type.meta as content_type_meta, 
-    content_type.tabs as content_type_tabs, content_type.type_id as content_type_type_id
+    content_type.tabs as content_type_tabs 
         FROM content_type
         WHERE content_type.id=$1`
 
-	var content_type_id, content_type_created_by, content_type_type_id int
+	var content_type_id, content_type_created_by int
 	var content_type_path, content_type_name, content_type_alias string
 	var content_type_description, content_type_icon, content_type_thumbnail string
 	var content_type_created_date *time.Time
@@ -409,7 +419,7 @@ func GetContentTypeById(id int) (contentType ContentType) {
 
 	err := row.Scan(
 		&content_type_id, &content_type_path, &content_type_parent_id, &content_type_name, &content_type_alias,
-		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs, &content_type_type_id)
+		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs)
 
 	var parent_content_type_id int
 	if content_type_parent_id.Valid {
@@ -430,7 +440,7 @@ func GetContentTypeById(id int) (contentType ContentType) {
 	case err != nil:
 		log.Fatal(err)
 	default:
-		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_type_id, false, false, false, nil, nil, nil}
+		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 	}
 
 	return

@@ -1,0 +1,334 @@
+<div ng-controller="MediaEditCtrl" class="collexy-controller">
+    <form role="form" ng-submit="submit()">
+        <h4>Edit</h4>
+
+        <input type="text" ng-model="data.name">
+        <!-- <pre>
+        {{node}}
+            {{node.ctm.tabs}}
+            {{node.ct.tabs}}
+        </pre>
+        <p>
+            {{node.media}}
+        </p> -->
+        <ul class="admin-tabs">
+            <!-- <li class="active"><a href="">Meta</a></li>
+            <li><a href="#">Properties</a></li> -->
+            <!-- <li ng-repeat="tab in [{name: 'tab1', properties: [{name: 'prop1', order: 1, data_type: 1, help_text: 'help text', description: 'description'}]}, {name: 'tab2', properties: [{name: 'prop2', order: 1, data_type: 1, help_text: 'help text2', description: 'description2'}, {name: 'prop3', order: 2, data_type: 1, help_text: 'help text3', description: 'description3'}]}] track by tab.name">{{tab.name}}</li> -->
+            <li ng-repeat="tab in tabs | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" collexy-toggle-tab="toggleTab(tab.name)">{{tab.name}}</a></li>
+            <li ng-class="(currentTab==access) ? 'active' : ''">
+                <a href="#access" collexy-toggle-tab="toggleTab(access)">Access</a>
+            </li>
+        </ul>
+
+        <div ng-repeat="tab in tabs | unique: 'name'" ng-show="currentTab == tab.name">
+
+            <table>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Id:</td>
+                    <td>{{data.id}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Created By:</td>
+                    <td>{{data.created_by}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Created Date:</td>
+                    <td>{{data.created_date}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Last updated date:</td>
+                    <td>{{data.updated_date}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Node Type:</td>
+                    <td>{{data.type_id}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Node Path:</td>
+                    <td>{{data.path}}</td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Parent Node ID:</td>
+                    <td><input type="number" ng-model="data.parent_id"/></td>
+                    <td></td>
+                </tr>
+                <tr ng-if="tab.name=='Properties'">
+                    <td>Location:</td>
+                    <td>{{location}}</td>
+                    <td></td>
+                </tr>
+        
+
+                <tr ng-repeat="prop in tab.properties">
+                    <td>{{prop.name}}<br><small>{{prop.description}}<small></td>
+                    <!-- <td><div wrap-input></div><td> -->
+                    <!-- <td><div wrap-input><input type="text" ng-model="node.media.meta[prop.name]"/></div></td> -->
+                    <!-- <td><input type="text" ng-model="prop.name"></td> -->
+                    <td compile ng-bind-html="prop.data_type.html | unsafe" style="width:70%;"></td>
+                    <!-- <td>{{prop.description}}</td> -->
+                    <!-- <td>
+                        <img ng-if="data.meta[prop.name] === data.meta.path && node.content.meta[prop.name] != '' && data.meta[prop.name] != null" ng-src="{{data.meta.path | pathToUrl}}" width="75" height="75">
+                    </td> -->
+                </tr>
+                <!-- <p>{{tab.name}} fields</p>
+                <p>{{tab.properties}}</p> -->
+            </table>
+        </div>
+        <div ng-show="currentTab == access">
+            <table>
+                <tr>
+                    <td>Public Access</td>
+                    <td style="width: 70%;">
+                        <h4>Members</h4>
+                        <table>
+                            <thead>
+                                <th>Available</th>
+                                <th>Selected</th>
+                            </thead>
+                            <tr>
+                                <td>
+                                    
+                                    <select multiple="true" ng-model="available" ng-options="item as item.name for item in availableMembers"></select>
+                                </td>
+                                <td>
+                                    <button ng-click="moveItem(available[0], availableMembers, selectedMembers)">--></button><br>
+                                    <button ng-click="moveItem(selected[0], selectedMembers, availableMembers)"><--</button>
+                                </td>
+                                <td>
+                                    <select multiple="true" ng-model="selected" ng-options="item as item.username for item in selectedMembers"></select>
+                                </td>
+                            </tr>
+                        </table>
+                        <h4>Groups</h4>
+                        <table>
+                            <thead>
+                                <th>Available</th>
+                                <th>Selected</th>
+                            </thead>
+                            <tr>
+                                <td>
+                                    
+                                    <select multiple="true" ng-model="available" ng-options="item as item.name for item in availableMemberGroups"></select>
+                                </td>
+                                <td>
+                                    <button ng-click="moveItem(available[0], availableMemberGroups, selectedMemberGroups)">--></button><br>
+                                    <button ng-click="moveItem(selected[0], selectedMemberGroups, availableMemberGroups)"><--</button>
+                                </td>
+                                <td>
+                                    <select multiple="true" ng-model="selected" ng-options="item as item.username for item in selectedMemberGroups"></select>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Backend User Node Permissions</td>
+                    <td style="width:70%;">
+                        <h4>Users</h4>
+                        <table>
+                            <tr>
+                                <td>
+                                    <strong>user1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>user1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>user1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>user1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>user1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>user1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>user1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                        <h4>Groups</h4>
+                        <table>
+                            <tr>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>group1</strong>
+                                    <ul class="stripped-list">
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                        <li><label><input type="checkbox"> perm1</label></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- <form role="form" ng-submit="submit()">
+            <label>Id: {{node.id}}</label><br>
+            <label>Created By: {{node.created_by}}</label><br>
+            <label>Created Date: {{node.created_date}}</label><br>
+            <label>Node Type: {{node.node_type}}</label><br>
+            <label>Node Path: {{node.path}}</label><br>
+            <label>Name</label>
+            <input type="text" ng-model="node.name" name="name" class="form-control"><br>
+            
+            <button class="btn" type="submit">Update Node &raquo;</button>
+        </form> -->
+        <div ui-view></div>
+       
+        <!-- <input type="hidden" ng-value="data.node.old_name"> -->
+        <button class="btn" type="submit">Create Content &raquo;</button>
+    </form>
+</div>
