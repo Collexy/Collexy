@@ -36,8 +36,8 @@ type ContentType struct {
 	AllowedContentTypeIds   []int                  `json:"allowed_content_type_ids,omitempty"`
 	CompositeContentTypeIds []int                  `json:"composite_content_type_ids,omitempty"`
 	CompositeContentTypes   []ContentType          `json:"composite_content_types,omitempty"`
-    TemplateId              int                    `json:"template_id,omitempty"`
-    AllowedTemplateIds      []int                  `json:"allowed_template_ids,omitempty"`
+	TemplateId              int                    `json:"template_id,omitempty"`
+	AllowedTemplateIds      []int                  `json:"allowed_template_ids,omitempty"`
 }
 
 func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType) {
@@ -86,7 +86,7 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
 			&content_type_alias, &content_type_created_by, &content_type_created_date, &content_type_description,
 			&content_type_icon, &content_type_thumbnail, &content_type_meta, &content_type_tabs,
 			&content_type_allow_at_root, &content_type_is_container, &content_type_is_abstract, &content_type_allowed_content_type_ids,
-            &content_type_template_id, &content_type_allowed_template_ids); err != nil {
+			&content_type_template_id, &content_type_allowed_template_ids); err != nil {
 			log.Fatal(err)
 		}
 
@@ -97,10 +97,10 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
 			// NULL value
 		}
 
-        var template_id int
-        if content_type_template_id.Valid {
-            template_id = int(content_type_template_id.Int64)
-        }
+		var template_id int
+		if content_type_template_id.Valid {
+			template_id = int(content_type_template_id.Int64)
+		}
 
 		var tabs []Tab
 		var content_type_metaMap map[string]interface{}
@@ -359,7 +359,7 @@ WHERE content_type.id=$1`
 		&content_type_created_by, &content_type_created_date, &content_type_description, &content_type_icon, &content_type_thumbnail, &content_type_meta,
 		&content_type_tabs, &content_type_parent_content_types, &content_type_composite_content_types, &content_type_allow_at_root, &content_type_is_container,
 		&content_type_is_abstract, &content_type_allowed_content_type_ids, &content_type_composite_content_type_ids,
-        &content_type_template_id, &content_type_allowed_template_ids)
+		&content_type_template_id, &content_type_allowed_template_ids)
 
 	var parent_content_type_id int
 	if content_type_parent_id.Valid {
@@ -368,10 +368,10 @@ WHERE content_type.id=$1`
 		// NULL value
 	}
 
-    var template_id int
-    if content_type_template_id.Valid {
-        template_id = int(content_type_template_id.Int64)
-    }
+	var template_id int
+	if content_type_template_id.Valid {
+		template_id = int(content_type_template_id.Int64)
+	}
 
 	var parent_content_types, composite_content_types []ContentType
 	var tabs []Tab

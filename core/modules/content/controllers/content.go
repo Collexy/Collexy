@@ -195,26 +195,26 @@ func (this *ContentApiController) RenderAdminTemplate(w http.ResponseWriter, nam
 // }
 
 func (this *ContentApiController) PutContent(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-        var hasPermission bool = false
-        hasPermission = user.HasPermissions([]string{"content_update"})
-        if(hasPermission){
-            content := models.Content{}
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_update"})
+		if hasPermission {
+			content := models.Content{}
 
-            err := json.NewDecoder(r.Body).Decode(&content)
+			err := json.NewDecoder(r.Body).Decode(&content)
 
-            if err != nil {
-                http.Error(w, "Bad Request", 400)
-            }
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-            content.Update()
-        } else {
-            fmt.Fprintf(w,"You do not have permission to update content")
-        }
+			content.Update()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update content")
+		}
 
-    }
+	}
 }
 
 // func (this *ContentApiController) Delete(w http.ResponseWriter, r *http.Request){
@@ -335,31 +335,30 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
 			// } else {
 			// 	if content.PublicAccess != nil {
 
-
 			if member := coremodulemembermodels.GetLoggedInMember(r); member != nil {
-					if content.PublicAccessMembers != nil || content.PublicAccessMemberGroups != nil {
-						memberIdstr := strconv.Itoa(member.Id)
-						if content.PublicAccessMembers[memberIdstr] != nil {
-							this.RenderTemplate(w, templateName, content, member)
-						} else if member.Groups2PublicAccess(content.PublicAccessMemberGroups) {
-							this.RenderTemplate(w, templateName, content, member)
-						} else {
-							fmt.Println("You do not seem to have access to this content")
-							coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
-							this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
-						}
-						// if corehelpers.IntInSlice(member.Id, content.PublicAccess.Members) {
-						// 	this.RenderTemplate(w, templateName, content, member)
-						// } else if member.Groups2PublicAccess(content.PublicAccess.Groups) {
-						// 	this.RenderTemplate(w, templateName, content, member)
-						// } else {
-						// 	fmt.Println("You do not seem to have access to this content")
-						// 	coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
-						// 	this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
-						// }
-					} else {
+				if content.PublicAccessMembers != nil || content.PublicAccessMemberGroups != nil {
+					memberIdstr := strconv.Itoa(member.Id)
+					if content.PublicAccessMembers[memberIdstr] != nil {
 						this.RenderTemplate(w, templateName, content, member)
+					} else if member.Groups2PublicAccess(content.PublicAccessMemberGroups) {
+						this.RenderTemplate(w, templateName, content, member)
+					} else {
+						fmt.Println("You do not seem to have access to this content")
+						coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
+						this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
 					}
+					// if corehelpers.IntInSlice(member.Id, content.PublicAccess.Members) {
+					// 	this.RenderTemplate(w, templateName, content, member)
+					// } else if member.Groups2PublicAccess(content.PublicAccess.Groups) {
+					// 	this.RenderTemplate(w, templateName, content, member)
+					// } else {
+					// 	fmt.Println("You do not seem to have access to this content")
+					// 	coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
+					// 	this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
+					// }
+				} else {
+					this.RenderTemplate(w, templateName, content, member)
+				}
 			} else {
 				if content.PublicAccessMembers != nil || content.PublicAccessMemberGroups != nil {
 					fmt.Println("Member do have access to this content")

@@ -34,7 +34,7 @@ func init() {
 	//////
 
 	rContentSection := lib.Route{"content", "/admin/content", "core/modules/content/public/views/content/index.html", false}
-	
+
 	rContentTreeMethodEdit := lib.Route{"content.edit", "/edit/:id", "core/modules/content/public/views/content/edit.html", false}
 	rContentTreeMethodNew := lib.Route{"content.new", "/new?type_id&content_type_id&parent_id", "core/modules/content/public/views/content/new.html", false}
 

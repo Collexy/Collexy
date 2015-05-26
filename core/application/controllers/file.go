@@ -16,7 +16,7 @@ type FileApiController struct{}
 
 func (this *FileApiController) Delete(w http.ResponseWriter, r *http.Request) {
 
-	queryStrParams := r.URL.Query();
+	queryStrParams := r.URL.Query()
 
 	path := queryStrParams.Get("path")
 	fileName := queryStrParams.Get("fileName")
@@ -27,7 +27,7 @@ func (this *FileApiController) Delete(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-	  return
+		return
 	}
 
 	fmt.Sprintf("file with path: %s, and filename: %s is successfully deleted", path, fileName)
@@ -57,6 +57,4 @@ func (this *FileApiController) Delete(w http.ResponseWriter, r *http.Request) {
 // 		}
 // 	}
 
-	
 // }
-

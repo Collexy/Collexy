@@ -27,12 +27,12 @@ func (this *DirectoryApiController) UploadFileTest(w http.ResponseWriter, r *htt
 	w.Header().Set("Content-Type", "multipart/mixed; boundary=frontier")
 	fmt.Println("UPLOAD FILE TEST:::")
 
-	queryStrParams := r.URL.Query();
+	queryStrParams := r.URL.Query()
 
 	path := queryStrParams.Get("path")
 
 	fmt.Println("path: " + path)
-	
+
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		fmt.Println(err)
@@ -44,7 +44,7 @@ func (this *DirectoryApiController) UploadFileTest(w http.ResponseWriter, r *htt
 		fmt.Println(err)
 	}
 
-	err = ioutil.WriteFile(path + "\\" + handler.Filename, data, 0777)
+	err = ioutil.WriteFile(path+"\\"+handler.Filename, data, 0777)
 
 	if err != nil {
 		fmt.Println(err)

@@ -389,9 +389,6 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 				//     this.RenderTemplate(w, templateName, content, nil)
 				// }
 
-
-
-
 				if member := coremodulemembermodels.GetLoggedInMember(r); member != nil {
 					if content.PublicAccessMembers != nil || content.PublicAccessMemberGroups != nil {
 						memberIdstr := strconv.Itoa(member.Id)
@@ -421,40 +418,24 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 						fmt.Println("You need to be a member and be logged in to have access to this content")
 						templateName := "Unauthorized.tmpl"
 
-
-
-
-
-
-
-
-
-				// if member := coremodulemembermodels.GetLoggedInMember(r); member != nil {
-				// 	if content.PublicAccess != nil {
-				// 		if corehelpers.IntInSlice(member.Id, content.PublicAccess.Members) {
-				// 			this.RenderTemplate(w, templateName, content, member)
-				// 		} else if member.Groups2PublicAccess(content.PublicAccess.Groups) {
-				// 			this.RenderTemplate(w, templateName, content, member)
-				// 		} else {
-				// 			fmt.Println("You do not seem to have access to this content")
-				// 			coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
-				// 			this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
-				// 		}
-				// 	} else {
-				// 		this.RenderTemplate(w, templateName, content, member)
-				// 	}
-				// } else {
-				// 	if content.PublicAccess != nil {
-				// 		fmt.Println("You need to be a member and be logged in to have access to this content")
-				// 		templateName := "Unauthorized.tmpl"
-
-
-
-
-
-
-
-
+						// if member := coremodulemembermodels.GetLoggedInMember(r); member != nil {
+						// 	if content.PublicAccess != nil {
+						// 		if corehelpers.IntInSlice(member.Id, content.PublicAccess.Members) {
+						// 			this.RenderTemplate(w, templateName, content, member)
+						// 		} else if member.Groups2PublicAccess(content.PublicAccess.Groups) {
+						// 			this.RenderTemplate(w, templateName, content, member)
+						// 		} else {
+						// 			fmt.Println("You do not seem to have access to this content")
+						// 			coreglobals.Templates["Unauthorized.tmpl"] = template.Must(template.ParseFiles("views/Layout.tmpl", "views/Unauthorized.tmpl"))
+						// 			this.RenderTemplate(w, "Unauthorized.tmpl", nil, nil)
+						// 		}
+						// 	} else {
+						// 		this.RenderTemplate(w, templateName, content, member)
+						// 	}
+						// } else {
+						// 	if content.PublicAccess != nil {
+						// 		fmt.Println("You need to be a member and be logged in to have access to this content")
+						// 		templateName := "Unauthorized.tmpl"
 
 						// templateArray := []string{"views/" + templateName}
 						// templateArray = append(templateArray, "views/Layout.tmpl")

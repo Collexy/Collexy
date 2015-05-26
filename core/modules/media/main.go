@@ -20,14 +20,14 @@ func init() {
 	// Content
 	subr.HandleFunc("/api/media/{id:.*}/contextmenu", http.HandlerFunc(mediaTreeController.GetMenu)).Methods("GET")
 	subr.HandleFunc("/api/media", http.HandlerFunc(mediaApiController.Get)).Methods("GET")
-	
+
 	subr.HandleFunc("/api/media/{id:.*}/children", http.HandlerFunc(mediaApiController.GetByIdChildren)).Methods("GET")
 	subr.HandleFunc("/api/media/{id:.*}/parents", http.HandlerFunc(mediaApiController.GetByIdParents)).Methods("GET")
-	
+
 	subr.HandleFunc("/api/media/{id:.*}", http.HandlerFunc(mediaApiController.GetBackendMediaById)).Methods("GET")
 	//privateApiRouter.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Delete)).Methods("DELETE")
 	//privateApiRouter.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Post)).Methods("POST")
-	
+
 	privateApiRouter.HandleFunc("/api/media/{id:.*}", http.HandlerFunc(mediaApiController.Put)).Methods("PUT")
 
 	// Setup FileServer for the settings module

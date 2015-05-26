@@ -16,26 +16,26 @@ import (
 )
 
 type MediaType struct {
-	Id                      int                    `json:"id"`
-	Path                    string                 `json:"path"`
-	ParentId                int                    `json:"parent_id,omitempty"`
-	Name                    string                 `json:"name"`
-	Alias                   string                 `json:"alias"`
-	CreatedBy               int                    `json:"created_by"`
-	CreatedDate             *time.Time             `json:"created_date"`
-	Description             string                 `json:"description,omitempty"`
-	Icon                    string                 `json:"icon,omitempty"`
-	Thumbnail               string                 `json:"thumbnail,omitempty"`
-	Meta                    map[string]interface{} `json:"meta,omitempty"`
-	Tabs                    []Tab                  `json:"tabs,omitempty"`
-	ParentMediaTypes      []MediaType          `json:"parent_media_types,omitempty"`
-	AllowedMediaTypes     []MediaType          `json:"allowed_media_types,omitempty"`
-	AllowAtRoot             bool                   `json:"allow_at_root"`
-	IsContainer             bool                   `json:"is_container"`
-	IsAbstract              bool                   `json:"is_abstract"`
+	Id                    int                    `json:"id"`
+	Path                  string                 `json:"path"`
+	ParentId              int                    `json:"parent_id,omitempty"`
+	Name                  string                 `json:"name"`
+	Alias                 string                 `json:"alias"`
+	CreatedBy             int                    `json:"created_by"`
+	CreatedDate           *time.Time             `json:"created_date"`
+	Description           string                 `json:"description,omitempty"`
+	Icon                  string                 `json:"icon,omitempty"`
+	Thumbnail             string                 `json:"thumbnail,omitempty"`
+	Meta                  map[string]interface{} `json:"meta,omitempty"`
+	Tabs                  []Tab                  `json:"tabs,omitempty"`
+	ParentMediaTypes      []MediaType            `json:"parent_media_types,omitempty"`
+	AllowedMediaTypes     []MediaType            `json:"allowed_media_types,omitempty"`
+	AllowAtRoot           bool                   `json:"allow_at_root"`
+	IsContainer           bool                   `json:"is_container"`
+	IsAbstract            bool                   `json:"is_abstract"`
 	AllowedMediaTypeIds   []int                  `json:"allowed_media_type_ids,omitempty"`
 	CompositeMediaTypeIds []int                  `json:"composite_media_type_ids,omitempty"`
-	CompositeMediaTypes   []MediaType          `json:"composite_media_types,omitempty"`
+	CompositeMediaTypes   []MediaType            `json:"composite_media_types,omitempty"`
 }
 
 func GetMediaTypes(queryStringParams url.Values) (mediaTypes []*MediaType) {

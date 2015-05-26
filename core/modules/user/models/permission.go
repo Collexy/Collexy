@@ -7,13 +7,13 @@ import (
 )
 
 type Permission struct {
-	Name        string    `json:"name"`
+	Name string `json:"name"`
 }
 
 // func (this *Permission) Post() {
 // 	db := coreglobals.Db
 
-// 	_, err := db.Exec(`INSERT INTO member_group (path, parent_id, name, alias, created_by) 
+// 	_, err := db.Exec(`INSERT INTO member_group (path, parent_id, name, alias, created_by)
 //         VALUES ($1, $2, $3, $4, $5)`, this.Path, this.ParentId, this.Name, this.Alias, this.CreatedBy)
 
 // 	if err != nil {

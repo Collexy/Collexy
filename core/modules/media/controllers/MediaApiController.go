@@ -99,7 +99,7 @@ type TestData struct {
 }
 
 type TestStruct struct {
-	User    *coremoduleuser.User
+	User  *coremoduleuser.User
 	Media *models.Media
 }
 
@@ -109,11 +109,9 @@ type TestDataMember struct {
 }
 
 type TestStructMember struct {
-	Member  *coremodulemembermodels.Member
-	Media *models.Media
+	Member *coremodulemembermodels.Member
+	Media  *models.Media
 }
-
-
 
 // func (this *MediaApiController) Post(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Content-Type", "application/json")
@@ -139,26 +137,26 @@ type TestStructMember struct {
 // }
 
 func (this *MediaApiController) Put(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-        var hasPermission bool = false
-        hasPermission = user.HasPermissions([]string{"media_update"})
-        if(hasPermission){
-            media := models.Media{}
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_update"})
+		if hasPermission {
+			media := models.Media{}
 
-            err := json.NewDecoder(r.Body).Decode(&media)
+			err := json.NewDecoder(r.Body).Decode(&media)
 
-            if err != nil {
-                http.Error(w, "Bad Request", 400)
-            }
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-            media.Update()
-        } else {
-            fmt.Fprintf(w,"You do not have permission to update media")
-        }
+			media.Update()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update media")
+		}
 
-    }
+	}
 }
 
 // func (this *MediaApiController) Delete(w http.ResponseWriter, r *http.Request){
@@ -179,8 +177,6 @@ func (this *MediaApiController) Put(w http.ResponseWriter, r *http.Request) {
 
 //     }
 // }
-
-
 
 func (this *MediaApiController) GetBackendMediaById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")

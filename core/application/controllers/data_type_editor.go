@@ -37,6 +37,4 @@ func (this *DataTypeEditorApiController) GetByAlias(w http.ResponseWriter, r *ht
 		}
 	}
 
-	
 }
-

@@ -14,15 +14,15 @@ import (
 )
 
 type DataType struct {
-	Id          int        `json:"id"`
-	Path        string     `json:"path"`
-	ParentId    int        `json:"parent_id,omitempty"`
-	Name        string     `json:"name,omitempty"`
-	Alias       string     `json:"alias,omitempty"`
-	CreatedBy   int        `json:"created_by,omitempty"`
-	CreatedDate *time.Time `json:"created_date,omitempty"`
-	Html        string     `json:"html,omitempty"`
-	EditorAlias string     `json:"editor_alias,omitempty"`
+	Id          int                    `json:"id"`
+	Path        string                 `json:"path"`
+	ParentId    int                    `json:"parent_id,omitempty"`
+	Name        string                 `json:"name,omitempty"`
+	Alias       string                 `json:"alias,omitempty"`
+	CreatedBy   int                    `json:"created_by,omitempty"`
+	CreatedDate *time.Time             `json:"created_date,omitempty"`
+	Html        string                 `json:"html,omitempty"`
+	EditorAlias string                 `json:"editor_alias,omitempty"`
 	Meta        map[string]interface{} `json:"meta,omitempty"`
 }
 

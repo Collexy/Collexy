@@ -23,20 +23,20 @@ import (
 )
 
 type Content struct {
-	Id                   int                    `json:"id"`
-	Path                 string                 `json:"path"`
-	ParentId             int                    `json:"parent_id,omitempty"`
-	Name                 string                 `json:"name"`
-	Alias                string                 `json:"alias"`
-	CreatedBy            int                    `json:"created_by"`
-	CreatedDate          *time.Time             `json:"created_date"`
-	ContentTypeId        int                    `json:"content_type_id"`
-	Meta                 map[string]interface{} `json:"meta,omitempty"`
+	Id            int                    `json:"id"`
+	Path          string                 `json:"path"`
+	ParentId      int                    `json:"parent_id,omitempty"`
+	Name          string                 `json:"name"`
+	Alias         string                 `json:"alias"`
+	CreatedBy     int                    `json:"created_by"`
+	CreatedDate   *time.Time             `json:"created_date"`
+	ContentTypeId int                    `json:"content_type_id"`
+	Meta          map[string]interface{} `json:"meta,omitempty"`
 	// PublicAccess         *PublicAccess          `json:"public_access,omitempty"`
-	PublicAccessMembers  map[string]interface{} `json:"public_access_members,omitempty"`
-	PublicAccessMemberGroups  map[string]interface{} `json:"public_access_member_groups,omitempty"`
-	UserPermissions      map[string]*PermissionTest `json:"user_permissions,omitempty"`
-	UserGroupPermissions map[string]*PermissionTest `json:"user_group_permissions,omitempty"`
+	PublicAccessMembers      map[string]interface{}     `json:"public_access_members,omitempty"`
+	PublicAccessMemberGroups map[string]interface{}     `json:"public_access_member_groups,omitempty"`
+	UserPermissions          map[string]*PermissionTest `json:"user_permissions,omitempty"`
+	UserGroupPermissions     map[string]*PermissionTest `json:"user_group_permissions,omitempty"`
 	// UserPermissions      []PermissionsContainer `json:"user_permissions,omitempty"`
 	// UserGroupPermissions []PermissionsContainer `json:"user_group_permissions,omitempty"`
 	// Additional fields (not persisted in db)
@@ -165,8 +165,8 @@ FROM content
 		// }
 		userIdStr := strconv.Itoa(user.Id)
 		// if permissions are set on the node for a specific user
-		if(content_user_permissions != nil){
-			if(user_perm[userIdStr] != nil){
+		if content_user_permissions != nil {
+			if user_perm[userIdStr] != nil {
 				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
@@ -227,10 +227,10 @@ FROM content
 					if accessGranted {
 						break
 					}
-				// for j := 0; j < len(user_group_perm); j++ {
-				// 	if accessGranted {
-				// 		break
-				// 	}
+					// for j := 0; j < len(user_group_perm); j++ {
+					// 	if accessGranted {
+					// 		break
+					// 	}
 					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
 					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
@@ -254,10 +254,10 @@ FROM content
 							accessDenied = true
 						}
 					}
-				// }
+					// }
 				}
 			}
-			
+
 		}
 
 		// if !accessGranted && !accessDenied {
@@ -532,10 +532,10 @@ FROM content
 		// }
 
 		userIdStr := strconv.Itoa(user.Id)
-		
+
 		// if permissions are set on the node for a specific user
-		if(content_user_permissions != nil){
-			if(user_perm[userIdStr] != nil){
+		if content_user_permissions != nil {
+			if user_perm[userIdStr] != nil {
 				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
@@ -556,8 +556,6 @@ FROM content
 				}
 			}
 		}
-
-		
 
 		// if permissions are set on the node for a specific user
 		// if content_user_permissions != nil {
@@ -597,10 +595,10 @@ FROM content
 					if accessGranted {
 						break
 					}
-				// for j := 0; j < len(user_group_perm); j++ {
-				// 	if accessGranted {
-				// 		break
-				// 	}
+					// for j := 0; j < len(user_group_perm); j++ {
+					// 	if accessGranted {
+					// 		break
+					// 	}
 					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
 					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
@@ -624,10 +622,10 @@ FROM content
 							accessDenied = true
 						}
 					}
-				// }
+					// }
 				}
 			}
-			
+
 		}
 		// if !accessGranted && !accessDenied {
 		// 	// if no specific user node access has been specified, check node access per user_group
@@ -802,10 +800,10 @@ WHERE content.path @>
 		// }
 
 		userIdStr := strconv.Itoa(user.Id)
-		
+
 		// if permissions are set on the node for a specific user
-		if(content_user_permissions != nil){
-			if(user_perm[userIdStr] != nil){
+		if content_user_permissions != nil {
+			if user_perm[userIdStr] != nil {
 				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
@@ -834,10 +832,10 @@ WHERE content.path @>
 					if accessGranted {
 						break
 					}
-				// for j := 0; j < len(user_group_perm); j++ {
-				// 	if accessGranted {
-				// 		break
-				// 	}
+					// for j := 0; j < len(user_group_perm); j++ {
+					// 	if accessGranted {
+					// 		break
+					// 	}
 					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
 					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
@@ -861,10 +859,10 @@ WHERE content.path @>
 							accessDenied = true
 						}
 					}
-				// }
+					// }
 				}
 			}
-			
+
 		}
 
 		// // if permissions are set on the node for a specific user
@@ -2236,7 +2234,7 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //   NewPath string
 // }
 
-func (c *Content) Update(){
+func (c *Content) Update() {
 
 	db := coreglobals.Db
 
@@ -2246,11 +2244,11 @@ func (c *Content) Update(){
 	SET name=$1, alias=$2, meta=$3 
  	WHERE id=$4;`
 
- 	_, err := db.Exec(sqlStr, c.Name, c.Alias, meta, c.Id)
+	_, err := db.Exec(sqlStr, c.Name, c.Alias, meta, c.Id)
 
- 	corehelpers.PanicIf(err)
+	corehelpers.PanicIf(err)
 
-  	log.Println("media updated successfully")
+	log.Println("media updated successfully")
 }
 
 // func (c *Content) Update(){

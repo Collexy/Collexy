@@ -22,23 +22,23 @@ import (
 )
 
 type Media struct {
-	Id                   int                    `json:"id"`
-	Path                 string                 `json:"path"`
-	ParentId             int                    `json:"parent_id,omitempty"`
-	Name                 string                 `json:"name"`
-	CreatedBy            int                    `json:"created_by"`
-	CreatedDate          *time.Time             `json:"created_date"`
-	MediaTypeId        int                    `json:"media_type_id"`
-	Meta                 map[string]interface{} `json:"meta,omitempty"`
-	PublicAccessMembers  map[string]interface{} `json:"public_access_members,omitempty"`
-	PublicAccessMemberGroups  map[string]interface{} `json:"public_access_member_groups,omitempty"`
-	UserPermissions      map[string]*PermissionTest `json:"user_permissions,omitempty"`
-	UserGroupPermissions map[string]*PermissionTest `json:"user_group_permissions,omitempty"`
+	Id                       int                        `json:"id"`
+	Path                     string                     `json:"path"`
+	ParentId                 int                        `json:"parent_id,omitempty"`
+	Name                     string                     `json:"name"`
+	CreatedBy                int                        `json:"created_by"`
+	CreatedDate              *time.Time                 `json:"created_date"`
+	MediaTypeId              int                        `json:"media_type_id"`
+	Meta                     map[string]interface{}     `json:"meta,omitempty"`
+	PublicAccessMembers      map[string]interface{}     `json:"public_access_members,omitempty"`
+	PublicAccessMemberGroups map[string]interface{}     `json:"public_access_member_groups,omitempty"`
+	UserPermissions          map[string]*PermissionTest `json:"user_permissions,omitempty"`
+	UserGroupPermissions     map[string]*PermissionTest `json:"user_group_permissions,omitempty"`
 	// UserPermissions      []PermissionsContainer `json:"user_permissions,omitempty"`
 	// UserGroupPermissions []PermissionsContainer `json:"user_group_permissions,omitempty"`
 	// Additional fields (not persisted in db)
-	Url                string                                `json:"url,omitempty"`
-	Domains            []string                              `json:"domains,omitempty"`
+	Url              string                              `json:"url,omitempty"`
+	Domains          []string                            `json:"domains,omitempty"`
 	ParentMediaItems []*Media                            `json:"parent_media_items,omitempty"`
 	ChildMediaItems  []*Media                            `json:"child_media_items,omitempty"`
 	MediaType        *coremodulesettingsmodels.MediaType `json:"media_type,omitempty"`
@@ -154,8 +154,8 @@ FROM media
 		// }
 		userIdStr := strconv.Itoa(user.Id)
 		// if permissions are set on the node for a specific user
-		if(media_user_permissions != nil){
-			if(user_perm[userIdStr] != nil){
+		if media_user_permissions != nil {
+			if user_perm[userIdStr] != nil {
 				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
@@ -216,10 +216,10 @@ FROM media
 					if accessGranted {
 						break
 					}
-				// for j := 0; j < len(user_group_perm); j++ {
-				// 	if accessGranted {
-				// 		break
-				// 	}
+					// for j := 0; j < len(user_group_perm); j++ {
+					// 	if accessGranted {
+					// 		break
+					// 	}
 					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
 					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
@@ -243,10 +243,10 @@ FROM media
 							accessDenied = true
 						}
 					}
-				// }
+					// }
 				}
 			}
-			
+
 		}
 
 		// if !accessGranted && !accessDenied {
@@ -509,10 +509,10 @@ WHERE media.parent_id=$1`
 		// }
 
 		userIdStr := strconv.Itoa(user.Id)
-		
+
 		// if permissions are set on the node for a specific user
-		if(media_user_permissions != nil){
-			if(user_perm[userIdStr] != nil){
+		if media_user_permissions != nil {
+			if user_perm[userIdStr] != nil {
 				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
@@ -533,8 +533,6 @@ WHERE media.parent_id=$1`
 				}
 			}
 		}
-
-		
 
 		// if permissions are set on the node for a specific user
 		// if media_user_permissions != nil {
@@ -574,10 +572,10 @@ WHERE media.parent_id=$1`
 					if accessGranted {
 						break
 					}
-				// for j := 0; j < len(user_group_perm); j++ {
-				// 	if accessGranted {
-				// 		break
-				// 	}
+					// for j := 0; j < len(user_group_perm); j++ {
+					// 	if accessGranted {
+					// 		break
+					// 	}
 					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
 					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
@@ -601,10 +599,10 @@ WHERE media.parent_id=$1`
 							accessDenied = true
 						}
 					}
-				// }
+					// }
 				}
 			}
-			
+
 		}
 		// if !accessGranted && !accessDenied {
 		// 	// if no specific user node access has been specified, check node access per user_group
@@ -773,10 +771,10 @@ WHERE media.path @>
 		// }
 
 		userIdStr := strconv.Itoa(user.Id)
-		
+
 		// if permissions are set on the node for a specific user
-		if(media_user_permissions != nil){
-			if(user_perm[userIdStr] != nil){
+		if media_user_permissions != nil {
+			if user_perm[userIdStr] != nil {
 				for i := 0; i < len(user_perm[userIdStr].Permissions); i++ {
 					if accessGranted {
 						break
@@ -805,10 +803,10 @@ WHERE media.path @>
 					if accessGranted {
 						break
 					}
-				// for j := 0; j < len(user_group_perm); j++ {
-				// 	if accessGranted {
-				// 		break
-				// 	}
+					// for j := 0; j < len(user_group_perm); j++ {
+					// 	if accessGranted {
+					// 		break
+					// 	}
 					userGroupIdStr := strconv.Itoa(user.UserGroupIds[i])
 					if user_group_perm[userGroupIdStr] != nil {
 						if accessGranted {
@@ -832,10 +830,10 @@ WHERE media.path @>
 							accessDenied = true
 						}
 					}
-				// }
+					// }
 				}
 			}
-			
+
 		}
 
 		// // if permissions are set on the node for a specific user
@@ -932,9 +930,6 @@ WHERE media.path @>
 	}
 	return
 }
-
-
-
 
 // func DeleteMedia(id int){
 //   db := coreglobals.Db
@@ -1060,7 +1055,7 @@ WHERE media.path @>
 //   NewPath string
 // }
 
-func (c *Media) Update(){
+func (c *Media) Update() {
 
 	db := coreglobals.Db
 
@@ -1070,11 +1065,11 @@ func (c *Media) Update(){
 	SET name=$1, meta=$3 
  	WHERE id=$4;`
 
- 	_, err := db.Exec(sqlStr, c.Name, meta, c.Id)
+	_, err := db.Exec(sqlStr, c.Name, meta, c.Id)
 
- 	corehelpers.PanicIf(err)
+	corehelpers.PanicIf(err)
 
-  	log.Println("media updated successfully")
+	log.Println("media updated successfully")
 }
 
 // func (c *Media) Update(){
@@ -1571,6 +1566,33 @@ WHERE media.id=$1`
 	json.Unmarshal(ct_tabs, &tabs)
 	json.Unmarshal(ct_meta, &ct_metaMap)
 	json.Unmarshal(media_meta, &media_metaMap)
+
+	// if _, err := os.Stat("./config/media-access.json"); err != nil {
+	// 	if os.IsNotExist(err) {
+	// 		// file does not exist
+	// 		log.Println("media-access.json config file does not exist")
+	// 	} else {
+	// 		// other error
+	// 	}
+	// } else {
+
+	// 	configFile, err1 := os.Open("./config/media-access.json")
+	// 	defer configFile.Close()
+	// 	if err1 != nil {
+	// 		log.Println("Error opening media-access.json config file")
+	// 		//printError("opening config file", err1.Error())
+	// 	}
+
+	// 	jsonParser := json.NewDecoder(configFile)
+	// 	if err1 = jsonParser.Decode(coreglobals.MediaAccessConf); err1 != nil {
+	// 		log.Println("Error parsing media-access.json config file")
+	// 		//printError("parsing config file", err1.Error())
+	// 	}
+	// 	fmt.Println(coreglobals.MediaAccessConf)
+	// 	// log.Println(coreglobals.Maccess.Items[0].Domains[0])
+	// 	// log.Println(coreglobals.Maccess.Items[0].Url)
+	// 	// fmt.Println(coreglobals.Maccess.Items[0].MemberGroups)
+	// }
 
 	media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, media_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_media_types, nil, false, false, false, nil, nil, composite_media_types}
 

@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	//"net/url"
 	//"collexy/core/application/controllers"
 	//"collexy/core/api/models"
 	corehelpers "collexy/core/helpers"
@@ -22,16 +23,15 @@ import (
 	"collexy/core/lib"
 	"strings"
 	// _ "collexy/core/modules/mytest"
-	_ "collexy/core/modules/settings"
-	_ "collexy/core/modules/member"
-	_ "collexy/core/modules/user"
-	coremoduleusermodels "collexy/core/modules/user/models"
-	coremodulemembermodels "collexy/core/modules/member/models"
-	_ "collexy/core/modules/media"
 	_ "collexy/core/modules/content"
 	coremodulecontentcontrollers "collexy/core/modules/content/controllers"
 	coremodulecontentmodels "collexy/core/modules/content/models"
-	
+	_ "collexy/core/modules/media"
+	_ "collexy/core/modules/member"
+	coremodulemembermodels "collexy/core/modules/member/models"
+	_ "collexy/core/modules/settings"
+	_ "collexy/core/modules/user"
+	coremoduleusermodels "collexy/core/modules/user/models"
 )
 
 func executeDatabaseInstallScript(site_title, username, password, email string, privacy bool) (err error) {
@@ -417,7 +417,7 @@ func Main() {
 	// should eventually be a field in each module
 	dteContentPicker := lib.DataTypeEditor{"Collexy Content Picker Data Type Editor", "Collexy.DataTypeEditor.ContentPicker", "core/modules/settings/public/views/data-type/editor/content-picker.html"}
 	dteRadioButtonList := lib.DataTypeEditor{"Collexy Radio Button List Data Type Editor", "Collexy.DataTypeEditor.RadioButtonList", "core/modules/settings/public/views/data-type/editor/radio-button-list.html"}
-	
+
 	coreglobals.DataTypeEditors = append(coreglobals.DataTypeEditors, []lib.DataTypeEditor{dteContentPicker, dteRadioButtonList}...)
 
 	// temp end
@@ -446,11 +446,11 @@ func Main() {
 	}
 
 	// fmt.Println("Routes:")
-	// fmt.Println(len(Routes))
-	for _, r := range coreglobals.Routes {
-		mystr, _ := json.Marshal(r)
-		fmt.Println(string(mystr))
-	}
+	// // fmt.Println(len(Routes))
+	// for _, r := range coreglobals.Routes {
+	// 	mystr, _ := json.Marshal(r)
+	// 	fmt.Println(string(mystr))
+	// }
 
 	coreglobals.Templates["admin.tmpl"] = template.Must(template.ParseFiles("core/application/views/includes/admin.tmpl", "core/application/views/layouts/base.tmpl"))
 
@@ -491,6 +491,7 @@ func Main() {
 func MediaProtectHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(*r.URL)
+		var urlStr string = ""
 
 		if _, err := os.Stat("./config/media-access.json"); err != nil {
 			if os.IsNotExist(err) {
@@ -509,45 +510,65 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 			}
 
 			jsonParser := json.NewDecoder(configFile)
-			if err1 = jsonParser.Decode(&coreglobals.Maccess); err1 != nil {
+			if err1 = jsonParser.Decode(&coreglobals.MediaAccessConf); err1 != nil {
 				log.Println("Error parsing media-access.json config file")
+				log.Println(err1.Error())
 				//printError("parsing config file", err1.Error())
 			}
-			log.Println(coreglobals.Maccess.Items[0].Domains[0])
-			log.Println(coreglobals.Maccess.Items[0].Url)
-			fmt.Println(coreglobals.Maccess.Items[0].MemberGroups)
-		}
 
+			urlStr = r.URL.Path
+			// urlStrTemp, err2 := r.URL.Path()
+			// if err2!=nil{
+			// 	log.Println(err2.Error())
+
+			// } else{
+			// 	urlStrTemp = urlStrTemp
+			// }
+
+			log.Println("urlStr: " + urlStr)
+			log.Println(coreglobals.MediaAccessConf[urlStr])
+			//log.Println(url.QueryEscape(urlStr))
+			log.Println("111!!!!!1")
+			// log.Println(coreglobals.Maccess.Items[0].Domains[0])
+			// log.Println(coreglobals.Maccess.Items[0].Url)
+			// fmt.Println(coreglobals.Maccess.Items[0].MemberGroups)
+		}
 
 		// fmt.Println(r.URL.Path)
 		// fmt.Println(coreglobals.Maccess.Domains[0] + "/" + coreglobals.Maccess.Url)
 		// fmt.Println(r.Host)
 
-		isProtected := false;
-		hasAccess := false;
-		var protectedItem *coreglobals.MediaAccessItem = nil
+		isProtected := false
+		hasAccess := false
+		var protectedItem *coreglobals.MediaAccessItem
 
-		for _, maItem := range coreglobals.Maccess.Items {
-			if isProtected {
-				break;
-			}
-			for _, domain := range maItem.Domains {
-				if isProtected {
-					break;
-				}
-				if domain + "/" + maItem.Url == r.Host + "/" + r.URL.Path{
-					if isProtected {
-						break;
-					}
-					isProtected = true;
-					protectedItem = &maItem
-					// fmt.Fprintf(w, "loldalolselol")
-
-					
-				}
-			}
+		if val, ok := coreglobals.MediaAccessConf[urlStr]; ok {
+			isProtected = true
+			protectedItem = val
 		}
-		if isProtected{
+
+		// var protectedItem *coreglobals.MediaAccessItem = nil
+
+		// for _, maItem := range coreglobals.Maccess.Items {
+		// 	if isProtected {
+		// 		break;
+		// 	}
+		// 	for _, domain := range maItem.Domains {
+		// 		if isProtected {
+		// 			break;
+		// 		}
+		// 		if domain + "/" + maItem.Url == r.Host + "/" + r.URL.Path{
+		// 			if isProtected {
+		// 				break;
+		// 			}
+		// 			isProtected = true;
+		// 			protectedItem = &maItem
+		// 			// fmt.Fprintf(w, "loldalolselol")
+
+		// 		}
+		// 	}
+		// }
+		if isProtected {
 			sid := corehelpers.CheckMemberCookie(w, r)
 
 			m, err := coremodulemembermodels.GetMember(sid)
@@ -557,33 +578,32 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 				// hasAccess = false //already set when var was initialized
 
 			} else {
+				SetProtectedMediaKey(r,protectedItem)
 				coremodulemembermodels.SetLoggedInMember(r, m)
-				
+
 				for _, mg := range m.Groups {
 					if hasAccess {
-						break;
+						break
 					}
-					fmt.Println("MEMBER :::::: ")
-					fmt.Println(mg)
-					fmt.Println(protectedItem.MemberGroups[0])
-					if mg.Id == protectedItem.MemberGroups[0]{
-						fmt.Println("workz?")
-						hasAccess = true;
+					// fmt.Println("MEMBER :::::: ")
+					// fmt.Println(mg)
+					// fmt.Println(protectedItem.MemberGroups[0])
+					if mg.Id == protectedItem.MemberGroups[0] {
+						// fmt.Println("workz?")
+						hasAccess = true
 					}
 				}
-				
+
 			}
 			if !hasAccess {
 				fmt.Fprintf(w, "You need to be logged in to access this media item.")
 			} else {
 				h.ServeHTTP(w, r)
 			}
-			
+
 		} else {
 			h.ServeHTTP(w, r)
 		}
-
-		
 
 		//sid := corehelpers.CheckCookie(w, r)
 
@@ -596,8 +616,132 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 		// } else {
 		// 	coremodulemembermodels.SetLoggedInMember(r, m)
 
-
 		// 	h.ServeHTTP(w, r)
 		// }
 	})
 }
+
+// // type key int // already defined in user module.models
+
+// const myProtectedMediakey key = 1
+
+// GetProtectedMedia returns a value for this package from the request values.
+func GetProtectedMedia(r *http.Request) *coreglobals.MediaAccessItem {
+	if rv := context.Get(r, coreglobals.MyProtectedMediakey); rv != nil {
+		return rv.(*coreglobals.MediaAccessItem)
+	}
+	return nil
+}
+
+func SetProtectedMediaKey(r *http.Request, val *coreglobals.MediaAccessItem) {
+    context.Set(r, coreglobals.MyProtectedMediakey, val)
+}
+
+// func MediaProtectHandler(h http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Println(*r.URL)
+
+// 		if _, err := os.Stat("./config/media-access.json"); err != nil {
+// 			if os.IsNotExist(err) {
+// 				// file does not exist
+// 				log.Println("media-access.json config file does not exist")
+// 			} else {
+// 				// other error
+// 			}
+// 		} else {
+
+// 			configFile, err1 := os.Open("./config/media-access.json")
+// 			defer configFile.Close()
+// 			if err1 != nil {
+// 				log.Println("Error opening media-access.json config file")
+// 				//printError("opening config file", err1.Error())
+// 			}
+
+// 			jsonParser := json.NewDecoder(configFile)
+// 			if err1 = jsonParser.Decode(&coreglobals.Maccess); err1 != nil {
+// 				log.Println("Error parsing media-access.json config file")
+// 				//printError("parsing config file", err1.Error())
+// 			}
+// 			log.Println(coreglobals.Maccess.Items[0].Domains[0])
+// 			log.Println(coreglobals.Maccess.Items[0].Url)
+// 			fmt.Println(coreglobals.Maccess.Items[0].MemberGroups)
+// 		}
+
+// 		// fmt.Println(r.URL.Path)
+// 		// fmt.Println(coreglobals.Maccess.Domains[0] + "/" + coreglobals.Maccess.Url)
+// 		// fmt.Println(r.Host)
+
+// 		isProtected := false;
+// 		hasAccess := false;
+// 		var protectedItem *coreglobals.MediaAccessItem = nil
+
+// 		for _, maItem := range coreglobals.Maccess.Items {
+// 			if isProtected {
+// 				break;
+// 			}
+// 			for _, domain := range maItem.Domains {
+// 				if isProtected {
+// 					break;
+// 				}
+// 				if domain + "/" + maItem.Url == r.Host + "/" + r.URL.Path{
+// 					if isProtected {
+// 						break;
+// 					}
+// 					isProtected = true;
+// 					protectedItem = &maItem
+// 					// fmt.Fprintf(w, "loldalolselol")
+
+// 				}
+// 			}
+// 		}
+// 		if isProtected{
+// 			sid := corehelpers.CheckMemberCookie(w, r)
+
+// 			m, err := coremodulemembermodels.GetMember(sid)
+
+// 			if m == nil || err == sql.ErrNoRows {
+// 				fmt.Println(err)
+// 				// hasAccess = false //already set when var was initialized
+
+// 			} else {
+// 				coremodulemembermodels.SetLoggedInMember(r, m)
+
+// 				for _, mg := range m.Groups {
+// 					if hasAccess {
+// 						break;
+// 					}
+// 					fmt.Println("MEMBER :::::: ")
+// 					fmt.Println(mg)
+// 					fmt.Println(protectedItem.MemberGroups[0])
+// 					if mg.Id == protectedItem.MemberGroups[0]{
+// 						fmt.Println("workz?")
+// 						hasAccess = true;
+// 					}
+// 				}
+
+// 			}
+// 			if !hasAccess {
+// 				fmt.Fprintf(w, "You need to be logged in to access this media item.")
+// 			} else {
+// 				h.ServeHTTP(w, r)
+// 			}
+
+// 		} else {
+// 			h.ServeHTTP(w, r)
+// 		}
+
+// 		//sid := corehelpers.CheckCookie(w, r)
+
+// 		//m, err := coremodulemembermodels.GetMember(sid)
+
+// 		// if m == nil || err == sql.ErrNoRows {
+// 		// 	fmt.Println(err)
+// 		// 	fmt.Fprintf(w, "You need to be logged in to access the API.")
+
+// 		// } else {
+// 		// 	coremodulemembermodels.SetLoggedInMember(r, m)
+
+// 		// 	h.ServeHTTP(w, r)
+// 		// }
+// 	})
+// }
