@@ -348,7 +348,7 @@ LATERAL
     SELECT array_to_json(array_agg(res1)) AS allowed_content_types
     FROM 
     (
-      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta, 
+      SELECT c.id, c.path, c.parent_id, c.name, c.alias, c.created_by, c.description, c.icon, c.thumbnail, c.meta
       FROM content_type AS c
       --where path @> subpath(ct.path,0,nlevel(ct.path)-1)
       --WHERE ct.meta->'allowed_content_type_ids' @> ('' || c.id || '')::jsonb
