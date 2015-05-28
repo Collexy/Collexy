@@ -24,7 +24,7 @@ function MediaTreeCtrl($scope, Media) {
  * @description
  * The controller for editing media
  */
-function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, MediaParents) {
+function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, MediaParents, Member, MemberGroup, User, UserGroup, Permission) {
     // Tabs
     var tabs = [];
     $scope.stateParams = $stateParams;
@@ -83,6 +83,98 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
 
             $scope.originalData = angular.copy(data);
             $scope.latestData = angular.copy(data);
+
+            Member.query({}, function(){
+
+            }).$promise.then(function(members){
+                
+                $scope.allMembers = members;
+
+                var availableMembers = [];
+                var selectedMembers = [];
+
+                if(typeof data.public_access_members != 'undefined'){
+                    for (var i = 0; i < members.length; i++) {
+                        var memberId = members[i].id
+                        if (data.public_access_members[""+memberId+""] === 'undefined') {
+                            availableMembers.push(members[i])
+                        } else {
+                            selectedMembers.push(members[i])
+                        }
+                    }
+                }
+
+                availableMembers.unique();
+                selectedMembers.unique();
+                $scope.availableMembers = availableMembers;
+                $scope.selectedMembers = selectedMembers;
+
+                if(selectedMembers.length == 0){
+                    $scope.availableMembers = members;
+
+                }
+
+            }, function(){
+                // error
+            })
+            
+            MemberGroup.query({}, function(){
+
+            }).$promise.then(function(memberGroups){
+                
+                $scope.allMemberGroups = memberGroups;
+
+                var availableMemberGroups = [];
+                var selectedMemberGroups = [];
+
+                if(typeof data.public_access_member_groups != 'undefined'){
+                    for (var i = 0; i < memberGroups.length; i++) {
+                        var memberGroupId = memberGroups[i].id
+                        if (data.public_access_member_groups[""+memberGroupId+""] === 'undefined') {
+                            availableMemberGroups.push(memberGroups[i])
+                        } else {
+                            selectedMemberGroups.push(memberGroups[i])
+                        }
+                    }
+                }
+
+                availableMemberGroups.unique();
+                selectedMemberGroups.unique();
+                $scope.availableMemberGroups = availableMemberGroups;
+                $scope.selectedMemberGroups = selectedMemberGroups;
+
+                if(selectedMemberGroups.length == 0){
+                    $scope.availableMemberGroups = memberGroups;
+
+                }
+
+            }, function(){
+                // error
+            })
+            
+
+            User.query({}, function(){
+
+            }).$promise.then(function(users){
+                $scope.allUsers = users;
+                
+            });
+
+            UserGroup.query({}, function(){
+
+            }).$promise.then(function(userGroups){
+                
+                $scope.allUserGroups = userGroups;
+
+            });
+
+            Permission.query({}, function(){
+
+            }).$promise.then(function(permissions){
+                
+                $scope.allPermissions = permissions;
+
+            });
         });
     } else {
         // New

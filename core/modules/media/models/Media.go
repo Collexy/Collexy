@@ -1168,7 +1168,7 @@ func (c *Media) Update() {
 //   tx.Commit()
 // }
 
-func GetBackendMediaById(id int) (media Media) {
+func GetBackendMediaById(id int, protectedMedia *coreglobals.MediaAccessItem) (media Media) {
 	db := coreglobals.Db
 	queryStr := `SELECT media.id AS media_id, media.path AS media_path, media.parent_id AS media_parent_id,
 media.name AS media_name, media.created_by AS media_created_by, 
@@ -1593,11 +1593,23 @@ WHERE media.id=$1`
 	// 	// log.Println(coreglobals.Maccess.Items[0].Url)
 	// 	// fmt.Println(coreglobals.Maccess.Items[0].MemberGroups)
 	// }
+ 	var public_access_members map[string]interface{}
+ 	var public_access_member_groups map[string]interface{}
+
+	if protectedMedia != nil{
+		for _, mgId := range protectedMedia.MemberGroups{
+
+			mgIdStr := strconv.Itoa(mgId)
+			//log.Println("mgidstr: " + mgIdStr)
+			public_access_member_groups = make(map[string]interface{})
+			public_access_member_groups[mgIdStr] = true;
+		}
+	}
 
 	media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, media_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_media_types, nil, false, false, false, nil, nil, composite_media_types}
 
 	media = Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
-		media_media_type_id, media_metaMap, nil, nil, user_perm, user_group_perm, "", nil, nil, nil, &media_type}
+		media_media_type_id, media_metaMap, public_access_members, public_access_member_groups, user_perm, user_group_perm, "", nil, nil, nil, &media_type}
 
 	return
 }

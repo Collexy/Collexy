@@ -578,7 +578,7 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 				// hasAccess = false //already set when var was initialized
 
 			} else {
-				SetProtectedMediaKey(r,protectedItem)
+				
 				coremodulemembermodels.SetLoggedInMember(r, m)
 
 				for _, mg := range m.Groups {
@@ -619,22 +619,6 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 		// 	h.ServeHTTP(w, r)
 		// }
 	})
-}
-
-// // type key int // already defined in user module.models
-
-// const myProtectedMediakey key = 1
-
-// GetProtectedMedia returns a value for this package from the request values.
-func GetProtectedMedia(r *http.Request) *coreglobals.MediaAccessItem {
-	if rv := context.Get(r, coreglobals.MyProtectedMediakey); rv != nil {
-		return rv.(*coreglobals.MediaAccessItem)
-	}
-	return nil
-}
-
-func SetProtectedMediaKey(r *http.Request, val *coreglobals.MediaAccessItem) {
-    context.Set(r, coreglobals.MyProtectedMediakey, val)
 }
 
 // func MediaProtectHandler(h http.Handler) http.Handler {

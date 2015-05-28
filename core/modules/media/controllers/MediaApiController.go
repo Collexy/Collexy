@@ -9,13 +9,13 @@ import (
 	//"collexy/helpers"
 	"collexy/core/modules/media/models"
 	"strconv"
-	//"log"
+	"os"
 	//"github.com/gorilla/schema"
 	"encoding/json"
-	//"log"
+	"log"
 	//"io/ioutil"
 	//"path/filepath"
-	//coreglobals "collexy/core/globals"
+	coreglobals "collexy/core/globals"
 	corehelpers "collexy/core/helpers"
 	"github.com/gorilla/mux"
 	//"html/template"
@@ -188,10 +188,57 @@ func (this *MediaApiController) GetBackendMediaById(w http.ResponseWriter, r *ht
 
 	// Media object including the media' Node, the media type object.
 	// Note: Inside the media type object is an array of parent MediaTypes
-	media := models.GetBackendMediaById(id)
+
+	media := models.GetBackendMediaById(id,GetProtectedMedia(w,r,id))
 
 	res, err := json.Marshal(media)
 	corehelpers.PanicIf(err)
 
 	fmt.Fprintf(w, "%s", res)
+}
+
+func GetProtectedMedia(w http.ResponseWriter, r *http.Request, id int) (protectedItem *coreglobals.MediaAccessItem) {
+	fmt.Println(*r.URL)
+	var urlStr string = ""
+
+	if _, err := os.Stat("./config/media-access.json"); err != nil {
+		if os.IsNotExist(err) {
+			// file does not exist
+			log.Println("media-access.json config file does not exist")
+		} else {
+			// other error
+		}
+	} else {
+
+		configFile, err1 := os.Open("./config/media-access.json")
+		defer configFile.Close()
+		if err1 != nil {
+			log.Println("Error opening media-access.json config file")
+			//printError("opening config file", err1.Error())
+		}
+
+		jsonParser := json.NewDecoder(configFile)
+		if err1 = jsonParser.Decode(&coreglobals.MediaAccessConf); err1 != nil {
+			log.Println("Error parsing media-access.json config file")
+			log.Println(err1.Error())
+			//printError("parsing config file", err1.Error())
+		}
+
+		urlStr = r.URL.Path
+
+		log.Println("urlStr: " + urlStr)
+		log.Println(coreglobals.MediaAccessConf[urlStr])
+
+	}
+
+	for _, value := range coreglobals.MediaAccessConf{
+		if(value.MediaId == id){
+			protectedItem = value
+			// isProtected = true
+			// break
+			return
+		}
+	}
+
+	return
 }

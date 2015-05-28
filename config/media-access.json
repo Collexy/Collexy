@@ -1,13 +1,13 @@
 
 {
     "media/Sample Images/TXT/pic04.jpg": {
-        "media_id": 16,
+        "media_id": 6,
         "login_page": 22,
         "access_denied_page": 3,
         "member_groups": [1]
     },
     "media/Sample Images/TXT/pic05.jpg": {
-        "media_id": 17,
+        "media_id": 7,
         "login_page": 22,
         "access_denied_page": 3,
         "member_groups": [1]

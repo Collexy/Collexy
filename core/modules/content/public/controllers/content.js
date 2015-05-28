@@ -137,7 +137,7 @@ function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType, M
                 if(typeof data.public_access_member_groups != 'undefined'){
                     for (var i = 0; i < memberGroups.length; i++) {
                         var memberGroupId = memberGroups[i].id
-                        if (data.public_access_members[""+memberGroupId+""] === 'undefined') {
+                        if (data.public_access_member_groups[""+memberGroupId+""] === 'undefined') {
                             availableMemberGroups.push(memberGroups[i])
                         } else {
                             selectedMemberGroups.push(memberGroups[i])
