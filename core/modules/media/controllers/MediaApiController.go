@@ -11,9 +11,10 @@ import (
 	"strconv"
 	"os"
 	//"github.com/gorilla/schema"
+	"encoding/xml"
 	"encoding/json"
 	"log"
-	//"io/ioutil"
+	"io/ioutil"
 	//"path/filepath"
 	coreglobals "collexy/core/globals"
 	corehelpers "collexy/core/helpers"
@@ -197,37 +198,64 @@ func (this *MediaApiController) GetBackendMediaById(w http.ResponseWriter, r *ht
 	fmt.Fprintf(w, "%s", res)
 }
 
+func buildMap(mySlice ...*coreglobals.MediaAccessItem) (myMap map[string]*coreglobals.MediaAccessItem) {
+	myMap = make(map[string]*coreglobals.MediaAccessItem)
+	for _, item := range mySlice {
+	
+		myMap[item.Url] = item
+		itemKeyIdStr := strconv.Itoa(item.MediaId)
+		myMap[itemKeyIdStr] = item
+	}
+	return
+}
+
 func GetProtectedMedia(w http.ResponseWriter, r *http.Request, id int) (protectedItem *coreglobals.MediaAccessItem) {
 	fmt.Println(*r.URL)
-	var urlStr string = ""
 
-	if _, err := os.Stat("./config/media-access.json"); err != nil {
+
+	if _, err := os.Stat("./config/media-access.xml"); err != nil {
 		if os.IsNotExist(err) {
 			// file does not exist
-			log.Println("media-access.json config file does not exist")
+			log.Println("media-access.xml config file does not exist")
 		} else {
 			// other error
 		}
 	} else {
 
-		configFile, err1 := os.Open("./config/media-access.json")
+		configFile, err1 := os.Open("./config/media-access.xml")
 		defer configFile.Close()
 		if err1 != nil {
-			log.Println("Error opening media-access.json config file")
+			log.Println("Error opening media-access.xml config file")
 			//printError("opening config file", err1.Error())
 		}
 
-		jsonParser := json.NewDecoder(configFile)
-		if err1 = jsonParser.Decode(&coreglobals.MediaAccessConf); err1 != nil {
-			log.Println("Error parsing media-access.json config file")
-			log.Println(err1.Error())
-			//printError("parsing config file", err1.Error())
+		XMLdata, err2 := ioutil.ReadAll(configFile)
+
+		fmt.Println(string(XMLdata))
+
+		if err2 != nil {
+			log.Println("Error reading from media-access.xml config file")
+			fmt.Printf("error: %v", err2)
 		}
 
-		urlStr = r.URL.Path
+		var v coreglobals.MediaAccessItems
+		err := xml.Unmarshal(XMLdata, &v)
+		if err != nil {
+			fmt.Printf("error: %v", err)
+			return
+		}
 
-		log.Println("urlStr: " + urlStr)
-		log.Println(coreglobals.MediaAccessConf[urlStr])
+
+		
+
+		//fmt.Printf("%#v\n", v)
+
+		coreglobals.MediaAccessConf = buildMap(v.Items...)
+
+		// urlStr = r.URL.Path
+
+		// log.Println("urlStr: " + urlStr)
+		// log.Println(coreglobals.MediaAccessConf[urlStr])
 
 	}
 
@@ -242,3 +270,49 @@ func GetProtectedMedia(w http.ResponseWriter, r *http.Request, id int) (protecte
 
 	return
 }
+
+// func GetProtectedMedia(w http.ResponseWriter, r *http.Request, id int) (protectedItem *coreglobals.MediaAccessItem) {
+// 	fmt.Println(*r.URL)
+// 	var urlStr string = ""
+
+// 	if _, err := os.Stat("./config/media-access.json"); err != nil {
+// 		if os.IsNotExist(err) {
+// 			// file does not exist
+// 			log.Println("media-access.json config file does not exist")
+// 		} else {
+// 			// other error
+// 		}
+// 	} else {
+
+// 		configFile, err1 := os.Open("./config/media-access.json")
+// 		defer configFile.Close()
+// 		if err1 != nil {
+// 			log.Println("Error opening media-access.json config file")
+// 			//printError("opening config file", err1.Error())
+// 		}
+
+// 		jsonParser := json.NewDecoder(configFile)
+// 		if err1 = jsonParser.Decode(&coreglobals.MediaAccessConf); err1 != nil {
+// 			log.Println("Error parsing media-access.json config file")
+// 			log.Println(err1.Error())
+// 			//printError("parsing config file", err1.Error())
+// 		}
+
+// 		urlStr = r.URL.Path
+
+// 		log.Println("urlStr: " + urlStr)
+// 		log.Println(coreglobals.MediaAccessConf[urlStr])
+
+// 	}
+
+// 	for _, value := range coreglobals.MediaAccessConf{
+// 		if(value.MediaId == id){
+// 			protectedItem = value
+// 			// isProtected = true
+// 			// break
+// 			return
+// 		}
+// 	}
+
+// 	return
+// }

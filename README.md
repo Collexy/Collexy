@@ -11,12 +11,6 @@ Live test site here: <a href="http://test.codeish.com" rel="nofollow">http://tes
 " target="_blank"><img src="http://img.youtube.com/vi/P1XyKQumd9k/maxresdefault.jpg" 
 alt="IMAGE ALT TEXT HERE" width="560" height="315" border="10" /></a>
 
-
-###To-do
-Preview of my first sketches to help illustrate the big picture for Phase 2
-
-![Alt text](https://github.com/codeish/collexy/blob/master/docs/screenshots/20150401_221528.jpg?raw=true "To-do next")
-
 ###Phases
 
 1. Proof of concept only: Quick and dirty prototype-ish code. <strong>(where we're currently at)</strong>

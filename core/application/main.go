@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 	//"collexy/globals"
 	coreglobals "collexy/core/globals"
+	"encoding/xml"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -32,6 +33,7 @@ import (
 	_ "collexy/core/modules/settings"
 	_ "collexy/core/modules/user"
 	coremoduleusermodels "collexy/core/modules/user/models"
+	"strconv"
 )
 
 func executeDatabaseInstallScript(site_title, username, password, email string, privacy bool) (err error) {
@@ -488,33 +490,70 @@ func Main() {
 	http.Handle("/", m)
 }
 
+func buildMap(mySlice ...*coreglobals.MediaAccessItem) (myMap map[string]*coreglobals.MediaAccessItem) {
+	myMap = make(map[string]*coreglobals.MediaAccessItem)
+	for _, item := range mySlice {
+	
+		myMap[item.Url] = item
+		itemKeyIdStr := strconv.Itoa(item.MediaId)
+		myMap[itemKeyIdStr] = item
+	}
+	return
+}
+
 func MediaProtectHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(*r.URL)
 		var urlStr string = ""
 
-		if _, err := os.Stat("./config/media-access.json"); err != nil {
+		if _, err := os.Stat("./config/media-access.xml"); err != nil {
 			if os.IsNotExist(err) {
 				// file does not exist
-				log.Println("media-access.json config file does not exist")
+				log.Println("media-access.xml XML file does not exist")
 			} else {
 				// other error
 			}
 		} else {
 
-			configFile, err1 := os.Open("./config/media-access.json")
+			configFile, err1 := os.Open("./config/media-access.xml")
 			defer configFile.Close()
 			if err1 != nil {
-				log.Println("Error opening media-access.json config file")
+				log.Println("Error opening media-access.xml config file")
 				//printError("opening config file", err1.Error())
 			}
 
-			jsonParser := json.NewDecoder(configFile)
-			if err1 = jsonParser.Decode(&coreglobals.MediaAccessConf); err1 != nil {
-				log.Println("Error parsing media-access.json config file")
-				log.Println(err1.Error())
-				//printError("parsing config file", err1.Error())
+			XMLdata, err2 := ioutil.ReadAll(configFile)
+
+			fmt.Println(string(XMLdata))
+
+			if err2 != nil {
+				log.Println("Error reading from media-access.xml config file")
+				fmt.Printf("error: %v", err2)
 			}
+
+			var v coreglobals.MediaAccessItems
+			err := xml.Unmarshal(XMLdata, &v)
+			if err != nil {
+				fmt.Printf("error: %v", err)
+				return
+			}
+
+
+			
+
+			//fmt.Printf("%#v\n", v)
+
+			coreglobals.MediaAccessConf = buildMap(v.Items...)
+
+			fmt.Println("test MEdia acceSS")
+			fmt.Println(v)
+
+			// jsonParser := json.NewDecoder(configFile)
+			// if err1 = jsonParser.Decode(&coreglobals.MediaAccessConf); err1 != nil {
+			// 	log.Println("Error parsing media-access.xml config file")
+			// 	log.Println(err1.Error())
+			// 	//printError("parsing config file", err1.Error())
+			// }
 
 			urlStr = r.URL.Path
 			// urlStrTemp, err2 := r.URL.Path()
@@ -546,6 +585,9 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 			isProtected = true
 			protectedItem = val
 		}
+
+		// fmt.Println(protectedItem)
+		// fmt.Println(protectedItem.MemberGroups)
 
 		// var protectedItem *coreglobals.MediaAccessItem = nil
 
@@ -620,6 +662,139 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 		// }
 	})
 }
+
+// func MediaProtectHandler(h http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Println(*r.URL)
+// 		var urlStr string = ""
+
+// 		if _, err := os.Stat("./config/media-access.json"); err != nil {
+// 			if os.IsNotExist(err) {
+// 				// file does not exist
+// 				log.Println("media-access.json config file does not exist")
+// 			} else {
+// 				// other error
+// 			}
+// 		} else {
+
+// 			configFile, err1 := os.Open("./config/media-access.json")
+// 			defer configFile.Close()
+// 			if err1 != nil {
+// 				log.Println("Error opening media-access.json config file")
+// 				//printError("opening config file", err1.Error())
+// 			}
+
+// 			jsonParser := json.NewDecoder(configFile)
+// 			if err1 = jsonParser.Decode(&coreglobals.MediaAccessConf); err1 != nil {
+// 				log.Println("Error parsing media-access.json config file")
+// 				log.Println(err1.Error())
+// 				//printError("parsing config file", err1.Error())
+// 			}
+
+// 			urlStr = r.URL.Path
+// 			// urlStrTemp, err2 := r.URL.Path()
+// 			// if err2!=nil{
+// 			// 	log.Println(err2.Error())
+
+// 			// } else{
+// 			// 	urlStrTemp = urlStrTemp
+// 			// }
+
+// 			log.Println("urlStr: " + urlStr)
+// 			log.Println(coreglobals.MediaAccessConf[urlStr])
+// 			//log.Println(url.QueryEscape(urlStr))
+// 			log.Println("111!!!!!1")
+// 			// log.Println(coreglobals.Maccess.Items[0].Domains[0])
+// 			// log.Println(coreglobals.Maccess.Items[0].Url)
+// 			// fmt.Println(coreglobals.Maccess.Items[0].MemberGroups)
+// 		}
+
+// 		// fmt.Println(r.URL.Path)
+// 		// fmt.Println(coreglobals.Maccess.Domains[0] + "/" + coreglobals.Maccess.Url)
+// 		// fmt.Println(r.Host)
+
+// 		isProtected := false
+// 		hasAccess := false
+// 		var protectedItem *coreglobals.MediaAccessItem
+
+// 		if val, ok := coreglobals.MediaAccessConf[urlStr]; ok {
+// 			isProtected = true
+// 			protectedItem = val
+// 		}
+
+// 		// var protectedItem *coreglobals.MediaAccessItem = nil
+
+// 		// for _, maItem := range coreglobals.Maccess.Items {
+// 		// 	if isProtected {
+// 		// 		break;
+// 		// 	}
+// 		// 	for _, domain := range maItem.Domains {
+// 		// 		if isProtected {
+// 		// 			break;
+// 		// 		}
+// 		// 		if domain + "/" + maItem.Url == r.Host + "/" + r.URL.Path{
+// 		// 			if isProtected {
+// 		// 				break;
+// 		// 			}
+// 		// 			isProtected = true;
+// 		// 			protectedItem = &maItem
+// 		// 			// fmt.Fprintf(w, "loldalolselol")
+
+// 		// 		}
+// 		// 	}
+// 		// }
+// 		if isProtected {
+// 			sid := corehelpers.CheckMemberCookie(w, r)
+
+// 			m, err := coremodulemembermodels.GetMember(sid)
+
+// 			if m == nil || err == sql.ErrNoRows {
+// 				fmt.Println(err)
+// 				// hasAccess = false //already set when var was initialized
+
+// 			} else {
+				
+// 				coremodulemembermodels.SetLoggedInMember(r, m)
+
+// 				for _, mg := range m.Groups {
+// 					if hasAccess {
+// 						break
+// 					}
+// 					// fmt.Println("MEMBER :::::: ")
+// 					// fmt.Println(mg)
+// 					// fmt.Println(protectedItem.MemberGroups[0])
+// 					if mg.Id == protectedItem.MemberGroups[0] {
+// 						// fmt.Println("workz?")
+// 						hasAccess = true
+// 					}
+// 				}
+
+// 			}
+// 			if !hasAccess {
+// 				fmt.Fprintf(w, "You need to be logged in to access this media item.")
+// 			} else {
+// 				h.ServeHTTP(w, r)
+// 			}
+
+// 		} else {
+// 			h.ServeHTTP(w, r)
+// 		}
+
+// 		//sid := corehelpers.CheckCookie(w, r)
+
+// 		//m, err := coremodulemembermodels.GetMember(sid)
+
+// 		// if m == nil || err == sql.ErrNoRows {
+// 		// 	fmt.Println(err)
+// 		// 	fmt.Fprintf(w, "You need to be logged in to access the API.")
+
+// 		// } else {
+// 		// 	coremodulemembermodels.SetLoggedInMember(r, m)
+
+// 		// 	h.ServeHTTP(w, r)
+// 		// }
+// 	})
+// }
 
 // func MediaProtectHandler(h http.Handler) http.Handler {
 // 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
