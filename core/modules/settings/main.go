@@ -15,11 +15,13 @@ func init() {
 	// register API route endpoints, controllers and handlers
 
 	contentTypeApiController := coremodulesettingscontrollers.ContentTypeApiController{}
+	mediaTypeApiController := coremodulesettingscontrollers.MediaTypeApiController{}
 	dataTypeApiController := coremodulesettingscontrollers.DataTypeApiController{}
 	templateApiController := coremodulesettingscontrollers.TemplateApiController{}
 	directoryApiController := coremodulesettingscontrollers.DirectoryApiController{}
 
 	contentTypeTreeController := coremodulesettingscontrollers.ContentTypeTreeController{}
+	mediaTypeTreeController := coremodulesettingscontrollers.MediaTypeTreeController{}
 	dataTypeTreeController := coremodulesettingscontrollers.DataTypeTreeController{}
 	templateTreeController := coremodulesettingscontrollers.TemplateTreeController{}
 	directoryTreeController := coremodulesettingscontrollers.DirectoryTreeController{}
@@ -33,7 +35,10 @@ func init() {
 	subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/content-type", http.HandlerFunc(contentTypeApiController.Get)).Methods("GET")
 
-	subrPrivate.HandleFunc("/api/media-type/{id:.*}/contextmenu", http.HandlerFunc(contentTypeTreeController.GetMenuForMediaType)).Methods("GET")
+	subrPrivate.HandleFunc("/api/media-type/{id:.*}/contextmenu", http.HandlerFunc(mediaTypeTreeController.GetMenuForMediaType)).Methods("GET")
+	subrPrivate.HandleFunc("/api/media-type/{id:.*}/children", http.HandlerFunc(mediaTypeApiController.GetByIdChildren)).Methods("GET")
+	subrPrivate.HandleFunc("/api/media-type/{id:.*}", http.HandlerFunc(mediaTypeApiController.GetById)).Methods("GET")
+	subrPrivate.HandleFunc("/api/media-type", http.HandlerFunc(mediaTypeApiController.Get)).Methods("GET")
 	//m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypeByNodeId)) // not sure about this
 	//m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypes)) // not sure about this
 	//privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.PutContentType)).Methods("PUT")

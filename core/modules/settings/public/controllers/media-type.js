@@ -8,11 +8,10 @@ angular.module("myApp").controller("MediaTypeDeleteCtrl", MediaTypeDeleteCtrl);
  * @description
  * The controller for the media type tree
  */
-function MediaTypeTreeCtrl($scope, $stateParams, ContentTypeChildren, ContentType, sessionService, $interpolate, ngDialog) {
+function MediaTypeTreeCtrl($scope, $stateParams, MediaTypeChildren, MediaType, sessionService, $interpolate, ngDialog) {
     $scope.ContextMenuServiceName = "MediaTypeContextMenu"
-    $scope.EntityChildrenServiceName = "ContentTypeChildren"
-    ContentType.query({
-        'type-id': '2',
+    $scope.EntityChildrenServiceName = "MediaTypeChildren"
+    MediaType.query({
         'levels': '1'
     }, {}, function(tree) {
         $scope.tree = tree;
@@ -25,11 +24,11 @@ function MediaTypeTreeCtrl($scope, $stateParams, ContentTypeChildren, ContentTyp
  * @description
  * The controller for editing a media type
  */
-function MediaTypeEditCtrl($scope, $stateParams, ContentType, DataType) {
-    $scope.currentTab = 'content-type';
+function MediaTypeEditCtrl($scope, $stateParams, MediaType, DataType) {
+    $scope.currentTab = 'media-type';
     $scope.stateParams = $stateParams;
     if ($stateParams.id) {
-        $scope.node = ContentType.get({
+        $scope.node = MediaType.get({
             extended: true
         }, {
             id: $stateParams.id
@@ -38,7 +37,7 @@ function MediaTypeEditCtrl($scope, $stateParams, ContentType, DataType) {
         });
     } else if ($stateParams.parent_id) {
         $scope.node = {
-            "parent_content_type_id": parseInt($stateParams.parent_id)
+            "parent_media_type_id": parseInt($stateParams.parent_id)
         }
     } else {
         $scope.node = {}
@@ -52,13 +51,13 @@ function MediaTypeEditCtrl($scope, $stateParams, ContentType, DataType) {
             }
         }
     }
-    $scope.allMediaTypes = ContentType.query({
+    $scope.allMediaTypes = MediaType.query({
         'type-id': '2'
     }, {}, function(allMediaTypes) {
         var availableCompositeMediaTypes = []
         for (var i = 0; i < allMediaTypes.length; i++) {
-            if (typeof $scope.node.parent_content_types !== 'undefined' && $scope.node.parent_content_types.length > 0) {
-                if ($scope.node.parent_content_types.containsId(allMediaTypes[i].id)) {} else {
+            if (typeof $scope.node.parent_media_types !== 'undefined' && $scope.node.parent_media_types.length > 0) {
+                if ($scope.node.parent_media_types.containsId(allMediaTypes[i].id)) {} else {
                     availableCompositeMediaTypes.push(allMediaTypes[i])
                 }
             } else {
@@ -94,14 +93,14 @@ function MediaTypeEditCtrl($scope, $stateParams, ContentType, DataType) {
         }
         if ($stateParams.id) {
             console.log("update");
-            ContentType.update({
+            MediaType.update({
                 id: $stateParams.id
             }, $scope.node, success, failure);
             console.log($scope.node)
             //User.update($scope.user, success, failure);
         } else {
             console.log("create");
-            ContentType.create($scope.node, success, failure);
+            MediaType.create($scope.node, success, failure);
             //User.create($scope.user, success, failure);
         }
     }
@@ -127,7 +126,7 @@ function MediaTypeEditCtrl($scope, $stateParams, ContentType, DataType) {
                         tabs[i].properties.push({
                             "name": "property name",
                             "order": 1,
-                            "data_type_node_id": 2,
+                            "data_type_id": 2,
                             "help_text": "prop help text",
                             "description": "prop description"
                         });
@@ -148,12 +147,12 @@ function MediaTypeEditCtrl($scope, $stateParams, ContentType, DataType) {
  * @name MediaTypeDeleteCtrl
  * @function
  * @description
- * The controller for deleting content type
+ * The controller for deleting media type
  */
-function MediaTypeDeleteCtrl($scope, $stateParams, ContentType) {
+function MediaTypeDeleteCtrl($scope, $stateParams, MediaType) {
     $scope.delete = function(item) {
         console.log(item)
-        ContentType.delete({
+        MediaType.delete({
             id: item.id
         }, function() {
             console.log("media type record with id: " + item.id + " deleted")
