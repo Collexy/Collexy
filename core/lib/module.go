@@ -5,4 +5,5 @@ type Module struct {
 	Alias       string
 	Description string
 	Sections    []Section
+	Order		int
 }

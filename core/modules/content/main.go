@@ -68,7 +68,7 @@ func init() {
 	// setup module
 	sections := []lib.Section{sContent}
 	// params: name, alias, description, sections
-	moduleSettings := lib.Module{"Content Module", "contentModule", "Just a content module", sections}
+	moduleSettings := lib.Module{"Content Module", "contentModule", "Just a content module", sections, 100}
 
 	// register module
 	lib.RegisterModule(moduleSettings)

@@ -633,3 +633,15 @@ div[class*='col-'] + div[class*='col-'] {
 	padding-left: 0; 
 	list-style-type: none;"
 }
+
+.user-permissions ul {
+	font-size: 0.8em;
+	max-height: 150px;
+	overflow-y: scroll;
+}
+
+.public-access select {
+	width: 100%;
+}
+
+.align-center { text-align: center !important; }

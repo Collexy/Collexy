@@ -30,10 +30,11 @@ import (
 	_ "collexy/core/modules/media"
 	_ "collexy/core/modules/member"
 	coremodulemembermodels "collexy/core/modules/member/models"
-	_ "collexy/core/modules/settings"
 	_ "collexy/core/modules/user"
+	_ "collexy/core/modules/settings"
 	coremoduleusermodels "collexy/core/modules/user/models"
 	"strconv"
+	"sort"
 )
 
 func executeDatabaseInstallScript(site_title, username, password, email string, privacy bool) (err error) {
@@ -425,6 +426,14 @@ func Main() {
 	// temp end
 
 	APIstuff()
+
+	// var sortedModules lib.Modules
+
+	// for _, m := range lib.Modules {
+
+	// }
+
+	sort.Sort(lib.Modules)
 
 	for _, m := range lib.Modules {
 		for _, s := range m.Sections {

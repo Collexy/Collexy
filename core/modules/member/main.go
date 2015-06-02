@@ -102,7 +102,7 @@ func init() {
 	// setup module
 	sections := []lib.Section{sMembers}
 	// params: name, alias, description, sections
-	moduleMembers := lib.Module{"Members Module", "membersModule", "Just a members module", sections}
+	moduleMembers := lib.Module{"Members Module", "membersModule", "Just a members module", sections, 300}
 
 	// register module
 	lib.RegisterModule(moduleMembers)
