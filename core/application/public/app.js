@@ -1,9 +1,7 @@
 'use strict';
-
 var $stateProviderRef = null;
 var $urlRouterProviderRef = null;
 var $controllerProviderRef = null;
-
 // Declare app level module which depends on components
 angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'checklist-model', 'ngDialog', 'ui.codemirror', 'perfect_scrollbar', 'ui.sortable']).config(function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $provide, $controllerProvider) {
     $controllerProviderRef = $controllerProvider
@@ -52,68 +50,68 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
             //$state.transitionTo($state.current, $stateParams, { reload: true, inherit: false, notify: true });
         });
         // if($cookies.sessionauth != null){
-        // 		var user = authenticationService.get({sid:$cookies.sessionauth}, function(user){
-        // 			var allowUserAccess = true;
-        // 			if(!allowUserAccess){
-        // 				console.log("test")
-        // 				$state.go('login', toParams, {notify: false}).then(function() {	
-        // 			    	$rootScope.$broadcast('$stateChangeSuccess', toState, toParams, fromState, fromParams);
-        // 				});
-        // 				event.preventDefault();
-        // 			} else {
-        // 				sessionService.setUser(user)
-        // 			}
-        // 		})
+        //      var user = authenticationService.get({sid:$cookies.sessionauth}, function(user){
+        //          var allowUserAccess = true;
+        //          if(!allowUserAccess){
+        //              console.log("test")
+        //              $state.go('login', toParams, {notify: false}).then(function() { 
+        //                  $rootScope.$broadcast('$stateChangeSuccess', toState, toParams, fromState, fromParams);
+        //              });
+        //              event.preventDefault();
+        //          } else {
+        //              sessionService.setUser(user)
+        //          }
+        //      })
         // } else {
-        // 	$state.go('login', toParams, {notify: false}).then(function() {	
-        // 	    	$rootScope.$broadcast('$stateChangeSuccess', toState, toParams, fromState, fromParams);
-        // 		});
-        // 	event.preventDefault();
+        //  $state.go('login', toParams, {notify: false}).then(function() { 
+        //          $rootScope.$broadcast('$stateChangeSuccess', toState, toParams, fromState, fromParams);
+        //      });
+        //  event.preventDefault();
         // }
         // var angularRoutes = AngularRoute.query({}, function(routes){
-        // 	console.log(routes)
-        // 	angular.forEach(routes, function (value, key){ 
-        // 		//console.log(value.components[0].single)
-        // 		var templateUrl = "";
-        // 		var parent = "";
-        // 		if('parent' in value){
-        // 			parent = value.parent;
-        // 		}
-        // 		if('components' in value){
-        // 			if(value.components.length > 0){
-        // 				templateUrl = value.components[0].single
-        // 			}
-        // 		}
-        // 		if(templateUrl != ""){
-        // 			var state = {
-        // 				"url": value.url,
-        // 				//"parent" : parent,
-        // 				//"abstract": value.abstract,
-        // 				//"views":{}
-        // 				"templateUrl": templateUrl
-        // 			};
-        // 		} else {
-        // 			var state = {
-        // 				"url": value.url,
-        // 				//"parent" : parent,
-        // 				//"abstract": value.abstract,
-        // 				//"views":{}
-        // 				//"templateUrl": templateUrl
-        // 			};
-        // 		}
-        // 		// here we configure the views
-        // 		// angular.forEach(value.components, function (value1,key1) 
-        // 		// {
-        // 		// 	console.log(value1)
-        // 		//   state.views[key1] = {
-        // 		//     templateUrl : value1.single,
-        // 		//   };
-        // 		// });
-        // 		if('parent' in value){
-        // 			$stateProviderRef.state(value.parent + "." + value.alias, state);
-        // 		} else {
-        // 			$stateProviderRef.state(value.alias, state);
-        // 		}
+        //  console.log(routes)
+        //  angular.forEach(routes, function (value, key){ 
+        //      //console.log(value.components[0].single)
+        //      var templateUrl = "";
+        //      var parent = "";
+        //      if('parent' in value){
+        //          parent = value.parent;
+        //      }
+        //      if('components' in value){
+        //          if(value.components.length > 0){
+        //              templateUrl = value.components[0].single
+        //          }
+        //      }
+        //      if(templateUrl != ""){
+        //          var state = {
+        //              "url": value.url,
+        //              //"parent" : parent,
+        //              //"abstract": value.abstract,
+        //              //"views":{}
+        //              "templateUrl": templateUrl
+        //          };
+        //      } else {
+        //          var state = {
+        //              "url": value.url,
+        //              //"parent" : parent,
+        //              //"abstract": value.abstract,
+        //              //"views":{}
+        //              //"templateUrl": templateUrl
+        //          };
+        //      }
+        //      // here we configure the views
+        //      // angular.forEach(value.components, function (value1,key1) 
+        //      // {
+        //      //  console.log(value1)
+        //      //   state.views[key1] = {
+        //      //     templateUrl : value1.single,
+        //      //   };
+        //      // });
+        //      if('parent' in value){
+        //          $stateProviderRef.state(value.parent + "." + value.alias, state);
+        //      } else {
+        //          $stateProviderRef.state(value.alias, state);
+        //      }
         //      });
         // })
         // angular.forEach(angularRoutes, function (value, key) 
@@ -128,7 +126,7 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         //          // here we configure the views
         //          angular.forEach(value.components, function (value1,key1) 
         //          {
-        //          	alert(key1 + ": : " + value1)
+        //              alert(key1 + ": : " + value1)
         //            state.views[key1] = {
         //              templateUrl : value1,
         //            };
@@ -149,41 +147,40 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
             //alert("stateChangeStart")
             // if (toState != null && toState.data.access != null && toState.data.access.requiredAuthentication) {
             if ($cookies.get('sessionauth') != null) {
-                
-                // 		if("permissions" in toState.data){
+                //      if("permissions" in toState.data){
                 var user = authenticationService.get({
-                    sid: $cookies.get('sessionauth') 
+                    sid: $cookies.get('sessionauth')
                 }, function(user) {
-                    // 				console.log(user)
-                    // 				var userPermissions = [];
-                    // 				var i = 0;
-                    // 				//var hasPermission = false;
+                    //              console.log(user)
+                    //              var userPermissions = [];
+                    //              var i = 0;
+                    //              //var hasPermission = false;
                     var allowUserAccess = true;
-                    // 				if(user != null && "id" in user){
-                    // 					console.log("user is defined")
-                    // 					if(typeof user.user_groups != 'undefined'){
-                    // 						console.log("user_groups in user [x]")
-                    // 						while(i < user.user_groups.length){
-                    // 							if("permissions" in user.user_groups[i]){
-                    // 								console.log("permissions in user_group [x]")
-                    // 								for(var k = 0; k< user.user_groups[i].permissions.length; k++){
-                    // 									userPermissions.push(user.user_groups[i].permissions[k].name)
-                    // 								}
-                    // 								i++;
-                    // 							}
-                    // 						}
-                    // 					}
-                    // 				}
-                    // 				var userPermissionsUnique = userPermissions.unique();
-                    // 				console.log(userPermissionsUnique)
-                    // 				for(var l=0; l < toState.data.permissions.length; l++){
-                    // 					//console.log(toState.data.permissions[l])
-                    // 					if(userPermissionsUnique.indexOf(toState.data.permissions[l]) == -1){
-                    // 						//console.log("FALSE")
-                    // 						allowUserAccess = false;
-                    // 					}
-                    // 				}
-                    // 				//console.log(allowUserAccess)
+                    //              if(user != null && "id" in user){
+                    //                  console.log("user is defined")
+                    //                  if(typeof user.user_groups != 'undefined'){
+                    //                      console.log("user_groups in user [x]")
+                    //                      while(i < user.user_groups.length){
+                    //                          if("permissions" in user.user_groups[i]){
+                    //                              console.log("permissions in user_group [x]")
+                    //                              for(var k = 0; k< user.user_groups[i].permissions.length; k++){
+                    //                                  userPermissions.push(user.user_groups[i].permissions[k].name)
+                    //                              }
+                    //                              i++;
+                    //                          }
+                    //                      }
+                    //                  }
+                    //              }
+                    //              var userPermissionsUnique = userPermissions.unique();
+                    //              console.log(userPermissionsUnique)
+                    //              for(var l=0; l < toState.data.permissions.length; l++){
+                    //                  //console.log(toState.data.permissions[l])
+                    //                  if(userPermissionsUnique.indexOf(toState.data.permissions[l]) == -1){
+                    //                      //console.log("FALSE")
+                    //                      allowUserAccess = false;
+                    //                  }
+                    //              }
+                    //              //console.log(allowUserAccess)
                     if (!allowUserAccess) {
                         console.log("test")
                         $state.go('login', toParams, {
@@ -196,12 +193,12 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                         sessionService.setUser(user)
                     }
                 })
-                // 		} else {
-                // 			$state.go('adminLogin', toParams, {notify: false}).then(function() {	
-                // 		    	$rootScope.$broadcast('$stateChangeSuccess', toState, toParams, fromState, fromParams);
-                // 			});
-                // 			event.preventDefault();
-                // 		}
+                //      } else {
+                //          $state.go('adminLogin', toParams, {notify: false}).then(function() {    
+                //              $rootScope.$broadcast('$stateChangeSuccess', toState, toParams, fromState, fromParams);
+                //          });
+                //          event.preventDefault();
+                //      }
             } else {
                 $state.go('login', toParams, {
                     notify: false
@@ -269,12 +266,11 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         scope: false,
         link: function(scope, element, attrs) {
             var parentControllerScope = "";
-            if(element.hasClass('collexy-controller')){
+            if (element.hasClass('collexy-controller')) {
                 parentControllerScope = element.scope();
             } else {
                 parentControllerScope = element.closest('.collexy-controller').scope()
             }
-
             parentControllerScope.$watch("contextMenu", function(newValue, oldValue) {
                 parentControllerScope.contextMenu = newValue;
                 //alert($scope.contextMenu)
@@ -394,10 +390,10 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         var parentControllerScope = element.closest('.collexy-controller').scope()
         var item = $parse(attr.ngExpandCollapse)($scope)
         element.bind('click', function(event) {
-            //alert("lol")
             $scope.expand_collapse(item)
         })
         $scope.expand_collapse = function(data) {
+            //console.log(data)
             var serviceName = parentControllerScope.EntityChildrenServiceName;
             if (!data.show) {
                 if (data.nodes == undefined) {
@@ -406,14 +402,18 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                 if (data.nodes.length == 0) {
                     // REST API call to fetch the current node's immediate children
                     var myService = $injector.get(serviceName);
-                    data.nodes = myService.query({
+                    myService.query({
                         id: data.id
-                    }, function(node) {
-                        //console.log(node)
+                    }, function() {}).$promise.then(function(nodes) {
+                        //alert("finished");
+                        data.nodes = nodes;
+                    }, function() {
+                        //err
                     });
                 }
             }
-            data.show = !data.show;
+            data["show"] = !data.show;
+            $scope.$apply();
         }
     }
 }).directive('collexyToggleTab', function($parse) {
@@ -441,25 +441,22 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                 elm.bind('change', function(ev) {
                     var files = ev.target.files;
                     //emit event upward
-                    $scope.$emit("filesSelected", { files: files });  
-
+                    $scope.$emit("filesSelected", {
+                        files: files
+                    });
                     // $parse(attrs.fileInput).assign(scope, elm[0].files)
                     // scope.$apply()
-                    
                 })
-
                 //var propName = attrs.propName;
-
                 // alert(attrs.propName);
-
-                $scope.$on("formSubmitSuccess", function (event, args) {
+                $scope.$on("formSubmitSuccess", function(event, args) {
                     // alert("formSubmitSuccess event")
                     var escapedPath = replaceAll($scope.location, '\\', '%5C');
-                    if(typeof $scope.files != 'undefined'){
-                        if($scope.files.length > 0){
+                    if (typeof $scope.files != 'undefined') {
+                        if ($scope.files.length > 0) {
                             $scope.upload(escapedPath);
                             // if(typeof $scope.originalData.meta[propName] != 'undefined'){
-                            if(typeof $scope.originalData.meta["attached_file"] != 'undefined'){
+                            if (typeof $scope.originalData.meta["attached_file"] != 'undefined') {
                                 $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
                                 // if(typeof $scope.originalData.meta["attached_file"].persisted_files != 'undefined'){
                                 //     if($scope.originalData.meta["attached_file"].persisted_files.length > 0){
@@ -468,7 +465,7 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                                 // }
                             }
                         } else {
-                            if(typeof $scope.originalData.meta["attached_file"] != 'undefined'){
+                            if (typeof $scope.originalData.meta["attached_file"] != 'undefined') {
                                 $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
                                 // if($scope.originalData.meta["attached_file"].persisted_files.length > 0){
                                 //     if($scope.clearFiles){
@@ -478,7 +475,7 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                             }
                         }
                     } else {
-                        if(typeof $scope.originalData.meta["attached_file"] != 'undefined'){
+                        if (typeof $scope.originalData.meta["attached_file"] != 'undefined') {
                             $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
                             // if($scope.originalData.meta["attached_file"].persisted_files.length > 0){
                             //     if($scope.clearFiles){
@@ -487,8 +484,6 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                             // }
                         }
                     }
-                    
-
                     // if(typeof $scope.data.meta != 'undefined'){
                     //  if(typeof $scope.data.meta["file_upload"] != 'undefined'){
                     //      if(typeof $scope.data.meta["file_upload"].persisted_files != 'undefined'){
@@ -499,22 +494,17 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                     //                      var isSameAsOrig = false;
                     //                  }
                     //                  if(!isSameAsOrig){
-
                     //                  }
                     //              }
                     //          }
                     //      }
                     //  }
                     // }
-                    
-                    
                     // $scope.$apply(function () {
-                        
                     // })
                 });
-
-                $scope.$on("filesSelected", function (event, args) {
-                    $scope.$apply(function () {
+                $scope.$on("filesSelected", function(event, args) {
+                    $scope.$apply(function() {
                         console.log("lol")
                         console.log(args.files)
                         $scope.files = args.files;
@@ -532,20 +522,17 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         }
     }
 ])
-
 // .directive('folderBrowser', ['$parse',
 //     function($parse) {
 //         return {
 //             restrict: 'A',
 //             link: function($scope, elm, attrs) {
 //                 var propName = attrs.propName;
-
 //                 $scope.data.meta[propName]
 //             }
 //         }
 //     }
 // ])
-
 // .directive('fileInput', ['$parse',
 //     function($parse) {
 //         return {
@@ -651,26 +638,27 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         element.bind('contextmenu', function(event) {
             scope.$apply(function() {
                 event.preventDefault();
-                fn(scope, {$event:event});
+                fn(scope, {
+                    $event: event
+                });
             });
         });
     };
-})
-.directive('script', function() {
+}).directive('script', function() {
     return {
-      restrict: 'E',
-      scope: false,
-      link: function(scope, elem, attr) {
-        if (attr.type === 'text/javascript-lazy') {
-          var code = elem.text();
-          var f = new Function(code);
-          f();
+        restrict: 'E',
+        scope: false,
+        link: function(scope, elem, attr) {
+            if (attr.type === 'text/javascript-lazy') {
+                var code = elem.text();
+                var f = new Function(code);
+                f();
+            }
         }
-      }
     };
-  });
+});
 // .directive('ngContextMenu', [
-// 	'$parse',
+//  '$parse',
 //     '$document',
 //     'ContextMenuService',
 //     function($parse, $document, ContextMenuService) {
@@ -681,76 +669,76 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
 //           'disabled': '&contextMenuDisabled'
 //         },
 //         link: function($scope, $element, $attrs) {
-//         	alert($scope.menuOptions);
-// 	        var data = $parse($attrs.ngContextMenu)($scope);
-// 	        console.log(data);
-// 	        var opened = false;
-//           	function open(event, menuElement) {
-// 	            menuElement.addClass('open');
-// 	            var doc = $document[0].documentElement;
-// 	            var docLeft = (window.pageXOffset || doc.scrollLeft) -
-// 	                          (doc.clientLeft || 0),
-// 	                docTop = (window.pageYOffset || doc.scrollTop) -
-// 	                         (doc.clientTop || 0),
-// 	                elementWidth = menuElement[0].scrollWidth,
-// 	                elementHeight = menuElement[0].scrollHeight;
-// 	            var docWidth = doc.clientWidth + docLeft,
-// 	              docHeight = doc.clientHeight + docTop,
-// 	              totalWidth = elementWidth + event.pageX,
-// 	              totalHeight = elementHeight + event.pageY,
-// 	              left = Math.max(event.pageX - docLeft, 0),
-// 	              top = Math.max(event.pageY - docTop, 0);
-// 	            if (totalWidth > docWidth) {
-// 	              left = left - (totalWidth - docWidth);
-// 	            }
-// 	            if (totalHeight > docHeight) {
-// 	              top = top - (totalHeight - docHeight);
-// 	            }
-// 	            menuElement.css('top', top + 'px');
-// 	            menuElement.css('left', left + 'px');
-// 	            opened = true;
-//           	}
-// 			function close(menuElement) {
-// 				menuElement.removeClass('open');
-// 				opened = false;
-// 			}
-// 	        $element.bind('contextmenu', function(event) {
-// 				if (ContextMenuService.menuElement !== null) {
-// 					close(ContextMenuService.menuElement);
-// 				}
-// 				ContextMenuService.menuElement = angular.element(
-// 					document.getElementById($attrs.target)
-// 				);
-// 				ContextMenuService.element = event.target;
-// 				//console.log('set', ContextMenuService.element);
-// 				event.preventDefault();
-// 				event.stopPropagation();
-// 				$scope.$apply(function() {
-// 					$scope.callback({ $event: event });
-// 				});
-// 				$scope.$apply(function() {
-// 					open(event, ContextMenuService.menuElement);
-// 				});
-// 	        });
-// 	        function handleClickEvent(event) {
-// 	            if (opened &&
-// 	              (event.button !== 2 ||
-// 	               event.target !== ContextMenuService.element)) {
-// 	              $scope.$apply(function() {
-// 	                close(ContextMenuService.menuElement);
-// 	              });
-// 	            }
-//           	}
-//           	// Firefox treats a right-click as a click and a contextmenu event
-//           	// while other browsers just treat it as a contextmenu event
-// 			$document.bind('click', handleClickEvent);
-// 			$document.bind('contextmenu', handleClickEvent);
-// 			$scope.$on('$destroy', function() {
-// 				//console.log('destroy');
-// 				$document.unbind('click', handleClickEvent);
-// 				$document.unbind('contextmenu', handleClickEvent);
-// 			});
-// 	    }
+//          alert($scope.menuOptions);
+//          var data = $parse($attrs.ngContextMenu)($scope);
+//          console.log(data);
+//          var opened = false;
+//              function open(event, menuElement) {
+//              menuElement.addClass('open');
+//              var doc = $document[0].documentElement;
+//              var docLeft = (window.pageXOffset || doc.scrollLeft) -
+//                            (doc.clientLeft || 0),
+//                  docTop = (window.pageYOffset || doc.scrollTop) -
+//                           (doc.clientTop || 0),
+//                  elementWidth = menuElement[0].scrollWidth,
+//                  elementHeight = menuElement[0].scrollHeight;
+//              var docWidth = doc.clientWidth + docLeft,
+//                docHeight = doc.clientHeight + docTop,
+//                totalWidth = elementWidth + event.pageX,
+//                totalHeight = elementHeight + event.pageY,
+//                left = Math.max(event.pageX - docLeft, 0),
+//                top = Math.max(event.pageY - docTop, 0);
+//              if (totalWidth > docWidth) {
+//                left = left - (totalWidth - docWidth);
+//              }
+//              if (totalHeight > docHeight) {
+//                top = top - (totalHeight - docHeight);
+//              }
+//              menuElement.css('top', top + 'px');
+//              menuElement.css('left', left + 'px');
+//              opened = true;
+//              }
+//          function close(menuElement) {
+//              menuElement.removeClass('open');
+//              opened = false;
+//          }
+//          $element.bind('contextmenu', function(event) {
+//              if (ContextMenuService.menuElement !== null) {
+//                  close(ContextMenuService.menuElement);
+//              }
+//              ContextMenuService.menuElement = angular.element(
+//                  document.getElementById($attrs.target)
+//              );
+//              ContextMenuService.element = event.target;
+//              //console.log('set', ContextMenuService.element);
+//              event.preventDefault();
+//              event.stopPropagation();
+//              $scope.$apply(function() {
+//                  $scope.callback({ $event: event });
+//              });
+//              $scope.$apply(function() {
+//                  open(event, ContextMenuService.menuElement);
+//              });
+//          });
+//          function handleClickEvent(event) {
+//              if (opened &&
+//                (event.button !== 2 ||
+//                 event.target !== ContextMenuService.element)) {
+//                $scope.$apply(function() {
+//                  close(ContextMenuService.menuElement);
+//                });
+//              }
+//              }
+//              // Firefox treats a right-click as a click and a contextmenu event
+//              // while other browsers just treat it as a contextmenu event
+//          $document.bind('click', handleClickEvent);
+//          $document.bind('contextmenu', handleClickEvent);
+//          $scope.$on('$destroy', function() {
+//              //console.log('destroy');
+//              $document.unbind('click', handleClickEvent);
+//              $document.unbind('contextmenu', handleClickEvent);
+//          });
+//      }
 //     };
 // }]);
 // .directive('ngRightClick', function($parse) {
