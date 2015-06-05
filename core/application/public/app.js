@@ -476,7 +476,10 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                         }
                     } else {
                         if (typeof $scope.originalData.meta["attached_file"] != 'undefined') {
-                            $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
+                            if($scope.clearFiles){
+                                $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
+                            }
+                            
                             // if($scope.originalData.meta["attached_file"].persisted_files.length > 0){
                             //     if($scope.clearFiles){
                             //         $scope.deleteFiles($scope.location, $scope.originalData.meta["attached_file"].persisted_files);

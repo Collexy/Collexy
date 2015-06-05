@@ -89,8 +89,8 @@
         </div>
 
         <div ng-show="currentTab == access">
-            <table class="public-access">
-                <tr>
+            <table >
+                <tr class="public-access">
                     <td>Member Public Access</td>
                     <td style="width:80%;">
                         <!-- <h4>Members</h4> -->
@@ -104,8 +104,8 @@
                                     <select multiple="true" ng-model="available" ng-options="item as item.username for item in availableMembers"></select>
                                 </td>
                                 <td class="align-center">
-                                    <button ng-click="moveItem(available[0], availableMembers, selectedMembers)">--></button><br>
-                                    <button ng-click="moveItem(selected[0], selectedMembers, availableMembers)"><--</button>
+                                    <button type="button" ng-click="moveMember(available[0], availableMembers, selectedMembers)">--></button><br>
+                                    <button type="button" ng-click="moveMember(selected[0], selectedMembers, availableMembers)"><--</button>
                                 </td>
                                 <td>
                                     <select multiple="true" ng-model="selected" ng-options="item as item.username for item in selectedMembers"></select>
@@ -114,7 +114,7 @@
                         </table>
                     </td>
                 </tr>
-                <tr>
+                <tr class="public-access">
                     <td>Member Group Public Access</td>
                     <td style="width:80%;">
                         <!-- <h4>Groups</h4> -->
@@ -129,8 +129,8 @@
                                     <select multiple="true" ng-model="available" ng-options="item as item.name for item in availableMemberGroups"></select>
                                 </td>
                                 <td class="align-center">
-                                    <button ng-click="moveItem(available[0], availableMemberGroups, selectedMemberGroups)">--></button><br>
-                                    <button ng-click="moveItem(selected[0], selectedMemberGroups, availableMemberGroups)"><--</button>
+                                    <button type="button" ng-click="moveMemberGroup(available[0], availableMemberGroups, selectedMemberGroups)">--></button><br>
+                                    <button type="button" ng-click="moveMemberGroup(selected[0], selectedMemberGroups, availableMemberGroups)"><--</button>
                                 </td>
                                 <td>
                                     <select multiple="true" ng-model="selected" ng-options="item as item.name for item in selectedMemberGroups"></select>

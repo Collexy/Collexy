@@ -39,6 +39,7 @@ function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType, M
     // }, {}, function(contentNodes) {
     //     $scope.contentNodes = contentNodes;
     // });
+    
     Template.query({}, {}, function(allTemplates) {
         $scope.allTemplates = allTemplates;
     });
@@ -400,6 +401,39 @@ function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType, M
             //User.create($scope.user, success, failure);
         }
     }
+
+    $scope.moveMember = function(item, from, to) {
+        //alert("moveMember")
+        var idx = from.indexOf(item);
+        if (idx != -1) {
+            from.splice(idx, 1);
+            to.push(item);
+        }
+        var member_ids = {};
+        for (var i = 0; i < $scope.selectedMembers.length; i++) {
+            member_ids[""+$scope.selectedMembers[i].id+""]= true;
+        }
+        $scope.data.public_access_members = member_ids;
+        console.log($scope.data)
+    };
+
+    /** object instead of array */
+    $scope.moveMemberGroup = function(item, from, to) {
+        //alert("moveMemberGroup")
+        console.log(from)
+        var idx = from.indexOf(item);
+        if (idx != -1) {
+            from.splice(idx, 1);
+            to.push(item);
+        }
+        var member_group_ids = {};
+        for (var i = 0; i < $scope.selectedMemberGroups.length; i++) {
+            //member_group_ids.push($scope.selectedMemberGroups[i].id);
+            member_group_ids[""+$scope.selectedMemberGroups[i].id+""]= true;
+        }
+        $scope.data.public_access_member_groups = member_group_ids;
+        console.log($scope.data)
+    };
 }
 /**
  * @ngdoc controller

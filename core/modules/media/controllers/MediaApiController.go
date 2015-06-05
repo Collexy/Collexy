@@ -258,8 +258,10 @@ func GetProtectedMedia(w http.ResponseWriter, r *http.Request, id int) (protecte
 		// log.Println(coreglobals.MediaAccessConf[urlStr])
 
 	}
+	fmt.Printf("id is: %d", id)
 
 	for _, value := range coreglobals.MediaAccessConf{
+		//fmt.Printf("coreglobals.MediaAccessConf value is: %d /n", value)
 		if(value.MediaId == id){
 			protectedItem = value
 			// isProtected = true

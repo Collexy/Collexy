@@ -2248,7 +2248,7 @@ func (c *Content) Update() {
 
 	corehelpers.PanicIf(err)
 
-	log.Println("media updated successfully")
+	log.Println("content updated successfully")
 }
 
 // func (c *Content) Update(){
