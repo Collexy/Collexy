@@ -1,8 +1,6 @@
 package globals
 
-import
-
-(
+import (
 	"encoding/xml"
 )
 
@@ -33,20 +31,20 @@ const MyProtectedMediakey key = 1
 // }
 
 type MediaAccessItems struct {
-	XMLName xml.Name     `xml:mediaItems"`
+	XMLName xml.Name           `xml:mediaItems"`
 	Items   []*MediaAccessItem `xml:"item"`
 	//Items map[string]*MediaItem `xml:"Item"` //does not work - how would you do it with maps?
 }
 
 type MediaAccessItem struct {
-	XMLName xml.Name     `xml:item"`
-	MediaId int `xml:"id,attr" json:"media_id,omitempty"`
+	XMLName xml.Name `xml:item"`
+	MediaId int      `xml:"id,attr" json:"media_id,omitempty"`
 	//Domains     []string `json:"domains,omitempty"`
-	Url     string `xml:"url,attr" json:"url,omitempty"`
-	LoginPage        int   `xml:"loginPage,attr,omitempty" json:"login_page,omitempty"`
-	AccessDeniedPage int   `xml:"accessDeniedPage,attr,omitempty" json:"access_denied_page,omitempty"`
-	Members     []int		`xml:"members>member" json:"members,omitempty"` // https://github.com/golang/go/issues/3688
-	MemberGroups     []int `xml:"memberGroups>group" json:"member_groups,omitempty"` // https://github.com/golang/go/issues/3688
+	Url              string `xml:"url,attr" json:"url,omitempty"`
+	LoginPage        int    `xml:"loginPage,attr,omitempty" json:"login_page,omitempty"`
+	AccessDeniedPage int    `xml:"accessDeniedPage,attr,omitempty" json:"access_denied_page,omitempty"`
+	Members          []int  `xml:"members>member" json:"members,omitempty"`           // https://github.com/golang/go/issues/3688
+	MemberGroups     []int  `xml:"memberGroups>group" json:"member_groups,omitempty"` // https://github.com/golang/go/issues/3688
 	// Members     []int		`xml:"members>member,id,attr" json:"members,omitempty"`
 	// MemberGroups     []int `xml:"memberGroups>group,id,attr" json:"member_groups,omitempty"`
 }
@@ -68,10 +66,6 @@ type MediaAccessItem struct {
 // 	XMLName xml.Name     `xml:"group"`
 // 	Groups []int		`xml: "id,attr"`
 // }
-
-
-
-
 
 // var Maccess MediaAccess
 

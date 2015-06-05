@@ -38,6 +38,8 @@ function DataTypeEditCtrl($scope, $stateParams, DataType, DataTypeEditor, $compi
                 alias: entity.editor_alias
             }, function() {});
         });
+    } else {
+        $scope.entity = {}
     }
     $scope.dataTypeEditors = DataTypeEditor.query()
     if (typeof $scope.selectedDataTypeEditor == 'undefined') {
@@ -100,6 +102,7 @@ function DataTypeEditCtrl($scope, $stateParams, DataType, DataTypeEditor, $compi
             //User.update($scope.user, success, failure);
         } else {
             console.log("create");
+            console.log($scope.entity)
             DataType.create($scope.entity, success, failure);
             //User.create($scope.user, success, failure);
         }

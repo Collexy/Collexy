@@ -59,7 +59,7 @@
                 <tr ng-if="tab.name=='Properties'">
                     <td>Template:</td>
                     <td>
-                        <select ng-model="data.meta.template_id" ng-options="t.node_id as aliasOrName(t.alias,t.name) for t in filteredArray(allTemplates, data.content_type.meta.allowed_template_ids,'id')">
+                        <select ng-model="data.meta.template_id" ng-options="t.id as aliasOrName(t.alias,t.name) for t in filteredArray(allTemplates, data.content_type.meta.allowed_template_ids,'id')">
                         </select>
                     </td>
                     <td></td>
@@ -86,21 +86,11 @@
                 <p>{{tab.properties}}</p> -->
             </table>
         </div>
-        
-        <!-- <form role="form" ng-submit="submit()">
-            <label>Id: {{node.id}}</label><br>
-            <label>Created By: {{node.created_by}}</label><br>
-            <label>Created Date: {{node.created_date}}</label><br>
-            <label>Node Type: {{node.node_type}}</label><br>
-            <label>Node Path: {{node.path}}</label><br>
-            <label>Name</label>
-            <input type="text" ng-model="node.name" name="name" class="form-control"><br>
-            
-            <button class="btn" type="submit">Update Node &raquo;</button>
-        </form> -->
+
         <div ui-view></div>
-        <button class="btn" type="submit">Create Content &raquo;</button>
-        content_type: {{data.content_type_node_id}}
-        <input type="hidden" ng-value="data.content_type_node_id">
+        <p ng-if="userHasPermission('content_create') || userHasPermission('content_all')">
+            <button class="btn" type="submit">Create Content &raquo;</button>
+        </p>
+        <input type="hidden" ng-value="data.content_type_id">
     </form>
 </div>

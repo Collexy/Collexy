@@ -53,6 +53,8 @@
             </table>
         </div>
         <div ui-view></div>
-        <button class="btn" type="submit">Update Data Type &raquo;</button>
+        <p ng-if="userHasPermission('data_type_update') || userHasPermission('data_type_all')">
+            <button class="btn" type="submit">Update Data Type &raquo;</button>
+        </p>
     </form>
 </div>

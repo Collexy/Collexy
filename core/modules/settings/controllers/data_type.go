@@ -3,6 +3,7 @@ package controllers
 import (
 	corehelpers "collexy/core/helpers"
 	"collexy/core/modules/settings/models"
+	coremoduleuser "collexy/core/modules/user/models"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -15,57 +16,93 @@ type DataTypeApiController struct{}
 func (this *DataTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	dataTypes := models.GetDataTypes()
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"data_type_browse", "data_type_all"})
+		if hasPermission {
 
-	res, err := json.Marshal(dataTypes)
-	corehelpers.PanicIf(err)
+			dataTypes := models.GetDataTypes()
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(dataTypes)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse data types")
+		}
+	}
 
 }
 
 func (this *DataTypeApiController) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"data_type_browse", "data_type_all"})
+		if hasPermission {
 
-	id, _ := strconv.Atoi(idStr)
+			params := mux.Vars(r)
+			idStr := params["id"]
 
-	dataType := models.GetDataTypeById(id)
+			id, _ := strconv.Atoi(idStr)
 
-	res, err := json.Marshal(dataType)
-	corehelpers.PanicIf(err)
+			dataType := models.GetDataTypeById(id)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(dataType)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse data types")
+		}
+	}
 
 }
 
-// func (this *DataTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Content-Type", "application/json")
+func (this *DataTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-//     dataType := models.DataType{}
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"data_type_create", "data_type_all"})
+		if hasPermission {
 
-//     err := json.NewDecoder(r.Body).Decode(&dataType)
+			dataType := models.DataType{}
 
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
+			err := json.NewDecoder(r.Body).Decode(&dataType)
 
-//     dataType.Post()
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-// }
+			dataType.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create data types")
+		}
+	}
 
-// func (this *DataTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Content-Type", "application/json")
+}
 
-//     dataType := models.DataType{}
+func (this *DataTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-//     err := json.NewDecoder(r.Body).Decode(&dataType)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"data_type_update", "data_type_all"})
+		if hasPermission {
 
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
+			dataType := models.DataType{}
 
-//     dataType.Update()
-// }
+			err := json.NewDecoder(r.Body).Decode(&dataType)
+
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+
+			dataType.Update()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update data types")
+		}
+	}
+}

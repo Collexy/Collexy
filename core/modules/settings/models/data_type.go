@@ -2,13 +2,13 @@ package models
 
 import (
 	"encoding/json"
-	//corehelpers "collexy/core/helpers"
+	corehelpers "collexy/core/helpers"
 	coreglobals "collexy/core/globals"
 	"time"
 	//"fmt"
 	//"net/http"
 	//"html/template"
-	//"strconv"
+	"strconv"
 	"database/sql"
 	"log"
 )
@@ -123,6 +123,94 @@ func GetDataTypeById(id int) (dataType *DataType) {
 	}
 	return
 }
+
+func (d *DataType) Post() {
+
+	//meta, err := json.Marshal(d.Meta)
+	//corehelpers.PanicIf(err)
+
+	db := coreglobals.Db
+
+	var id int64
+
+	// sqlStr := `INSERT INTO data_type (name, alias, created_by, html, editor_alias, meta) 
+	// VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	// err1 := db.QueryRow(sqlStr, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta).Scan(&id)
+	sqlStr := `INSERT INTO data_type (name, alias, html, editor_alias) 
+	VALUES ($1, $2, $3, $4) RETURNING id`
+	err1 := db.QueryRow(sqlStr, d.Name, d.Alias, d.Html, d.EditorAlias).Scan(&id)
+
+	corehelpers.PanicIf(err1)
+
+	sqlStr = `UPDATE data_type 
+	SET path=$1  
+	WHERE id=$2`
+
+	_, err2 := db.Exec(sqlStr, strconv.FormatInt(id, 10), id)
+
+	corehelpers.PanicIf(err2)
+
+	log.Println("data type created successfully")
+}
+
+func (d *DataType) Update() {
+
+	meta, err := json.Marshal(d.Meta)
+	corehelpers.PanicIf(err)
+
+	db := coreglobals.Db
+
+	sqlStr := `UPDATE data_type 
+	SET path=$1, parent_id=$2, name=$3, alias=$4, 
+	created_by=$5, html=$6, editor_alias=$7, meta=$8 
+	WHERE id=$9`
+
+	_, err1 := db.Exec(sqlStr, d.Path, d.ParentId, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta, d.Id)
+
+	corehelpers.PanicIf(err1)
+
+	log.Println("data type updated successfully")
+}
+
+// func (t *DataType) Post() {
+// 	// tm, err := json.Marshal(t)
+// 	// corehelpers.PanicIf(err)
+// 	// fmt.Println("tm:::: ")
+// 	// fmt.Println(string(tm))
+
+// 	db := coreglobals.Db
+
+// 	tx, err := db.Begin()
+// 	corehelpers.PanicIf(err)
+// 	//defer tx.Rollback()
+
+// 	// http://godoc.org/github.com/lib/pq
+// 	// pq does not support the LastInsertId() method of the Result type in database/sql.
+// 	// To return the identifier of an INSERT (or UPDATE or DELETE),
+// 	// use the Postgres RETURNING clause with a standard Query or QueryRow call:
+
+// 	var id int64
+// 	err = db.QueryRow(`INSERT INTO node (name, node_type, created_by) VALUES ($1, $2, $3) RETURNING id`, t.Node.Name, 11, 1).Scan(&id)
+// 	//res, err := tx.Exec(`INSERT INTO node (name, node_type, created_by, parent_id) VALUES ($1, $2, $3, $4)`, t.Node.Name, 3, 1, t.ParentTemplateNodeId)
+// 	//helpers.PanicIf(err)
+// 	//id, err := res.LastInsertId()
+// 	fmt.Println(strconv.FormatInt(id, 10))
+// 	if err != nil {
+// 		//log.Println(string(res))
+// 		log.Fatal(err.Error())
+// 	} else {
+// 		_, err = tx.Exec("UPDATE node SET path=$1 WHERE id=$2", "1."+strconv.FormatInt(id, 10), id)
+// 		corehelpers.PanicIf(err)
+// 		//println("LastInsertId:", id)
+// 	}
+// 	//defer r1.Close()
+
+// 	_, err = tx.Exec("INSERT INTO data_type (id, alias, html) VALUES ($1, $2, $3)", id, t.Alias, t.Html)
+// 	corehelpers.PanicIf(err)
+// 	//defer r2.Close()
+// 	err1 := tx.Commit()
+// 	corehelpers.PanicIf(err1)
+// }
 
 // func (t *DataType) Post(){
 //   tm, err := json.Marshal(t)

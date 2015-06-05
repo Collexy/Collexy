@@ -8,13 +8,13 @@ import (
 	_ "github.com/lib/pq"
 	//"collexy/helpers"
 	"collexy/core/modules/media/models"
-	"strconv"
 	"os"
+	"strconv"
 	//"github.com/gorilla/schema"
-	"encoding/xml"
 	"encoding/json"
-	"log"
+	"encoding/xml"
 	"io/ioutil"
+	"log"
 	//"path/filepath"
 	coreglobals "collexy/core/globals"
 	corehelpers "collexy/core/helpers"
@@ -190,7 +190,7 @@ func (this *MediaApiController) GetBackendMediaById(w http.ResponseWriter, r *ht
 	// Media object including the media' Node, the media type object.
 	// Note: Inside the media type object is an array of parent MediaTypes
 
-	media := models.GetBackendMediaById(id,GetProtectedMedia(w,r,id))
+	media := models.GetBackendMediaById(id, GetProtectedMedia(w, r, id))
 
 	res, err := json.Marshal(media)
 	corehelpers.PanicIf(err)
@@ -201,7 +201,7 @@ func (this *MediaApiController) GetBackendMediaById(w http.ResponseWriter, r *ht
 func buildMap(mySlice ...*coreglobals.MediaAccessItem) (myMap map[string]*coreglobals.MediaAccessItem) {
 	myMap = make(map[string]*coreglobals.MediaAccessItem)
 	for _, item := range mySlice {
-	
+
 		myMap[item.Url] = item
 		itemKeyIdStr := strconv.Itoa(item.MediaId)
 		myMap[itemKeyIdStr] = item
@@ -211,7 +211,6 @@ func buildMap(mySlice ...*coreglobals.MediaAccessItem) (myMap map[string]*coregl
 
 func GetProtectedMedia(w http.ResponseWriter, r *http.Request, id int) (protectedItem *coreglobals.MediaAccessItem) {
 	fmt.Println(*r.URL)
-
 
 	if _, err := os.Stat("./config/media-access.xml"); err != nil {
 		if os.IsNotExist(err) {
@@ -245,9 +244,6 @@ func GetProtectedMedia(w http.ResponseWriter, r *http.Request, id int) (protecte
 			return
 		}
 
-
-		
-
 		//fmt.Printf("%#v\n", v)
 
 		coreglobals.MediaAccessConf = buildMap(v.Items...)
@@ -260,9 +256,9 @@ func GetProtectedMedia(w http.ResponseWriter, r *http.Request, id int) (protecte
 	}
 	fmt.Printf("id is: %d", id)
 
-	for _, value := range coreglobals.MediaAccessConf{
+	for _, value := range coreglobals.MediaAccessConf {
 		//fmt.Printf("coreglobals.MediaAccessConf value is: %d /n", value)
-		if(value.MediaId == id){
+		if value.MediaId == id {
 			protectedItem = value
 			// isProtected = true
 			// break

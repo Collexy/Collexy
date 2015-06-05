@@ -18,12 +18,12 @@ import (
 	coremodulesettingsmodels "collexy/core/modules/settings/models"
 	coremoduleuser "collexy/core/modules/user/models"
 	//"github.com/kennygrant/sanitize"
+	"bufio"
+	"encoding/xml"
+	"fmt"
+	"io/ioutil"
 	"net/url"
 	"os"
-	"fmt"
-	"encoding/xml"
-	"io/ioutil"
-	"bufio"
 )
 
 type Media struct {
@@ -35,7 +35,7 @@ type Media struct {
 	CreatedDate              *time.Time                 `json:"created_date"`
 	MediaTypeId              int                        `json:"media_type_id"`
 	Meta                     map[string]interface{}     `json:"meta,omitempty"`
-	PublicAccessMembers      map[string]interface{}    `json:"public_access_members,omitempty"`
+	PublicAccessMembers      map[string]interface{}     `json:"public_access_members,omitempty"`
 	PublicAccessMemberGroups map[string]interface{}     `json:"public_access_member_groups,omitempty"`
 	UserPermissions          map[string]*PermissionTest `json:"user_permissions,omitempty"`
 	UserGroupPermissions     map[string]*PermissionTest `json:"user_group_permissions,omitempty"`
@@ -1066,9 +1066,9 @@ func (c *Media) Update() {
 
 	// meta, _ := json.Marshal(c.Meta)
 
-	// sqlStr := `UPDATE media 
-	// SET name=$1, meta=$3 
- // 	WHERE id=$4;`
+	// sqlStr := `UPDATE media
+	// SET name=$1, meta=$3
+	// 	WHERE id=$4;`
 
 	// _, err := db.Exec(sqlStr, c.Name, meta, c.Id)
 
@@ -1079,7 +1079,7 @@ func (c *Media) Update() {
 	log.Println("media updated successfully")
 }
 
-func UpdatePublicAccessForMedia(m *Media){
+func UpdatePublicAccessForMedia(m *Media) {
 	if _, err := os.Stat("./config/media-access.xml"); err != nil {
 		if os.IsNotExist(err) {
 			// file does not exist
@@ -1116,28 +1116,28 @@ func UpdatePublicAccessForMedia(m *Media){
 
 		//coreglobals.MediaAccessConf = buildMap(v.Items...)
 		vv := v
-		for _, val := range vv.Items{
+		for _, val := range vv.Items {
 			//fmt.Printf("v.Items val is: %#v\n", val)
-			
-			if(val.MediaId == m.Id){
 
-				if(m.PublicAccessMemberGroups != nil){
+			if val.MediaId == m.Id {
+
+				if m.PublicAccessMemberGroups != nil {
 					fmt.Printf("val.MediaId:%d\n", val.MediaId)
 					fmt.Printf("m.Id:%d\n", m.Id)
 					fmt.Println("m.PublicAccessMemberGroups != nil\n")
 					var memberGroups []int
 					for key, _ := range m.PublicAccessMemberGroups {
-						intVal,_ := strconv.Atoi(key)
+						intVal, _ := strconv.Atoi(key)
 						memberGroups = append(memberGroups, intVal)
 					}
 					val.MemberGroups = memberGroups
 					fmt.Printf("val.memberGroups is: %d\n", val.MemberGroups)
 					fmt.Printf("memberGroups is: %d\n", memberGroups)
 				}
-				if(m.PublicAccessMembers != nil){
+				if m.PublicAccessMembers != nil {
 					var members []int
 					for key, _ := range m.PublicAccessMembers {
-						intVal,_ := strconv.Atoi(key)
+						intVal, _ := strconv.Atoi(key)
 						members = append(members, intVal)
 					}
 					val.Members = members
@@ -1149,25 +1149,25 @@ func UpdatePublicAccessForMedia(m *Media){
 		fmt.Println(string(b))
 
 		// open output file
-	    fo, err := os.Create("./config/media-access.xml")
-	    if err != nil {
-	        panic(err)
-	    }
-	    // close fo on exit and check for its returned error
-	    defer func() {
-	        if err := fo.Close(); err != nil {
-	            panic(err)
-	        }
-	    }()
-	   
-	    w := bufio.NewWriter(fo)
-	    n4, err4 := w.WriteString(string(b))
-	    if err4 != nil {
-	        panic(err4)
-	    }
-	    fmt.Printf("wrote %d bytes\n", n4)
-	    w.Flush()
-			//fmt.Printf("%#v\n", v)
+		fo, err := os.Create("./config/media-access.xml")
+		if err != nil {
+			panic(err)
+		}
+		// close fo on exit and check for its returned error
+		defer func() {
+			if err := fo.Close(); err != nil {
+				panic(err)
+			}
+		}()
+
+		w := bufio.NewWriter(fo)
+		n4, err4 := w.WriteString(string(b))
+		if err4 != nil {
+			panic(err4)
+		}
+		fmt.Printf("wrote %d bytes\n", n4)
+		w.Flush()
+		//fmt.Printf("%#v\n", v)
 	}
 }
 
@@ -1692,18 +1692,18 @@ WHERE media.id=$1`
 	// 	// log.Println(coreglobals.Maccess.Items[0].Url)
 	// 	// fmt.Println(coreglobals.Maccess.Items[0].MemberGroups)
 	// }
- 	var public_access_members map[string]interface{}
- 	var public_access_member_groups map[string]interface{}
+	var public_access_members map[string]interface{}
+	var public_access_member_groups map[string]interface{}
 
-	if protectedMedia != nil{
+	if protectedMedia != nil {
 		//fmt.Printf("v.Items is: %#v\n", protectedMedia)
 		public_access_member_groups = make(map[string]interface{})
-		for _, mgId := range protectedMedia.MemberGroups{
+		for _, mgId := range protectedMedia.MemberGroups {
 			fmt.Printf("mgIdlolol: %d", mgId)
 			mgIdStr := strconv.Itoa(mgId)
 			//log.Println("mgidstr: " + mgIdStr)
-			
-			public_access_member_groups[mgIdStr] = true;
+
+			public_access_member_groups[mgIdStr] = true
 		}
 	}
 

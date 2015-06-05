@@ -14,8 +14,8 @@ import (
 	"github.com/gorilla/mux"
 	//"collexy/globals"
 	coreglobals "collexy/core/globals"
-	"encoding/xml"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -30,11 +30,11 @@ import (
 	_ "collexy/core/modules/media"
 	_ "collexy/core/modules/member"
 	coremodulemembermodels "collexy/core/modules/member/models"
-	_ "collexy/core/modules/user"
 	_ "collexy/core/modules/settings"
+	_ "collexy/core/modules/user"
 	coremoduleusermodels "collexy/core/modules/user/models"
-	"strconv"
 	"sort"
+	"strconv"
 )
 
 func executeDatabaseInstallScript(site_title, username, password, email string, privacy bool) (err error) {
@@ -502,7 +502,7 @@ func Main() {
 func buildMap(mySlice ...*coreglobals.MediaAccessItem) (myMap map[string]*coreglobals.MediaAccessItem) {
 	myMap = make(map[string]*coreglobals.MediaAccessItem)
 	for _, item := range mySlice {
-	
+
 		myMap[item.Url] = item
 		itemKeyIdStr := strconv.Itoa(item.MediaId)
 		myMap[itemKeyIdStr] = item
@@ -546,9 +546,6 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 				fmt.Printf("error: %v", err)
 				return
 			}
-
-
-			
 
 			//fmt.Printf("%#v\n", v)
 
@@ -629,7 +626,7 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 				// hasAccess = false //already set when var was initialized
 
 			} else {
-				
+
 				coremodulemembermodels.SetLoggedInMember(r, m)
 
 				for _, mg := range m.Groups {
@@ -762,7 +759,7 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 // 				// hasAccess = false //already set when var was initialized
 
 // 			} else {
-				
+
 // 				coremodulemembermodels.SetLoggedInMember(r, m)
 
 // 				for _, mg := range m.Groups {
