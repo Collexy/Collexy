@@ -172,6 +172,20 @@ func (d *DataType) Update() {
 	log.Println("data type updated successfully")
 }
 
+func DeleteDataType(id int) {
+
+	db := coreglobals.Db
+
+	sqlStr := `delete FROM data_type 
+	WHERE id=$1`
+
+	_, err := db.Exec(sqlStr, id)
+
+	corehelpers.PanicIf(err)
+
+	log.Printf("data type with id %d was successfully deleted", id)
+}
+
 // func (t *DataType) Post() {
 // 	// tm, err := json.Marshal(t)
 // 	// corehelpers.PanicIf(err)

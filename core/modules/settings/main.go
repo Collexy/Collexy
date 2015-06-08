@@ -49,6 +49,7 @@ func init() {
 	subrPrivate.HandleFunc("/api/data-type", http.HandlerFunc(dataTypeApiController.Get)).Methods("GET") // not sure about this
 	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
 	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Delete)).Methods("DELETE")
 
 	subrPrivate.HandleFunc("/api/template/{id:.*}/contextmenu", http.HandlerFunc(templateTreeController.GetMenuForTemplate)).Methods("GET")
 	subrPrivate.HandleFunc("/api/template/{id:.*}/children", http.HandlerFunc(templateApiController.GetByIdChildren)).Methods("GET")

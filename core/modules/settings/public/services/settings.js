@@ -132,8 +132,8 @@ function DataTypeContextMenu($resource) {
         create: {
             method: 'POST',
             isArray: false
-        }
-        // delete: { method: 'delete', isArray: false }
+        },
+        //delete: { method: 'delete', isArray: false }
     });
 }
 

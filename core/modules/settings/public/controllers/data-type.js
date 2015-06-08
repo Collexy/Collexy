@@ -39,7 +39,9 @@ function DataTypeEditCtrl($scope, $stateParams, DataType, DataTypeEditor, $compi
             }, function() {});
         });
     } else {
-        $scope.entity = {}
+        $scope.entity = {
+            "created_by": $scope.userSession.id
+        }
     }
     $scope.dataTypeEditors = DataTypeEditor.query()
     if (typeof $scope.selectedDataTypeEditor == 'undefined') {

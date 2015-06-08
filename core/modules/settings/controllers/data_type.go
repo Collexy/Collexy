@@ -106,3 +106,22 @@ func (this *DataTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func (this *DataTypeApiController) Delete(w http.ResponseWriter, r *http.Request){
+    w.Header().Set("Content-Type", "application/json")
+    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+        var hasPermission bool = false
+        hasPermission = user.HasPermissions([]string{"data_type_delete", "data_type_all"})
+        if(hasPermission){
+            params := mux.Vars(r)
+
+            idStr := params["id"]
+            id, _ := strconv.Atoi(idStr)
+
+            models.DeleteDataType(id)
+        } else {
+            fmt.Fprintf(w,"You do not have permission to delete content")
+        }
+
+    }
+}
