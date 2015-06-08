@@ -18,6 +18,7 @@ import (
 	//"strings"
 	//"html/template"
 	"github.com/gorilla/mux"
+	coremoduleuser "collexy/core/modules/user/models"
 )
 
 type TemplateApiController struct{}
@@ -34,21 +35,6 @@ type TemplateApiController struct{}
 //     }
 
 //     template.Post()
-
-// }
-
-// func (this *TemplateApiController) PutTemplate(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Content-Type", "application/json")
-
-//     template := models.Template{}
-
-//     err := json.NewDecoder(r.Body).Decode(&template)
-
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
-
-//     template.Update()
 
 // }
 
@@ -98,4 +84,28 @@ func (this *TemplateApiController) GetById(w http.ResponseWriter, r *http.Reques
 
 	fmt.Fprintf(w, "%s", res)
 
+}
+
+func (this *TemplateApiController) Put(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"template_update", "template_all"})
+		if hasPermission {
+
+		    template := models.Template{}
+
+		    err := json.NewDecoder(r.Body).Decode(&template)
+
+		    if err != nil {
+		        http.Error(w, "Bad Request", 400)
+		    }
+
+		    template.Update()
+
+	    } else {
+			fmt.Fprintf(w, "You do not have permission to update templates")
+		}
+	}
 }

@@ -53,10 +53,9 @@ func init() {
 
 	subrPrivate.HandleFunc("/api/template/{id:.*}/contextmenu", http.HandlerFunc(templateTreeController.GetMenuForTemplate)).Methods("GET")
 	subrPrivate.HandleFunc("/api/template/{id:.*}/children", http.HandlerFunc(templateApiController.GetByIdChildren)).Methods("GET")
-	subrPrivate.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
 	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.GetById)).Methods("GET")
-
-	// privateApiRouter.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PutTemplate)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
+	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.Put)).Methods("PUT")
 	// privateApiRouter.HandleFunc("/api/template/{nodeId:.*}", http.HandlerFunc(templateApiController.PostTemplate)).Methods("POST")
 
 	// Directory

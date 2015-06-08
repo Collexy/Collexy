@@ -18,6 +18,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 )
 
 type Template struct {
@@ -178,6 +179,56 @@ where my_template.id=$1`
 	return
 }
 
+func (t *Template) Update(){
+	
+
+	// either save old file name attribute or make a get query first, before the update
+	// to make sure the get query finishes before the update, use channels and spawn a goroutine
+	// instead of manually spawning a second channel and go routine of type bool, we use the sync package
+	// Todo:
+	// maybe here's a slight performance improvement? Maybe test?
+	// If db update is successful but filesystem fails to rename file, cancel/undo the update
+
+
+	c := make(chan Template)
+	var oldTemplate Template
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	
+	go func(){
+		defer wg.Done()
+		c <- GetTemplateById(t.Id)
+	}()
+
+	go func() {
+        for i := range c {
+            fmt.Println(i)
+            oldTemplate = i
+        }
+    }()
+
+	wg.Wait()
+
+    oldName := oldTemplate.Name + ".tmpl"
+	newName := t.Name + ".tmpl"
+	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
+
+    db := coreglobals.Db
+
+	_, err := db.Exec("UPDATE template SET name=$1, alias=$2, created_by=$3 WHERE id=$4", t.Name, t.Alias, t.CreatedBy, t.Id)
+	corehelpers.PanicIf(err)
+
+	// rename filename
+	err2 := os.Rename(absPath+oldName, absPath+newName)
+	corehelpers.PanicIf(err2)
+
+	// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
+	err3 := ioutil.WriteFile(absPath+newName, []byte(t.Html), 0644)
+	corehelpers.PanicIf(err3)
+}
+
 // func (t *Template) Post(){
 //   tm, err := json.Marshal(t)
 //   corehelpers.PanicIf(err)
@@ -242,37 +293,35 @@ where my_template.id=$1`
 // }
 
 // func (t *Template) Update(){
-//   db := coreglobals.Db
+// 	db := coreglobals.Db
 
-//   tx, err := db.Begin()
-//   corehelpers.PanicIf(err)
-//   //defer tx.Rollback()
+// 	tx, err := db.Begin()
+// 	corehelpers.PanicIf(err)
+// 	//defer tx.Rollback()
 
-//   _, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", t.Node.Name, t.Node.Id)
-//   corehelpers.PanicIf(err)
-//   //defer r1.Close()
+// 	_, err = tx.Exec("UPDATE node SET name = $1 WHERE id = $2", t.Node.Name, t.Node.Id)
+// 	corehelpers.PanicIf(err)
+// 	//defer r1.Close()
 
-//   fmt.Println("partial template node ids (array): ")
-//   fmt.Println(t.PartialTemplateIds)
+// 	fmt.Println("partial template node ids (array): ")
+// 	fmt.Println(t.PartialTemplateIds)
 
-//   fmt.Println("partial template node ids (postgres format): ")
-//   partial_template_node_ids_pgs_format, _ := t.PartialTemplateIds.Value()
-//   fmt.Println(partial_template_node_ids_pgs_format)
+// 	fmt.Println("partial template node ids (postgres format): ")
+// 	partial_template_node_ids_pgs_format, _ := t.PartialTemplateIds.Value()
+// 	fmt.Println(partial_template_node_ids_pgs_format)
 
-//   _, err = tx.Exec(`UPDATE template SET alias = $1, parent_template_node_id = $2, partial_template_node_ids = $3 WHERE node_id = $4`, t.Alias, t.ParentTemplateId, partial_template_node_ids_pgs_format, t.Node.Id)
-//   corehelpers.PanicIf(err)
-//   //defer r2.Close()
-//   err1 := tx.Commit()
-//   corehelpers.PanicIf(err1)
+// 	_, err = tx.Exec(`UPDATE template SET alias = $1, parent_template_node_id = $2, partial_template_node_ids = $3 WHERE node_id = $4`, t.Alias, t.ParentTemplateId, partial_template_node_ids_pgs_format, t.Node.Id)
+// 	corehelpers.PanicIf(err)
+// 	//defer r2.Close()
+// 	err1 := tx.Commit()
+// 	corehelpers.PanicIf(err1)
 
-//   name := t.Node.Name + ".tmpl"
-//   absPath, _ := filepath.Abs("/views/" + name)
+// 	name := t.Node.Name + ".tmpl"
+// 	absPath, _ := filepath.Abs("/views/" + name)
 
-//   // write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
-//   err = ioutil.WriteFile(absPath, []byte(t.Html), 0644)
-//   if err != nil {
-//       panic(err)
-//   }
+// 	// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
+// 	err = ioutil.WriteFile(absPath, []byte(t.Html), 0644)
+// 	corehelpers.PanicIf(err)
 // }
 
 /*
