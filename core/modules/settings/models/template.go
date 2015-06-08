@@ -183,24 +183,61 @@ func (t *Template) Post() {
 
 	db := coreglobals.Db
 
-	var id int64
+	// Channel c, is for getting the parent template
+	// We need to append the id of the newly created template to the path of the parent id to create the new path
+	c := make(chan Template)
+	var parentTemplate Template
 
-	// instead of doing both a post and update request, would it be better to just set the id to nextval directly?
-	// probably, but test
+	var wg sync.WaitGroup
 
-	sqlStr := `INSERT INTO template (parent_id, name, alias, created_by, is_partial) 
-	VALUES ($1, $2, $3, $4, $5) RETURNING id`
-	err1 := db.QueryRow(sqlStr, t.ParentId, t.Name, t.Alias, t.CreatedBy, t.IsPartial).Scan(&id)
-	corehelpers.PanicIf(err1)
+	wg.Add(1)
+	
+	go func(){
+		defer wg.Done()
+		c <- GetTemplateById(t.ParentId)
+	}()
 
-	// TODO:
-	// Get previous template path
-	// Append prev path with id
-	sqlStr = `UPDATE template 
-	SET path=$1  
+	go func() {
+        for i := range c {
+            fmt.Println(i)
+            parentTemplate = i
+        }
+    }()
+
+    wg.Wait()
+
+    // This channel and WaitGroup is just to make sure the insert query is completed before we continue
+    c1 := make(chan int)
+    var id int64
+
+    var wg1 sync.WaitGroup
+
+	wg1.Add(1)
+	
+	go func(){
+		defer wg1.Done()
+		sqlStr := `INSERT INTO template (parent_id, name, alias, created_by, is_partial) 
+		VALUES ($1, $2, $3, $4, $5) RETURNING id`
+		err1 := db.QueryRow(sqlStr, t.ParentId, t.Name, t.Alias, t.CreatedBy, t.IsPartial).Scan(&id)
+		corehelpers.PanicIf(err1)
+		c1 <- int(id)
+	}()
+
+	go func() {
+        for i := range c1 {
+            fmt.Println(i)
+        }
+    }()
+
+    wg1.Wait()
+
+    // fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
+
+	sqlStr := `UPDATE template 
+	SET path=$1 
 	WHERE id=$2`
 
-	_, err2 := db.Exec(sqlStr, strconv.FormatInt(id, 10), id)
+	_, err2 := db.Exec(sqlStr, parentTemplate.Path + "." + strconv.FormatInt(id, 10), id)
 	corehelpers.PanicIf(err2)
 
 	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
@@ -266,6 +303,27 @@ func (t *Template) Update(){
 // http://stackoverflow.com/questions/14921668/difference-between-restrict-and-no-action
 func DeleteTemplate(id int) {
 
+	c := make(chan Template)
+	var t Template
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	
+	go func(){
+		defer wg.Done()
+		c <- GetTemplateById(id)
+	}()
+
+	go func() {
+        for i := range c {
+            fmt.Println(i)
+            t = i
+        }
+    }()
+
+	wg.Wait()
+
 	db := coreglobals.Db
 
 	sqlStr := `DELETE FROM template 
@@ -274,6 +332,10 @@ func DeleteTemplate(id int) {
 	_, err := db.Exec(sqlStr, id)
 
 	corehelpers.PanicIf(err)
+
+	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
+	err1 := os.Remove(absPath+t.Name+".tmpl")
+	corehelpers.PanicIf(err1)
 
 	log.Printf("template with id %d was successfully deleted", id)
 }
