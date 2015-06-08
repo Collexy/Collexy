@@ -193,6 +193,9 @@ func (t *Template) Post() {
 	err1 := db.QueryRow(sqlStr, t.ParentId, t.Name, t.Alias, t.CreatedBy, t.IsPartial).Scan(&id)
 	corehelpers.PanicIf(err1)
 
+	// TODO:
+	// Get previous template path
+	// Append prev path with id
 	sqlStr = `UPDATE template 
 	SET path=$1  
 	WHERE id=$2`
@@ -256,6 +259,23 @@ func (t *Template) Update(){
 	// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
 	err3 := ioutil.WriteFile(absPath+newName, []byte(t.Html), 0644)
 	corehelpers.PanicIf(err3)
+}
+
+// Temporary simple delete 
+// Eventually - constraints missing from database, which should prevent deletion and id changes to foreign keys referenced from elsewhere.
+// http://stackoverflow.com/questions/14921668/difference-between-restrict-and-no-action
+func DeleteTemplate(id int) {
+
+	db := coreglobals.Db
+
+	sqlStr := `DELETE FROM template 
+	WHERE id=$1`
+
+	_, err := db.Exec(sqlStr, id)
+
+	corehelpers.PanicIf(err)
+
+	log.Printf("template with id %d was successfully deleted", id)
 }
 
 // func (t *Template) Post(){

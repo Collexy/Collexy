@@ -89,7 +89,7 @@ func (this *TemplateApiController) Post(w http.ResponseWriter, r *http.Request) 
 
 		    template.Post()
 		} else {
-			fmt.Fprintf(w, "You do not have permission to create data types")
+			fmt.Fprintf(w, "You do not have permission to create templates")
 		}
 	}
 
@@ -117,4 +117,23 @@ func (this *TemplateApiController) Put(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "You do not have permission to update templates")
 		}
 	}
+}
+
+func (this *TemplateApiController) Delete(w http.ResponseWriter, r *http.Request){
+    w.Header().Set("Content-Type", "application/json")
+    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+        var hasPermission bool = false
+        hasPermission = user.HasPermissions([]string{"template_delete", "template_all"})
+        if(hasPermission){
+            params := mux.Vars(r)
+
+            idStr := params["id"]
+            id, _ := strconv.Atoi(idStr)
+
+            models.DeleteTemplate(id)
+        } else {
+            fmt.Fprintf(w,"You do not have permission to delete templates")
+        }
+
+    }
 }

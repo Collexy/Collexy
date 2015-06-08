@@ -32,7 +32,7 @@ func (this *TemplateTreeController) GetMenuForTemplate(w http.ResponseWriter, r 
 		cmiNew := ContextMenuItem{"Create", path, "", "", false, nil, "node_create"}
 		cmItems = append(cmItems, cmiNew)
 	} else {
-		cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/settings/public/views/content-type/delete.html", true, nil, ""}
+		cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/settings/public/views/template/delete.html", true, nil, ""}
 		path := fmt.Sprintf("settings.template.new({parent_id:%d})", id)
 		cmiNew := ContextMenuItem{"Create", path, "", "", false, nil, "node_create"}
 		cmItems = append(cmItems, cmiNew)

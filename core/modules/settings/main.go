@@ -57,6 +57,7 @@ func init() {
 	subrPrivate.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
 	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.Put)).Methods("PUT")
 	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.Delete)).Methods("DELETE")
 
 	// Directory
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}/{is_dir:.*}/contextmenu", http.HandlerFunc(directoryTreeController.GetMenuForDirectory)).Methods("GET")
