@@ -532,6 +532,75 @@ func (ct *ContentType) Post(){
 
 }
 
+func (ct *ContentType) Put(){
+    meta, err1 := json.Marshal(ct.Meta)
+    corehelpers.PanicIf(err1)
+    tabs, err2 := json.Marshal(ct.Tabs)
+    corehelpers.PanicIf(err2)
+
+    // see template commented out post function and below
+    // _pgs_format, _ := t.PartialTemplateIds.Value()
+    allowedContentTypeIds, err3 := IntArray(ct.AllowedContentTypeIds).Value()
+    corehelpers.PanicIf(err3)
+    compositeContentTypeIds, err4 := IntArray(ct.CompositeContentTypeIds).Value()
+    corehelpers.PanicIf(err4)
+    allowedTemplateIds, err5 := IntArray(ct.AllowedTemplateIds).Value()
+    corehelpers.PanicIf(err5)
+
+    db := coreglobals.Db
+
+    // Channel c, is for getting the parent template
+    // We need to append the id of the newly created template to the path of the parent id to create the new path
+    c := make(chan ContentType)
+    var parentContentType ContentType
+
+    var wg sync.WaitGroup
+
+    wg.Add(1)
+    
+    go func(){
+        defer wg.Done()
+        c <- GetContentTypeById(ct.ParentId)
+    }()
+
+    go func() {
+        for i := range c {
+            fmt.Println(i)
+            parentContentType = i
+        }
+    }()
+
+    wg.Wait()
+
+    
+    sqlStr := `UPDATE content_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12, 
+        is_abstract=$13, allowed_content_type_ids=$14,composite_content_type_ids=$15, template_id=$16, allowed_template_ids=$17
+        WHERE id=$18`
+
+    _, err6 := db.Exec(sqlStr, parentContentType.Path + "." + strconv.Itoa(ct.Id), ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
+        ct.IsAbstract, allowedContentTypeIds, compositeContentTypeIds, ct.TemplateId, allowedTemplateIds, ct.Id)
+    
+    corehelpers.PanicIf(err6)
+    
+
+    log.Println("content type updated successfully")
+
+}
+
+func DeleteContentType(id int) {
+
+    db := coreglobals.Db
+
+    sqlStr := `DELETE FROM content_type 
+    WHERE id=$1`
+
+    _, err := db.Exec(sqlStr, id)
+
+    corehelpers.PanicIf(err)
+
+    log.Printf("content type with id %d was successfully deleted", id)
+}
+
 // func (t *ContentType) Post(){
 //   tm, err := json.Marshal(t)
 //   corehelpers.PanicIf(err)

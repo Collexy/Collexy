@@ -35,6 +35,8 @@ func init() {
 	subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/content-type", http.HandlerFunc(contentTypeApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/content-type/{id:.*}", http.HandlerFunc(contentTypeApiController.Delete)).Methods("DELETE")
 
 	subrPrivate.HandleFunc("/api/media-type/{id:.*}/contextmenu", http.HandlerFunc(mediaTypeTreeController.GetMenuForMediaType)).Methods("GET")
 	subrPrivate.HandleFunc("/api/media-type/{id:.*}/children", http.HandlerFunc(mediaTypeApiController.GetByIdChildren)).Methods("GET")
