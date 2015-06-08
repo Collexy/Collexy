@@ -38,10 +38,13 @@ function ContentTypeEditCtrl($scope, $stateParams, ContentType, DataType, Templa
         });
     } else if ($stateParams.parent_id) {
         $scope.node = {
-            "parent_content_type_id": parseInt($stateParams.parent_id)
+            "parent_id": parseInt($stateParams.parent_id),
+            "created_by": $scope.userSession.id
         }
     } else {
-        $scope.node = {}
+        $scope.entity = {
+            "created_by": $scope.userSession.id
+        }
     }
     if ($scope.stateParams.type_id) {
         if (typeof $scope.node !== 'undefined') {

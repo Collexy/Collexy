@@ -26,48 +26,73 @@ type TemplateApiController struct{}
 func (this *TemplateApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	queryStrParams := r.URL.Query()
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"template_browse", "template_all"})
+		if hasPermission {
 
-	templates := models.GetTemplates(queryStrParams)
+			queryStrParams := r.URL.Query()
 
-	res, err := json.Marshal(templates)
-	corehelpers.PanicIf(err)
+			templates := models.GetTemplates(queryStrParams)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(templates)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse templates")
+		}
+	}
 
 }
 
 func (this *TemplateApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"template_browse", "template_all"})
+		if hasPermission {
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	//user := coremoduleuser.GetLoggedInUser(r)
+			//user := coremoduleuser.GetLoggedInUser(r)
 
-	templates := models.GetTemplatesByIdChildren(id)
+			templates := models.GetTemplatesByIdChildren(id)
 
-	res, err := json.Marshal(templates)
-	corehelpers.PanicIf(err)
+			res, err := json.Marshal(templates)
+			corehelpers.PanicIf(err)
 
-	fmt.Fprintf(w, "%s", res)
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse templates")
+		}
+	}
 }
 
 func (this *TemplateApiController) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"template_browse", "template_all"})
+		if hasPermission {
+			params := mux.Vars(r)
+			idStr := params["id"]
 
-	id, _ := strconv.Atoi(idStr)
+			id, _ := strconv.Atoi(idStr)
 
-	template := models.GetTemplateById(id)
+			template := models.GetTemplateById(id)
 
-	res, err := json.Marshal(template)
-	corehelpers.PanicIf(err)
+			res, err := json.Marshal(template)
+			corehelpers.PanicIf(err)
 
-	fmt.Fprintf(w, "%s", res)
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse templates")
+		}
+	}
 
 }
 

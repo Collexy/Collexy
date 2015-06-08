@@ -18,6 +18,7 @@ import (
 	//"strings"
 	//"html/template"
 	"github.com/gorilla/mux"
+	coremoduleuser "collexy/core/modules/user/models"
 )
 
 type ContentTypeApiController struct{}
@@ -51,20 +52,29 @@ func (this *ContentTypeApiController) GetByIdChildren(w http.ResponseWriter, r *
 	fmt.Fprintf(w, "%s", res)
 }
 
-// func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Content-Type", "application/json")
+func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
 
-//     contentType := models.ContentType{}
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_type_create", "content_type_all"})
+		if hasPermission {
 
-//     err := json.NewDecoder(r.Body).Decode(&contentType)
+		    contentType := models.ContentType{}
 
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
+		    err := json.NewDecoder(r.Body).Decode(&contentType)
 
-//     contentType.Post()
+		    if err != nil {
+		        http.Error(w, "Bad Request", 400)
+		    }
 
-// }
+		    contentType.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create content types")
+		}
+	}
+
+}
 
 // func (this *ContentTypeApiController) GetContentTypes(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Content-Type", "application/json")
