@@ -2,7 +2,7 @@
     <form role="form" ng-submit="submit()">
         <h4>New</h4>
 
-        <input type="text" ng-model="node.node.name">
+        <input type="text" ng-model="node.name">
 
         <ul class="admin-tabs">
             <li ng-class="(currentTab=='template') ? 'active' : ''"><a href="#template" collexy-toggle-tab="toggleTab('template')">Template</a></li>
@@ -30,6 +30,12 @@
                     <td>
                         <select ng-model="node.parent_id" ng-options="t.id as aliasOrName(t.alias,t.name) for t in allTemplates">
                         </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Is Partial</td>
+                    <td>
+                        <input type="checkbox" ng-model="node.is_partial"/>
                     </td>
                 </tr>
             </table>

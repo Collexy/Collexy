@@ -23,21 +23,6 @@ import (
 
 type TemplateApiController struct{}
 
-// func (this *TemplateApiController) PostTemplate(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Content-Type", "application/json")
-
-//     template := models.Template{}
-
-//     err := json.NewDecoder(r.Body).Decode(&template)
-
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
-
-//     template.Post()
-
-// }
-
 func (this *TemplateApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -83,6 +68,30 @@ func (this *TemplateApiController) GetById(w http.ResponseWriter, r *http.Reques
 	corehelpers.PanicIf(err)
 
 	fmt.Fprintf(w, "%s", res)
+
+}
+
+func (this *TemplateApiController) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"template_create", "template_all"})
+		if hasPermission {
+
+			template := models.Template{}
+
+		    err := json.NewDecoder(r.Body).Decode(&template)
+
+		    if err != nil {
+		        http.Error(w, "Bad Request", 400)
+		    }
+
+		    template.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create data types")
+		}
+	}
 
 }
 

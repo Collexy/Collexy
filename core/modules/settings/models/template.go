@@ -179,6 +179,35 @@ where my_template.id=$1`
 	return
 }
 
+func (t *Template) Post() {
+
+	db := coreglobals.Db
+
+	var id int64
+
+	// instead of doing both a post and update request, would it be better to just set the id to nextval directly?
+	// probably, but test
+
+	sqlStr := `INSERT INTO template (parent_id, name, alias, created_by, is_partial) 
+	VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	err1 := db.QueryRow(sqlStr, t.ParentId, t.Name, t.Alias, t.CreatedBy, t.IsPartial).Scan(&id)
+	corehelpers.PanicIf(err1)
+
+	sqlStr = `UPDATE template 
+	SET path=$1  
+	WHERE id=$2`
+
+	_, err2 := db.Exec(sqlStr, strconv.FormatInt(id, 10), id)
+	corehelpers.PanicIf(err2)
+
+	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
+
+	err3 := ioutil.WriteFile(absPath+t.Name+".tmpl", []byte(t.Html), 0644)
+	corehelpers.PanicIf(err3)
+
+	log.Println("template created successfully")
+}
+
 func (t *Template) Update(){
 	
 
@@ -217,7 +246,7 @@ func (t *Template) Update(){
 
     db := coreglobals.Db
 
-	_, err := db.Exec("UPDATE template SET name=$1, alias=$2, created_by=$3 WHERE id=$4", t.Name, t.Alias, t.CreatedBy, t.Id)
+	_, err := db.Exec("UPDATE template SET name=$1, alias=$2 WHERE id=$3", t.Name, t.Alias, t.Id)
 	corehelpers.PanicIf(err)
 
 	// rename filename

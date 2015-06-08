@@ -42,10 +42,13 @@ function TemplateEditCtrl($scope, $stateParams, Template) {
         //User.get({ userId: $stateParams.userId} , function(phone) {
     } else if ($stateParams.parent_id) {
         $scope.node = {
-            "parent_template_id": parseInt($stateParams.parent_id)
+            "parent_id": parseInt($stateParams.parent_id),
+            "created_by": $scope.userSession.id
         };
     } else {
-        $scope.node = {}
+        $scope.node = {
+            "created_by": $scope.userSession.id
+        }
     }
 
     $scope.allTemplates = Template.query({}, {}, function(node) {});
