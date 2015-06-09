@@ -177,6 +177,8 @@
             </table>
         </div>
         <div ui-view></div>
-        <button class="btn" type="submit">Create Content Type &raquo;</button>
+        <p ng-if="userHasPermission('content_type_create') || userHasPermission('content_type_all')">
+            <button class="btn" type="submit">Create Content Type &raquo;</button>
+        </p>
     </form>
 </div>

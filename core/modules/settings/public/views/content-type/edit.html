@@ -234,6 +234,8 @@
             <button class="btn" type="submit">Update Node &raquo;</button>
         </form> -->
         <div ui-view></div>
-        <button class="btn" type="submit">Update Content Type &raquo;</button>
+        <p ng-if="userHasPermission('content_type_update') || userHasPermission('content_type_all')">
+            <button class="btn" type="submit">Update Content Type &raquo;</button>
+        </p>
     </form>
 </div>

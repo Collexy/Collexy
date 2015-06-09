@@ -237,7 +237,12 @@ func (t *Template) Post() {
 	SET path=$1 
 	WHERE id=$2`
 
-	_, err2 := db.Exec(sqlStr, parentTemplate.Path + "." + strconv.FormatInt(id, 10), id)
+	path := strconv.Itoa(t.Id)
+    if t.ParentId > 0 {
+        path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
+    }
+
+	_, err2 := db.Exec(sqlStr, path, id)
 	corehelpers.PanicIf(err2)
 
 	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
@@ -284,9 +289,35 @@ func (t *Template) Update(){
 	newName := t.Name + ".tmpl"
 	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
 
+	c2 := make(chan Template)
+	var parentTemplate Template
+
+	var wg2 sync.WaitGroup
+
+	wg2.Add(1)
+	
+	go func(){
+		defer wg.Done()
+		c2 <- GetTemplateById(t.ParentId)
+	}()
+
+	go func() {
+        for i := range c {
+            fmt.Println(i)
+            parentTemplate = i
+        }
+    }()
+
+	wg2.Wait()
+
     db := coreglobals.Db
 
-	_, err := db.Exec("UPDATE template SET name=$1, alias=$2 WHERE id=$3", t.Name, t.Alias, t.Id)
+    path := strconv.Itoa(t.Id)
+    if t.ParentId > 0 {
+        path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
+    }
+
+	_, err := db.Exec("UPDATE template SET path=$1, name=$2, alias=$3 WHERE id=$4", path, t.Name, t.Alias, t.Id)
 	corehelpers.PanicIf(err)
 
 	// rename filename

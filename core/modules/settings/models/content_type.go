@@ -525,7 +525,12 @@ func (ct *ContentType) Post(){
     SET path=$1 
     WHERE id=$2`
 
-    _, err6 := db.Exec(sqlStr, parentContentType.Path + "." + strconv.FormatInt(id, 10), id)
+    path := strconv.Itoa(ct.Id)
+    if ct.ParentId > 0 {
+        path = parentContentType.Path + "." + strconv.Itoa(ct.Id)
+    }
+
+    _, err6 := db.Exec(sqlStr, path, id)
     corehelpers.PanicIf(err6)
 
     log.Println("content type created successfully")
@@ -577,7 +582,12 @@ func (ct *ContentType) Put(){
         is_abstract=$13, allowed_content_type_ids=$14,composite_content_type_ids=$15, template_id=$16, allowed_template_ids=$17
         WHERE id=$18`
 
-    _, err6 := db.Exec(sqlStr, parentContentType.Path + "." + strconv.Itoa(ct.Id), ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
+    path := strconv.Itoa(ct.Id)
+    if ct.ParentId > 0 {
+        path = parentContentType.Path + "." + strconv.Itoa(ct.Id)
+    }
+
+    _, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
         ct.IsAbstract, allowedContentTypeIds, compositeContentTypeIds, ct.TemplateId, allowedTemplateIds, ct.Id)
     
     corehelpers.PanicIf(err6)

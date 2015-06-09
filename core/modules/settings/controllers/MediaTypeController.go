@@ -18,6 +18,7 @@ import (
 	//"strings"
 	//"html/template"
 	"github.com/gorilla/mux"
+	coremoduleuser "collexy/core/modules/user/models"
 )
 
 type MediaTypeApiController struct{}
@@ -25,46 +26,49 @@ type MediaTypeApiController struct{}
 func (this *MediaTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Media-Type", "application/json")
 
-	queryStrParams := r.URL.Query()
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_type_browse", "media_type_all"})
+		if hasPermission {
 
-	mediaTypes := models.GetMediaTypes(queryStrParams)
-	res, err := json.Marshal(mediaTypes)
-	corehelpers.PanicIf(err)
+			queryStrParams := r.URL.Query()
 
-	fmt.Fprintf(w, "%s", res)
+			mediaTypes := models.GetMediaTypes(queryStrParams)
+			res, err := json.Marshal(mediaTypes)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse media types")
+		}
+	}
 }
 
 func (this *MediaTypeApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Media-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_type_browse", "media_type_all"})
+		if hasPermission {
 
-	//user := coremoduleuser.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	mediaTypes := models.GetMediaTypesByIdChildren(id)
+			//user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(mediaTypes)
-	corehelpers.PanicIf(err)
+			mediaTypes := models.GetMediaTypesByIdChildren(id)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(mediaTypes)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse media types")
+		}
+	}
 }
-
-// func (this *MediaTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Media-Type", "application/json")
-
-//     mediaType := models.MediaType{}
-
-//     err := json.NewDecoder(r.Body).Decode(&mediaType)
-
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
-
-//     mediaType.Post()
-
-// }
 
 // func (this *MediaTypeApiController) GetMediaTypes(w http.ResponseWriter, r *http.Request) {
 //     w.Header().Set("Media-Type", "application/json")
@@ -95,30 +99,104 @@ func (this *MediaTypeApiController) GetByIdChildren(w http.ResponseWriter, r *ht
 func (this *MediaTypeApiController) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Media-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_type_browse", "media_type_all"})
+		if hasPermission {
 
-	id, _ := strconv.Atoi(idStr)
+			params := mux.Vars(r)
+			idStr := params["id"]
 
-	var extended bool = false
-	extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
+			id, _ := strconv.Atoi(idStr)
 
-	//extended, _ := strconv.Atoi(extendedStr)
+			var extended bool = false
+			extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
 
-	if !extended {
-		media := models.GetMediaTypeById(id)
-		res, err := json.Marshal(media)
-		corehelpers.PanicIf(err)
+			//extended, _ := strconv.Atoi(extendedStr)
 
-		fmt.Fprintf(w, "%s", res)
-	} else {
-		media := models.GetMediaTypeExtendedById(id)
-		res, err := json.Marshal(media)
-		corehelpers.PanicIf(err)
+			if !extended {
+				media := models.GetMediaTypeById(id)
+				res, err := json.Marshal(media)
+				corehelpers.PanicIf(err)
 
-		fmt.Fprintf(w, "%s", res)
+				fmt.Fprintf(w, "%s", res)
+			} else {
+				media := models.GetMediaTypeExtendedById(id)
+				res, err := json.Marshal(media)
+				corehelpers.PanicIf(err)
+
+				fmt.Fprintf(w, "%s", res)
+			}
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse media types")
+		}
+	}
+}
+
+func (this *MediaTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_type_create", "media_type_all"})
+		if hasPermission {
+
+		    mediaType := models.MediaType{}
+
+		    err := json.NewDecoder(r.Body).Decode(&mediaType)
+
+		    if err != nil {
+		        http.Error(w, "Bad Request", 400)
+		    }
+
+		    mediaType.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create media types")
+		}
 	}
 
+}
+
+func (this *MediaTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_type_update", "media_type_all"})
+		if hasPermission {
+
+		    mediaType := models.MediaType{}
+
+		    err := json.NewDecoder(r.Body).Decode(&mediaType)
+
+		    if err != nil {
+		        http.Error(w, "Bad Request", 400)
+		    }
+		    mediaType.Put()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update media types")
+		}
+	}
+    
+}
+
+func (this *MediaTypeApiController) Delete(w http.ResponseWriter, r *http.Request){
+    w.Header().Set("Content-Type", "application/json")
+    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+        var hasPermission bool = false
+        hasPermission = user.HasPermissions([]string{"media_type_delete", "media_type_all"})
+        if(hasPermission){
+            params := mux.Vars(r)
+
+            idStr := params["id"]
+            id, _ := strconv.Atoi(idStr)
+
+            models.DeleteMediaType(id)
+        } else {
+            fmt.Fprintf(w,"You do not have permission to delete media types")
+        }
+
+    }
 }
 
 // func (this *MediaTypeApiController) GetMediaTypeById(w http.ResponseWriter, r *http.Request) {
@@ -143,24 +221,4 @@ func (this *MediaTypeApiController) GetById(w http.ResponseWriter, r *http.Reque
 
 //         fmt.Fprintf(w,"%s",res)
 //     }
-// }
-
-// func (this *MediaTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Media-Type", "application/json")
-
-//     mediaType := models.MediaType{}
-
-//     err := json.NewDecoder(r.Body).Decode(&mediaType)
-
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
-
-//     // b, err := json.Marshal(mediaType)
-//     // if err != nil {
-//     //     fmt.Println(err)
-//     //     return
-//     // }
-
-//     mediaType.Update()
 // }

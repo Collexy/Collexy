@@ -42,24 +42,23 @@ func init() {
 	subrPrivate.HandleFunc("/api/media-type/{id:.*}/children", http.HandlerFunc(mediaTypeApiController.GetByIdChildren)).Methods("GET")
 	subrPrivate.HandleFunc("/api/media-type/{id:.*}", http.HandlerFunc(mediaTypeApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/media-type", http.HandlerFunc(mediaTypeApiController.Get)).Methods("GET")
-	//m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypeByNodeId)) // not sure about this
-	//m.Get("/api/content-type/", http.HandlerFunc(contentTypeApiController.GetContentTypes)) // not sure about this
-	//privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.PutContentType)).Methods("PUT")
-	//privateApiRouter.HandleFunc("/api/content-type/{nodeId:.*}", http.HandlerFunc(contentTypeApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/media-type/{id:.*}", http.HandlerFunc(mediaTypeApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/media-type/{id:.*}", http.HandlerFunc(mediaTypeApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/media-type/{id:.*}", http.HandlerFunc(mediaTypeApiController.Delete)).Methods("DELETE")
 
 	subrPrivate.HandleFunc("/api/data-type/{id:.*}/contextmenu", http.HandlerFunc(dataTypeTreeController.GetMenuForDataType)).Methods("GET")
 	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/data-type", http.HandlerFunc(dataTypeApiController.Get)).Methods("GET") // not sure about this
-	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
 	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Put)).Methods("PUT")
 	subrPrivate.HandleFunc("/api/data-type/{id:.*}", http.HandlerFunc(dataTypeApiController.Delete)).Methods("DELETE")
 
 	subrPrivate.HandleFunc("/api/template/{id:.*}/contextmenu", http.HandlerFunc(templateTreeController.GetMenuForTemplate)).Methods("GET")
 	subrPrivate.HandleFunc("/api/template/{id:.*}/children", http.HandlerFunc(templateApiController.GetByIdChildren)).Methods("GET")
 	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/template", http.HandlerFunc(templateApiController.Get)).Methods("GET") // not sure about this
-	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.Put)).Methods("PUT")
 	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.Put)).Methods("PUT")
 	subrPrivate.HandleFunc("/api/template/{id:.*}", http.HandlerFunc(templateApiController.Delete)).Methods("DELETE")
 
 	// Directory

@@ -37,10 +37,13 @@ function MediaTypeEditCtrl($scope, $stateParams, MediaType, DataType) {
         });
     } else if ($stateParams.parent_id) {
         $scope.node = {
-            "parent_media_type_id": parseInt($stateParams.parent_id)
+            "parent_id": parseInt($stateParams.parent_id),
+            "created_by": $scope.userSession.id
         }
     } else {
-        $scope.node = {}
+        $scope.entity = {
+            "created_by": $scope.userSession.id
+        }
     }
     if ($scope.stateParams.type_id) {
         if (typeof $scope.node !== 'undefined') {

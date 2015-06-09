@@ -3,16 +3,17 @@ package models
 import (
 	// "fmt"
 	"encoding/json"
-	//corehelpers "collexy/core/helpers"
+	corehelpers "collexy/core/helpers"
 	coreglobals "collexy/core/globals"
 	"time"
-	//"fmt"
+	"fmt"
 	// "net/http"
 	// "html/template"
-	//"strconv"
+	"strconv"
 	"database/sql"
 	"log"
 	"net/url"
+    "sync"
 )
 
 type MediaType struct {
@@ -115,7 +116,7 @@ func GetMediaTypesByIdChildren(id int) (mediaTypes []*MediaType) {
         media_type.alias as member_alias, media_type.created_by as media_type_created_by, 
         media_type.created_date as media_type_created_date, media_type.description as media_type_description, 
         media_type.icon as media_type_icon, media_type.thumbnail as media_type_thumbnail,
-        media_type.meta as media_type_meta, media_type.tabs as media_type_tabs, 
+        media_type.meta as media_type_meta, media_type.tabs as media_type_tabs 
         FROM media_type
         WHERE media_type.parent_id=$1`
 
@@ -384,7 +385,7 @@ func GetMediaTypeById(id int) (mediaType MediaType) {
     media_type.alias as member_alias, media_type.created_by as media_type_created_by, 
     media_type.created_date as media_type_created_date, media_type.description as media_type_description, 
     media_type.icon as media_type_icon, media_type.thumbnail as media_type_thumbnail, media_type.meta as media_type_meta, 
-    media_type.tabs as media_type_tabs, 
+    media_type.tabs as media_type_tabs  
         FROM media_type
         WHERE media_type.id=$1`
 
@@ -428,6 +429,165 @@ func GetMediaTypeById(id int) (mediaType MediaType) {
 	}
 
 	return
+}
+
+func (mt *MediaType) Post(){
+    meta, err1 := json.Marshal(mt.Meta)
+    corehelpers.PanicIf(err1)
+    tabs, err2 := json.Marshal(mt.Tabs)
+    corehelpers.PanicIf(err2)
+
+    // see template commented out post funmtion and below
+    // _pgs_format, _ := t.PartialTemplateIds.Value()
+    allowedMediaTypeIds, err3 := IntArray(mt.AllowedMediaTypeIds).Value()
+    corehelpers.PanicIf(err3)
+    compositeMediaTypeIds, err4 := IntArray(mt.CompositeMediaTypeIds).Value()
+    corehelpers.PanicIf(err4)
+
+    // http://godoc.org/github.com/lib/pq
+    // pq does not support the LastInsertId() method of the Result type in database/sql.
+    // To return the identifier of an INSERT (or UPDATE or DELETE),
+    // use the Postgres RETURNING clause with a standard Query or QueryRow call:
+
+    db := coreglobals.Db
+
+    // Channel c, is for getting the parent template
+    // We need to append the id of the newly created template to the path of the parent id to create the new path
+    c := make(chan MediaType)
+    var parentMediaType MediaType
+
+    var wg sync.WaitGroup
+
+    wg.Add(1)
+    
+    go func(){
+        defer wg.Done()
+        c <- GetMediaTypeById(mt.ParentId)
+    }()
+
+    go func() {
+        for i := range c {
+            fmt.Println(i)
+            parentMediaType = i
+        }
+    }()
+
+    wg.Wait()
+
+    // This channel and WaitGroup is just to make sure the insert query is completed before we continue
+    c1 := make(chan int)
+    var id int64
+
+    var wg1 sync.WaitGroup
+
+    wg1.Add(1)
+    
+    go func(){
+        defer wg1.Done()
+        sqlStr := `INSERT INTO media_type (parent_id, name, alias, created_by, description, icon, thumbnail, meta, tabs, allow_at_root, is_container, 
+            is_abstract, allowed_media_type_ids,composite_media_type_ids) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id`
+        err1 := db.QueryRow(sqlStr, mt.ParentId, mt.Name, mt.Alias, mt.CreatedBy, mt.Description, mt.Icon, mt.Thumbnail, meta, tabs, mt.AllowAtRoot, mt.IsContainer,
+            mt.IsAbstract, allowedMediaTypeIds, compositeMediaTypeIds).Scan(&id)
+        corehelpers.PanicIf(err1)
+        c1 <- int(id)
+    }()
+
+    go func() {
+        for i := range c1 {
+            fmt.Println(i)
+        }
+    }()
+
+    wg1.Wait()
+
+    // fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
+
+    sqlStr := `UPDATE media_type 
+    SET path=$1 
+    WHERE id=$2`
+
+    path := strconv.Itoa(mt.Id)
+    if mt.ParentId > 0 {
+        path = parentMediaType.Path + "." + strconv.Itoa(mt.Id)
+    }
+
+    _, err6 := db.Exec(sqlStr, path, id)
+    corehelpers.PanicIf(err6)
+
+    log.Println("media type created successfully")
+
+}
+
+func (ct *MediaType) Put(){
+    meta, err1 := json.Marshal(ct.Meta)
+    corehelpers.PanicIf(err1)
+    tabs, err2 := json.Marshal(ct.Tabs)
+    corehelpers.PanicIf(err2)
+
+    // see template commented out post function and below
+    // _pgs_format, _ := t.PartialTemplateIds.Value()
+    allowedMediaTypeIds, err3 := IntArray(ct.AllowedMediaTypeIds).Value()
+    corehelpers.PanicIf(err3)
+    compositeMediaTypeIds, err4 := IntArray(ct.CompositeMediaTypeIds).Value()
+    corehelpers.PanicIf(err4)
+
+    db := coreglobals.Db
+
+    // Channel c, is for getting the parent template
+    // We need to append the id of the newly created template to the path of the parent id to create the new path
+    c := make(chan MediaType)
+    var parentMediaType MediaType
+
+    var wg sync.WaitGroup
+
+    wg.Add(1)
+    
+    go func(){
+        defer wg.Done()
+        c <- GetMediaTypeById(ct.ParentId)
+    }()
+
+    go func() {
+        for i := range c {
+            fmt.Println(i)
+            parentMediaType = i
+        }
+    }()
+
+    wg.Wait()
+
+    
+    sqlStr := `UPDATE media_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12, 
+        is_abstract=$13, allowed_media_type_ids=$14,composite_media_type_ids=$15
+        WHERE id=$16`
+
+    path := strconv.Itoa(ct.Id)
+    if ct.ParentId > 0 {
+        path = parentMediaType.Path + "." + strconv.Itoa(ct.Id)
+    }
+    _, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
+        ct.IsAbstract, allowedMediaTypeIds, compositeMediaTypeIds, ct.Id)
+    
+    corehelpers.PanicIf(err6)
+    
+
+    log.Println("media type updated successfully")
+
+}
+
+func DeleteMediaType(id int) {
+
+    db := coreglobals.Db
+
+    sqlStr := `DELETE FROM media_type 
+    WHERE id=$1`
+
+    _, err := db.Exec(sqlStr, id)
+
+    corehelpers.PanicIf(err)
+
+    log.Printf("media type with id %d was successfully deleted", id)
 }
 
 // func (t *MediaType) Post(){
