@@ -24,6 +24,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"sync"
 )
 
 type Media struct {
@@ -936,6 +937,109 @@ WHERE media.path @>
 	return
 }
 
+func GetMediaByIdParentsInternalUseOnly(id int) (mediaSlice []*Media) {
+
+	db := coreglobals.Db
+	sqlStr := ""
+	// if(queryStringParams.Get("type-id") != nil){
+	sqlStr = `SELECT media.id AS media_id, media.path AS media_path, media.parent_id AS media_parent_id,
+media.name AS media_name, media.created_by AS media_created_by, 
+media.created_date AS media_created_date, media.media_type_id AS media_media_type_id,
+media.meta AS media_meta, 
+media.user_permissions AS media_user_permissions, media.user_group_permissions AS media_user_group_permissions,
+media_type.id AS ct_id, media_type.path AS ct_path, media_type.parent_id AS ct_parent_id,
+media_type.name AS ct_name, media_type.alias AS ct_alias, media_type.created_by AS ct_created_by,
+media_type.created_date AS ct_created_date, media_type.description AS ct_description,
+media_type.icon AS ct_icon, media_type.thumbnail AS ct_thumbnail, media_type.meta AS ct_meta,
+media_type.tabs AS ct_tabs
+FROM media 
+JOIN media_type 
+ON media.media_type_id = media_type.id
+WHERE media.path @> 
+(
+	SELECT path
+	FROM
+	media
+	WHERE
+	id = $1
+) ORDER BY media.path`
+
+	rows, err := db.Query(sqlStr, id)
+	corehelpers.PanicIf(err)
+	defer rows.Close()
+
+	var media_id, media_created_by, media_media_type_id int
+	var media_path, media_name string
+	var media_parent_id sql.NullInt64
+	var media_created_date *time.Time
+	var media_meta, media_user_permissions, media_user_group_permissions []byte
+
+	var ct_id, ct_created_by int
+	var ct_parent_id sql.NullInt64
+	var ct_created_date *time.Time
+	var ct_path, ct_name, ct_alias, ct_description string
+	var ct_tabs, ct_meta []byte
+	var ct_icon, ct_thumbnail sql.NullString
+
+	for rows.Next() {
+		var media_type_icon_str, media_type_thumbnail_str string
+
+		// if(queryStringParams.Get("type-id")!=nil){
+		err := rows.Scan(&media_id, &media_path, &media_parent_id, &media_name, &media_created_by,
+			&media_created_date, &media_media_type_id, &media_meta,
+			&media_user_permissions, &media_user_group_permissions,
+			&ct_id, &ct_path, &ct_parent_id, &ct_name, &ct_alias, &ct_created_by, &ct_created_date, &ct_description, &ct_icon,
+			&ct_thumbnail, &ct_meta, &ct_tabs)
+
+		corehelpers.PanicIf(err)
+
+		if ct_icon.Valid {
+			media_type_icon_str = ct_icon.String
+		}
+
+		if ct_thumbnail.Valid {
+			media_type_thumbnail_str = ct_thumbnail.String
+		}
+
+		var cpid int
+		if media_parent_id.Valid {
+			cpid = int(media_parent_id.Int64)
+		}
+
+		var ctpid int
+		if ct_parent_id.Valid {
+			ctpid = int(ct_parent_id.Int64)
+		}
+
+		var user_perm, user_group_perm map[string]*PermissionTest // map[string]PermissionsContainer
+		user_perm = nil
+		user_group_perm = nil
+		json.Unmarshal(media_user_permissions, &user_perm)
+		json.Unmarshal(media_user_group_permissions, &user_group_perm)
+
+		var media_metaMap map[string]interface{}
+
+		// var public_access *PublicAccess
+
+		// json.Unmarshal(media_public_access, &public_access)
+
+		json.Unmarshal(media_meta, &media_metaMap)
+
+		var tabs []coremodulesettingsmodels.Tab
+		var ct_metaMap map[string]interface{}
+
+		json.Unmarshal(ct_tabs, &tabs)
+		json.Unmarshal(ct_meta, &ct_metaMap)
+
+		media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+		media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+			media_media_type_id, media_metaMap, nil, nil, nil, nil, "", nil, nil, nil, &media_type}
+		mediaSlice = append(mediaSlice, &media)
+
+	}
+	return
+}
+
 // func DeleteMedia(id int){
 //   db := coreglobals.Db
 
@@ -1060,25 +1164,228 @@ WHERE media.path @>
 //   NewPath string
 // }
 
-func (c *Media) Update() {
+func (m *Media) Post() {
+	meta, _ := json.Marshal(m.Meta)
 
-	// db := coreglobals.Db
+	userPermissions, _ := json.Marshal(m.UserPermissions)
+	userGroupPermissions, _ := json.Marshal(m.UserGroupPermissions)
 
-	// meta, _ := json.Marshal(c.Meta)
+	// http://godoc.org/github.com/lib/pq
+	// pq does not support the LastInsertId() method of the Result type in database/sql.
+	// To return the identifier of an INSERT (or UPDATE or DELETE),
+	// use the Postgres RETURNING clause with a standard Query or QueryRow call:
 
-	// sqlStr := `UPDATE media
-	// SET name=$1, meta=$3
-	// 	WHERE id=$4;`
+	db := coreglobals.Db
 
-	// _, err := db.Exec(sqlStr, c.Name, meta, c.Id)
+	// Channel c, is for getting the parent template
+	// We need to append the id of the newly created template to the path of the parent id to create the new path
+	c1 := make(chan Media)
+	var parentMedia Media
 
-	// corehelpers.PanicIf(err)
+	var wg sync.WaitGroup
 
-	UpdatePublicAccessForMedia(c)
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		c1 <- GetMediaById(m.ParentId)
+	}()
+
+	go func() {
+		for i := range c1 {
+			fmt.Println(i)
+			parentMedia = i
+		}
+	}()
+
+	wg.Wait()
+
+	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
+	c2 := make(chan int)
+	var id int64
+
+	var wg1 sync.WaitGroup
+
+	wg1.Add(1)
+
+	go func() {
+		defer wg1.Done()
+		sqlStr := `INSERT INTO media ( 
+			parent_id, name, created_by, media_type_id, 
+			meta, 
+			user_permissions, user_group_permissions) 
+			VALUES (
+				$1,$2,$3,$4,$5,$6,$7
+				) RETURNING id`
+		err1 := db.QueryRow(sqlStr, m.ParentId, m.Name, m.CreatedBy, m.MediaTypeId,
+			meta,
+			userPermissions, userGroupPermissions).Scan(&id)
+		corehelpers.PanicIf(err1)
+
+		c2 <- int(id)
+	}()
+
+	go func() {
+		for i := range c2 {
+			fmt.Println(i)
+		}
+	}()
+
+	wg1.Wait()
+
+	m.Id = int(id)
+
+	// fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
+
+	sqlStr := `UPDATE media 
+    SET path=$1 
+    WHERE id=$2`
+
+	path := strconv.FormatInt(id, 10)
+	if m.ParentId > 0 {
+		path = parentMedia.Path + "." + strconv.FormatInt(id, 10)
+	}
+
+	_, err6 := db.Exec(sqlStr, path, id)
+	corehelpers.PanicIf(err6)
+
+	// add entries to media-access.xml if public access is set
+	if m.PublicAccessMembers != nil || m.PublicAccessMemberGroups != nil {
+		c3 := make(chan []*Media)
+
+		var wg2 sync.WaitGroup
+
+		wg2.Add(1)
+
+		go func() {
+			defer wg2.Done()
+			parents := GetMediaByIdParentsInternalUseOnly(m.Id)
+
+			c3 <- parents
+		}()
+
+		go func() {
+			for i := range c3 {
+				fmt.Println(i)
+				m.ParentMediaItems = append(m.ParentMediaItems, i...)
+			}
+		}()
+
+		wg2.Wait()
+
+		urlStr := "media"
+		if len(m.ParentMediaItems) > 0 {
+			for _, p := range m.ParentMediaItems {
+				urlStr = urlStr + "/" + p.Name
+			}
+			m.Url = urlStr
+		}
+
+		fmt.Printf("url is: %s", m.Url)
+
+		UpdatePublicAccessForMedia(m)
+	}
+
+	log.Println("media created successfully")
+
+}
+
+// Todo: If media is protected it should also be deleted in the XML file
+func DeleteMedia(id int) {
+	db := coreglobals.Db
+
+	sqlStr := `DELETE FROM media 
+    WHERE id=$1`
+
+	_, err := db.Exec(sqlStr, id)
+
+	corehelpers.PanicIf(err)
+
+	log.Printf("media with id %d was successfully deleted", id)
+}
+
+func (m *Media) Put() {
+
+	meta, _ := json.Marshal(m.Meta)
+	userPermissions, _ := json.Marshal(m.UserPermissions)
+	userGroupPermissions, _ := json.Marshal(m.UserGroupPermissions)
+
+	c1 := make(chan Media)
+	var parentMedia Media
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		c1 <- GetMediaById(m.ParentId)
+	}()
+
+	go func() {
+		for i := range c1 {
+			fmt.Println(i)
+			parentMedia = i
+		}
+	}()
+
+	wg.Wait()
+
+	db := coreglobals.Db
+
+	sqlStr := `UPDATE media 
+	SET path=$1, parent_id=$2, name=$3, created_by=$4, media_type_id=$5, 
+	meta=$6, user_permissions=$7, user_group_permissions=$8
+	WHERE id=$9;`
+
+	path := strconv.Itoa(m.Id)
+	if m.ParentId > 0 {
+		path = parentMedia.Path + "." + strconv.Itoa(m.Id)
+	}
+
+	_, err := db.Exec(sqlStr, path, m.ParentId, m.Name, m.CreatedBy, m.MediaTypeId,
+		meta, userPermissions, userGroupPermissions, m.Id)
+
+	corehelpers.PanicIf(err)
+
+	// if m.PublicAccessMembers != nil || m.PublicAccessMemberGroups != nil{
+	c3 := make(chan []*Media)
+
+	var wg2 sync.WaitGroup
+
+	wg2.Add(1)
+
+	go func() {
+		defer wg2.Done()
+		parents := GetMediaByIdParentsInternalUseOnly(m.Id)
+
+		c3 <- parents
+	}()
+
+	go func() {
+		for i := range c3 {
+			fmt.Println(i)
+			m.ParentMediaItems = append(m.ParentMediaItems, i...)
+		}
+	}()
+
+	wg2.Wait()
+
+	urlStr := "media"
+	if len(m.ParentMediaItems) > 0 {
+		for _, p := range m.ParentMediaItems {
+			urlStr = urlStr + "/" + p.Name
+		}
+		m.Url = urlStr
+	}
+
+	UpdatePublicAccessForMedia(m)
+	// }
 
 	log.Println("media updated successfully")
 }
 
+// https://github.com/golang/go/issues/3688
 func UpdatePublicAccessForMedia(m *Media) {
 	if _, err := os.Stat("./config/media-access.xml"); err != nil {
 		if os.IsNotExist(err) {
@@ -1115,34 +1422,103 @@ func UpdatePublicAccessForMedia(m *Media) {
 		//fmt.Printf("%#v\n", v)
 
 		//coreglobals.MediaAccessConf = buildMap(v.Items...)
+		mediaExists := false
 		vv := v
-		for _, val := range vv.Items {
+
+		// reason for using a downward loop:
+		// http://stackoverflow.com/questions/29005825/how-to-remove-element-of-struct-array-in-loop-in-golang
+		for i := len(vv.Items) - 1; i >= 0; i-- {
+			//for i, val := range vv.Items {
 			//fmt.Printf("v.Items val is: %#v\n", val)
 
-			if val.MediaId == m.Id {
+			if vv.Items[i].MediaId == m.Id {
+				mediaExists = true
+				if (m.PublicAccessMembers == nil || len(m.PublicAccessMembers) == 0) && (m.PublicAccessMemberGroups == nil || len(m.PublicAccessMemberGroups) == 0) {
+					vv.Items = append(vv.Items[:i], vv.Items[i+1:]...)
+					//vv.Items = append(vv.Items[:i], vv.Items[i+1:]...)
+				} else {
+					if m.PublicAccessMemberGroups != nil {
+						fmt.Printf("val.MediaId:%d\n", vv.Items[i].MediaId)
+						fmt.Printf("m.Id:%d\n", m.Id)
+						fmt.Println("m.PublicAccessMemberGroups != nil\n")
+						var memberGroups []int
+						for key, _ := range m.PublicAccessMemberGroups {
+							intVal, _ := strconv.Atoi(key)
+							memberGroups = append(memberGroups, intVal)
+						}
+						vv.Items[i].MemberGroups = memberGroups
+						fmt.Printf("val.memberGroups is: %d\n", vv.Items[i].MemberGroups)
+						fmt.Printf("memberGroups is: %d\n", memberGroups)
+					}
+					if m.PublicAccessMembers != nil {
+						var members []int
+						for key, _ := range m.PublicAccessMembers {
+							intVal, _ := strconv.Atoi(key)
+							members = append(members, intVal)
+						}
+						vv.Items[i].Members = members
+					}
+				}
 
-				if m.PublicAccessMemberGroups != nil {
-					fmt.Printf("val.MediaId:%d\n", val.MediaId)
-					fmt.Printf("m.Id:%d\n", m.Id)
-					fmt.Println("m.PublicAccessMemberGroups != nil\n")
-					var memberGroups []int
-					for key, _ := range m.PublicAccessMemberGroups {
-						intVal, _ := strconv.Atoi(key)
-						memberGroups = append(memberGroups, intVal)
-					}
-					val.MemberGroups = memberGroups
-					fmt.Printf("val.memberGroups is: %d\n", val.MemberGroups)
-					fmt.Printf("memberGroups is: %d\n", memberGroups)
-				}
-				if m.PublicAccessMembers != nil {
-					var members []int
-					for key, _ := range m.PublicAccessMembers {
-						intVal, _ := strconv.Atoi(key)
-						members = append(members, intVal)
-					}
-					val.Members = members
-				}
 			}
+		}
+		// for i, val := range vv.Items {
+		// 	//fmt.Printf("v.Items val is: %#v\n", val)
+
+		// 	if val.MediaId == m.Id {
+		// 		mediaExists = true
+		// 		if m.PublicAccessMembers == nil && m.PublicAccessMemberGroups == nil{
+		// 			vv.Items = append(vv.Items[:i], vv.Items[i+1:]...)
+		// 		} else {
+		// 			if m.PublicAccessMemberGroups != nil {
+		// 				fmt.Printf("val.MediaId:%d\n", val.MediaId)
+		// 				fmt.Printf("m.Id:%d\n", m.Id)
+		// 				fmt.Println("m.PublicAccessMemberGroups != nil\n")
+		// 				var memberGroups []int
+		// 				for key, _ := range m.PublicAccessMemberGroups {
+		// 					intVal, _ := strconv.Atoi(key)
+		// 					memberGroups = append(memberGroups, intVal)
+		// 				}
+		// 				val.MemberGroups = memberGroups
+		// 				fmt.Printf("val.memberGroups is: %d\n", val.MemberGroups)
+		// 				fmt.Printf("memberGroups is: %d\n", memberGroups)
+		// 			}
+		// 			if m.PublicAccessMembers != nil {
+		// 				var members []int
+		// 				for key, _ := range m.PublicAccessMembers {
+		// 					intVal, _ := strconv.Atoi(key)
+		// 					members = append(members, intVal)
+		// 				}
+		// 				val.Members = members
+		// 			}
+		// 		}
+
+		// 	}
+		// }
+
+		if !mediaExists {
+			var members []int
+			for key, _ := range m.PublicAccessMembers {
+				intVal, _ := strconv.Atoi(key)
+				members = append(members, intVal)
+			}
+
+			var memberGroups []int
+			for key, _ := range m.PublicAccessMemberGroups {
+				intVal, _ := strconv.Atoi(key)
+				memberGroups = append(memberGroups, intVal)
+			}
+
+			mai := coreglobals.MediaAccessItem{
+				xml.Name{Local: "item"},
+				m.Id,
+				m.Url,
+				0,
+				0,
+				members,
+				memberGroups,
+			}
+			vv.Items = append(vv.Items, &mai)
 		}
 
 		b, _ := xml.MarshalIndent(&vv, "", "    ")
@@ -1704,6 +2080,15 @@ WHERE media.id=$1`
 			//log.Println("mgidstr: " + mgIdStr)
 
 			public_access_member_groups[mgIdStr] = true
+		}
+
+		public_access_members = make(map[string]interface{})
+		for _, mgId := range protectedMedia.Members {
+			fmt.Printf("mgIdlolol: %d", mgId)
+			mgIdStr := strconv.Itoa(mgId)
+			//log.Println("mgidstr: " + mgIdStr)
+
+			public_access_members[mgIdStr] = true
 		}
 	}
 

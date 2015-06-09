@@ -31,67 +31,103 @@ type MediaApiController struct{}
 func (this *MediaApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	queryStrParams := r.URL.Query()
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_browse", "media_all"})
+		if hasPermission {
 
-	user := coremoduleuser.GetLoggedInUser(r)
+			queryStrParams := r.URL.Query()
 
-	media := models.GetMedia(queryStrParams, user)
+			user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(media)
-	corehelpers.PanicIf(err)
+			media := models.GetMedia(queryStrParams, user)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(media)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse media")
+		}
+	}
 }
 
 func (this *MediaApiController) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_browse", "media_all"})
+		if hasPermission {
 
-	//user := coremoduleuser.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	media := models.GetMediaById(id)
+			//user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(media)
-	corehelpers.PanicIf(err)
+			media := models.GetMediaById(id)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(media)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse media")
+		}
+	}
 }
 
 func (this *MediaApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_browse", "media_all"})
+		if hasPermission {
 
-	user := coremoduleuser.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	media := models.GetMediaByIdChildren(id, user)
+			user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(media)
-	corehelpers.PanicIf(err)
+			media := models.GetMediaByIdChildren(id, user)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(media)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse media")
+		}
+	}
 }
 
 func (this *MediaApiController) GetByIdParents(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_browse", "media_all"})
+		if hasPermission {
 
-	user := coremoduleuser.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	media := models.GetMediaByIdParents(id, user)
+			user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(media)
-	corehelpers.PanicIf(err)
+			media := models.GetMediaByIdParents(id, user)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(media)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse media")
+		}
+	}
 }
 
 type TestData struct {
@@ -112,6 +148,71 @@ type TestDataMember struct {
 type TestStructMember struct {
 	Member *coremodulemembermodels.Member
 	Media  *models.Media
+}
+
+func (this *MediaApiController) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_create", "media_all"})
+		if hasPermission {
+
+			media := models.Media{}
+
+			err := json.NewDecoder(r.Body).Decode(&media)
+
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+
+			media.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create media")
+		}
+	}
+}
+
+func (this *MediaApiController) Put(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_update", "media_all"})
+		if hasPermission {
+			media := models.Media{}
+
+			err := json.NewDecoder(r.Body).Decode(&media)
+
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+
+			media.Put()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update media")
+		}
+
+	}
+}
+
+func (this *MediaApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_delete", "media_all"})
+		if hasPermission {
+			params := mux.Vars(r)
+
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
+
+			models.DeleteMedia(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete media")
+		}
+
+	}
 }
 
 // func (this *MediaApiController) Post(w http.ResponseWriter, r *http.Request) {
@@ -136,29 +237,6 @@ type TestStructMember struct {
 //         }
 //     }
 // }
-
-func (this *MediaApiController) Put(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-		var hasPermission bool = false
-		hasPermission = user.HasPermissions([]string{"media_update"})
-		if hasPermission {
-			media := models.Media{}
-
-			err := json.NewDecoder(r.Body).Decode(&media)
-
-			if err != nil {
-				http.Error(w, "Bad Request", 400)
-			}
-
-			media.Update()
-		} else {
-			fmt.Fprintf(w, "You do not have permission to update media")
-		}
-
-	}
-}
 
 // func (this *MediaApiController) Delete(w http.ResponseWriter, r *http.Request){
 //     w.Header().Set("Content-Type", "application/json")

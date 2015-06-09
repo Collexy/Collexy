@@ -32,7 +32,7 @@ func (this *ContentApiController) Get(w http.ResponseWriter, r *http.Request) {
 
 	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
-		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		hasPermission = user.HasPermissions([]string{"content_browse", "content_all"})
 		if hasPermission {
 
 			queryStrParams := r.URL.Query()
@@ -56,7 +56,7 @@ func (this *ContentApiController) GetById(w http.ResponseWriter, r *http.Request
 
 	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
-		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		hasPermission = user.HasPermissions([]string{"content_browse", "content_all"})
 		if hasPermission {
 
 			params := mux.Vars(r)
@@ -82,7 +82,7 @@ func (this *ContentApiController) GetByIdChildren(w http.ResponseWriter, r *http
 
 	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
-		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		hasPermission = user.HasPermissions([]string{"content_browse", "content_all"})
 		if hasPermission {
 
 			params := mux.Vars(r)
@@ -108,7 +108,7 @@ func (this *ContentApiController) GetByIdParents(w http.ResponseWriter, r *http.
 
 	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
-		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		hasPermission = user.HasPermissions([]string{"content_browse", "content_all"})
 		if hasPermission {
 
 			params := mux.Vars(r)

@@ -39,8 +39,8 @@ function CollexyDataTypeEditorFileUploadController($scope, ContentType, $http, F
             delete $scope.data.meta["attached_file"];
     	} else {
             
-            if(typeof $scope.originalData.meta["attached_file"] != 'undefined'){
-                $scope.data.meta["attached_file"] = $scope.originalData.meta["attached_file"];
+            if(typeof $scope.originalData["meta"]["attached_file"] != 'undefined'){
+                $scope.data["meta"]["attached_file"] = $scope.originalData["meta"]["attached_file"];
             }
             // if(typeof $scope.data.meta["file_upload"] == 'undefined'){
             //     $scope.data.meta["file_upload"] = {};

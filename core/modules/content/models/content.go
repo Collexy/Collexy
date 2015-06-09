@@ -2165,8 +2165,8 @@ func (c *Content) Post() {
 			VALUES (
 				$1,$2,$3,$4,$5,$6,$7,$8,$9,$10
 				) RETURNING id`
-		err1 := db.QueryRow(sqlStr, c.ParentId, c.Name, c.Alias, c.CreatedBy, c.ContentTypeId, 
-			meta, publicAccessMembers, publicAccessMemberGroups, 
+		err1 := db.QueryRow(sqlStr, c.ParentId, c.Name, c.Alias, c.CreatedBy, c.ContentTypeId,
+			meta, publicAccessMembers, publicAccessMemberGroups,
 			userPermissions, userGroupPermissions).Scan(&id)
 		corehelpers.PanicIf(err1)
 		c2 <- int(id)
@@ -2235,20 +2235,20 @@ func (c *Content) Put() {
 	user_permissions=$10, user_group_permissions=$11 
  	WHERE id=$12;`
 
- 	path := strconv.Itoa(c.Id)
+	path := strconv.Itoa(c.Id)
 	if c.ParentId > 0 {
 		path = parentContent.Path + "." + strconv.Itoa(c.Id)
 	}
 
-	_, err := db.Exec(sqlStr, path, c.ParentId, c.Name, c.Alias, c.CreatedBy, c.ContentTypeId, 
-		meta, publicAccessMembers,publicAccessMemberGroups,userPermissions,userGroupPermissions, c.Id)
+	_, err := db.Exec(sqlStr, path, c.ParentId, c.Name, c.Alias, c.CreatedBy, c.ContentTypeId,
+		meta, publicAccessMembers, publicAccessMemberGroups, userPermissions, userGroupPermissions, c.Id)
 
 	corehelpers.PanicIf(err)
 
 	log.Println("content updated successfully")
 }
 
-func DeleteContent(id int){
+func DeleteContent(id int) {
 	db := coreglobals.Db
 
 	sqlStr := `DELETE FROM content 
@@ -2369,8 +2369,6 @@ func DeleteContent(id int){
 //   Id int64
 //   NewPath string
 // }
-
-
 
 // func (c *Content) Update(){
 
