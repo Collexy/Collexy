@@ -17,8 +17,8 @@ import (
 	//"path/filepath"
 	//"strings"
 	//"html/template"
-	"github.com/gorilla/mux"
 	coremoduleuser "collexy/core/modules/user/models"
+	"github.com/gorilla/mux"
 )
 
 type ContentTypeApiController struct{}
@@ -72,22 +72,22 @@ func (this *ContentTypeApiController) GetByIdChildren(w http.ResponseWriter, r *
 }
 
 func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
 	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
 		hasPermission = user.HasPermissions([]string{"content_type_create", "content_type_all"})
 		if hasPermission {
 
-		    contentType := models.ContentType{}
+			contentType := models.ContentType{}
 
-		    err := json.NewDecoder(r.Body).Decode(&contentType)
+			err := json.NewDecoder(r.Body).Decode(&contentType)
 
-		    if err != nil {
-		        http.Error(w, "Bad Request", 400)
-		    }
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-		    contentType.Post()
+			contentType.Post()
 		} else {
 			fmt.Fprintf(w, "You do not have permission to create content types")
 		}
@@ -96,45 +96,45 @@ func (this *ContentTypeApiController) Post(w http.ResponseWriter, r *http.Reques
 }
 
 func (this *ContentTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
 		hasPermission = user.HasPermissions([]string{"content_type_update", "content_type_all"})
 		if hasPermission {
 
-		    contentType := models.ContentType{}
+			contentType := models.ContentType{}
 
-		    err := json.NewDecoder(r.Body).Decode(&contentType)
+			err := json.NewDecoder(r.Body).Decode(&contentType)
 
-		    if err != nil {
-		        http.Error(w, "Bad Request", 400)
-		    }
-		    contentType.Put()
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+			contentType.Put()
 		} else {
 			fmt.Fprintf(w, "You do not have permission to update content types")
 		}
 	}
-    
+
 }
 
-func (this *ContentTypeApiController) Delete(w http.ResponseWriter, r *http.Request){
-    w.Header().Set("Content-Type", "application/json")
-    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-        var hasPermission bool = false
-        hasPermission = user.HasPermissions([]string{"content_type_delete", "content_type_all"})
-        if(hasPermission){
-            params := mux.Vars(r)
+func (this *ContentTypeApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_type_delete", "content_type_all"})
+		if hasPermission {
+			params := mux.Vars(r)
 
-            idStr := params["id"]
-            id, _ := strconv.Atoi(idStr)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-            models.DeleteContentType(id)
-        } else {
-            fmt.Fprintf(w,"You do not have permission to delete content types")
-        }
+			models.DeleteContentType(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete content types")
+		}
 
-    }
+	}
 }
 
 // func (this *ContentTypeApiController) GetContentTypes(w http.ResponseWriter, r *http.Request) {

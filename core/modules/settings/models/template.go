@@ -191,30 +191,30 @@ func (t *Template) Post() {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	
-	go func(){
+
+	go func() {
 		defer wg.Done()
 		c <- GetTemplateById(t.ParentId)
 	}()
 
 	go func() {
-        for i := range c {
-            fmt.Println(i)
-            parentTemplate = i
-        }
-    }()
+		for i := range c {
+			fmt.Println(i)
+			parentTemplate = i
+		}
+	}()
 
-    wg.Wait()
+	wg.Wait()
 
-    // This channel and WaitGroup is just to make sure the insert query is completed before we continue
-    c1 := make(chan int)
-    var id int64
+	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
+	c1 := make(chan int)
+	var id int64
 
-    var wg1 sync.WaitGroup
+	var wg1 sync.WaitGroup
 
 	wg1.Add(1)
-	
-	go func(){
+
+	go func() {
 		defer wg1.Done()
 		sqlStr := `INSERT INTO template (parent_id, name, alias, created_by, is_partial) 
 		VALUES ($1, $2, $3, $4, $5) RETURNING id`
@@ -224,28 +224,28 @@ func (t *Template) Post() {
 	}()
 
 	go func() {
-        for i := range c1 {
-            fmt.Println(i)
-        }
-    }()
+		for i := range c1 {
+			fmt.Println(i)
+		}
+	}()
 
-    wg1.Wait()
+	wg1.Wait()
 
-    // fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
+	// fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
 
 	sqlStr := `UPDATE template 
 	SET path=$1 
 	WHERE id=$2`
 
 	path := strconv.Itoa(t.Id)
-    if t.ParentId > 0 {
-        path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
-    }
+	if t.ParentId > 0 {
+		path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
+	}
 
 	_, err2 := db.Exec(sqlStr, path, id)
 	corehelpers.PanicIf(err2)
 
-	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
+	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/")
 
 	err3 := ioutil.WriteFile(absPath+t.Name+".tmpl", []byte(t.Html), 0644)
 	corehelpers.PanicIf(err3)
@@ -253,8 +253,7 @@ func (t *Template) Post() {
 	log.Println("template created successfully")
 }
 
-func (t *Template) Update(){
-	
+func (t *Template) Update() {
 
 	// either save old file name attribute or make a get query first, before the update
 	// to make sure the get query finishes before the update, use channels and spawn a goroutine
@@ -263,31 +262,30 @@ func (t *Template) Update(){
 	// maybe here's a slight performance improvement? Maybe test?
 	// If db update is successful but filesystem fails to rename file, cancel/undo the update
 
-
 	c := make(chan Template)
 	var oldTemplate Template
 
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	
-	go func(){
+
+	go func() {
 		defer wg.Done()
 		c <- GetTemplateById(t.Id)
 	}()
 
 	go func() {
-        for i := range c {
-            fmt.Println(i)
-            oldTemplate = i
-        }
-    }()
+		for i := range c {
+			fmt.Println(i)
+			oldTemplate = i
+		}
+	}()
 
 	wg.Wait()
 
-    oldName := oldTemplate.Name + ".tmpl"
+	oldName := oldTemplate.Name + ".tmpl"
 	newName := t.Name + ".tmpl"
-	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
+	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/")
 
 	c2 := make(chan Template)
 	var parentTemplate Template
@@ -295,27 +293,27 @@ func (t *Template) Update(){
 	var wg2 sync.WaitGroup
 
 	wg2.Add(1)
-	
-	go func(){
+
+	go func() {
 		defer wg.Done()
 		c2 <- GetTemplateById(t.ParentId)
 	}()
 
 	go func() {
-        for i := range c {
-            fmt.Println(i)
-            parentTemplate = i
-        }
-    }()
+		for i := range c {
+			fmt.Println(i)
+			parentTemplate = i
+		}
+	}()
 
 	wg2.Wait()
 
-    db := coreglobals.Db
+	db := coreglobals.Db
 
-    path := strconv.Itoa(t.Id)
-    if t.ParentId > 0 {
-        path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
-    }
+	path := strconv.Itoa(t.Id)
+	if t.ParentId > 0 {
+		path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
+	}
 
 	_, err := db.Exec("UPDATE template SET path=$1, name=$2, alias=$3 WHERE id=$4", path, t.Name, t.Alias, t.Id)
 	corehelpers.PanicIf(err)
@@ -329,7 +327,7 @@ func (t *Template) Update(){
 	corehelpers.PanicIf(err3)
 }
 
-// Temporary simple delete 
+// Temporary simple delete
 // Eventually - constraints missing from database, which should prevent deletion and id changes to foreign keys referenced from elsewhere.
 // http://stackoverflow.com/questions/14921668/difference-between-restrict-and-no-action
 func DeleteTemplate(id int) {
@@ -340,18 +338,18 @@ func DeleteTemplate(id int) {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	
-	go func(){
+
+	go func() {
 		defer wg.Done()
 		c <- GetTemplateById(id)
 	}()
 
 	go func() {
-        for i := range c {
-            fmt.Println(i)
-            t = i
-        }
-    }()
+		for i := range c {
+			fmt.Println(i)
+			t = i
+		}
+	}()
 
 	wg.Wait()
 
@@ -364,8 +362,8 @@ func DeleteTemplate(id int) {
 
 	corehelpers.PanicIf(err)
 
-	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0])+"/views/")
-	err1 := os.Remove(absPath+t.Name+".tmpl")
+	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/")
+	err1 := os.Remove(absPath + t.Name + ".tmpl")
 	corehelpers.PanicIf(err1)
 
 	log.Printf("template with id %d was successfully deleted", id)

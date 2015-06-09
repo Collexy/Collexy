@@ -17,8 +17,8 @@ import (
 	//"path/filepath"
 	//"strings"
 	//"html/template"
-	"github.com/gorilla/mux"
 	coremoduleuser "collexy/core/modules/user/models"
+	"github.com/gorilla/mux"
 )
 
 type MediaTypeApiController struct{}
@@ -134,22 +134,22 @@ func (this *MediaTypeApiController) GetById(w http.ResponseWriter, r *http.Reque
 }
 
 func (this *MediaTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
 	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
 		hasPermission = user.HasPermissions([]string{"media_type_create", "media_type_all"})
 		if hasPermission {
 
-		    mediaType := models.MediaType{}
+			mediaType := models.MediaType{}
 
-		    err := json.NewDecoder(r.Body).Decode(&mediaType)
+			err := json.NewDecoder(r.Body).Decode(&mediaType)
 
-		    if err != nil {
-		        http.Error(w, "Bad Request", 400)
-		    }
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-		    mediaType.Post()
+			mediaType.Post()
 		} else {
 			fmt.Fprintf(w, "You do not have permission to create media types")
 		}
@@ -158,45 +158,45 @@ func (this *MediaTypeApiController) Post(w http.ResponseWriter, r *http.Request)
 }
 
 func (this *MediaTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
 		hasPermission = user.HasPermissions([]string{"media_type_update", "media_type_all"})
 		if hasPermission {
 
-		    mediaType := models.MediaType{}
+			mediaType := models.MediaType{}
 
-		    err := json.NewDecoder(r.Body).Decode(&mediaType)
+			err := json.NewDecoder(r.Body).Decode(&mediaType)
 
-		    if err != nil {
-		        http.Error(w, "Bad Request", 400)
-		    }
-		    mediaType.Put()
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+			mediaType.Put()
 		} else {
 			fmt.Fprintf(w, "You do not have permission to update media types")
 		}
 	}
-    
+
 }
 
-func (this *MediaTypeApiController) Delete(w http.ResponseWriter, r *http.Request){
-    w.Header().Set("Content-Type", "application/json")
-    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-        var hasPermission bool = false
-        hasPermission = user.HasPermissions([]string{"media_type_delete", "media_type_all"})
-        if(hasPermission){
-            params := mux.Vars(r)
+func (this *MediaTypeApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"media_type_delete", "media_type_all"})
+		if hasPermission {
+			params := mux.Vars(r)
 
-            idStr := params["id"]
-            id, _ := strconv.Atoi(idStr)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-            models.DeleteMediaType(id)
-        } else {
-            fmt.Fprintf(w,"You do not have permission to delete media types")
-        }
+			models.DeleteMediaType(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete media types")
+		}
 
-    }
+	}
 }
 
 // func (this *MediaTypeApiController) GetMediaTypeById(w http.ResponseWriter, r *http.Request) {

@@ -1,16 +1,16 @@
 package models
 
 import (
-	"encoding/json"
-	corehelpers "collexy/core/helpers"
 	coreglobals "collexy/core/globals"
+	corehelpers "collexy/core/helpers"
+	"encoding/json"
 	"time"
 	//"fmt"
 	//"net/http"
 	//"html/template"
-	"strconv"
 	"database/sql"
 	"log"
+	"strconv"
 )
 
 type DataType struct {
@@ -133,7 +133,7 @@ func (d *DataType) Post() {
 
 	var id int64
 
-	// sqlStr := `INSERT INTO data_type (name, alias, created_by, html, editor_alias, meta) 
+	// sqlStr := `INSERT INTO data_type (name, alias, created_by, html, editor_alias, meta)
 	// VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
 	// err1 := db.QueryRow(sqlStr, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta).Scan(&id)
 	sqlStr := `INSERT INTO data_type (name, alias, html, editor_alias) 

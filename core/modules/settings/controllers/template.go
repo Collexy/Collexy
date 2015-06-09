@@ -17,8 +17,8 @@ import (
 	//"path/filepath"
 	//"strings"
 	//"html/template"
-	"github.com/gorilla/mux"
 	coremoduleuser "collexy/core/modules/user/models"
+	"github.com/gorilla/mux"
 )
 
 type TemplateApiController struct{}
@@ -106,13 +106,13 @@ func (this *TemplateApiController) Post(w http.ResponseWriter, r *http.Request) 
 
 			template := models.Template{}
 
-		    err := json.NewDecoder(r.Body).Decode(&template)
+			err := json.NewDecoder(r.Body).Decode(&template)
 
-		    if err != nil {
-		        http.Error(w, "Bad Request", 400)
-		    }
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-		    template.Post()
+			template.Post()
 		} else {
 			fmt.Fprintf(w, "You do not have permission to create templates")
 		}
@@ -121,44 +121,44 @@ func (this *TemplateApiController) Post(w http.ResponseWriter, r *http.Request) 
 }
 
 func (this *TemplateApiController) Put(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
 		var hasPermission bool = false
 		hasPermission = user.HasPermissions([]string{"template_update", "template_all"})
 		if hasPermission {
 
-		    template := models.Template{}
+			template := models.Template{}
 
-		    err := json.NewDecoder(r.Body).Decode(&template)
+			err := json.NewDecoder(r.Body).Decode(&template)
 
-		    if err != nil {
-		        http.Error(w, "Bad Request", 400)
-		    }
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-		    template.Update()
+			template.Update()
 
-	    } else {
+		} else {
 			fmt.Fprintf(w, "You do not have permission to update templates")
 		}
 	}
 }
 
-func (this *TemplateApiController) Delete(w http.ResponseWriter, r *http.Request){
-    w.Header().Set("Content-Type", "application/json")
-    if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-        var hasPermission bool = false
-        hasPermission = user.HasPermissions([]string{"template_delete", "template_all"})
-        if(hasPermission){
-            params := mux.Vars(r)
+func (this *TemplateApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"template_delete", "template_all"})
+		if hasPermission {
+			params := mux.Vars(r)
 
-            idStr := params["id"]
-            id, _ := strconv.Atoi(idStr)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-            models.DeleteTemplate(id)
-        } else {
-            fmt.Fprintf(w,"You do not have permission to delete templates")
-        }
+			models.DeleteTemplate(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete templates")
+		}
 
-    }
+	}
 }

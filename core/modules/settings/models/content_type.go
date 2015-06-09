@@ -2,18 +2,18 @@ package models
 
 import (
 	// "fmt"
-	"encoding/json"
-	corehelpers "collexy/core/helpers"
 	coreglobals "collexy/core/globals"
-	"time"
+	corehelpers "collexy/core/helpers"
+	"encoding/json"
 	"fmt"
+	"time"
 	// "net/http"
 	// "html/template"
-	"strconv"
 	"database/sql"
 	"log"
 	"net/url"
-    "sync"
+	"strconv"
+	"sync"
 )
 
 type ContentType struct {
@@ -447,168 +447,166 @@ func GetContentTypeById(id int) (contentType ContentType) {
 	return
 }
 
-func (ct *ContentType) Post(){
-    meta, err1 := json.Marshal(ct.Meta)
-    corehelpers.PanicIf(err1)
-    tabs, err2 := json.Marshal(ct.Tabs)
-    corehelpers.PanicIf(err2)
+func (ct *ContentType) Post() {
+	meta, err1 := json.Marshal(ct.Meta)
+	corehelpers.PanicIf(err1)
+	tabs, err2 := json.Marshal(ct.Tabs)
+	corehelpers.PanicIf(err2)
 
-    // see template commented out post function and below
-    // _pgs_format, _ := t.PartialTemplateIds.Value()
-    allowedContentTypeIds, err3 := IntArray(ct.AllowedContentTypeIds).Value()
-    corehelpers.PanicIf(err3)
-    compositeContentTypeIds, err4 := IntArray(ct.CompositeContentTypeIds).Value()
-    corehelpers.PanicIf(err4)
-    allowedTemplateIds, err5 := IntArray(ct.AllowedTemplateIds).Value()
-    corehelpers.PanicIf(err5)
+	// see template commented out post function and below
+	// _pgs_format, _ := t.PartialTemplateIds.Value()
+	allowedContentTypeIds, err3 := IntArray(ct.AllowedContentTypeIds).Value()
+	corehelpers.PanicIf(err3)
+	compositeContentTypeIds, err4 := IntArray(ct.CompositeContentTypeIds).Value()
+	corehelpers.PanicIf(err4)
+	allowedTemplateIds, err5 := IntArray(ct.AllowedTemplateIds).Value()
+	corehelpers.PanicIf(err5)
 
-    // http://godoc.org/github.com/lib/pq
-    // pq does not support the LastInsertId() method of the Result type in database/sql.
-    // To return the identifier of an INSERT (or UPDATE or DELETE),
-    // use the Postgres RETURNING clause with a standard Query or QueryRow call:
+	// http://godoc.org/github.com/lib/pq
+	// pq does not support the LastInsertId() method of the Result type in database/sql.
+	// To return the identifier of an INSERT (or UPDATE or DELETE),
+	// use the Postgres RETURNING clause with a standard Query or QueryRow call:
 
-    db := coreglobals.Db
+	db := coreglobals.Db
 
-    // Channel c, is for getting the parent template
-    // We need to append the id of the newly created template to the path of the parent id to create the new path
-    c := make(chan ContentType)
-    var parentContentType ContentType
+	// Channel c, is for getting the parent template
+	// We need to append the id of the newly created template to the path of the parent id to create the new path
+	c := make(chan ContentType)
+	var parentContentType ContentType
 
-    var wg sync.WaitGroup
+	var wg sync.WaitGroup
 
-    wg.Add(1)
-    
-    go func(){
-        defer wg.Done()
-        c <- GetContentTypeById(ct.ParentId)
-    }()
+	wg.Add(1)
 
-    go func() {
-        for i := range c {
-            fmt.Println(i)
-            parentContentType = i
-        }
-    }()
+	go func() {
+		defer wg.Done()
+		c <- GetContentTypeById(ct.ParentId)
+	}()
 
-    wg.Wait()
+	go func() {
+		for i := range c {
+			fmt.Println(i)
+			parentContentType = i
+		}
+	}()
 
-    // This channel and WaitGroup is just to make sure the insert query is completed before we continue
-    c1 := make(chan int)
-    var id int64
+	wg.Wait()
 
-    var wg1 sync.WaitGroup
+	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
+	c1 := make(chan int)
+	var id int64
 
-    wg1.Add(1)
-    
-    go func(){
-        defer wg1.Done()
-        sqlStr := `INSERT INTO content_type (parent_id, name, alias, created_by, description, icon, thumbnail, meta, tabs, allow_at_root, is_container, 
+	var wg1 sync.WaitGroup
+
+	wg1.Add(1)
+
+	go func() {
+		defer wg1.Done()
+		sqlStr := `INSERT INTO content_type (parent_id, name, alias, created_by, description, icon, thumbnail, meta, tabs, allow_at_root, is_container, 
             is_abstract, allowed_content_type_ids,composite_content_type_ids, template_id, allowed_template_ids) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id`
-        err1 := db.QueryRow(sqlStr, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
-            ct.IsAbstract, allowedContentTypeIds, compositeContentTypeIds, ct.TemplateId, allowedTemplateIds).Scan(&id)
-        corehelpers.PanicIf(err1)
-        c1 <- int(id)
-    }()
+		err1 := db.QueryRow(sqlStr, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
+			ct.IsAbstract, allowedContentTypeIds, compositeContentTypeIds, ct.TemplateId, allowedTemplateIds).Scan(&id)
+		corehelpers.PanicIf(err1)
+		c1 <- int(id)
+	}()
 
-    go func() {
-        for i := range c1 {
-            fmt.Println(i)
-        }
-    }()
+	go func() {
+		for i := range c1 {
+			fmt.Println(i)
+		}
+	}()
 
-    wg1.Wait()
+	wg1.Wait()
 
-    // fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
+	// fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
 
-    sqlStr := `UPDATE content_type 
+	sqlStr := `UPDATE content_type 
     SET path=$1 
     WHERE id=$2`
 
-    path := strconv.Itoa(ct.Id)
-    if ct.ParentId > 0 {
-        path = parentContentType.Path + "." + strconv.Itoa(ct.Id)
-    }
+	path := strconv.Itoa(ct.Id)
+	if ct.ParentId > 0 {
+		path = parentContentType.Path + "." + strconv.Itoa(ct.Id)
+	}
 
-    _, err6 := db.Exec(sqlStr, path, id)
-    corehelpers.PanicIf(err6)
+	_, err6 := db.Exec(sqlStr, path, id)
+	corehelpers.PanicIf(err6)
 
-    log.Println("content type created successfully")
+	log.Println("content type created successfully")
 
 }
 
-func (ct *ContentType) Put(){
-    meta, err1 := json.Marshal(ct.Meta)
-    corehelpers.PanicIf(err1)
-    tabs, err2 := json.Marshal(ct.Tabs)
-    corehelpers.PanicIf(err2)
+func (ct *ContentType) Put() {
+	meta, err1 := json.Marshal(ct.Meta)
+	corehelpers.PanicIf(err1)
+	tabs, err2 := json.Marshal(ct.Tabs)
+	corehelpers.PanicIf(err2)
 
-    // see template commented out post function and below
-    // _pgs_format, _ := t.PartialTemplateIds.Value()
-    allowedContentTypeIds, err3 := IntArray(ct.AllowedContentTypeIds).Value()
-    corehelpers.PanicIf(err3)
-    compositeContentTypeIds, err4 := IntArray(ct.CompositeContentTypeIds).Value()
-    corehelpers.PanicIf(err4)
-    allowedTemplateIds, err5 := IntArray(ct.AllowedTemplateIds).Value()
-    corehelpers.PanicIf(err5)
+	// see template commented out post function and below
+	// _pgs_format, _ := t.PartialTemplateIds.Value()
+	allowedContentTypeIds, err3 := IntArray(ct.AllowedContentTypeIds).Value()
+	corehelpers.PanicIf(err3)
+	compositeContentTypeIds, err4 := IntArray(ct.CompositeContentTypeIds).Value()
+	corehelpers.PanicIf(err4)
+	allowedTemplateIds, err5 := IntArray(ct.AllowedTemplateIds).Value()
+	corehelpers.PanicIf(err5)
 
-    db := coreglobals.Db
+	db := coreglobals.Db
 
-    // Channel c, is for getting the parent template
-    // We need to append the id of the newly created template to the path of the parent id to create the new path
-    c := make(chan ContentType)
-    var parentContentType ContentType
+	// Channel c, is for getting the parent template
+	// We need to append the id of the newly created template to the path of the parent id to create the new path
+	c := make(chan ContentType)
+	var parentContentType ContentType
 
-    var wg sync.WaitGroup
+	var wg sync.WaitGroup
 
-    wg.Add(1)
-    
-    go func(){
-        defer wg.Done()
-        c <- GetContentTypeById(ct.ParentId)
-    }()
+	wg.Add(1)
 
-    go func() {
-        for i := range c {
-            fmt.Println(i)
-            parentContentType = i
-        }
-    }()
+	go func() {
+		defer wg.Done()
+		c <- GetContentTypeById(ct.ParentId)
+	}()
 
-    wg.Wait()
+	go func() {
+		for i := range c {
+			fmt.Println(i)
+			parentContentType = i
+		}
+	}()
 
-    
-    sqlStr := `UPDATE content_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12, 
+	wg.Wait()
+
+	sqlStr := `UPDATE content_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12, 
         is_abstract=$13, allowed_content_type_ids=$14,composite_content_type_ids=$15, template_id=$16, allowed_template_ids=$17
         WHERE id=$18`
 
-    path := strconv.Itoa(ct.Id)
-    if ct.ParentId > 0 {
-        path = parentContentType.Path + "." + strconv.Itoa(ct.Id)
-    }
+	path := strconv.Itoa(ct.Id)
+	if ct.ParentId > 0 {
+		path = parentContentType.Path + "." + strconv.Itoa(ct.Id)
+	}
 
-    _, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
-        ct.IsAbstract, allowedContentTypeIds, compositeContentTypeIds, ct.TemplateId, allowedTemplateIds, ct.Id)
-    
-    corehelpers.PanicIf(err6)
-    
+	_, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
+		ct.IsAbstract, allowedContentTypeIds, compositeContentTypeIds, ct.TemplateId, allowedTemplateIds, ct.Id)
 
-    log.Println("content type updated successfully")
+	corehelpers.PanicIf(err6)
+
+	log.Println("content type updated successfully")
 
 }
 
 func DeleteContentType(id int) {
 
-    db := coreglobals.Db
+	db := coreglobals.Db
 
-    sqlStr := `DELETE FROM content_type 
+	sqlStr := `DELETE FROM content_type 
     WHERE id=$1`
 
-    _, err := db.Exec(sqlStr, id)
+	_, err := db.Exec(sqlStr, id)
 
-    corehelpers.PanicIf(err)
+	corehelpers.PanicIf(err)
 
-    log.Printf("content type with id %d was successfully deleted", id)
+	log.Printf("content type with id %d was successfully deleted", id)
 }
 
 // func (t *ContentType) Post(){
