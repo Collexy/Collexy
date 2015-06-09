@@ -61,7 +61,7 @@
                 <tr ng-if="tab.name=='Properties'">
                     <td>Template:</td>
                     <td>
-                        <select ng-model="data.meta.template_id" ng-options="t.id as aliasOrName(t.alias,t.name) for t in filteredArray(allTemplates, data.content_type.meta.allowed_template_ids,'id')">
+                        <select ng-model="data.meta.template_id" ng-options="t.id as aliasOrName(t.alias,t.name) for t in filteredArray(allTemplates, data.content_type.allowed_template_ids,'id')">
                         </select>
                     </td>
                     <td></td>

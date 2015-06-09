@@ -507,9 +507,9 @@ func (mt *MediaType) Post() {
     SET path=$1 
     WHERE id=$2`
 
-	path := strconv.Itoa(mt.Id)
+	path := strconv.FormatInt(id, 10)
 	if mt.ParentId > 0 {
-		path = parentMediaType.Path + "." + strconv.Itoa(mt.Id)
+		path = parentMediaType.Path + "." + strconv.FormatInt(id, 10)
 	}
 
 	_, err6 := db.Exec(sqlStr, path, id)

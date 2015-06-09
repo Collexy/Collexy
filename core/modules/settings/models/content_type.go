@@ -525,9 +525,9 @@ func (ct *ContentType) Post() {
     SET path=$1 
     WHERE id=$2`
 
-	path := strconv.Itoa(ct.Id)
+	path := strconv.FormatInt(id, 10)
 	if ct.ParentId > 0 {
-		path = parentContentType.Path + "." + strconv.Itoa(ct.Id)
+		path = parentContentType.Path + "." + strconv.FormatInt(id, 10)
 	}
 
 	_, err6 := db.Exec(sqlStr, path, id)

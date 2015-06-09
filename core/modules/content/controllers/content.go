@@ -30,67 +30,169 @@ type ContentApiController struct{}
 func (this *ContentApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	queryStrParams := r.URL.Query()
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		if hasPermission {
 
-	user := coremoduleuser.GetLoggedInUser(r)
+			queryStrParams := r.URL.Query()
 
-	content := models.GetContent(queryStrParams, user)
+			user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(content)
-	corehelpers.PanicIf(err)
+			content := models.GetContent(queryStrParams, user)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(content)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse content")
+		}
+	}
 }
 
 func (this *ContentApiController) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		if hasPermission {
 
-	//user := coremoduleuser.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	content := models.GetContentById(id)
+			//user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(content)
-	corehelpers.PanicIf(err)
+			content := models.GetContentById(id)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(content)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse content")
+		}
+	}
 }
 
 func (this *ContentApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		if hasPermission {
 
-	user := coremoduleuser.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	content := models.GetContentByIdChildren(id, user)
+			user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(content)
-	corehelpers.PanicIf(err)
+			content := models.GetContentByIdChildren(id, user)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(content)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse content")
+		}
+	}
 }
 
 func (this *ContentApiController) GetByIdParents(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		if hasPermission {
 
-	user := coremoduleuser.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	content := models.GetContentByIdParents(id, user)
+			user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(content)
-	corehelpers.PanicIf(err)
+			content := models.GetContentByIdParents(id, user)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(content)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse content")
+		}
+	}
+
+}
+
+func (this *ContentApiController) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_create", "content_all"})
+		if hasPermission {
+
+			content := models.Content{}
+
+			err := json.NewDecoder(r.Body).Decode(&content)
+
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+
+			content.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create content")
+		}
+	}
+}
+
+func (this *ContentApiController) Put(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_update", "content_all"})
+		if hasPermission {
+			content := models.Content{}
+
+			err := json.NewDecoder(r.Body).Decode(&content)
+
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+
+			content.Put()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update content")
+		}
+
+	}
+}
+
+func (this *ContentApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"content_delete", "content_all"})
+		if hasPermission {
+			params := mux.Vars(r)
+
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
+
+			models.DeleteContent(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete content")
+		}
+
+	}
 }
 
 type TestData struct {
@@ -170,71 +272,6 @@ func (this *ContentApiController) RenderAdminTemplate(w http.ResponseWriter, nam
 
 	return nil
 }
-
-// func (this *ContentApiController) Post(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Content-Type", "application/json")
-
-//     if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-//         var hasPermission bool = false
-//         hasPermission = user.HasPermissions([]string{"content_create"})
-//         if(hasPermission){
-
-//             content := models.Content{}
-
-//             err := json.NewDecoder(r.Body).Decode(&content)
-
-//             if err != nil {
-//                 http.Error(w, "Bad Request", 400)
-//             }
-
-//             content.Post()
-//         } else {
-//             fmt.Fprintf(w,"You do not have permission to create content")
-//         }
-//     }
-// }
-
-func (this *ContentApiController) PutContent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-		var hasPermission bool = false
-		hasPermission = user.HasPermissions([]string{"content_update"})
-		if hasPermission {
-			content := models.Content{}
-
-			err := json.NewDecoder(r.Body).Decode(&content)
-
-			if err != nil {
-				http.Error(w, "Bad Request", 400)
-			}
-
-			content.Update()
-		} else {
-			fmt.Fprintf(w, "You do not have permission to update content")
-		}
-
-	}
-}
-
-// func (this *ContentApiController) Delete(w http.ResponseWriter, r *http.Request){
-//     w.Header().Set("Content-Type", "application/json")
-//     if user := coremoduleuser.GetLoggedInUser(r); user != nil {
-//         var hasPermission bool = false
-//         hasPermission = user.HasPermissions([]string{"content_delete"})
-//         if(hasPermission){
-//             params := mux.Vars(r)
-
-//             idStr := params["id"]
-//             id, _ := strconv.Atoi(idStr)
-
-//             models.DeleteContent(id)
-//         } else {
-//             fmt.Fprintf(w,"You do not have permission to delete content")
-//         }
-
-//     }
-// }
 
 func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.Request) {
 

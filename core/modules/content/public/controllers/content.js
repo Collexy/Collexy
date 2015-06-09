@@ -298,6 +298,7 @@ function ContentEditCtrl($scope, $stateParams, Content, Template, ContentType, M
                 }
             }
         }
+        $scope.data["created_by"] = $scope.userSession.id;
     }
     $scope.$watch("data", function(newValue, oldValue) {
         if (typeof $scope.data.user_group_permissions != 'undefined') {

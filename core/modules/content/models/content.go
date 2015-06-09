@@ -20,6 +20,7 @@ import (
 	coremoduleuser "collexy/core/modules/user/models"
 	"github.com/kennygrant/sanitize"
 	"net/url"
+	"sync"
 )
 
 type Content struct {
@@ -2110,20 +2111,155 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 	return template.HTML(str)
 }
 
-// func DeleteContent(id int){
-//   db := coreglobals.Db
+func (c *Content) Post() {
+	meta, _ := json.Marshal(c.Meta)
+	publicAccessMembers, _ := json.Marshal(c.PublicAccessMembers)
+	publicAccessMemberGroups, _ := json.Marshal(c.PublicAccessMemberGroups)
+	userPermissions, _ := json.Marshal(c.UserPermissions)
+	userGroupPermissions, _ := json.Marshal(c.UserGroupPermissions)
 
-//   tx, err := db.Begin()
-//   corehelpers.PanicIf(err)
+	// http://godoc.org/github.com/lib/pq
+	// pq does not support the LastInsertId() method of the Result type in database/sql.
+	// To return the identifier of an INSERT (or UPDATE or DELETE),
+	// use the Postgres RETURNING clause with a standard Query or QueryRow call:
 
-//   _, err1 := tx.Exec("DELETE FROM content where node_id=$1", id)
-//   corehelpers.PanicIf(err1)
-//   _, err2 := tx.Exec("DELETE FROM node where id=$1", id)
-//   corehelpers.PanicIf(err2)
-//   //defer r2.Close()
-//   err3 := tx.Commit()
-//   corehelpers.PanicIf(err3)
-// }
+	db := coreglobals.Db
+
+	// Channel c, is for getting the parent template
+	// We need to append the id of the newly created template to the path of the parent id to create the new path
+	c1 := make(chan Content)
+	var parentContent Content
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		c1 <- GetContentById(c.ParentId)
+	}()
+
+	go func() {
+		for i := range c1 {
+			fmt.Println(i)
+			parentContent = i
+		}
+	}()
+
+	wg.Wait()
+
+	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
+	c2 := make(chan int)
+	var id int64
+
+	var wg1 sync.WaitGroup
+
+	wg1.Add(1)
+
+	go func() {
+		defer wg1.Done()
+		sqlStr := `INSERT INTO content ( 
+			parent_id, name, alias, created_by, content_type_id, 
+			meta, public_access_members, public_access_member_groups, 
+			user_permissions, user_group_permissions) 
+			VALUES (
+				$1,$2,$3,$4,$5,$6,$7,$8,$9,$10
+				) RETURNING id`
+		err1 := db.QueryRow(sqlStr, c.ParentId, c.Name, c.Alias, c.CreatedBy, c.ContentTypeId, 
+			meta, publicAccessMembers, publicAccessMemberGroups, 
+			userPermissions, userGroupPermissions).Scan(&id)
+		corehelpers.PanicIf(err1)
+		c2 <- int(id)
+	}()
+
+	go func() {
+		for i := range c2 {
+			fmt.Println(i)
+		}
+	}()
+
+	wg1.Wait()
+
+	// fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
+
+	sqlStr := `UPDATE content 
+    SET path=$1 
+    WHERE id=$2`
+
+	path := strconv.FormatInt(id, 10)
+	if c.ParentId > 0 {
+		path = parentContent.Path + "." + strconv.FormatInt(id, 10)
+	}
+
+	_, err6 := db.Exec(sqlStr, path, id)
+	corehelpers.PanicIf(err6)
+
+	log.Println("content created successfully")
+
+}
+
+func (c *Content) Put() {
+
+	db := coreglobals.Db
+
+	meta, _ := json.Marshal(c.Meta)
+	publicAccessMembers, _ := json.Marshal(c.PublicAccessMembers)
+	publicAccessMemberGroups, _ := json.Marshal(c.PublicAccessMemberGroups)
+	userPermissions, _ := json.Marshal(c.UserPermissions)
+	userGroupPermissions, _ := json.Marshal(c.UserGroupPermissions)
+
+	c1 := make(chan Content)
+	var parentContent Content
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		c1 <- GetContentById(c.ParentId)
+	}()
+
+	go func() {
+		for i := range c1 {
+			fmt.Println(i)
+			parentContent = i
+		}
+	}()
+
+	wg.Wait()
+
+	sqlStr := `UPDATE content 
+	SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, content_type_id=$6, 
+	meta=$7, public_access_members=$8, public_access_member_groups=$9, 
+	user_permissions=$10, user_group_permissions=$11 
+ 	WHERE id=$12;`
+
+ 	path := strconv.Itoa(c.Id)
+	if c.ParentId > 0 {
+		path = parentContent.Path + "." + strconv.Itoa(c.Id)
+	}
+
+	_, err := db.Exec(sqlStr, path, c.ParentId, c.Name, c.Alias, c.CreatedBy, c.ContentTypeId, 
+		meta, publicAccessMembers,publicAccessMemberGroups,userPermissions,userGroupPermissions, c.Id)
+
+	corehelpers.PanicIf(err)
+
+	log.Println("content updated successfully")
+}
+
+func DeleteContent(id int){
+	db := coreglobals.Db
+
+	sqlStr := `DELETE FROM content 
+    WHERE id=$1`
+
+	_, err := db.Exec(sqlStr, id)
+
+	corehelpers.PanicIf(err)
+
+	log.Printf("content with id %d was successfully deleted", id)
+}
 
 // func (t *Content) Post(){
 
@@ -2234,22 +2370,7 @@ func (c *Content) TemplateFunctionTest(param1 string) template.HTML {
 //   NewPath string
 // }
 
-func (c *Content) Update() {
 
-	db := coreglobals.Db
-
-	meta, _ := json.Marshal(c.Meta)
-
-	sqlStr := `UPDATE content 
-	SET name=$1, alias=$2, meta=$3 
- 	WHERE id=$4;`
-
-	_, err := db.Exec(sqlStr, c.Name, c.Alias, meta, c.Id)
-
-	corehelpers.PanicIf(err)
-
-	log.Println("content updated successfully")
-}
 
 // func (c *Content) Update(){
 

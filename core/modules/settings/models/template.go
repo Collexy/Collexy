@@ -237,9 +237,9 @@ func (t *Template) Post() {
 	SET path=$1 
 	WHERE id=$2`
 
-	path := strconv.Itoa(t.Id)
+	path := strconv.FormatInt(id, 10)
 	if t.ParentId > 0 {
-		path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
+		path = parentTemplate.Path + "." + strconv.FormatInt(id, 10)
 	}
 
 	_, err2 := db.Exec(sqlStr, path, id)
@@ -315,7 +315,7 @@ func (t *Template) Update() {
 		path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
 	}
 
-	_, err := db.Exec("UPDATE template SET path=$1, name=$2, alias=$3 WHERE id=$4", path, t.Name, t.Alias, t.Id)
+	_, err := db.Exec("UPDATE template SET path=$1, parent_id=$2, name=$3, alias=$4 WHERE id=$5", path, t.ParentId, t.Name, t.Alias, t.Id)
 	corehelpers.PanicIf(err)
 
 	// rename filename

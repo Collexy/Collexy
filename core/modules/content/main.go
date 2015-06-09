@@ -22,10 +22,11 @@ func init() {
 	subr.HandleFunc("/api/content", http.HandlerFunc(contentApiController.Get)).Methods("GET")
 	subr.HandleFunc("/api/content/{id:.*}/children", http.HandlerFunc(contentApiController.GetByIdChildren)).Methods("GET")
 	subr.HandleFunc("/api/content/{id:.*}/parents", http.HandlerFunc(contentApiController.GetByIdParents)).Methods("GET")
-	//privateApiRouter.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Delete)).Methods("DELETE")
-	//privateApiRouter.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.Post)).Methods("POST")
 	subr.HandleFunc("/api/content/{id:.*}", http.HandlerFunc(contentApiController.GetBackendContentById)).Methods("GET")
-	privateApiRouter.HandleFunc("/api/content/{nodeId:.*}", http.HandlerFunc(contentApiController.PutContent)).Methods("PUT")
+
+	subr.HandleFunc("/api/content/{id:.*}", http.HandlerFunc(contentApiController.Post)).Methods("POST")
+	subr.HandleFunc("/api/content/{id:.*}", http.HandlerFunc(contentApiController.Put)).Methods("PUT")
+	subr.HandleFunc("/api/content/{id:.*}", http.HandlerFunc(contentApiController.Delete)).Methods("DELETE")
 
 	// Setup FileServer for the settings module
 	log.Println("Registered a handler for static files. [content::module]")
