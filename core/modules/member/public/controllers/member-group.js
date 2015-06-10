@@ -24,6 +24,10 @@ function MemberGroupEditCtrl($scope, $stateParams, MemberGroup) {
         }, function() {
             console.log("Database error: Error fetching membergroup")
         });
+    } else {
+        $scope.entity = {
+            "created_by" : $scope.userSession.id
+        }
     }
     $scope.submit = function() {
         console.log("submit")

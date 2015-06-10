@@ -14,7 +14,7 @@ function MemberListCtrl($scope, Member) {
     //console.log($state.current.name)
 }
 
-function MemberEditCtrl($scope, $stateParams, Member, MemberType) {
+function MemberEditCtrl($scope, $stateParams, Member, MemberType, MemberGroup) {
     //$scope._ = _;
     $scope.currentTab = 'Membership';
     var tabs = [];
@@ -27,6 +27,29 @@ function MemberEditCtrl($scope, $stateParams, Member, MemberType) {
             }, {
                 id: data.member_type_id
             }, function(member_type) {});
+
+            MemberGroup.query().$promise.then(function(memberGroups) {
+                $scope.allMemberGroups = memberGroups;
+                var availableMemberGroups = [];
+                var selectedMemberGroups = [];
+                for (var i = 0; i < data.member_group_ids.length; i++) {
+                    for (var j = 0; j < memberGroups.length; j++) {
+                        //console.log("[i] = " + data.member_group_ids[i] + ", [j]: " +memberGroups[j].id)
+                        if (data.member_group_ids[i] != memberGroups[j].id) {
+                            availableMemberGroups.push(memberGroups[j])
+                        } else {
+                            selectedMemberGroups.push(memberGroups[j])
+                        }
+                    }
+                }
+                availableMemberGroups.unique();
+                selectedMemberGroups.unique();
+                $scope.availableMemberGroups = availableMemberGroups;
+                $scope.selectedMemberGroups = selectedMemberGroups;
+            }, function() {
+                //ERR
+            })
+
         });
     } else {
         if ($stateParams.member_type_id) {
@@ -42,6 +65,67 @@ function MemberEditCtrl($scope, $stateParams, Member, MemberType) {
                     id: $scope.data.member_type_id
                 }, function(member_type) {})
             }
+        }
+        MemberGroup.query().$promise.then(function(memberGroups) {
+            $scope.allMemberGroups = memberGroups;
+            var availableMemberGroups = [];
+            var selectedMemberGroups = [];
+            
+            availableMemberGroups = $scope.allMemberGroups;
+
+            availableMemberGroups.unique();
+            //selectedMemberGroups.unique();
+            $scope.availableMemberGroups = availableMemberGroups;
+            $scope.selectedMemberGroups = selectedMemberGroups;
+        }, function() {
+            //ERR
+        })
+        $scope.data["created_by"] = $scope.userSession.id;
+    }
+
+    $scope.moveItem = function(item, from, to) {
+        alert("moveitem")
+        var idx = from.indexOf(item);
+        if (idx != -1) {
+            from.splice(idx, 1);
+            to.push(item);
+        }
+        var member_group_ids = [];
+        for (var i = 0; i < $scope.selectedMemberGroups.length; i++) {
+            member_group_ids.push($scope.selectedMemberGroups[i].id);
+        }
+        $scope.data.member_group_ids = member_group_ids;
+    };
+    $scope.moveAll = function(from, to) {
+        angular.forEach(from, function(item) {
+            to.push(item);
+        });
+        from.length = 0;
+    };
+
+    $scope.submit = function() {
+        console.log("submit")
+
+        function success(response) {
+            console.log("success", response)
+            //$location.path("/admin/users");
+        }
+
+        function failure(response) {
+            console.log("failure", response);
+        }
+        if ($stateParams.id) {
+            console.log("update");
+            Member.update({
+                id: $stateParams.id
+            }, $scope.data, success, failure);
+            console.log($scope.data)
+            //User.update($scope.user, success, failure);
+        } else {
+            console.log("create");
+            console.log($scope.data)
+            Member.create($scope.data, success, failure);
+            //User.create($scope.user, success, failure);
         }
     }
 }

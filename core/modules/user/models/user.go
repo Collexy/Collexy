@@ -59,7 +59,7 @@ func (u *User) Post() {
 		user_group_ids, permissions) 
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 
-	// Todo: 
+	// Todo:
 	// Level: not important
 	// Difficulty: easy
 	// Time: quick
@@ -69,13 +69,12 @@ func (u *User) Post() {
 	// instead of a parameter
 	u.SetPassword(string(u.Password))
 
-	_, err1 := db.Exec(sqlStr, u.Username, u.FirstName, u.LastName, u.Password, u.Email, 
+	_, err1 := db.Exec(sqlStr, u.Username, u.FirstName, u.LastName, u.Password, u.Email,
 		u.Status, userGroupIds, permissions)
 
 	if err1 != nil {
 		panic(err1)
 	}
-
 
 	log.Println("user created successfully")
 }
@@ -93,8 +92,8 @@ func (u *User) Put() {
 		WHERE id=$9`
 
 	u.SetPassword(string(u.Password))
-	
-	_, err1 := db.Exec(sqlStr, u.Username, u.FirstName, u.LastName, u.Password, u.Email, 
+
+	_, err1 := db.Exec(sqlStr, u.Username, u.FirstName, u.LastName, u.Password, u.Email,
 		u.Status, userGroupIds, permissions, u.Id)
 
 	if err1 != nil {
@@ -113,7 +112,7 @@ func DeleteUser(id int) {
 
 	_, err := db.Exec(sqlStr, id)
 
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 

@@ -31,7 +31,7 @@ func (this *MemberTypeTreeController) GetMenuForMemberType(w http.ResponseWriter
 		cmiNew := ContextMenuItem{"Create", "member.memberType.new({parent_id:null})", "", "", false, nil, "node_create"}
 		cmItems = append(cmItems, cmiNew)
 	} else {
-		cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/settings/public/views/content-type/delete.html", true, nil, ""}
+		cmiDel := ContextMenuItem{"Delete", "", "", "core/modules/member/public/views/member-type/delete.html", true, nil, ""}
 		path := fmt.Sprintf("member.memberType.new({parent_id:%d})", id)
 		cmiNew := ContextMenuItem{"Create", path, "", "", false, nil, "node_create"}
 		cmItems = append(cmItems, cmiNew)

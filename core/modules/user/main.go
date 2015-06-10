@@ -39,7 +39,7 @@ func init() {
 	subrPrivate.HandleFunc("/api/user-group", http.HandlerFunc(userGroupApiController.Post)).Methods("POST")
 	subrPrivate.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.Put)).Methods("PUT")
 	subrPrivate.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.Delete)).Methods("DELETE")
-	
+
 	subrPrivate.HandleFunc("/api/permission", http.HandlerFunc(permissionApiController.Get)).Methods("GET")
 
 	///

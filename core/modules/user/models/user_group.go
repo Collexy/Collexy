@@ -10,10 +10,10 @@ import (
 )
 
 type UserGroup struct {
-	Id              int      `json:"id"`
-	Name            string   `json:"name,omitempty"`
-	Alias           string   `json:"alias,omitempty"`
-	Permissions     []string `json:"permissions,omitempty"`
+	Id          int      `json:"id"`
+	Name        string   `json:"name,omitempty"`
+	Alias       string   `json:"alias,omitempty"`
+	Permissions []string `json:"permissions,omitempty"`
 }
 
 func GetUserGroups(user *User) (userGroups []UserGroup) {
@@ -101,7 +101,6 @@ func (u *UserGroup) Post() {
 	if err1 != nil {
 		panic(err1)
 	}
-
 
 	log.Println("user group created successfully")
 }

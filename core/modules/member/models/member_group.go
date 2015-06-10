@@ -9,8 +9,6 @@ import (
 
 type MemberGroup struct {
 	Id          int       `json:"id"`
-	Path        string    `json:"path"`
-	ParentId    int       `json:"parent_id,omitempty"`
 	Name        string    `json:"name"`
 	Alias       string    `json:"alias"`
 	CreatedBy   int       `json:"created_by"`
@@ -20,8 +18,8 @@ type MemberGroup struct {
 func (this *MemberGroup) Post() {
 	db := coreglobals.Db
 
-	_, err := db.Exec(`INSERT INTO member_group (path, parent_id, name, alias, created_by) 
-        VALUES ($1, $2, $3, $4, $5)`, this.Path, this.ParentId, this.Name, this.Alias, this.CreatedBy)
+	_, err := db.Exec(`INSERT INTO member_group (name, alias, created_by) 
+        VALUES ($1, $2, $3)`, this.Name, this.Alias, this.CreatedBy)
 
 	if err != nil {
 		log.Fatal(err)
@@ -38,10 +36,26 @@ func (this *MemberGroup) Put() {
 	}
 }
 
+func DeleteMemberGroup(id int) {
+
+	db := coreglobals.Db
+
+	sqlStr := `delete FROM "member_group" 
+	WHERE id=$1`
+
+	_, err := db.Exec(sqlStr, id)
+
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("member group with id %d was successfully deleted", id)
+}
+
 func GetMemberGroups() (memberGroups []*MemberGroup) {
 	db := coreglobals.Db
 
-	rows, err := db.Query(`SELECT id, path, parent_id, name, alias, created_by, created_date 
+	rows, err := db.Query(`SELECT id, name, alias, created_by, created_date 
         FROM member_group`)
 	if err != nil {
 		log.Fatal(err)
@@ -50,21 +64,14 @@ func GetMemberGroups() (memberGroups []*MemberGroup) {
 
 	for rows.Next() {
 		var id, created_by int
-		var path, name, alias string
+		var name, alias string
 		var created_date time.Time
-		var parent_id sql.NullInt64
 
-		if err := rows.Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date); err != nil {
+		if err := rows.Scan(&id, &name, &alias, &created_by, &created_date); err != nil {
 			log.Fatal(err)
 		}
 
-		var pid int
-
-		if parent_id.Valid {
-			pid = int(parent_id.Int64)
-		}
-
-		memberGroup := &MemberGroup{id, path, pid, name, alias, created_by, created_date}
+		memberGroup := &MemberGroup{id, name, alias, created_by, created_date}
 		memberGroups = append(memberGroups, memberGroup)
 	}
 	if err := rows.Err(); err != nil {
@@ -77,25 +84,19 @@ func GetMemberGroupById(id int) (memberGroup *MemberGroup) {
 	db := coreglobals.Db
 
 	var created_by int
-	var path, name, alias string
+	var name, alias string
 	var created_date time.Time
-	var parent_id sql.NullInt64
 
-	err := db.QueryRow(`SELECT id, path, parent_id, name, alias, created_by, created_date 
-        FROM member_group WHERE id=$1`, id).Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date)
+	err := db.QueryRow(`SELECT id, name, alias, created_by, created_date 
+        FROM member_group WHERE id=$1`, id).Scan(&id, &name, &alias, &created_by, &created_date)
 	switch {
 	case err == sql.ErrNoRows:
 		log.Printf("No member group with that ID.")
 	case err != nil:
 		log.Fatal(err)
 	default:
-		var pid int
 
-		if parent_id.Valid {
-			pid = int(parent_id.Int64)
-		}
-
-		memberGroup = &MemberGroup{id, path, pid, name, alias, created_by, created_date}
+		memberGroup = &MemberGroup{id, name, alias, created_by, created_date}
 	}
 	return
 }

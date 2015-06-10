@@ -3,10 +3,10 @@ package globals
 import (
 	"errors"
 	//corehelpers "collexy/core/helpers"
+	"database/sql/driver"
 	"fmt"
 	"regexp"
 	"strings"
-	"database/sql/driver"
 )
 
 type StringSlice []string

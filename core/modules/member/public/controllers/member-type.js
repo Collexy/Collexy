@@ -32,7 +32,12 @@ function MemberTypeEditCtrl($scope, $stateParams, MemberType, DataType) {
         }, function() {
             console.log("Database error: Error fetching MemberType")
         });
+    } else {
+        $scope.entity = {
+            "created_by" : $scope.userSession.id
+        }
     }
+
     DataType.query().$promise.then(function(allDataTypes) {
         $scope.allDataTypes = allDataTypes;
     }, function() {
@@ -62,7 +67,7 @@ function MemberTypeEditCtrl($scope, $stateParams, MemberType, DataType) {
     }
     $scope.addTab = function() {
         if ('tabs' in $scope.entity) {} else {
-            $scope.node["tabs"] = [];
+            $scope.entity["tabs"] = [];
         }
         tab = {
             "name": "mytab",

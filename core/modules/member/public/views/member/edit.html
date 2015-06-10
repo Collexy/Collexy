@@ -56,6 +56,43 @@
                 <td>{{data.member_type_id}}</td>
                 <td>blabla bla bla</td>
             </tr>
+            <tr>
+                <td>Email:</td>
+                <td><input type="email" ng-model="data.email"/></td>
+                
+            </tr>
+            <tr>
+                <td>Member Group Ids:</td>
+                <td>
+                    <table>
+                        <thead>
+                            <th>Available Groups</th>
+                            <th></th>
+                            <th>Selected Groups</th>
+                        </thead>
+                        <tr>
+                            <td>
+                                
+                                <select multiple="true" ng-model="available" ng-options="item as item.name for item in availableMemberGroups"></select>
+                            </td>
+                            <td>
+                                <button ng-click="moveItem(available[0], availableMemberGroups, selectedMemberGroups)">--></button><br>
+                                <button ng-click="moveItem(selected[0], selectedMemberGroups, availableMemberGroups)"><--</button>
+                            </td>
+                            <td>
+                                <select multiple="true" ng-model="selected" ng-options="item as item.name for item in selectedMemberGroups"></select>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- key as value for (key , value) in data //data.user_group_ids -->
+                    
+                    <!-- {{availableUserGroups}}<br>
+                    {{selectedUserGroups}}<br> -->
+                    
+                    {{data.member_group_ids}}
+                </td>
+               
+            </tr>
         </table>
         <div ui-view></div>
         <button class="btn" type="submit">Update Member &raquo;</button>

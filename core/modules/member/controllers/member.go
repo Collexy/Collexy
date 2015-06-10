@@ -12,6 +12,7 @@ import (
 	"strconv"
 	//"github.com/gorilla/schema"
 	"collexy/core/modules/member/models"
+	coremoduleusermodels "collexy/core/modules/user/models"
 	"github.com/gorilla/mux"
 	//"github.com/dgrijalva/jwt-go"
 	//"encoding/json"
@@ -21,26 +22,45 @@ type MemberApiController struct{}
 
 func (this *MemberApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	members := models.GetMembers()
-	res, err := json.Marshal(members)
-	corehelpers.PanicIf(err)
 
-	fmt.Fprintf(w, "%s", res)
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_browse", "member_all"})
+		if hasPermission {
+
+			members := models.GetMembers()
+			res, err := json.Marshal(members)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse members")
+		}
+	}
 }
 
 func (this *MemberApiController) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_browse", "member_all"})
+		if hasPermission {
 
-	memberId, _ := strconv.Atoi(idStr)
+			params := mux.Vars(r)
+			idStr := params["id"]
 
-	member := models.GetMemberById(memberId)
-	res, err := json.Marshal(member)
-	corehelpers.PanicIf(err)
+			memberId, _ := strconv.Atoi(idStr)
 
-	fmt.Fprintf(w, "%s", res)
+			member := models.GetMemberById(memberId)
+			res, err := json.Marshal(member)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse members")
+		}
+	}
 }
 
 func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
@@ -61,69 +81,68 @@ func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w,"username: %s\n password: ",username, password)
 }
 
-// func (this *MemberApiController) Post(w http.ResponseWriter, r *http.Request) {
-//     user := new(models.User)
+func (this *MemberApiController) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-//     err := r.ParseForm()
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_create", "member_all"})
+		if hasPermission {
 
-//     corehelpers.PanicIf(err)
+			u := models.Member{}
 
-//     decoder := schema.NewDecoder()
-//     // r.PostForm is a map of our POST form values
-//     decoder.Decode(user, r.PostForm)
+			err := json.NewDecoder(r.Body).Decode(&u)
 
-//     fmt.Println(r.PostForm)
-//     fmt.Println(user.FirstName)
-//     fmt.Println(user.Password)
-//     fmt.Println(r.FormValue("Password"))
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-//     db := corehelpers.Db
+			u.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create members")
+		}
+	}
 
-//     // http://stackoverflow.com/questions/244243/how-to-reset-postgres-primary-key-sequence-when-it-falls-out-of-sync
-//     //fmt.Println(fmt.Sprintf("path: %s, created_by: %d, label: %s, User type: %d", t.Path, t.Created_by, t.Label, t.User_type))
-//     lol := string(r.FormValue("Password"))
-//     user.SetPassword(lol)
+}
 
-//     // password := user.Password
-//     fmt.Println(fmt.Sprintf("username: %s, first name: %s, last name: %s, password: %s", user.Username, user.FirstName, user.LastName, user.Password))
+func (this *MemberApiController) Put(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-//     querystr := fmt.Sprintf("INSERT INTO \"user\" (username, first_name, last_name, password) VALUES ('%s','%s','%s','%s')", user.Username, user.FirstName, user.LastName, user.Password)
-//     fmt.Println("querystring: " + querystr)
-//     res, err := db.Exec(querystr)
-//     corehelpers.PanicIf(err)
-//     fmt.Println(res)
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_update", "member_all"})
+		if hasPermission {
 
-// }
+			u := models.Member{}
 
-// func (this *UserController) Delete(w http.ResponseWriter, r *http.Request) {
+			err := json.NewDecoder(r.Body).Decode(&u)
 
-//     params := mux.Vars(r)
-//     idStr := params["id"]
-//     id, _ := strconv.Atoi(idStr)
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-//     parm_id := id
+			u.Put()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update members")
+		}
+	}
+}
 
-//     db := corehelpers.Db
+func (this *MemberApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_delete", "member_all"})
+		if hasPermission {
+			params := mux.Vars(r)
 
-//     querystr := fmt.Sprintf("DELETE FROM \"user\" WHERE id=%d", parm_id)
-//     res, err := db.Exec(querystr)
-//     corehelpers.PanicIf(err)
-//     fmt.Println(res)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-// }
+			models.DeleteMember(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete members")
+		}
 
-// type User struct {
-//   Username string `json:"username,omitempty"`
-//   Password string `json:"password"`
-// }
-
-// func (this *MemberApiController) Login(w http.ResponseWriter, r *http.Request) {}
-
-// // func (this *UserController) ReadCookieHandler(w http.ResponseWriter, r *http.Request) {
-// //     if cookie, err := r.Cookie("cookie-name-test"); err == nil {
-// //         value := make(map[string]string)
-// //         // if err = s2.Decode("cookie-name-test", cookie.Value, &value); err == nil {
-// //         //     fmt.Fprintf(w, "The value of foo is %q", value["foo"])
-// //         // }
-// //     }
-// // }
+	}
+}

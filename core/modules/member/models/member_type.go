@@ -2,10 +2,14 @@ package models
 
 import (
 	coreglobals "collexy/core/globals"
+	corehelpers "collexy/core/helpers"
 	coremodulesettingsmodels "collexy/core/modules/settings/models"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
+	"strconv"
+	"sync"
 	"time"
 )
 
@@ -528,3 +532,172 @@ func GetMemberTypeById(id int) (memberType MemberType) {
 
 //     return
 // }
+
+func (ct *MemberType) Post() {
+	meta, err1 := json.Marshal(ct.Meta)
+	corehelpers.PanicIf(err1)
+	tabs, err2 := json.Marshal(ct.Tabs)
+	corehelpers.PanicIf(err2)
+
+	// see template commented out post function and below
+	// _pgs_format, _ := t.PartialTemplateIds.Value()
+	// allowedMemberTypeIds, err3 := IntArray(ct.AllowedMemberTypeIds).Value()
+	// corehelpers.PanicIf(err3)
+	// compositeMemberTypeIds, err4 := IntArray(ct.CompositeMemberTypeIds).Value()
+	// corehelpers.PanicIf(err4)
+	// allowedTemplateIds, err5 := IntArray(ct.AllowedTemplateIds).Value()
+	// corehelpers.PanicIf(err5)
+
+	// http://godoc.org/github.com/lib/pq
+	// pq does not support the LastInsertId() method of the Result type in database/sql.
+	// To return the identifier of an INSERT (or UPDATE or DELETE),
+	// use the Postgres RETURNING clause with a standard Query or QueryRow call:
+
+	db := coreglobals.Db
+
+	// Channel c, is for getting the parent template
+	// We need to append the id of the newly created template to the path of the parent id to create the new path
+	c := make(chan MemberType)
+	var parentMemberType MemberType
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		c <- GetMemberTypeById(ct.ParentId)
+	}()
+
+	go func() {
+		for i := range c {
+			fmt.Println(i)
+			parentMemberType = i
+		}
+	}()
+
+	wg.Wait()
+
+	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
+	c1 := make(chan int)
+	var id int64
+
+	var wg1 sync.WaitGroup
+
+	wg1.Add(1)
+
+	go func() {
+		defer wg1.Done()
+		// sqlStr := `INSERT INTO member_type (parent_id, name, alias, created_by, description, icon, thumbnail, meta, tabs, allow_at_root, is_container,
+		//           is_abstract, allowed_member_type_ids,composite_member_type_ids, template_id, allowed_template_ids)
+		//           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id`
+		// err1 := db.QueryRow(sqlStr, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
+		sqlStr := `INSERT INTO member_type (parent_id, name, alias, created_by, description, icon, meta, tabs) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
+		err1 := db.QueryRow(sqlStr, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, meta, tabs).Scan(&id)
+		corehelpers.PanicIf(err1)
+		c1 <- int(id)
+	}()
+
+	go func() {
+		for i := range c1 {
+			fmt.Println(i)
+		}
+	}()
+
+	wg1.Wait()
+
+	// fmt.Println(parentTemplate.Path + "." + strconv.FormatInt(id, 10))
+
+	sqlStr := `UPDATE member_type 
+    SET path=$1 
+    WHERE id=$2`
+
+	path := strconv.FormatInt(id, 10)
+	if ct.ParentId > 0 {
+		path = parentMemberType.Path + "." + strconv.FormatInt(id, 10)
+	}
+
+	_, err6 := db.Exec(sqlStr, path, id)
+	corehelpers.PanicIf(err6)
+
+	log.Println("member_type created successfully")
+
+}
+
+func (ct *MemberType) Put() {
+	meta, err1 := json.Marshal(ct.Meta)
+	corehelpers.PanicIf(err1)
+	tabs, err2 := json.Marshal(ct.Tabs)
+	corehelpers.PanicIf(err2)
+
+	// see template commented out post function and below
+	// _pgs_format, _ := t.PartialTemplateIds.Value()
+	// allowedMemberTypeIds, err3 := IntArray(ct.AllowedMemberTypeIds).Value()
+	// corehelpers.PanicIf(err3)
+	// compositeMemberTypeIds, err4 := IntArray(ct.CompositeMemberTypeIds).Value()
+	// corehelpers.PanicIf(err4)
+	// allowedTemplateIds, err5 := IntArray(ct.AllowedTemplateIds).Value()
+	// corehelpers.PanicIf(err5)
+
+	db := coreglobals.Db
+
+	// Channel c, is for getting the parent template
+	// We need to append the id of the newly created template to the path of the parent id to create the new path
+	c := make(chan MemberType)
+	var parentMemberType MemberType
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		c <- GetMemberTypeById(ct.ParentId)
+	}()
+
+	go func() {
+		for i := range c {
+			fmt.Println(i)
+			parentMemberType = i
+		}
+	}()
+
+	wg.Wait()
+
+	path := strconv.Itoa(ct.Id)
+	if ct.ParentId > 0 {
+		path = parentMemberType.Path + "." + strconv.Itoa(ct.Id)
+	}
+
+	// sqlStr := `UPDATE member_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12,
+	//        is_abstract=$13, allowed_member_type_ids=$14,composite_member_type_ids=$15, template_id=$16, allowed_template_ids=$17
+	//        WHERE id=$18`
+
+	// _, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
+	// 	ct.IsAbstract, allowedMemberTypeIds, compositeMemberTypeIds, ct.TemplateId, allowedTemplateIds, ct.Id)
+
+	sqlStr := `UPDATE member_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, meta=$8, tabs=$9 
+        WHERE id=$11`
+
+	_, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, meta, tabs, ct.Id)
+
+	corehelpers.PanicIf(err6)
+
+	log.Println("member_type updated successfully")
+
+}
+
+func DeleteMemberType(id int) {
+
+	db := coreglobals.Db
+
+	sqlStr := `DELETE FROM member_type 
+    WHERE id=$1`
+
+	_, err := db.Exec(sqlStr, id)
+
+	corehelpers.PanicIf(err)
+
+	log.Printf("member_type with id %d was successfully deleted", id)
+}

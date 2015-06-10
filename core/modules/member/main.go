@@ -27,23 +27,28 @@ func init() {
 	subrPublic.HandleFunc("/api/public/member/login", http.HandlerFunc(memberApiController.Login)).Methods("POST")
 
 	subrPrivate.HandleFunc("/api/member/{id:.*}/contextmenu", http.HandlerFunc(memberTreeController.GetMenuForMember)).Methods("GET")
-	subrPrivate.HandleFunc("/api/member", http.HandlerFunc(memberApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member/{id:.*}", http.HandlerFunc(memberApiController.GetById)).Methods("GET")
+	subrPrivate.HandleFunc("/api/member", http.HandlerFunc(memberApiController.Get)).Methods("GET")
+	subrPrivate.HandleFunc("/api/member", http.HandlerFunc(memberApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/member/{id:.*}", http.HandlerFunc(memberApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/member/{id:.*}", http.HandlerFunc(memberApiController.Delete)).Methods("DELETE")
 
 	// Member Group
 	subrPrivate.HandleFunc("/api/member-group/{id:.*}/contextmenu", http.HandlerFunc(memberGroupTreeController.GetMenuForMemberGroup)).Methods("GET")
-	subrPrivate.HandleFunc("/api/member-group", http.HandlerFunc(memberGroupApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-group/{id:.*}", http.HandlerFunc(memberGroupApiController.GetById)).Methods("GET")
+	subrPrivate.HandleFunc("/api/member-group", http.HandlerFunc(memberGroupApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-group", http.HandlerFunc(memberGroupApiController.Post)).Methods("POST")
 	subrPrivate.HandleFunc("/api/member-group/{id:.*}", http.HandlerFunc(memberGroupApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/member-group/{id:.*}", http.HandlerFunc(memberGroupApiController.Delete)).Methods("DELETE")
 
 	// Member type
 	subrPrivate.HandleFunc("/api/member-type/{id:.*}/contextmenu", http.HandlerFunc(memberTypeTreeController.GetMenuForMemberType)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-type/{id:.*}/children", http.HandlerFunc(memberTypeApiController.GetByIdChildren)).Methods("GET")
-	subrPrivate.HandleFunc("/api/member-type", http.HandlerFunc(memberTypeApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/member-type/{id:.*}", http.HandlerFunc(memberTypeApiController.GetById)).Methods("GET")
-	// privateApiRouter.HandleFunc("/api/member-type", http.HandlerFunc(memberTypeApiController.Post)).Methods("POST")
-	// privateApiRouter.HandleFunc("/api/member-type/{id:.*}", http.HandlerFunc(memberTypeApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/member-type", http.HandlerFunc(memberTypeApiController.Get)).Methods("GET")
+	subrPrivate.HandleFunc("/api/member-type", http.HandlerFunc(memberTypeApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/member-type/{id:.*}", http.HandlerFunc(memberTypeApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/member-type/{id:.*}", http.HandlerFunc(memberTypeApiController.Delete)).Methods("DELETE")
 
 	///
 

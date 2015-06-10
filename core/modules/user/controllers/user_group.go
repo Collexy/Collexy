@@ -31,7 +31,7 @@ func (this *UserGroupApiController) Get(w http.ResponseWriter, r *http.Request) 
 		} else {
 			fmt.Fprintf(w, "You do not have permission to browse user groups")
 		}
-	}	
+	}
 }
 
 func (this *UserGroupApiController) GetById(w http.ResponseWriter, r *http.Request) {

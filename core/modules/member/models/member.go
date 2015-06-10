@@ -2,6 +2,7 @@ package models
 
 import (
 	coreglobals "collexy/core/globals"
+	corehelpers "collexy/core/helpers"
 	"database/sql"
 	"encoding/base32"
 	"encoding/json"
@@ -303,7 +304,7 @@ FROM member,
 LATERAL (
   SELECT array_to_json(array_agg(group_agg)) AS groups
   FROM (
-    SELECT member_group.id, member_group.path, member_group.parent_id, member_group.name, member_group.alias, member_group.created_by, member_group.created_date 
+    SELECT member_group.id, member_group.name, member_group.alias, member_group.created_by, member_group.created_date 
     FROM member_group
     WHERE member_group.id = ANY (member.member_group_ids)
   ) group_agg
@@ -364,4 +365,81 @@ func GetLoggedInMember(r *http.Request) *Member {
 // SetLoggedInUser sets a value for this package in the request values.
 func SetLoggedInMember(r *http.Request, val *Member) {
 	context.Set(r, loggedInMember, val)
+}
+
+func (u *Member) Post() {
+
+	meta, err := json.Marshal(u.Meta)
+	corehelpers.PanicIf(err)
+
+	db := coreglobals.Db
+
+	memberGroupIds, _ := coreglobals.IntSlice(u.MemberGroupIds).Value()
+
+	// sqlStr := `INSERT INTO data_type (name, alias, created_by, html, editor_alias, meta)
+	// VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	// err1 := db.QueryRow(sqlStr, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta).Scan(&id)
+	sqlStr := `INSERT INTO "member" (username, "password", email, meta, status, 
+		member_type_id, member_group_ids) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7)`
+
+	// Todo:
+	// Level: not important
+	// Difficulty: easy
+	// Time: quick
+	// Description:
+	// u.SetPassword(string(u.Password)) seems kinda stupid.
+	// the SetPassword functions should just compute the hash using the struft password field
+	// instead of a parameter
+	u.SetPassword(string(u.Password))
+
+	_, err1 := db.Exec(sqlStr, u.Username, u.Password, u.Email, meta, u.Status,
+		u.MemberTypeId, memberGroupIds)
+
+	if err1 != nil {
+		panic(err1)
+	}
+
+	log.Println("member created successfully")
+}
+
+func (u *Member) Put() {
+
+	meta, _ := json.Marshal(u.Meta)
+
+	memberGroupIds, _ := coreglobals.IntSlice(u.MemberGroupIds).Value()
+
+	db := coreglobals.Db
+
+	sqlStr := `UPDATE "member" 
+	SET username=$1, "password"=$2, email=$3, meta=$4, status=$5, 
+		member_type_id=$6, member_group_ids=$7 
+		WHERE id=$8`
+
+	u.SetPassword(string(u.Password))
+
+	_, err1 := db.Exec(sqlStr, u.Username, u.Password, u.Email, meta, u.Status,
+		u.MemberTypeId, memberGroupIds, u.Id)
+
+	if err1 != nil {
+		panic(err1)
+	}
+
+	log.Println("member updated successfully")
+}
+
+func DeleteMember(id int) {
+
+	db := coreglobals.Db
+
+	sqlStr := `delete FROM "member" 
+	WHERE id=$1`
+
+	_, err := db.Exec(sqlStr, id)
+
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("member with id %d was successfully deleted", id)
 }

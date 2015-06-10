@@ -17,6 +17,7 @@ import (
 	//"path/filepath"
 	//"strings"
 	//"html/template"
+	coremoduleusermodels "collexy/core/modules/user/models"
 	"github.com/gorilla/mux"
 )
 
@@ -24,95 +25,147 @@ type MemberTypeApiController struct{}
 
 func (this *MemberTypeApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_type_browse", "member_all"})
+		if hasPermission {
 
-	memberTypes := models.GetMemberTypes()
-	res, err := json.Marshal(memberTypes)
-	corehelpers.PanicIf(err)
+			memberTypes := models.GetMemberTypes()
+			res, err := json.Marshal(memberTypes)
+			corehelpers.PanicIf(err)
 
-	fmt.Fprintf(w, "%s", res)
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create member types")
+		}
+	}
 }
 
 func (this *MemberTypeApiController) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_type_browse", "member_all"})
+		if hasPermission {
 
-	params := mux.Vars(r)
-	idStr := params["id"]
+			params := mux.Vars(r)
+			idStr := params["id"]
 
-	id, _ := strconv.Atoi(idStr)
+			id, _ := strconv.Atoi(idStr)
 
-	var extended bool = false
-	extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
+			var extended bool = false
+			extended, _ = strconv.ParseBool(r.URL.Query().Get("extended"))
 
-	//extended, _ := strconv.Atoi(extendedStr)
+			//extended, _ := strconv.Atoi(extendedStr)
 
-	if !extended {
-		memberType := models.GetMemberTypeById(id)
-		res, err := json.Marshal(memberType)
-		corehelpers.PanicIf(err)
+			if !extended {
+				memberType := models.GetMemberTypeById(id)
+				res, err := json.Marshal(memberType)
+				corehelpers.PanicIf(err)
 
-		fmt.Fprintf(w, "%s", res)
-	} else {
-		memberType := models.GetMemberTypeExtendedById(id)
-		res, err := json.Marshal(memberType)
-		corehelpers.PanicIf(err)
+				fmt.Fprintf(w, "%s", res)
+			} else {
+				memberType := models.GetMemberTypeExtendedById(id)
+				res, err := json.Marshal(memberType)
+				corehelpers.PanicIf(err)
 
-		fmt.Fprintf(w, "%s", res)
+				fmt.Fprintf(w, "%s", res)
+			}
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create member types")
+		}
 	}
-
 }
 
 func (this *MemberTypeApiController) GetByIdChildren(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_type_browse", "member_all"})
+		if hasPermission {
 
-	//user := coremoduleuser.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	memberTypes := models.GetMemberTypesByIdChildren(id)
+			//user := coremoduleuser.GetLoggedInUser(r)
 
-	res, err := json.Marshal(memberTypes)
-	corehelpers.PanicIf(err)
+			memberTypes := models.GetMemberTypesByIdChildren(id)
 
-	fmt.Fprintf(w, "%s", res)
+			res, err := json.Marshal(memberTypes)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create member types")
+		}
+	}
 }
 
-// func (this *MemberTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Member-Type", "application/json")
+func (this *MemberTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-//     memberType := models.MemberType{}
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_type_create", "member_all"})
+		if hasPermission {
 
-//     err := json.NewDecoder(r.Body).Decode(&memberType)
+			memberType := models.MemberType{}
 
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
+			err := json.NewDecoder(r.Body).Decode(&memberType)
 
-//     memberType.Post()
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-// }
+			memberType.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create member types")
+		}
+	}
 
-// func (this *MemberTypeApiController) GetMemberTypes(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Member-Type", "application/json")
+}
 
-//     memberTypes := models.GetMemberTypes()
-//     res, err := json.Marshal(memberTypes)
-//     corehelpers.PanicIf(err)
+func (this *MemberTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-//     fmt.Fprintf(w,"%s",res)
-// }
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_type_update", "member_all"})
+		if hasPermission {
 
-// func (this *MemberTypeApiController) PutMemberType(w http.ResponseWriter, r *http.Request) {
-//     w.Header().Set("Member-Type", "application/json")
+			memberType := models.MemberType{}
 
-//     memberType := models.MemberType{}
+			err := json.NewDecoder(r.Body).Decode(&memberType)
 
-//     err := json.NewDecoder(r.Body).Decode(&memberType)
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-//     if err != nil {
-//         http.Error(w, "Bad Request", 400)
-//     }
+			memberType.Put()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update member types")
+		}
+	}
+}
 
-//     memberType.Update()
-// }
+func (this *MemberTypeApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := coremoduleusermodels.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"member_type_delete", "member_all"})
+		if hasPermission {
+			params := mux.Vars(r)
+
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
+
+			models.DeleteMemberType(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete member types")
+		}
+
+	}
+}

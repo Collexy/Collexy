@@ -34,7 +34,7 @@ func (this *UserApiController) Get(w http.ResponseWriter, r *http.Request) {
 		} else {
 			fmt.Fprintf(w, "You do not have permission to browse users")
 		}
-	}	
+	}
 }
 
 func (this *UserApiController) GetById(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +58,7 @@ func (this *UserApiController) GetById(w http.ResponseWriter, r *http.Request) {
 		} else {
 			fmt.Fprintf(w, "You do not have permission to browse users")
 		}
-	}	
+	}
 }
 
 func (this *UserApiController) Post(w http.ResponseWriter, r *http.Request) {
@@ -160,8 +160,6 @@ func (this *UserApiController) Delete(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println(res)
 
 // }
-
-
 
 type User struct {
 	Username string `json:"username,omitempty"`
