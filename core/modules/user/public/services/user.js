@@ -15,6 +15,9 @@ function User($resource) {
         },
         update: {
             method: 'PUT',
+            // params: {
+            //     id: 'new'
+            // },
             isArray: false
         },
         create: {

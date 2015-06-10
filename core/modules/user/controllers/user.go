@@ -10,7 +10,7 @@ import (
 	"collexy/core/modules/user/models"
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/schema"
+	//"github.com/gorilla/schema"
 	_ "github.com/lib/pq"
 	"log"
 	"strconv"
@@ -22,174 +22,146 @@ type UserApiController struct{}
 
 func (this *UserApiController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	users := models.GetUsers()
-	res, err := json.Marshal(users)
-	corehelpers.PanicIf(err)
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"user_update", "user_all"})
+		if hasPermission {
+			users := models.GetUsers()
+			res, err := json.Marshal(users)
+			corehelpers.PanicIf(err)
 
-	fmt.Fprintf(w, "%s", res)
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse users")
+		}
+	}	
 }
 
 func (this *UserApiController) GetById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	idStr := params["id"]
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"user_update", "user_all"})
+		if hasPermission {
 
-	userId, _ := strconv.Atoi(idStr)
+			params := mux.Vars(r)
+			idStr := params["id"]
 
-	user := models.GetUserById(userId)
-	res, err := json.Marshal(user)
-	corehelpers.PanicIf(err)
+			userId, _ := strconv.Atoi(idStr)
 
-	fmt.Fprintf(w, "%s", res)
+			user := models.GetUserById(userId)
+			res, err := json.Marshal(user)
+			corehelpers.PanicIf(err)
+
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse users")
+		}
+	}	
 }
-
-// func (this *UserApiController) Get(w http.ResponseWriter, r *http.Request) {
-//     db := coreglobals.Db
-//     rows, err := db.Query("SELECT id, username, first_name, last_name, password FROM \"user\"")
-//     corehelpers.PanicIf(err)
-//     defer rows.Close()
-
-//     // var id, created_by, User_type int
-//     // var path, label string
-//     // var created_date time.Time
-//     var id int
-//     var username, first_name, last_name, password string
-
-//     for rows.Next(){
-//         err := rows.Scan(&id, &username, &first_name, &last_name, &password)
-//         corehelpers.PanicIf(err)
-//         fmt.Fprintf(w, "Id: %d, Username: %s, First: %s, Last: %s, Password:%s\n", id, username, first_name, last_name, password)
-//     }
-
-// }
-
-// func (this *UserApiController) GetById(w http.ResponseWriter, r *http.Request) {
-
-//     var parm_id, id, created_by, User_type int
-//     var path, label string
-//     var created_date time.Time
-
-//     templol := r.URL.Query().Get(":id")
-//     rofl,err1 := strconv.Atoi(templol)
-//     corehelpers.PanicIf(err1)
-
-//     parm_id = rofl
-
-//     db := coreglobals.Db
-
-//     row := db.QueryRow("SELECT id, path, created_by, label, User_type, created_date FROM User WHERE id=$1", parm_id)
-//     err:= row.Scan(&id, &path, &created_by, &label, &User_type, &created_date)
-
-//     //helpers.PanicIf(err)
-//     switch {
-//         case err == sql.ErrNoRows:
-//                 log.Printf("No User with that ID.")
-//         case err != nil:
-//                 log.Fatal(err)
-//         default:
-//                 fmt.Fprintf(w, "Id: %d, Path: %s, Created by: %d, Label: %s, User type: %d, Created date: %s\n", id, path, created_by, label, User_type, created_date)
-//     }
-
-// }
-
-// type test_struct struct {
-//     Id int
-//     Path string
-//     Created_by int
-//     Label string
-//     User_type int
-//     Created_date time.Time
-// }
 
 func (this *UserApiController) Post(w http.ResponseWriter, r *http.Request) {
-	user := new(models.User)
+	w.Header().Set("Content-Type", "application/json")
 
-	err := r.ParseForm()
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"user_create", "user_all"})
+		if hasPermission {
 
-	corehelpers.PanicIf(err)
+			u := models.User{}
 
-	decoder := schema.NewDecoder()
-	// r.PostForm is a map of our POST form values
-	decoder.Decode(user, r.PostForm)
+			err := json.NewDecoder(r.Body).Decode(&u)
 
-	fmt.Println(r.PostForm)
-	fmt.Println(user.FirstName)
-	fmt.Println(user.Password)
-	fmt.Println(r.FormValue("Password"))
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-	db := coreglobals.Db
-
-	// http://stackoverflow.com/questions/244243/how-to-reset-postgres-primary-key-sequence-when-it-falls-out-of-sync
-	//fmt.Println(fmt.Sprintf("path: %s, created_by: %d, label: %s, User type: %d", t.Path, t.Created_by, t.Label, t.User_type))
-	lol := string(r.FormValue("Password"))
-	user.SetPassword(lol)
-
-	// password := user.Password
-	fmt.Println(fmt.Sprintf("username: %s, first name: %s, last name: %s, password: %s", user.Username, user.FirstName, user.LastName, user.Password))
-
-	querystr := fmt.Sprintf("INSERT INTO \"user\" (username, first_name, last_name, password) VALUES ('%s','%s','%s','%s')", user.Username, user.FirstName, user.LastName, user.Password)
-	fmt.Println("querystring: " + querystr)
-	res, err := db.Exec(querystr)
-	corehelpers.PanicIf(err)
-	fmt.Println(res)
+			u.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create users")
+		}
+	}
 
 }
 
-// func (this *UserApiController) Put(w http.ResponseWriter, r *http.Request) {
-//     // path := r.FormValue("path")
-//     // created_by,err := strconv.Atoi(r.FormValue("created_by"))
-//     // label := r.FormValue("label")
-//     // User_type,err := strconv.Atoi(r.FormValue("User_type"))
+func (this *UserApiController) Put(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-//     templol := r.URL.Query().Get(":id")
-//     rofl,err1 := strconv.Atoi(templol)
-//     corehelpers.PanicIf(err1)
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"user_update", "user_all"})
+		if hasPermission {
 
-//     parm_id := rofl
+			u := models.User{}
 
-//     t := new(test_struct)
+			err := json.NewDecoder(r.Body).Decode(&u)
 
-//     err := r.ParseForm()
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
 
-//     corehelpers.PanicIf(err)
-
-//     decoder := schema.NewDecoder()
-//     // r.PostForm is a map of our POST form values
-//     decoder.Decode(t, r.PostForm)
-
-//     fmt.Println(r.PostForm)
-//     fmt.Println(t.Path)
-
-//     db := coreglobals.Db
-
-//     // http://stackoverflow.com/questions/244243/how-to-reset-postgres-primary-key-sequence-when-it-falls-out-of-sync
-//     fmt.Println(fmt.Sprintf("path: %s, created_by: %d, label: %s, User type: %d", t.Path, t.Created_by, t.Label, t.User_type))
-
-//     querystr := fmt.Sprintf("UPDATE User SET (path, created_by, label, User_type) = ('%s', %d, '%s', %d) WHERE id=%d", t.Path, t.Created_by, t.Label, t.User_type, parm_id)
-//     res, err := db.Exec(querystr)
-//     corehelpers.PanicIf(err)
-//     fmt.Println(res)
-
-//     // JSON(w, r.Body)
-// }
+			u.Put()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update users")
+		}
+	}
+}
 
 func (this *UserApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"user_delete", "user_all"})
+		if hasPermission {
+			params := mux.Vars(r)
 
-	params := mux.Vars(r)
-	idStr := params["id"]
-	id, _ := strconv.Atoi(idStr)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-	parm_id := id
+			models.DeleteUser(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete users")
+		}
 
-	db := coreglobals.Db
-
-	querystr := fmt.Sprintf("DELETE FROM \"user\" WHERE id=%d", parm_id)
-	res, err := db.Exec(querystr)
-	corehelpers.PanicIf(err)
-	fmt.Println(res)
-
+	}
 }
+
+// func (this *UserApiController) Post(w http.ResponseWriter, r *http.Request) {
+// 	user := new(models.User)
+
+// 	err := r.ParseForm()
+
+// 	corehelpers.PanicIf(err)
+
+// 	decoder := schema.NewDecoder()
+// 	// r.PostForm is a map of our POST form values
+// 	decoder.Decode(user, r.PostForm)
+
+// 	fmt.Println(r.PostForm)
+// 	fmt.Println(user.FirstName)
+// 	fmt.Println(user.Password)
+// 	fmt.Println(r.FormValue("Password"))
+
+// 	db := coreglobals.Db
+
+// 	// http://stackoverflow.com/questions/244243/how-to-reset-postgres-primary-key-sequence-when-it-falls-out-of-sync
+// 	//fmt.Println(fmt.Sprintf("path: %s, created_by: %d, label: %s, User type: %d", t.Path, t.Created_by, t.Label, t.User_type))
+// 	lol := string(r.FormValue("Password"))
+// 	user.SetPassword(lol)
+
+// 	// password := user.Password
+// 	fmt.Println(fmt.Sprintf("username: %s, first name: %s, last name: %s, password: %s", user.Username, user.FirstName, user.LastName, user.Password))
+
+// 	querystr := fmt.Sprintf("INSERT INTO \"user\" (username, first_name, last_name, password) VALUES ('%s','%s','%s','%s')", user.Username, user.FirstName, user.LastName, user.Password)
+// 	fmt.Println("querystring: " + querystr)
+// 	res, err := db.Exec(querystr)
+// 	corehelpers.PanicIf(err)
+// 	fmt.Println(res)
+
+// }
+
+
 
 type User struct {
 	Username string `json:"username,omitempty"`

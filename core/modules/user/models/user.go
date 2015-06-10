@@ -42,6 +42,84 @@ type User struct {
 	Permissions  []string     `json:"permissions,omitempty"`
 }
 
+func (u *User) Post() {
+
+	//meta, err := json.Marshal(d.Meta)
+	//corehelpers.PanicIf(err)
+
+	db := coreglobals.Db
+
+	userGroupIds, _ := coreglobals.IntSlice(u.UserGroupIds).Value()
+	permissions, _ := coreglobals.StringSlice(u.Permissions).Value()
+
+	// sqlStr := `INSERT INTO data_type (name, alias, created_by, html, editor_alias, meta)
+	// VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	// err1 := db.QueryRow(sqlStr, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta).Scan(&id)
+	sqlStr := `INSERT INTO "user" (username, first_name, last_name, "password", email, status, 
+		user_group_ids, permissions) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+
+	// Todo: 
+	// Level: not important
+	// Difficulty: easy
+	// Time: quick
+	// Description:
+	// u.SetPassword(string(u.Password)) seems kinda stupid.
+	// the SetPassword functions should just compute the hash using the struft password field
+	// instead of a parameter
+	u.SetPassword(string(u.Password))
+
+	_, err1 := db.Exec(sqlStr, u.Username, u.FirstName, u.LastName, u.Password, u.Email, 
+		u.Status, userGroupIds, permissions)
+
+	if err1 != nil {
+		panic(err1)
+	}
+
+
+	log.Println("user created successfully")
+}
+
+func (u *User) Put() {
+
+	userGroupIds, _ := coreglobals.IntSlice(u.UserGroupIds).Value()
+	permissions, _ := coreglobals.StringSlice(u.Permissions).Value()
+
+	db := coreglobals.Db
+
+	sqlStr := `UPDATE "user" 
+	SET username=$1, first_name=$2, last_name=$3, "password"=$4, email=$5, status=$6, 
+		user_group_ids=$7, permissions=$8 
+		WHERE id=$9`
+
+	u.SetPassword(string(u.Password))
+	
+	_, err1 := db.Exec(sqlStr, u.Username, u.FirstName, u.LastName, u.Password, u.Email, 
+		u.Status, userGroupIds, permissions, u.Id)
+
+	if err1 != nil {
+		panic(err1)
+	}
+
+	log.Println("user updated successfully")
+}
+
+func DeleteUser(id int) {
+
+	db := coreglobals.Db
+
+	sqlStr := `delete FROM "user" 
+	WHERE id=$1`
+
+	_, err := db.Exec(sqlStr, id)
+
+	if err != nil{
+		panic(err)
+	}
+
+	log.Printf("user with id %d was successfully deleted", id)
+}
+
 //SetPassword takes a plaintext password and hashes it with bcrypt and sets the
 //password field to the hash.
 func (u *User) SetPassword(password string) {
@@ -145,7 +223,7 @@ func GetUsers() (users []*User) {
 		//var meta []byte
 		var created_date, updated_date, login_date, accessed_date *time.Time
 		var status uint8
-		// IntArray is temporarily defined in template.go model
+		// coreglobals.StringSlice is temporarily defined in template.go model
 		var user_group_ids coreglobals.IntSlice
 
 		var sid, first_name, last_name sql.NullString
@@ -201,7 +279,7 @@ func GetUserById(id int) (user *User) {
 	//var meta []byte
 	var created_date, updated_date, login_date, accessed_date *time.Time
 	var status uint8
-	// IntArray is temporarily defined in template.go model
+	// coreglobals.IntSlice is temporarily defined in template.go model
 	var user_group_ids coreglobals.IntSlice
 
 	var sid, first_name, last_name sql.NullString
@@ -311,7 +389,7 @@ WHERE sid=$1`
 
 	// potential nulls
 	// var user_group_ids []int // doesn't work with scan
-	// IntArray custom type is right now located in models.Template
+	// coreglobals.IntSlice custom type is right now located in models.Template
 	var user_group_ids coreglobals.IntSlice
 	var user_groups []byte
 	var first_name, last_name sql.NullString

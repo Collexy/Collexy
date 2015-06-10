@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"database/sql/driver"
 )
 
 type StringSlice []string
@@ -25,6 +26,23 @@ func (s *StringSlice) Scan(src interface{}) error {
 	(*s) = StringSlice(parsed)
 
 	return nil
+}
+
+func (b StringSlice) Value() (driver.Value, error) {
+	var str string = "{"
+	var myarr []string = b
+	fmt.Println("driver.Value 1: ")
+	fmt.Println(b)
+	for i := 0; i < len(myarr); i++ {
+		str = str + myarr[i]
+		if i < len(myarr)-1 {
+			str = str + ","
+		}
+	}
+	str = str + "}"
+	fmt.Println("driver.Value 2: ")
+	fmt.Println(str)
+	return str, nil
 }
 
 func RemoveDuplicatesStringSlice(xs *[]string) {

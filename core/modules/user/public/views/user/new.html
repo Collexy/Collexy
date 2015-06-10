@@ -1,6 +1,6 @@
 <div ng-controller="UserEditCtrl" class="collexy-controller">
     <form role="form" ng-submit="submit()">
-        <h4>New</h4>
+        <h4>Edit</h4>
 
         <input type="text" ng-model="data.username">
 
@@ -13,11 +13,11 @@
         <!-- <table ng-show="currentTab == 'data.username'"> -->
 
         <table>
-            <tr>
+            <!-- <tr>
                 <td>Username:</td>
                 <td><input type="text" ng-model="data.username"/></td>
                 
-            </tr>
+            </tr> -->
             <tr>
                 <td>First Name:</td>
                 <td><input type="text" ng-model="data.first_name"/></td>
@@ -29,12 +29,22 @@
                 
             </tr>
             <tr>
+                <td>Email:</td>
+                <td><input type="email" ng-model="data.email"/></td>
+                
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td><input type="password" ng-model="data.password"/></td>
+                
+            </tr>
+            <tr>
                 <td>Status:</td>
                 <td>
                     <!-- <select ng-model="data.status" ng-options="opt as opt.label for opt in options"> -->
-                    <select ng-model="data.status">
-                        <option value="0">Disabled</option>
-                        <option value="1">Enabled</option>
+                    <select ng-model="data.status" ng-options="opt.val as opt.label for opt in [{'label':'Disabled','val':0}, {'label':'Enabled','val':1}]">
+                        <!-- <option value="0">Disabled</option>
+                        <option value="1">Enabled</option> -->
                     </select>
                     <!-- <input type="number" ng-model="data.status"/> -->
                 </td>
@@ -76,6 +86,8 @@
             
         </table>
         <div ui-view></div>
-        <button class="btn" type="submit">Update User &raquo;</button>
+        <p ng-if="userHasPermission('user_update')">
+            <button class="btn" type="submit">Update User &raquo;</button>
+        </p>
     </form>
 </div>

@@ -14,6 +14,32 @@ function UserGroupEditCtrl($scope, $stateParams, UserGroup) {
     }, function() {}).$promise.then(function(data) {
         $scope.data = data;
     });
+
+    $scope.submit = function() {
+        console.log("submit")
+
+        function success(response) {
+            console.log("success", response)
+            //$location.path("/admin/users");
+        }
+
+        function failure(response) {
+            console.log("failure", response);
+        }
+        if ($stateParams.id) {
+            console.log("update");
+            UserGroup.update({
+                id: $stateParams.id
+            }, $scope.data, success, failure);
+            console.log($scope.data)
+            //User.update($scope.user, success, failure);
+        } else {
+            console.log("create");
+            console.log($scope.data)
+            UserGroup.create($scope.data, success, failure);
+            //User.create($scope.user, success, failure);
+        }
+    }
 }
 /**
  * @ngdoc controller

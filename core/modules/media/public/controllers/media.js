@@ -210,7 +210,6 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
             $scope.allMembers = members;
             var availableMembers = [];
             var selectedMembers = [];
-            
             availableMembers.unique();
             selectedMembers.unique();
             $scope.availableMembers = availableMembers;
@@ -225,7 +224,6 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
             $scope.allMemberGroups = memberGroups;
             var availableMemberGroups = [];
             var selectedMemberGroups = [];
-
             availableMemberGroups.unique();
             selectedMemberGroups.unique();
             $scope.availableMemberGroups = availableMemberGroups;
@@ -257,12 +255,12 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
     // }
     // $scope.files = [];
     // $scope.persistedFiles = [pathToUrl("media\\Sample Images\\TXT\\pic04.jpg")];
-    $scope.test = {
-            files: undefined
-        }
-        // $scope.submit = function() {
-        //     $scope.$emit("formSubmit"); 
-        // }
+    // $scope.test = {
+    //         files: undefined
+    //     }
+    // $scope.submit = function() {
+    //     $scope.$emit("formSubmit"); 
+    // }
     $scope.submit = function() {
         console.log("submit")
 

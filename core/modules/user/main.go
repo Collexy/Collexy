@@ -27,14 +27,19 @@ func init() {
 	subrPublic.HandleFunc("/api/public/user/login", http.HandlerFunc(userApiController.Login)).Methods("POST")
 
 	subrPrivate.HandleFunc("/api/user/{id:.*}/contextmenu", http.HandlerFunc(userTreeController.GetMenuForUser)).Methods("GET")
-	subrPrivate.HandleFunc("/api/user", http.HandlerFunc(userApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/user/{id:.*}", http.HandlerFunc(userApiController.GetById)).Methods("GET")
+	subrPrivate.HandleFunc("/api/user", http.HandlerFunc(userApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/user", http.HandlerFunc(userApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/user/{id:.*}", http.HandlerFunc(userApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/user/{id:.*}", http.HandlerFunc(userApiController.Delete)).Methods("DELETE")
 
 	subrPrivate.HandleFunc("/api/user-group/{id:.*}/contextmenu", http.HandlerFunc(userGroupTreeController.GetMenuForUserGroup)).Methods("GET")
 	subrPrivate.HandleFunc("/api/user-group", http.HandlerFunc(userGroupApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.GetById)).Methods("GET")
-
+	subrPrivate.HandleFunc("/api/user-group", http.HandlerFunc(userGroupApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.Delete)).Methods("DELETE")
+	
 	subrPrivate.HandleFunc("/api/permission", http.HandlerFunc(permissionApiController.Get)).Methods("GET")
 
 	///

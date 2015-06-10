@@ -33,35 +33,54 @@ function UserListCtrl($scope, $stateParams, User) {
  * The controller for deleting content
  */
 function UserEditCtrl($scope, $stateParams, User, UserGroup, sessionService, $interpolate, ngDialog) {
-    User.get({
-        id: $stateParams.id
-    }, function() {}).$promise.then(function(data) {
-        $scope.data = data;
-        $scope.currentTab = data.username;
-        UserGroup.query().$promise.then(function(userGroups) {
-            $scope.allUserGroups = userGroups;
-            var availableUserGroups = [];
-            var selectedUserGroups = [];
-            for (var i = 0; i < data.user_group_ids.length; i++) {
-                for (var j = 0; j < userGroups.length; j++) {
-                    //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
-                    if (data.user_group_ids[i] != userGroups[j].id) {
-                        availableUserGroups.push(userGroups[j])
-                    } else {
-                        selectedUserGroups.push(userGroups[j])
+    $scope.stateParams = $stateParams;
+    if ($stateParams.id) {
+        User.get({
+            id: $stateParams.id
+        }, function() {}).$promise.then(function(data) {
+            $scope.data = data;
+            $scope.currentTab = data.username;
+            UserGroup.query().$promise.then(function(userGroups) {
+                $scope.allUserGroups = userGroups;
+                var availableUserGroups = [];
+                var selectedUserGroups = [];
+                for (var i = 0; i < data.user_group_ids.length; i++) {
+                    for (var j = 0; j < userGroups.length; j++) {
+                        //console.log("[i] = " + data.user_group_ids[i] + ", [j]: " +userGroups[j].id)
+                        if (data.user_group_ids[i] != userGroups[j].id) {
+                            availableUserGroups.push(userGroups[j])
+                        } else {
+                            selectedUserGroups.push(userGroups[j])
+                        }
                     }
                 }
-            }
+                availableUserGroups.unique();
+                selectedUserGroups.unique();
+                $scope.availableUserGroups = availableUserGroups;
+                $scope.selectedUserGroups = selectedUserGroups;
+            }, function() {
+                //ERR
+            })
+        }, function() {
+            // ERR
+        });
+    } else {
+        $scope.data = {};
+        UserGroup.query().$promise.then(function(userGroups) {
+            //console.log(userGroups)
+            $scope.allUserGroups = userGroups;
+            var availableUserGroups = $scope.allUserGroups;
+            var selectedUserGroups = [];
+            
             availableUserGroups.unique();
-            selectedUserGroups.unique();
+            //selectedUserGroups.unique();
             $scope.availableUserGroups = availableUserGroups;
             $scope.selectedUserGroups = selectedUserGroups;
+            //console.log($scope.availableUserGroups)
         }, function() {
             //ERR
         })
-    }, function() {
-        // ERR
-    });
+    }
     $scope.moveItem = function(item, from, to) {
         alert("moveitem")
         var idx = from.indexOf(item);
@@ -81,6 +100,32 @@ function UserEditCtrl($scope, $stateParams, User, UserGroup, sessionService, $in
         });
         from.length = 0;
     };
+
+    $scope.submit = function() {
+        console.log("submit")
+
+        function success(response) {
+            console.log("success", response)
+            //$location.path("/admin/users");
+        }
+
+        function failure(response) {
+            console.log("failure", response);
+        }
+        if ($stateParams.id) {
+            console.log("update");
+            User.update({
+                id: $stateParams.id
+            }, $scope.data, success, failure);
+            console.log($scope.data)
+            //User.update($scope.user, success, failure);
+        } else {
+            console.log("create");
+            console.log($scope.data)
+            User.create($scope.data, success, failure);
+            //User.create($scope.user, success, failure);
+        }
+    }
 }
 var userControllers = angular.module('userControllers', []);
 // userControllers.controller('UserListCtrl', ['$scope', 'User', function ($scope, User) {

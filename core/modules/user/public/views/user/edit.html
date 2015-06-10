@@ -33,11 +33,11 @@
                 <td>{{data.login_date}}</td>
                 
             </tr>
-            <tr>
+            <!-- <tr>
                 <td>Username:</td>
                 <td><input type="text" ng-model="data.username"/></td>
                 
-            </tr>
+            </tr> -->
             <tr>
                 <td>First Name:</td>
                 <td><input type="text" ng-model="data.first_name"/></td>
@@ -49,12 +49,17 @@
                 
             </tr>
             <tr>
+                <td>Email:</td>
+                <td><input type="email" ng-model="data.email"/></td>
+                
+            </tr>
+            <tr>
                 <td>Status:</td>
                 <td>
                     <!-- <select ng-model="data.status" ng-options="opt as opt.label for opt in options"> -->
-                    <select ng-model="data.status">
-                        <option value="0">Disabled</option>
-                        <option value="1">Enabled</option>
+                    <select ng-model="data.status" ng-options="opt.val as opt.label for opt in [{'label':'Disabled','val':0}, {'label':'Enabled','val':1}]">
+                        <!-- <option value="0">Disabled</option>
+                        <option value="1">Enabled</option> -->
                     </select>
                     <!-- <input type="number" ng-model="data.status"/> -->
                 </td>

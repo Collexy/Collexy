@@ -120,7 +120,7 @@ func (this *DataTypeApiController) Delete(w http.ResponseWriter, r *http.Request
 
 			models.DeleteDataType(id)
 		} else {
-			fmt.Fprintf(w, "You do not have permission to delete content")
+			fmt.Fprintf(w, "You do not have permission to delete data types")
 		}
 
 	}
