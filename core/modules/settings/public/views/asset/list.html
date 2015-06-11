@@ -1,0 +1,19 @@
+<script type="text/ng-template"  id="tree_item_renderer.html">
+
+        <i ng-expand-collapse="data" class="fa" ng-class="data.show == true ? 'fa-caret-down' : 'fa-caret-right'"></i>
+        
+        <a ui-sref="settings.asset.edit({name:data.info.name})"  ui-sref-active="active" ng-right-click="showOptions(data,$event)">{{data.info.name}} </a>
+        
+        <ul ng-show="data.children">
+            <li ng-repeat="data in data.children" ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+
+</script>
+
+    <h4>{{rootdir | capitalize}}</h4>
+<!--     {{tree.children}} -->
+    <div class="admin-tree-container">
+        <ul class="admin-tree">
+            <li ng-repeat="data in tree.children" ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+    </div>

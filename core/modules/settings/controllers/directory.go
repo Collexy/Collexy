@@ -117,3 +117,18 @@ func (this *DirectoryApiController) GetById(w http.ResponseWriter, r *http.Reque
 	fmt.Fprintf(w, "%s", finod)
 
 }
+
+func (this *DirectoryApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+	path := params["path"]
+
+	err := models.DeleteFileSystemNode(path)
+
+	if(err!=nil){
+		fmt.Fprintf(w, "%s", "error deleting file")
+	}
+	
+
+}

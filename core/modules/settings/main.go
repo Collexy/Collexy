@@ -65,10 +65,11 @@ func init() {
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}/{is_dir:.*}/contextmenu", http.HandlerFunc(directoryTreeController.GetMenuForDirectory)).Methods("GET")
 	subrPrivate.HandleFunc("/api/directory/upload-file-test", http.HandlerFunc(directoryApiController.UploadFileTest)).Methods("POST")
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Post)).Methods("POST")
-	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/directory/{path:.*}", http.HandlerFunc(directoryApiController.Delete)).Methods("DELETE")
 
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}", http.HandlerFunc(directoryApiController.Get)).Methods("GET")
+
 
 	// API END
 
@@ -99,6 +100,10 @@ func init() {
 	rStylesheetTreeMethodEdit := lib.Route{"settings.stylesheet.edit", "/edit/:name", "core/modules/settings/public/views/stylesheet/edit.html", false}
 	rStylesheetTreeMethodNew := lib.Route{"settings.stylesheet.new", "/new?type&parent", "core/modules/settings/public/views/stylesheet/new.html", false}
 
+	rAssetSection := lib.Route{"settings.asset", "/asset", "core/modules/settings/public/views/asset/index.html", false}
+	rAssetTreeMethodEdit := lib.Route{"settings.asset.edit", "/edit/:name", "core/modules/settings/public/views/asset/edit.html", false}
+	rAssetTreeMethodNew := lib.Route{"settings.asset.new", "/new?type&parent", "core/modules/settings/public/views/asset/new.html", false}
+
 	// setup trees
 	routesContentTypeTree := []lib.Route{rContentTypeTreeMethodEdit, rContentTypeTreeMethodNew}
 	routesMediaTypeTree := []lib.Route{rMediaTypeTreeMethodEdit, rMediaTypeTreeMethodNew}
@@ -106,6 +111,7 @@ func init() {
 	routesTemplateTree := []lib.Route{rTemplateTreeMethodEdit, rTemplateTreeMethodNew}
 	routesScriptTree := []lib.Route{rScriptTreeMethodEdit, rScriptTreeMethodNew}
 	routesStylesheetTree := []lib.Route{rStylesheetTreeMethodEdit, rStylesheetTreeMethodNew}
+	routesAssetTree := []lib.Route{rAssetTreeMethodEdit, rAssetTreeMethodNew}
 
 	tContentType := lib.Tree{"Content Types", "contentTypes", routesContentTypeTree}
 	tMediaType := lib.Tree{"Media Types", "mediaTypes", routesMediaTypeTree}
@@ -113,6 +119,7 @@ func init() {
 	tTemplate := lib.Tree{"Templates", "templates", routesTemplateTree}
 	tScript := lib.Tree{"Scripts", "scripts", routesScriptTree}
 	tStylesheet := lib.Tree{"Stylesheets", "stylesheets", routesStylesheetTree}
+	tAsset := lib.Tree{"Assets", "assets", routesAssetTree}
 
 	treesContentTypeSection := []*lib.Tree{&tContentType}
 	treesMediaTypeSection := []*lib.Tree{&tMediaType}
@@ -120,6 +127,7 @@ func init() {
 	treesTemplateSection := []*lib.Tree{&tTemplate}
 	treesScriptSection := []*lib.Tree{&tScript}
 	treesStylesheetSection := []*lib.Tree{&tStylesheet}
+	treesAssetSection := []*lib.Tree{&tAsset}
 
 	// params: name, alias, icon, route, trees, iscontainer, parent
 	sSettings := lib.Section{"Settings Section", "settingsSection", "fa fa-gear fa-fw", &rSettingsSection, nil, true, nil, nil, []string{"settings_section"}}
@@ -129,9 +137,10 @@ func init() {
 	sDataType := lib.Section{"Data Type Section", "dataTypeSection", "fa fa-check-square-o fa-fw", &rDataTypeSection, treesDataTypeSection, false, nil, nil, []string{"data_type_section"}}
 	sTemplate := lib.Section{"Template Section", "templateSection", "fa fa-eye fa-fw", &rTemplateSection, treesTemplateSection, false, nil, nil, []string{"template_section"}}
 	sScript := lib.Section{"Script Section", "scriptSection", "fa fa-file-code-o fa-fw", &rScriptSection, treesScriptSection, false, nil, nil, []string{"script_section"}}
-	sStylesheet := lib.Section{"Stylesheet Type Section", "stylesheetSection", "fa fa-desktop fa-fw", &rStylesheetSection, treesStylesheetSection, false, nil, nil, []string{"stylesheet_section"}}
+	sStylesheet := lib.Section{"Stylesheet Section", "stylesheetSection", "fa fa-desktop fa-fw", &rStylesheetSection, treesStylesheetSection, false, nil, nil, []string{"stylesheet_section"}}
+	sAsset := lib.Section{"Asset Section", "assetSection", "fa fa-desktop fa-fw", &rAssetSection, treesAssetSection, false, nil, nil, []string{"asset_section"}}
 
-	lol := []lib.Section{sContentType, sMediaType, sDataType, sTemplate, sScript, sStylesheet}
+	lol := []lib.Section{sContentType, sMediaType, sDataType, sTemplate, sScript, sStylesheet, sAsset}
 	sSettings.Children = lol
 	//reflect.ValueOf(&sSettings).Elem().FieldByName("Children").Set(reflect.ValueOf(lol))
 	// log.Println(sSettings.Children[0].Name + ":FDSF:SDF:DS:F:")

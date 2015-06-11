@@ -184,3 +184,15 @@ func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode) {
 	})
 	return
 }
+
+
+func DeleteFileSystemNode(path string) (err error){
+
+	err = os.Remove(path)
+
+	if err != nil {
+		fmt.Println(err)
+		
+	}
+	return
+}

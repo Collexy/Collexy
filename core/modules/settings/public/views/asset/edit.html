@@ -1,0 +1,134 @@
+<div ng-controller="AssetEditCtrl" class="collexy-controller">
+    <form role="form" ng-submit="submit()">
+        <h4>Edit</h4>
+        <input type="text" ng-model="data.info.name" ng-change="updateNewPath(data.info.name)">
+        <ul class="admin-tabs">
+            <li ng-class="(currentTab==type) ? 'active' : ''"><a href="#{{type}}" collexy-toggle-tab="toggleTab(type)">{{type | capitalize}}</a></li>
+            <li ng-class="(currentTab=='properties') ? 'active' : ''"><a href="#properties" collexy-toggle-tab="toggleTab('properties')">Properties</a></li>
+            <!-- <li ng-repeat="tab in node.ct.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
+        </ul>
+        <div ng-show="currentTab == type">
+            <!--         type: {{type}} -->
+            <table>
+                <tr ng-if="type!='folder'">
+                    <td>
+                        File contents<br>
+                        <small>File contents here.</small>
+                    </td>
+                    <td style="width:80%;" ng-if="isImage">
+
+                        <div ng-if="fileExtension!='svg'">
+                            <img ng-src="/{{pathToUrl(data.path)}}"/>
+                        </div>
+
+
+                        <object type="image/svg+xml" data="/{{pathToUrl(data.path)}}" class="logo" ng-if="fileExtension=='svg'">Kiwi Logo <!-- fallback image in CSS --> </object>
+
+                    </td>
+                    <td style="width:80%;" ng-if="!isImage"><div ui-codemirror ui-codemirror-opts="editorOptions" ng-model="data.contents" ></div></td>
+                    <style>
+                                            .CodeMirror {
+                                                height: 600px;
+                                                border: 1px solid #ddd;
+                                            }
+                    </style>
+
+                </tr>
+                <!-- <tr>
+                                        <td>Parent folder</td>
+                                        <td><input type="text" ng-model="data.parent" ng-change="updateParentPath(data.parent)"/></td>
+                                        <td>Parent folder path here.</td>
+                </tr> -->
+                <tr>
+                    <td>
+                        Link to {{type}}
+                        <small>Parent folder path here + this {{type}}'s name.</small>
+                    </td>
+                    <td><input type="text" ng-model="data.path" readonly style="border:none; background: #ddd; padding: 0.3em, 0.5em;" /></td>
+
+                </tr>
+            </table>
+        </div>
+        <div ng-show="currentTab == 'properties'">
+            <table>
+                <tr>
+                    <td>File path:</td>
+                    <td>{{data.path}}</td>
+                    <td>Info about the file path.</td>
+                </tr>
+                <tr>
+                    <td>File size:</td>
+                    <td>{{data.info.size}} bytes</td>
+                    <td>Info about the file size.</td>
+                </tr>
+                <tr>
+                    <td>File mode:</td>
+                    <td>{{data.info.mode}}</td>
+                    <td>Info about the file mode.</td>
+                </tr>
+                <tr>
+                    <td>File last modified date:</td>
+                    <td>{{data.info.mod_time}}</td>
+                    <td>Info about the last modified date.</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- <div ng-repeat="tab in node.ct.tabs  | unique: name" ng-show="currentTab == tab.name">
+                        <table>
+                                <tr ng-if="tab.name=='Properties'">
+                                        <td>Id:</td>
+                                        <td>{{node.node.id}}</td>
+                                        <td></td>
+                                </tr>
+                                <tr ng-if="tab.name=='Properties'">
+                                        <td>Created By:</td>
+                                        <td>{{node.node.created_by}}</td>
+                                        <td></td>
+                                </tr>
+                                <tr ng-if="tab.name=='Properties'">
+                                        <td>Created Date:</td>
+                                        <td>{{node.node.created_date}}</td>
+                                        <td></td>
+                                </tr>
+                                <tr ng-if="tab.name=='Properties'">
+                                        <td>Last updated date:</td>
+                                        <td>{{node.node.updated_date}}</td>
+                                        <td></td>
+                                </tr>
+                                <tr ng-if="tab.name=='Properties'">
+                                        <td>Node Type:</td>
+                                        <td>{{node.node.node_type}}</td>
+                                        <td></td>
+                                </tr>
+                                <tr ng-if="tab.name=='Properties'">
+                                        <td>Node Path:</td>
+                                        <td>{{node.node.path}}</td>
+                                        <td></td>
+                                </tr>
+                                <tr ng-repeat="prop in tab.properties">
+                                        <td>{{prop.name}}</td>
+                                        <td compile ng-bind-html="prop.data_type.Html | unsafe"></td>
+                                        <td>
+                                                <img ng-if="node.content.meta[prop.name] === node.content.meta.url && node.content.meta[prop.name] != '' && node.content.meta[prop.name] != null" ng-src="{{node.content.meta.url}}" width="75" height="75">
+                                                <span ng-if="node.content.meta[prop.name] !== node.content.meta.url">{{value.description}}</span>
+                                        </td>
+                                </tr>
+                        </table>
+                </div>
+        -->
+        <!-- <form role="form" ng-submit="submit()">
+                        <label>Id: {{node.id}}</label><br>
+                        <label>Created By: {{node.created_by}}</label><br>
+                        <label>Created Date: {{node.created_date}}</label><br>
+                        <label>Node Type: {{node.node_type}}</label><br>
+                        <label>Node Path: {{node.path}}</label><br>
+                        <label>Name</label>
+                        <input type="text" ng-model="node.name" name="name" class="form-control"><br>
+                        
+                        <button class="btn" type="submit">Update Node &raquo;</button>
+        </form> -->
+        <div ui-view></div>
+        <button class="btn" type="submit">Update {{type | capitalize}} &raquo;</button>
+    </form>
+</div>

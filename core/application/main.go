@@ -491,6 +491,7 @@ func Main() {
 	http.Handle("/stylesheets/", http.StripPrefix("/", http.FileServer(http.Dir("./"))))
 	http.Handle("/scripts/", http.StripPrefix("/", http.FileServer(http.Dir("./"))))
 	http.Handle("/media/", http.StripPrefix("/", MediaProtectHandler(http.FileServer(http.Dir("./")))))
+	http.Handle("/assets/", http.StripPrefix("/", http.FileServer(http.Dir("./"))))
 	http.Handle("/public/", http.FileServer(http.Dir("./core/application")))
 
 	log.Println("Registered a handler for static files.")
