@@ -98,9 +98,14 @@ function AssetTreeCtrl($scope, $stateParams, $state, Directory, DirectoryContext
     }
 }
 
-function AssetEditCtrl($scope, $stateParams, Directory, $state) {
-    $scope.rootdir = $state.current.name.split(".")[1] + "s";
+function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
+    $scope.$watch('files', function () {
+      console.log($scope.files[0])
+        //$scope.upload($scope.files);
+    });
 
+    $scope.rootdir = $state.current.name.split(".")[1] + "s";
+    
     if ($stateParams.name) {
         $scope.data = Directory.get({
             rootdir: $scope.rootdir,
@@ -163,7 +168,8 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state) {
     } else { 
 
         $scope.data = {
-            "info": {}
+            "info": {},
+            "meta": {}
         }
 
         if ($stateParams.type == 'folder') {
@@ -184,11 +190,6 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state) {
 
         $scope.currentTab = $scope.type;
     }
-
-
-
-    //console.log($state.current)
-    $scope.rootdir = $state.current.name.split(".")[1] + "s";
     
     
     
@@ -218,35 +219,93 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state) {
         return text;
     }
     $scope.submit = function() {
-        console.log("submit")
+        //$scope.$broadcast("formSubmitSuccess"); 
+        //$scope.files = ["lol123"]
+        // alert($scope.files[0]) 
+        // var files = $scope.files
+        // for (var i = 0; i < files.length; i++) {
+        //     console.log(files[i])
+        // }
+        $scope.upload($scope.files);
 
-        function success(response) {
-            console.log("success", response)
-            //$location.path("/admin/users");
-        }
 
-        function failure(response) {
-            console.log("failure", response);
+        // console.log("submit")
 
-        }
-        //console.log($stateParams)
-        if ($stateParams.type) {
-            console.log("create");
-            console.log($scope.data)
-            Directory.create({
-                rootdir: $scope.rootdir
-            }, $scope.data, success, failure);
-            //User.create($scope.user, success, failure);
-        } else {
-            console.log("update");
-            Directory.update({
-                rootdir: $scope.rootdir,
-                name: $stateParams.name
-            }, $scope.data, success, failure);
-            console.log($scope.data)
-            //User.update($scope.user, success, failure);
-        }
+        // function success(response) {
+        //     console.log("success", response)
+        //     //$location.path("/admin/users");
+        // }
+
+        // function failure(response) {
+        //     console.log("failure", response);
+
+        // }
+        // //console.log($stateParams)
+        // if ($stateParams.type) {
+        //     console.log("create");
+        //     console.log($scope.data)
+        //     Directory.create({
+        //         rootdir: $scope.rootdir
+        //     }, $scope.data, success, failure);
+        //     //User.create($scope.user, success, failure);
+        // } else {
+        //     console.log("update");
+        //     Directory.update({
+        //         rootdir: $scope.rootdir,
+        //         name: $stateParams.name
+        //     }, $scope.data, success, failure);
+        //     console.log($scope.data)
+        //     //User.update($scope.user, success, failure);
+        // }
     }
+
+    // $scope.files = [];
+    // $scope.$watch("files", function(newValue, oldValue) {
+    //     $scope.files = newValue;
+    //     console.log($scope.files)
+    //     // var lol = [];
+    //     // for(var i = 0; i < $scope.files.length; i++){
+    //     //  lol.push($scope.files[i].name)
+    //     // }
+    //     // $scope.data.meta["file_upload"].persisted_files = lol
+    // }, true);
+
+    
+
+    $scope.upload = function (files) {
+        alert("lol")
+
+        console.log($scope.files)
+        if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var pathIndexEnd = $scope.data.path.lastIndexOf("\\")
+                var path = $scope.data.path.substring(0,pathIndexEnd)
+                alert(path)
+                var escapedPath = replaceAll(path, '\\', '%5C');
+                console.log('file is ' + JSON.stringify(file));
+                var uploadUrl = '/api/directory/upload-file-test?path=' + escapedPath;
+                Upload.upload({
+                    url: uploadUrl,
+                    fields: {'username': $scope.username},
+                    file: file
+                }).progress(function (evt) {
+                    var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                }).success(function (data, status, headers, config) {
+                    console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+                });
+            }
+        }
+    };
+    //$scope.persistedFiles = [pathToUrl("media\\Sample Images\\TXT\\pic04.jpg")];
+    //console.log($scope.data.meta["file_upload"]["persisted_files"])
+    
+
+    // $scope.$watch("myFile", function(newValue, oldValue) {
+    //     $scope.myFile = newValue;
+    //     alert("lol")
+    // }, true);
 }
 /**
  * @ngdoc controller

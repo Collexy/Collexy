@@ -92,13 +92,13 @@ func init() {
 	rTemplateTreeMethodEdit := lib.Route{"settings.template.edit", "/edit/:id", "core/modules/settings/public/views/template/edit.html", false}
 	rTemplateTreeMethodNew := lib.Route{"settings.template.new", "/new?parent_id", "core/modules/settings/public/views/template/new.html", false}
 
-	rScriptSection := lib.Route{"settings.script", "/script", "core/modules/settings/public/views/script/index.html", false}
-	rScriptTreeMethodEdit := lib.Route{"settings.script.edit", "/edit/:name", "core/modules/settings/public/views/script/edit.html", false}
-	rScriptTreeMethodNew := lib.Route{"settings.script.new", "/new?type&parent", "core/modules/settings/public/views/script/new.html", false}
+	//rScriptSection := lib.Route{"settings.script", "/script", "core/modules/settings/public/views/script/index.html", false}
+	//rScriptTreeMethodEdit := lib.Route{"settings.script.edit", "/edit/:name", "core/modules/settings/public/views/script/edit.html", false}
+	//rScriptTreeMethodNew := lib.Route{"settings.script.new", "/new?type&parent", "core/modules/settings/public/views/script/new.html", false}
 
-	rStylesheetSection := lib.Route{"settings.stylesheet", "/stylesheet", "core/modules/settings/public/views/stylesheet/index.html", false}
-	rStylesheetTreeMethodEdit := lib.Route{"settings.stylesheet.edit", "/edit/:name", "core/modules/settings/public/views/stylesheet/edit.html", false}
-	rStylesheetTreeMethodNew := lib.Route{"settings.stylesheet.new", "/new?type&parent", "core/modules/settings/public/views/stylesheet/new.html", false}
+	//rStylesheetSection := lib.Route{"settings.stylesheet", "/stylesheet", "core/modules/settings/public/views/stylesheet/index.html", false}
+	//rStylesheetTreeMethodEdit := lib.Route{"settings.stylesheet.edit", "/edit/:name", "core/modules/settings/public/views/stylesheet/edit.html", false}
+	//rStylesheetTreeMethodNew := lib.Route{"settings.stylesheet.new", "/new?type&parent", "core/modules/settings/public/views/stylesheet/new.html", false}
 
 	rAssetSection := lib.Route{"settings.asset", "/asset", "core/modules/settings/public/views/asset/index.html", false}
 	rAssetTreeMethodEdit := lib.Route{"settings.asset.edit", "/edit/:name", "core/modules/settings/public/views/asset/edit.html", false}
@@ -109,24 +109,24 @@ func init() {
 	routesMediaTypeTree := []lib.Route{rMediaTypeTreeMethodEdit, rMediaTypeTreeMethodNew}
 	routesDataTypeTree := []lib.Route{rDataTypeTreeMethodEdit, rDataTypeTreeMethodNew}
 	routesTemplateTree := []lib.Route{rTemplateTreeMethodEdit, rTemplateTreeMethodNew}
-	routesScriptTree := []lib.Route{rScriptTreeMethodEdit, rScriptTreeMethodNew}
-	routesStylesheetTree := []lib.Route{rStylesheetTreeMethodEdit, rStylesheetTreeMethodNew}
+	//routesScriptTree := []lib.Route{rScriptTreeMethodEdit, rScriptTreeMethodNew}
+	//routesStylesheetTree := []lib.Route{rStylesheetTreeMethodEdit, rStylesheetTreeMethodNew}
 	routesAssetTree := []lib.Route{rAssetTreeMethodEdit, rAssetTreeMethodNew}
 
 	tContentType := lib.Tree{"Content Types", "contentTypes", routesContentTypeTree}
 	tMediaType := lib.Tree{"Media Types", "mediaTypes", routesMediaTypeTree}
 	tDataType := lib.Tree{"DataTypes", "dataTypes", routesDataTypeTree}
 	tTemplate := lib.Tree{"Templates", "templates", routesTemplateTree}
-	tScript := lib.Tree{"Scripts", "scripts", routesScriptTree}
-	tStylesheet := lib.Tree{"Stylesheets", "stylesheets", routesStylesheetTree}
+	//tScript := lib.Tree{"Scripts", "scripts", routesScriptTree}
+	//tStylesheet := lib.Tree{"Stylesheets", "stylesheets", routesStylesheetTree}
 	tAsset := lib.Tree{"Assets", "assets", routesAssetTree}
 
 	treesContentTypeSection := []*lib.Tree{&tContentType}
 	treesMediaTypeSection := []*lib.Tree{&tMediaType}
 	treesDataTypeSection := []*lib.Tree{&tDataType}
 	treesTemplateSection := []*lib.Tree{&tTemplate}
-	treesScriptSection := []*lib.Tree{&tScript}
-	treesStylesheetSection := []*lib.Tree{&tStylesheet}
+	//treesScriptSection := []*lib.Tree{&tScript}
+	//treesStylesheetSection := []*lib.Tree{&tStylesheet}
 	treesAssetSection := []*lib.Tree{&tAsset}
 
 	// params: name, alias, icon, route, trees, iscontainer, parent
@@ -136,11 +136,12 @@ func init() {
 	sMediaType := lib.Section{"Media Type Section", "mediaTypeSection", "fa fa-files-o fa-fw", &rMediaTypeSection, treesMediaTypeSection, false, nil, nil, []string{"media_type_section"}}
 	sDataType := lib.Section{"Data Type Section", "dataTypeSection", "fa fa-check-square-o fa-fw", &rDataTypeSection, treesDataTypeSection, false, nil, nil, []string{"data_type_section"}}
 	sTemplate := lib.Section{"Template Section", "templateSection", "fa fa-eye fa-fw", &rTemplateSection, treesTemplateSection, false, nil, nil, []string{"template_section"}}
-	sScript := lib.Section{"Script Section", "scriptSection", "fa fa-file-code-o fa-fw", &rScriptSection, treesScriptSection, false, nil, nil, []string{"script_section"}}
-	sStylesheet := lib.Section{"Stylesheet Section", "stylesheetSection", "fa fa-desktop fa-fw", &rStylesheetSection, treesStylesheetSection, false, nil, nil, []string{"stylesheet_section"}}
-	sAsset := lib.Section{"Asset Section", "assetSection", "fa fa-desktop fa-fw", &rAssetSection, treesAssetSection, false, nil, nil, []string{"asset_section"}}
+	//sScript := lib.Section{"Script Section", "scriptSection", "fa fa-file-code-o fa-fw", &rScriptSection, treesScriptSection, false, nil, nil, []string{"script_section"}}
+	//sStylesheet := lib.Section{"Stylesheet Section", "stylesheetSection", "fa fa-desktop fa-fw", &rStylesheetSection, treesStylesheetSection, false, nil, nil, []string{"stylesheet_section"}}
+	sAsset := lib.Section{"Asset Section", "assetSection", "fa fa-file-code-o fa-fw", &rAssetSection, treesAssetSection, false, nil, nil, []string{"asset_section"}}
 
-	lol := []lib.Section{sContentType, sMediaType, sDataType, sTemplate, sScript, sStylesheet, sAsset}
+	// lol := []lib.Section{sContentType, sMediaType, sDataType, sTemplate, sScript, sStylesheet, sAsset}
+	lol := []lib.Section{sContentType, sMediaType, sDataType, sTemplate, sAsset}
 	sSettings.Children = lol
 	//reflect.ValueOf(&sSettings).Elem().FieldByName("Children").Set(reflect.ValueOf(lol))
 	// log.Println(sSettings.Children[0].Name + ":FDSF:SDF:DS:F:")
