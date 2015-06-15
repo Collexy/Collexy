@@ -42,7 +42,7 @@ function ContentTypeEditCtrl($scope, $stateParams, ContentType, DataType, Templa
             "created_by": $scope.userSession.id
         }
     } else {
-        $scope.entity = {
+        $scope.node = {
             "created_by": $scope.userSession.id
         }
     }

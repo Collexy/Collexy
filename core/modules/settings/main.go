@@ -70,7 +70,6 @@ func init() {
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}", http.HandlerFunc(directoryApiController.Get)).Methods("GET")
 
-
 	// API END
 
 	// setup routes

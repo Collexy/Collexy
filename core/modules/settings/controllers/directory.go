@@ -126,9 +126,8 @@ func (this *DirectoryApiController) Delete(w http.ResponseWriter, r *http.Reques
 
 	err := models.DeleteFileSystemNode(path)
 
-	if(err!=nil){
+	if err != nil {
 		fmt.Fprintf(w, "%s", "error deleting file")
 	}
-	
 
 }

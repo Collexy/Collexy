@@ -1884,7 +1884,6 @@ WHERE content.path <@ subltree($1,$2,$3);`
 			contentTemplateId = int(content_template_id.Int64)
 		}
 
-
 		var content_url_str string
 		if content_url.Valid {
 			content_url_str = content_url.String
@@ -1954,7 +1953,7 @@ WHERE content.path <@ subltree($1,$2,$3);`
 	//   ) res1
 	// ) AS tpl
 	// --ON (content.meta->>'template_id')::int = tpl.id
-	// ON content.template_id = tpl.id 
+	// ON content.template_id = tpl.id
 	// JOIN
 	// (
 	//   SELECT *
@@ -2264,30 +2263,29 @@ func (c *Content) Put() {
 
 	if c.Meta != nil {
 		j, _ := json.Marshal(c.Meta)
-			meta = j
+		meta = j
 	}
 
 	if c.PublicAccessMembers != nil {
 		j, _ := json.Marshal(c.PublicAccessMembers)
-			publicAccessMembers = j
+		publicAccessMembers = j
 	}
 
 	if c.PublicAccessMemberGroups != nil {
 		j, _ := json.Marshal(c.PublicAccessMemberGroups)
-			publicAccessMemberGroups = j
+		publicAccessMemberGroups = j
 	}
 
 	if c.UserPermissions != nil {
 		j, _ := json.Marshal(c.UserPermissions)
-			userPermissions = j
+		userPermissions = j
 	}
 
 	if c.UserGroupPermissions != nil {
 		j, _ := json.Marshal(c.UserGroupPermissions)
-			userGroupPermissions = j
+		userGroupPermissions = j
 	}
 
-	
 	// publicAccessMemberGroups, _ := json.Marshal(c.PublicAccessMemberGroups)
 	// userPermissions, _ := json.Marshal(c.UserPermissions)
 	// userGroupPermissions, _ := json.Marshal(c.UserGroupPermissions)
@@ -2938,7 +2936,6 @@ WHERE content.id=$1`
 		contentTemplateId = int(content_template_id.Int64)
 	}
 
-
 	var template_id int
 	if ct_template_id.Valid {
 		template_id = int(ct_template_id.Int64)
@@ -3077,7 +3074,6 @@ WHERE content.id = $1;`
 	if content_template_id.Valid {
 		contentTemplateId = int(content_template_id.Int64)
 	}
-
 
 	var content_url_str string
 	if content_url.Valid {
@@ -3289,7 +3285,6 @@ WHERE lower(content.name) = $1;`
 		contentTemplateId = int(content_template_id.Int64)
 	}
 
-
 	var content_url_str string
 	if content_url.Valid {
 		content_url_str = content_url.String
@@ -3450,7 +3445,6 @@ WHERE $1 = ANY(heh.domains) and nlevel(content.path) = 1;`
 	if content_template_id.Valid {
 		contentTemplateId = int(content_template_id.Int64)
 	}
-
 
 	// var content_url_str string
 	// if content_url.Valid {

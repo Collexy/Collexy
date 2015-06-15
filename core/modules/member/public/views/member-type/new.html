@@ -22,9 +22,33 @@
                     <td>Icon</td>
                 </tr>
                 <tr>
+                    <td>Thumbnail</td>
+                    <td><input type="text" ng-model="entity.thumbnail"></td>
+                    <td>thumbnail</td>
+                </tr>
+                <tr>
                     <td>Description</td>
                     <td><textarea ng-model="entity.description"></textarea></td>
                     <td>Notes about the content type1.</td>
+                </tr>
+                <tr>
+                    <td>Is Abstract</td>
+                    <td>
+                        <input type="checkbox" ng-model="entity.is_abstract" ng-true-value="true" ng-false-value="false">
+                        <label> Yes</label>
+                    </td>
+                    <td>If this field is checked, your container member type is abstract</td>
+                </tr>
+                <tr>
+                    <td>Composite member types</td>
+                    <td>
+                        <div ng-repeat="mtype in availableCompositeMemberTypes"><label><input type="checkbox" checklist-model="entity.composite_member_type_ids" checklist-value="mtype.id"></label> {{mtype.name}}</div>
+                        <!-- <div ng-repeat="ctype in allContentTypes"><label><input type="checkbox" ng-model="node.meta.allowed_content_type_ids" ng-true-value="ctype.id" ng-false-value=""></label> {{ctype.name}}</div> -->
+                        <br>
+                          <button type="button" ng-click="checkAll()">check all</button>
+                          <button type="button" ng-click="uncheckAll()">uncheck all</button>
+                    </td>
+                    <td>Members of this type will "inherit" tabs and properties from its composite types</td>
                 </tr>
                 <!-- <tr>
                     <td>Allowed templates</td>

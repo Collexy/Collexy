@@ -10,7 +10,12 @@ angular.module("myApp").controller("MemberTypeDeleteCtrl", MemberTypeDeleteCtrl)
  */
 function MemberTypeListCtrl($scope, MemberType) {
     $scope.ContextMenuServiceName = "MemberTypeContextMenu"
-    $scope.tree = MemberType.query();
+    $scope.EntityChildrenServiceName = "MemberTypeChildren"
+    MemberType.query({
+        'levels': '1'
+    }, {}, function(tree) {
+        $scope.tree = tree;
+    });
 }
 /**
  * @ngdoc controller
@@ -32,11 +37,39 @@ function MemberTypeEditCtrl($scope, $stateParams, MemberType, DataType) {
         }, function() {
             console.log("Database error: Error fetching MemberType")
         });
+
+        
+
     } else {
         $scope.entity = {
             "created_by" : $scope.userSession.id
         }
+
+        if(typeof $stateParams.parent_id != 'undefined'){
+            $scope.entity["parent_id"] = parseInt($stateParams.parent_id)
+        }
     }
+
+    $scope.allMemberTypes = MemberType.query({
+        
+    }, {}, function(allMemberTypes) {
+        var availableCompositeMemberTypes = []
+        for (var i = 0; i < allMemberTypes.length; i++) {
+            if (typeof $scope.entity.parent_member_types !== 'undefined' && $scope.entity.parent_member_types.length > 0) {
+                if ($scope.entity.parent_member_types.containsId(allMemberTypes[i].id)) {} else {
+                    availableCompositeMemberTypes.push(allMemberTypes[i])
+                }
+            } else {
+                if(allMemberTypes[i].id != $stateParams.id){
+                    availableCompositeMemberTypes.push(allMemberTypes[i])
+                }
+                
+            }
+        }
+        $scope.availableCompositeMemberTypes = availableCompositeMemberTypes;
+        console.log(availableCompositeMemberTypes)
+    });
+
 
     DataType.query().$promise.then(function(allDataTypes) {
         $scope.allDataTypes = allDataTypes;
@@ -87,7 +120,7 @@ function MemberTypeEditCtrl($scope, $stateParams, MemberType, DataType) {
                         tabs[i].properties.push({
                             "name": "property name",
                             "order": 1,
-                            "data_type_node_id": 2,
+                            "data_type_id": 1,
                             "help_text": "prop help text",
                             "description": "prop description"
                         });

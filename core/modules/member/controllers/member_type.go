@@ -29,8 +29,8 @@ func (this *MemberTypeApiController) Get(w http.ResponseWriter, r *http.Request)
 		var hasPermission bool = false
 		hasPermission = user.HasPermissions([]string{"member_type_browse", "member_all"})
 		if hasPermission {
-
-			memberTypes := models.GetMemberTypes()
+			queryStrParams := r.URL.Query()
+			memberTypes := models.GetMemberTypes(queryStrParams)
 			res, err := json.Marshal(memberTypes)
 			corehelpers.PanicIf(err)
 

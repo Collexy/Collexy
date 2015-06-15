@@ -28,8 +28,8 @@ func (this *MemberTreeController) GetMenuForMember(w http.ResponseWriter, r *htt
 	// Content types should have added an AllowAtRoot field, to help determine ContextMenuItems at root level
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
 	// Permissions should be added again
-
-	memberTypes := coremodulemembermodels.GetMemberTypes()
+	// queryStrParams := r.URL.Query()
+	memberTypes := coremodulemembermodels.GetMemberTypes(nil)
 
 	for _, mt := range memberTypes {
 		//if mt.TypeId == 1 {
