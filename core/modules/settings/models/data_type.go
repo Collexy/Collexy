@@ -10,13 +10,11 @@ import (
 	//"html/template"
 	"database/sql"
 	"log"
-	"strconv"
+	//"strconv"
 )
 
 type DataType struct {
 	Id          int                    `json:"id"`
-	Path        string                 `json:"path"`
-	ParentId    int                    `json:"parent_id,omitempty"`
 	Name        string                 `json:"name,omitempty"`
 	Alias       string                 `json:"alias,omitempty"`
 	CreatedBy   int                    `json:"created_by,omitempty"`
@@ -29,7 +27,7 @@ type DataType struct {
 func GetDataTypes() (dataTypes []*DataType) {
 	db := coreglobals.Db
 
-	rows, err := db.Query(`SELECT id, path, parent_id, name, alias, created_by, created_date, html, editor_alias, meta 
+	rows, err := db.Query(`SELECT id, name, alias, created_by, created_date, html, editor_alias, meta 
         FROM data_type`)
 	if err != nil {
 		log.Fatal(err)
@@ -38,20 +36,13 @@ func GetDataTypes() (dataTypes []*DataType) {
 
 	for rows.Next() {
 		var id, created_by int
-		var path, name, alias string
+		var name, alias string
 		var created_date *time.Time
-		var parent_id sql.NullInt64
 		var html, editor_alias sql.NullString
 		var meta []byte
 
-		if err := rows.Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &html, &editor_alias, &meta); err != nil {
+		if err := rows.Scan(&id, &name, &alias, &created_by, &created_date, &html, &editor_alias, &meta); err != nil {
 			log.Fatal(err)
-		}
-
-		var pid int
-
-		if parent_id.Valid {
-			pid = int(parent_id.Int64)
 		}
 
 		var html_str string
@@ -70,7 +61,7 @@ func GetDataTypes() (dataTypes []*DataType) {
 
 		json.Unmarshal(meta, &data_type_metaMap)
 
-		dataType := &DataType{id, path, pid, name, alias, created_by, created_date, html_str, editor_alias_str, data_type_metaMap}
+		dataType := &DataType{id, name, alias, created_by, created_date, html_str, editor_alias_str, data_type_metaMap}
 		dataTypes = append(dataTypes, dataType)
 	}
 	if err := rows.Err(); err != nil {
@@ -83,25 +74,19 @@ func GetDataTypeById(id int) (dataType *DataType) {
 	db := coreglobals.Db
 
 	var created_by int
-	var path, name, alias string
+	var name, alias string
 	var created_date *time.Time
-	var parent_id sql.NullInt64
 	var html, editor_alias sql.NullString
 	var meta []byte
 
-	err := db.QueryRow(`SELECT id, path, parent_id, name, alias, created_by, created_date, html, editor_alias, meta
-        FROM data_type WHERE id=$1`, id).Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &html, &editor_alias, &meta)
+	err := db.QueryRow(`SELECT id, name, alias, created_by, created_date, html, editor_alias, meta
+        FROM data_type WHERE id=$1`, id).Scan(&id, &name, &alias, &created_by, &created_date, &html, &editor_alias, &meta)
 	switch {
 	case err == sql.ErrNoRows:
 		log.Printf("No data type with that ID.")
 	case err != nil:
 		log.Fatal(err)
 	default:
-		var pid int
-
-		if parent_id.Valid {
-			pid = int(parent_id.Int64)
-		}
 
 		var html_str string
 
@@ -119,7 +104,7 @@ func GetDataTypeById(id int) (dataType *DataType) {
 
 		json.Unmarshal(meta, &data_type_metaMap)
 
-		dataType = &DataType{id, path, pid, name, alias, created_by, created_date, html_str, editor_alias_str, data_type_metaMap}
+		dataType = &DataType{id, name, alias, created_by, created_date, html_str, editor_alias_str, data_type_metaMap}
 	}
 	return
 }
@@ -128,44 +113,44 @@ func (d *DataType) Post() {
 
 	//meta, err := json.Marshal(d.Meta)
 	//corehelpers.PanicIf(err)
+	var meta interface{} = nil
+
+	if d.Meta != nil {
+        j, _ := json.Marshal(d.Meta)
+        meta = j
+    }
 
 	db := coreglobals.Db
-
-	var id int64
 
 	// sqlStr := `INSERT INTO data_type (name, alias, created_by, html, editor_alias, meta)
 	// VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
 	// err1 := db.QueryRow(sqlStr, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta).Scan(&id)
-	sqlStr := `INSERT INTO data_type (name, alias, html, editor_alias) 
-	VALUES ($1, $2, $3, $4) RETURNING id`
-	err1 := db.QueryRow(sqlStr, d.Name, d.Alias, d.Html, d.EditorAlias).Scan(&id)
+	sqlStr := `INSERT INTO data_type (name, alias, created_by, html, editor_alias, meta) 
+	VALUES ($1, $2, $3, $4, $5, $6)`
+	_, err1 := db.Exec(sqlStr, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta)
 
 	corehelpers.PanicIf(err1)
-
-	sqlStr = `UPDATE data_type 
-	SET path=$1  
-	WHERE id=$2`
-
-	_, err2 := db.Exec(sqlStr, strconv.FormatInt(id, 10), id)
-
-	corehelpers.PanicIf(err2)
 
 	log.Println("data type created successfully")
 }
 
 func (d *DataType) Update() {
 
-	meta, err := json.Marshal(d.Meta)
-	corehelpers.PanicIf(err)
+	var meta interface{} = nil
+
+	if d.Meta != nil {
+        j, _ := json.Marshal(d.Meta)
+        meta = j
+    }
 
 	db := coreglobals.Db
 
 	sqlStr := `UPDATE data_type 
-	SET path=$1, parent_id=$2, name=$3, alias=$4, 
-	created_by=$5, html=$6, editor_alias=$7, meta=$8 
-	WHERE id=$9`
+	SET name=$1, alias=$2, 
+	created_by=$3, html=$4, editor_alias=$5, meta=$6 
+	WHERE id=$7`
 
-	_, err1 := db.Exec(sqlStr, d.Path, d.ParentId, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta, d.Id)
+	_, err1 := db.Exec(sqlStr, d.Name, d.Alias, d.CreatedBy, d.Html, d.EditorAlias, meta, d.Id)
 
 	corehelpers.PanicIf(err1)
 

@@ -19,7 +19,7 @@ import (
 type ContentType struct {
 	Id                      int                    `json:"id"`
 	Path                    string                 `json:"path"`
-	ParentId                int                    `json:"parent_id,omitempty"`
+	ParentId                *int                    `json:"parent_id,omitempty"`
 	Name                    string                 `json:"name"`
 	Alias                   string                 `json:"alias"`
 	CreatedBy               int                    `json:"created_by"`
@@ -109,7 +109,7 @@ func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType)
 		json.Unmarshal(content_type_tabs, &tabs)
 		json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, nil, nil, template_id, content_type_allowed_template_ids}
+		contentType := &ContentType{content_type_id, content_type_path, &parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, nil, nil, template_id, content_type_allowed_template_ids}
 		contentTypes = append(contentTypes, contentType)
 	}
 	if err := rows.Err(); err != nil {
@@ -169,7 +169,7 @@ func GetContentTypesByIdChildren(id int) (contentTypes []*ContentType) {
 		json.Unmarshal(content_type_tabs, &tabs)
 		json.Unmarshal(content_type_meta, &content_type_metaMap)
 
-		contentType := &ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
+		contentType := &ContentType{content_type_id, content_type_path, &parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 		contentTypes = append(contentTypes, contentType)
 	}
 	if err := rows.Err(); err != nil {
@@ -389,7 +389,7 @@ WHERE content_type.id=$1`
 	case err != nil:
 		log.Fatal(err)
 	default:
-		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, content_type_composite_content_type_ids, composite_content_types, template_id, content_type_allowed_template_ids}
+		contentType = ContentType{content_type_id, content_type_path, &parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, parent_content_types, nil, content_type_allow_at_root, content_type_is_container, content_type_is_abstract, content_type_allowed_content_type_ids, content_type_composite_content_type_ids, composite_content_types, template_id, content_type_allowed_template_ids}
 	}
 
 	return
@@ -441,17 +441,25 @@ func GetContentTypeById(id int) (contentType ContentType) {
 	case err != nil:
 		log.Fatal(err)
 	default:
-		contentType = ContentType{content_type_id, content_type_path, parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
+		contentType = ContentType{content_type_id, content_type_path, &parent_content_type_id, content_type_name, content_type_alias, content_type_created_by, content_type_created_date, content_type_description, content_type_icon, content_type_thumbnail, content_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil, 0, nil}
 	}
 
 	return
 }
 
 func (ct *ContentType) Post() {
-	meta, err1 := json.Marshal(ct.Meta)
-	corehelpers.PanicIf(err1)
-	tabs, err2 := json.Marshal(ct.Tabs)
-	corehelpers.PanicIf(err2)
+	var meta interface{} = nil
+    var tabs interface{} = nil
+
+    if ct.Meta != nil {
+        j, _ := json.Marshal(ct.Meta)
+        meta = j
+    }
+
+    if ct.Tabs != nil {
+        j, _ := json.Marshal(ct.Tabs)
+        tabs = j
+    }
 
 	// see template commented out post function and below
 	// _pgs_format, _ := t.PartialTemplateIds.Value()
@@ -469,28 +477,33 @@ func (ct *ContentType) Post() {
 
 	db := coreglobals.Db
 
-	// Channel c, is for getting the parent template
-	// We need to append the id of the newly created template to the path of the parent id to create the new path
-	c := make(chan ContentType)
-	var parentContentType ContentType
+    var parentContentType ContentType
 
-	var wg sync.WaitGroup
+    if ct.ParentId != nil {
 
-	wg.Add(1)
+    	// Channel c, is for getting the parent template
+    	// We need to append the id of the newly created template to the path of the parent id to create the new path
+    	c := make(chan ContentType)
+    	
 
-	go func() {
-		defer wg.Done()
-		c <- GetContentTypeById(ct.ParentId)
-	}()
+    	var wg sync.WaitGroup
 
-	go func() {
-		for i := range c {
-			fmt.Println(i)
-			parentContentType = i
-		}
-	}()
+    	wg.Add(1)
 
-	wg.Wait()
+    	go func() {
+    		defer wg.Done()
+    		c <- GetContentTypeById(*ct.ParentId)
+    	}()
+
+    	go func() {
+    		for i := range c {
+    			fmt.Println(i)
+    			parentContentType = i
+    		}
+    	}()
+
+    	wg.Wait()
+    }
 
 	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
 	c1 := make(chan int)
@@ -526,7 +539,7 @@ func (ct *ContentType) Post() {
     WHERE id=$2`
 
 	path := strconv.FormatInt(id, 10)
-	if ct.ParentId > 0 {
+	if ct.ParentId != nil {
 		path = parentContentType.Path + "." + strconv.FormatInt(id, 10)
 	}
 
@@ -538,10 +551,18 @@ func (ct *ContentType) Post() {
 }
 
 func (ct *ContentType) Put() {
-	meta, err1 := json.Marshal(ct.Meta)
-	corehelpers.PanicIf(err1)
-	tabs, err2 := json.Marshal(ct.Tabs)
-	corehelpers.PanicIf(err2)
+	var meta interface{} = nil
+    var tabs interface{} = nil
+
+    if ct.Meta != nil {
+        j, _ := json.Marshal(ct.Meta)
+        meta = j
+    }
+
+    if ct.Tabs != nil {
+        j, _ := json.Marshal(ct.Tabs)
+        tabs = j
+    }
 
 	// see template commented out post function and below
 	// _pgs_format, _ := t.PartialTemplateIds.Value()
@@ -554,35 +575,40 @@ func (ct *ContentType) Put() {
 
 	db := coreglobals.Db
 
-	// Channel c, is for getting the parent template
-	// We need to append the id of the newly created template to the path of the parent id to create the new path
-	c := make(chan ContentType)
-	var parentContentType ContentType
+    var parentContentType ContentType
 
-	var wg sync.WaitGroup
+    if ct.ParentId != nil {
 
-	wg.Add(1)
+    	// Channel c, is for getting the parent template
+    	// We need to append the id of the newly created template to the path of the parent id to create the new path
+    	c := make(chan ContentType)
+    	
 
-	go func() {
-		defer wg.Done()
-		c <- GetContentTypeById(ct.ParentId)
-	}()
+    	var wg sync.WaitGroup
 
-	go func() {
-		for i := range c {
-			fmt.Println(i)
-			parentContentType = i
-		}
-	}()
+    	wg.Add(1)
 
-	wg.Wait()
+    	go func() {
+    		defer wg.Done()
+    		c <- GetContentTypeById(*ct.ParentId)
+    	}()
+
+    	go func() {
+    		for i := range c {
+    			fmt.Println(i)
+    			parentContentType = i
+    		}
+    	}()
+
+    	wg.Wait()
+    }
 
 	sqlStr := `UPDATE content_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12, 
         is_abstract=$13, allowed_content_type_ids=$14,composite_content_type_ids=$15, template_id=$16, allowed_template_ids=$17
         WHERE id=$18`
 
 	path := strconv.Itoa(ct.Id)
-	if ct.ParentId > 0 {
+	if ct.ParentId != nil {
 		path = parentContentType.Path + "." + strconv.Itoa(ct.Id)
 	}
 

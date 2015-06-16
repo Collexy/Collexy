@@ -2,7 +2,7 @@ package models
 
 import (
 	coreglobals "collexy/core/globals"
-	corehelpers "collexy/core/helpers"
+	//corehelpers "collexy/core/helpers"
 	"database/sql"
 	"encoding/base32"
 	"encoding/json"
@@ -369,8 +369,12 @@ func SetLoggedInMember(r *http.Request, val *Member) {
 
 func (u *Member) Post() {
 
-	meta, err := json.Marshal(u.Meta)
-	corehelpers.PanicIf(err)
+	var meta interface{} = nil
+	
+	if u.Meta != nil {
+		j, _ := json.Marshal(u.Meta)
+		meta = j
+	}
 
 	db := coreglobals.Db
 
@@ -405,7 +409,12 @@ func (u *Member) Post() {
 
 func (u *Member) Put() {
 
-	meta, _ := json.Marshal(u.Meta)
+	var meta interface{} = nil
+	
+	if u.Meta != nil {
+		j, _ := json.Marshal(u.Meta)
+		meta = j
+	}
 
 	memberGroupIds, _ := coreglobals.IntSlice(u.MemberGroupIds).Value()
 

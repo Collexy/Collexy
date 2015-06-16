@@ -19,7 +19,7 @@ import (
 type MediaType struct {
 	Id                    int                    `json:"id"`
 	Path                  string                 `json:"path"`
-	ParentId              int                    `json:"parent_id,omitempty"`
+	ParentId              *int                    `json:"parent_id,omitempty"`
 	Name                  string                 `json:"name"`
 	Alias                 string                 `json:"alias"`
 	CreatedBy             int                    `json:"created_by"`
@@ -100,7 +100,7 @@ func GetMediaTypes(queryStringParams url.Values) (mediaTypes []*MediaType) {
 		json.Unmarshal(media_type_tabs, &tabs)
 		json.Unmarshal(media_type_meta, &media_type_metaMap)
 
-		mediaType := &MediaType{media_type_id, media_type_path, parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, media_type_allow_at_root, media_type_is_container, media_type_is_abstract, media_type_allowed_media_type_ids, nil, nil}
+		mediaType := &MediaType{media_type_id, media_type_path, &parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, media_type_allow_at_root, media_type_is_container, media_type_is_abstract, media_type_allowed_media_type_ids, nil, nil}
 		mediaTypes = append(mediaTypes, mediaType)
 	}
 	if err := rows.Err(); err != nil {
@@ -160,7 +160,7 @@ func GetMediaTypesByIdChildren(id int) (mediaTypes []*MediaType) {
 		json.Unmarshal(media_type_tabs, &tabs)
 		json.Unmarshal(media_type_meta, &media_type_metaMap)
 
-		mediaType := &MediaType{media_type_id, media_type_path, parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+		mediaType := &MediaType{media_type_id, media_type_path, &parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
 		mediaTypes = append(mediaTypes, mediaType)
 	}
 	if err := rows.Err(); err != nil {
@@ -373,7 +373,7 @@ WHERE media_type.id=$1`
 	case err != nil:
 		log.Fatal(err)
 	default:
-		mediaType = MediaType{media_type_id, media_type_path, parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, parent_media_types, nil, media_type_allow_at_root, media_type_is_container, media_type_is_abstract, media_type_allowed_media_type_ids, media_type_composite_media_type_ids, composite_media_types}
+		mediaType = MediaType{media_type_id, media_type_path, &parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, parent_media_types, nil, media_type_allow_at_root, media_type_is_container, media_type_is_abstract, media_type_allowed_media_type_ids, media_type_composite_media_type_ids, composite_media_types}
 	}
 
 	return
@@ -425,17 +425,25 @@ func GetMediaTypeById(id int) (mediaType MediaType) {
 	case err != nil:
 		log.Fatal(err)
 	default:
-		mediaType = MediaType{media_type_id, media_type_path, parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+		mediaType = MediaType{media_type_id, media_type_path, &parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
 	}
 
 	return
 }
 
 func (mt *MediaType) Post() {
-	meta, err1 := json.Marshal(mt.Meta)
-	corehelpers.PanicIf(err1)
-	tabs, err2 := json.Marshal(mt.Tabs)
-	corehelpers.PanicIf(err2)
+	var meta interface{} = nil
+    var tabs interface{} = nil
+
+    if mt.Meta != nil {
+        j, _ := json.Marshal(mt.Meta)
+        meta = j
+    }
+
+    if mt.Tabs != nil {
+        j, _ := json.Marshal(mt.Tabs)
+        tabs = j
+    }
 
 	// see template commented out post function and below
 	// _pgs_format, _ := t.PartialTemplateIds.Value()
@@ -451,28 +459,33 @@ func (mt *MediaType) Post() {
 
 	db := coreglobals.Db
 
-	// Channel c, is for getting the parent template
-	// We need to append the id of the newly created template to the path of the parent id to create the new path
-	c := make(chan MediaType)
-	var parentMediaType MediaType
+    var parentMediaType MediaType
 
-	var wg sync.WaitGroup
+    if mt.ParentId != nil {
+    	// Channel c, is for getting the parent template
+    	// We need to append the id of the newly created template to the path of the parent id to create the new path
+    	c := make(chan MediaType)
+    	
 
-	wg.Add(1)
+    	var wg sync.WaitGroup
 
-	go func() {
-		defer wg.Done()
-		c <- GetMediaTypeById(mt.ParentId)
-	}()
+    	wg.Add(1)
 
-	go func() {
-		for i := range c {
-			fmt.Println(i)
-			parentMediaType = i
-		}
-	}()
+    	go func() {
+    		defer wg.Done()
+    		c <- GetMediaTypeById(*mt.ParentId)
+    	}()
 
-	wg.Wait()
+    	go func() {
+    		for i := range c {
+    			fmt.Println(i)
+    			parentMediaType = i
+    		}
+    	}()
+        wg.Wait()
+    }
+
+	
 
 	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
 	c1 := make(chan int)
@@ -508,7 +521,7 @@ func (mt *MediaType) Post() {
     WHERE id=$2`
 
 	path := strconv.FormatInt(id, 10)
-	if mt.ParentId > 0 {
+	if mt.ParentId != nil {
 		path = parentMediaType.Path + "." + strconv.FormatInt(id, 10)
 	}
 
@@ -520,10 +533,18 @@ func (mt *MediaType) Post() {
 }
 
 func (mt *MediaType) Put() {
-	meta, err1 := json.Marshal(mt.Meta)
-	corehelpers.PanicIf(err1)
-	tabs, err2 := json.Marshal(mt.Tabs)
-	corehelpers.PanicIf(err2)
+	var meta interface{} = nil
+    var tabs interface{} = nil
+
+    if mt.Meta != nil {
+        j, _ := json.Marshal(mt.Meta)
+        meta = j
+    }
+
+    if mt.Tabs != nil {
+        j, _ := json.Marshal(mt.Tabs)
+        tabs = j
+    }
 
 	// see template commented out post function and below
 	// _pgs_format, _ := t.PartialTemplateIds.Value()
@@ -534,35 +555,39 @@ func (mt *MediaType) Put() {
 
 	db := coreglobals.Db
 
-	// Channel c, is for getting the parent template
-	// We need to append the id of the newly created template to the path of the parent id to create the new path
-	c := make(chan MediaType)
-	var parentMediaType MediaType
+    var parentMediaType MediaType
 
-	var wg sync.WaitGroup
+    if mt.ParentId != nil {
 
-	wg.Add(1)
+    	// Channel c, is for getting the parent template
+    	// We need to append the id of the newly created template to the path of the parent id to create the new path
+    	c := make(chan MediaType)
 
-	go func() {
-		defer wg.Done()
-		c <- GetMediaTypeById(mt.ParentId)
-	}()
+    	var wg sync.WaitGroup
 
-	go func() {
-		for i := range c {
-			fmt.Println(i)
-			parentMediaType = i
-		}
-	}()
+    	wg.Add(1)
 
-	wg.Wait()
+    	go func() {
+    		defer wg.Done()
+    		c <- GetMediaTypeById(*mt.ParentId)
+    	}()
+
+    	go func() {
+    		for i := range c {
+    			fmt.Println(i)
+    			parentMediaType = i
+    		}
+    	}()
+
+    	wg.Wait()
+    }
 
 	sqlStr := `UPDATE media_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12, 
         is_abstract=$13, allowed_media_type_ids=$14,composite_media_type_ids=$15
         WHERE id=$16`
 
 	path := strconv.Itoa(mt.Id)
-	if mt.ParentId > 0 {
+	if mt.ParentId != nil {
 		path = parentMediaType.Path + "." + strconv.Itoa(mt.Id)
 	}
 	_, err6 := db.Exec(sqlStr, path, mt.ParentId, mt.Name, mt.Alias, mt.CreatedBy, mt.Description, mt.Icon, mt.Thumbnail, meta, tabs, mt.AllowAtRoot, mt.IsContainer,

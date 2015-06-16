@@ -30,7 +30,7 @@ import (
 type Media struct {
 	Id                       int                        `json:"id"`
 	Path                     string                     `json:"path"`
-	ParentId                 int                        `json:"parent_id,omitempty"`
+	ParentId                 *int                        `json:"parent_id,omitempty"`
 	Name                     string                     `json:"name"`
 	CreatedBy                int                        `json:"created_by"`
 	CreatedDate              *time.Time                 `json:"created_date"`
@@ -169,9 +169,9 @@ FROM media
 					if user_perm[userIdStr].Permissions[i] == "node_browse" {
 						//fmt.Println("woauw it worked!")
 						accessGranted = true
-						media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+						media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
 						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
-						media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+						media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 							media_media_type_id, media_metaMap, nil, nil, user_perm, nil, "", nil, nil, nil, &media_type}
 						mediaSlice = append(mediaSlice, media)
 						break
@@ -238,8 +238,8 @@ FROM media
 							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
 								//fmt.Println("woauw it worked!")
 								accessGranted = true
-								media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
-								media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+								media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+								media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 									media_media_type_id, media_metaMap, nil, nil, nil, user_group_perm, "", nil, nil, nil, &media_type}
 								mediaSlice = append(mediaSlice, media)
 								break
@@ -303,8 +303,8 @@ FROM media
 					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
 						if user.UserGroups[i].Permissions[j] == "node_browse" {
 							accessGranted = true
-							media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
-							media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+							media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+							media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 								media_media_type_id, media_metaMap, nil, nil, nil, nil, "", nil, nil, nil, &media_type}
 							mediaSlice = append(mediaSlice, media)
 							break
@@ -379,10 +379,10 @@ WHERE media.id=$1`
 
 	corehelpers.PanicIf(err)
 
-	var media_type_parent_id int
+	var ctpid int
 	if ct_parent_id.Valid {
 		// use s.String
-		media_type_parent_id = int(ct_parent_id.Int64)
+		ctpid = int(ct_parent_id.Int64)
 	} else {
 		// NULL value
 	}
@@ -412,9 +412,9 @@ WHERE media.id=$1`
 	json.Unmarshal(ct_meta, &ct_metaMap)
 	json.Unmarshal(media_meta, &media_metaMap)
 
-	media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, media_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, nil, nil, allowed_media_types, false, false, false, nil, nil, nil}
+	media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, nil, nil, allowed_media_types, false, false, false, nil, nil, nil}
 
-	media = Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+	media = Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 		media_media_type_id, media_metaMap, nil, nil, user_perm, user_group_perm, "", nil, nil, nil, &media_type}
 
 	return
@@ -526,9 +526,9 @@ WHERE media.parent_id=$1`
 					if user_perm[userIdStr].Permissions[i] == "node_browse" {
 						//fmt.Println("woauw it worked!")
 						accessGranted = true
-						media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+						media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
 						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
-						media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+						media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 							media_media_type_id, media_metaMap, nil, nil, user_perm, nil, "", nil, nil, nil, &media_type}
 						mediaSlice = append(mediaSlice, media)
 						break
@@ -594,8 +594,8 @@ WHERE media.parent_id=$1`
 							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
 								//fmt.Println("woauw it worked!")
 								accessGranted = true
-								media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
-								media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+								media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+								media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 									media_media_type_id, media_metaMap, nil, nil, nil, user_group_perm, "", nil, nil, nil, &media_type}
 								mediaSlice = append(mediaSlice, media)
 								break
@@ -658,8 +658,8 @@ WHERE media.parent_id=$1`
 					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
 						if user.UserGroups[i].Permissions[j] == "node_browse" {
 							accessGranted = true
-							media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
-							media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+							media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+							media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 								media_media_type_id, media_metaMap, nil, nil, nil, nil, "", nil, nil, nil, &media_type}
 							mediaSlice = append(mediaSlice, media)
 							break
@@ -788,9 +788,9 @@ WHERE media.path @>
 					if user_perm[userIdStr].Permissions[i] == "node_browse" {
 						//fmt.Println("woauw it worked!")
 						accessGranted = true
-						media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+						media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
 						// node := Node{id, path, created_by, name, type_id, &created_date, 0, nil,nil,false, "", user_perm, nil, ""}
-						media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+						media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 							media_media_type_id, media_metaMap, nil, nil, user_perm, nil, "", nil, nil, nil, &media_type}
 						mediaSlice = append(mediaSlice, media)
 						break
@@ -825,8 +825,8 @@ WHERE media.path @>
 							if user_group_perm[userGroupIdStr].Permissions[j] == "node_browse" {
 								//fmt.Println("woauw it worked!")
 								accessGranted = true
-								media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
-								media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+								media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+								media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 									media_media_type_id, media_metaMap, nil, nil, nil, user_group_perm, "", nil, nil, nil, &media_type}
 								mediaSlice = append(mediaSlice, media)
 								break
@@ -921,8 +921,8 @@ WHERE media.path @>
 					for j := 0; j < len(user.UserGroups[i].Permissions); j++ {
 						if user.UserGroups[i].Permissions[j] == "node_browse" {
 							accessGranted = true
-							media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
-							media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+							media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+							media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 								media_media_type_id, media_metaMap, nil, nil, nil, nil, "", nil, nil, nil, &media_type}
 							mediaSlice = append(mediaSlice, media)
 							break
@@ -1031,8 +1031,8 @@ WHERE media.path @>
 		json.Unmarshal(ct_tabs, &tabs)
 		json.Unmarshal(ct_meta, &ct_metaMap)
 
-		media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
-		media := Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+		media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, ct_created_date, ct_description, media_type_icon_str, media_type_thumbnail_str, ct_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+		media := Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 			media_media_type_id, media_metaMap, nil, nil, nil, nil, "", nil, nil, nil, &media_type}
 		mediaSlice = append(mediaSlice, &media)
 
@@ -1165,10 +1165,26 @@ WHERE media.path @>
 // }
 
 func (m *Media) Post() {
-	meta, _ := json.Marshal(m.Meta)
+	var meta interface{} = nil
+	
+	var userPermissions interface{} = nil
+	var userGroupPermissions interface{} = nil
 
-	userPermissions, _ := json.Marshal(m.UserPermissions)
-	userGroupPermissions, _ := json.Marshal(m.UserGroupPermissions)
+	if m.Meta != nil {
+		j, _ := json.Marshal(m.Meta)
+		meta = j
+	}
+
+	if m.UserPermissions != nil {
+		j, _ := json.Marshal(m.UserPermissions)
+		userPermissions = j
+	}
+
+	if m.UserGroupPermissions != nil {
+		j, _ := json.Marshal(m.UserGroupPermissions)
+		userGroupPermissions = j
+	}
+
 
 	// http://godoc.org/github.com/lib/pq
 	// pq does not support the LastInsertId() method of the Result type in database/sql.
@@ -1177,28 +1193,33 @@ func (m *Media) Post() {
 
 	db := coreglobals.Db
 
-	// Channel c, is for getting the parent template
-	// We need to append the id of the newly created template to the path of the parent id to create the new path
-	c1 := make(chan Media)
 	var parentMedia Media
 
-	var wg sync.WaitGroup
+	if m.ParentId != nil {
 
-	wg.Add(1)
+		// Channel c, is for getting the parent template
+		// We need to append the id of the newly created template to the path of the parent id to create the new path
+		c1 := make(chan Media)
+		
 
-	go func() {
-		defer wg.Done()
-		c1 <- GetMediaById(m.ParentId)
-	}()
+		var wg sync.WaitGroup
 
-	go func() {
-		for i := range c1 {
-			fmt.Println(i)
-			parentMedia = i
-		}
-	}()
+		wg.Add(1)
 
-	wg.Wait()
+		go func() {
+			defer wg.Done()
+			c1 <- GetMediaById(*m.ParentId)
+		}()
+
+		go func() {
+			for i := range c1 {
+				fmt.Println(i)
+				parentMedia = i
+			}
+		}()
+
+		wg.Wait()
+	}
 
 	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
 	c2 := make(chan int)
@@ -1242,7 +1263,7 @@ func (m *Media) Post() {
     WHERE id=$2`
 
 	path := strconv.FormatInt(id, 10)
-	if m.ParentId > 0 {
+	if m.ParentId != nil {
 		path = parentMedia.Path + "." + strconv.FormatInt(id, 10)
 	}
 
@@ -1306,30 +1327,51 @@ func DeleteMedia(id int) {
 
 func (m *Media) Put() {
 
-	meta, _ := json.Marshal(m.Meta)
-	userPermissions, _ := json.Marshal(m.UserPermissions)
-	userGroupPermissions, _ := json.Marshal(m.UserGroupPermissions)
+	var meta interface{} = nil
+	
+	var userPermissions interface{} = nil
+	var userGroupPermissions interface{} = nil
 
-	c1 := make(chan Media)
+	if m.Meta != nil {
+		j, _ := json.Marshal(m.Meta)
+		meta = j
+	}
+
+	if m.UserPermissions != nil {
+		j, _ := json.Marshal(m.UserPermissions)
+		userPermissions = j
+	}
+
+	if m.UserGroupPermissions != nil {
+		j, _ := json.Marshal(m.UserGroupPermissions)
+		userGroupPermissions = j
+	}
+
 	var parentMedia Media
 
-	var wg sync.WaitGroup
+	if m.ParentId != nil {
 
-	wg.Add(1)
+		c1 := make(chan Media)
+		
 
-	go func() {
-		defer wg.Done()
-		c1 <- GetMediaById(m.ParentId)
-	}()
+		var wg sync.WaitGroup
 
-	go func() {
-		for i := range c1 {
-			fmt.Println(i)
-			parentMedia = i
-		}
-	}()
+		wg.Add(1)
 
-	wg.Wait()
+		go func() {
+			defer wg.Done()
+			c1 <- GetMediaById(*m.ParentId)
+		}()
+
+		go func() {
+			for i := range c1 {
+				fmt.Println(i)
+				parentMedia = i
+			}
+		}()
+
+		wg.Wait()
+	}
 
 	db := coreglobals.Db
 
@@ -1339,7 +1381,7 @@ func (m *Media) Put() {
 	WHERE id=$9;`
 
 	path := strconv.Itoa(m.Id)
-	if m.ParentId > 0 {
+	if m.ParentId != nil {
 		path = parentMedia.Path + "." + strconv.Itoa(m.Id)
 	}
 
@@ -1699,8 +1741,6 @@ LATERAL
 		      'data_type', json_build_object
 		      (
 			'id',row.data_type_id, 
-			'path',row.data_type_path, 
-			'parent_id', row.data_type_parent_id,
 			'name',row.data_type_name, 
 			'alias',row.data_type_alias, 
 			'created_by',row.data_type_created_by, 
@@ -1714,7 +1754,7 @@ LATERAL
 		    )
             ) AS properties
 	    FROM(
-		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
+		SELECT k.name, "order",data_type_id, data_type.name as data_type_name, 
 		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, data_type.editor_alias as data_type_editor_alias,
 		data_type.meta as data_type_meta, help_text, description
 		FROM json_to_recordset(properties) 
@@ -1769,8 +1809,6 @@ LATERAL
 		      'data_type', json_build_object
 		      (
 			'id',row.data_type_id, 
-			'path',row.data_type_path, 
-			'parent_id', row.data_type_parent_id,
 			'name',row.data_type_name, 
 			'alias',row.data_type_alias, 
 			'created_by',row.data_type_created_by, 
@@ -1784,7 +1822,7 @@ LATERAL
 		    )
             ) AS properties
 	    FROM(
-		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
+		SELECT k.name, "order",data_type_id, data_type.name as data_type_name, 
 		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, data_type.editor_alias as data_type_editor_alias,
 		data_type.meta as data_type_meta, help_text, description
 		FROM json_to_recordset(properties) 
@@ -1841,8 +1879,6 @@ LATERAL
 		      'data_type', json_build_object
 		      (
 			'id',row.data_type_id, 
-			'path',row.data_type_path, 
-			'parent_id', row.data_type_parent_id,
 			'name',row.data_type_name, 
 			'alias',row.data_type_alias, 
 			'created_by',row.data_type_created_by, 
@@ -1856,7 +1892,7 @@ LATERAL
 		    )
             ) AS properties
 	    FROM(
-		SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, 
+		SELECT k.name, "order",data_type_id, data_type.name as data_type_name, 
 		data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.html AS data_type_html, data_type.editor_alias as data_type_editor_alias,
 		data_type.meta as data_type_meta, help_text, description
 		FROM json_to_recordset(properties) 
@@ -2008,10 +2044,10 @@ WHERE media.id=$1`
 
 	corehelpers.PanicIf(err)
 
-	var media_type_parent_id int
+	var ctpid int
 	if ct_parent_id.Valid {
 		// use s.String
-		media_type_parent_id = int(ct_parent_id.Int64)
+		ctpid = int(ct_parent_id.Int64)
 	} else {
 		// NULL value
 	}
@@ -2092,9 +2128,9 @@ WHERE media.id=$1`
 		}
 	}
 
-	media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, media_type_parent_id, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_media_types, nil, false, false, false, nil, nil, composite_media_types}
+	media_type := coremodulesettingsmodels.MediaType{ct_id, ct_path, &ctpid, ct_name, ct_alias, ct_created_by, &time.Time{}, ct_description, ct_icon, ct_thumbnail, ct_metaMap, tabs, parent_media_types, nil, false, false, false, nil, nil, composite_media_types}
 
-	media = Media{media_id, media_path, cpid, media_name, media_created_by, media_created_date,
+	media = Media{media_id, media_path, &cpid, media_name, media_created_by, media_created_date,
 		media_media_type_id, media_metaMap, public_access_members, public_access_member_groups, user_perm, user_group_perm, "", nil, nil, nil, &media_type}
 
 	return

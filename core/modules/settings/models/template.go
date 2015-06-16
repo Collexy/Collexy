@@ -24,7 +24,7 @@ import (
 type Template struct {
 	Id              int         `json:"id"`
 	Path            string      `json:"path"`
-	ParentId        int         `json:"parent_id,omitempty"`
+	ParentId        *int         `json:"parent_id,omitempty"`
 	Name            string      `json:"name"`
 	Alias           string      `json:"alias"`
 	CreatedBy       int         `json:"created_by"`
@@ -67,7 +67,7 @@ func GetTemplates(queryStringParams url.Values) (templates []*Template) {
 			pid = int(parent_id.Int64)
 		}
 
-		template := &Template{id, path, pid, name, alias, created_by, &created_date, is_partial, "", nil}
+		template := &Template{id, path, &pid, name, alias, created_by, &created_date, is_partial, "", nil}
 		templates = append(templates, template)
 	}
 	if err := rows.Err(); err != nil {
@@ -106,7 +106,7 @@ func GetTemplatesByIdChildren(parentId int) (templates []*Template) {
 			pid = int(parent_id.Int64)
 		}
 
-		template := &Template{id, path, pid, name, alias, created_by, &created_date, is_partial, "", nil}
+		template := &Template{id, path, &pid, name, alias, created_by, &created_date, is_partial, "", nil}
 		templates = append(templates, template)
 	}
 	if err := rows.Err(); err != nil {
@@ -173,7 +173,7 @@ where my_template.id=$1`
 	case err != nil:
 		log.Fatal(err)
 	default:
-		template = Template{id, path, pid, name, alias, created_by, created_date, is_partial, str, nil}
+		template = Template{id, path, &pid, name, alias, created_by, created_date, is_partial, str, nil}
 	}
 
 	return
@@ -194,7 +194,7 @@ func (t *Template) Post() {
 
 	go func() {
 		defer wg.Done()
-		c <- GetTemplateById(t.ParentId)
+		c <- GetTemplateById(*t.ParentId)
 	}()
 
 	go func() {
@@ -238,7 +238,7 @@ func (t *Template) Post() {
 	WHERE id=$2`
 
 	path := strconv.FormatInt(id, 10)
-	if t.ParentId > 0 {
+	if t.ParentId != nil {
 		path = parentTemplate.Path + "." + strconv.FormatInt(id, 10)
 	}
 
@@ -296,7 +296,7 @@ func (t *Template) Update() {
 
 	go func() {
 		defer wg.Done()
-		c2 <- GetTemplateById(t.ParentId)
+		c2 <- GetTemplateById(*t.ParentId)
 	}()
 
 	go func() {
@@ -311,7 +311,7 @@ func (t *Template) Update() {
 	db := coreglobals.Db
 
 	path := strconv.Itoa(t.Id)
-	if t.ParentId > 0 {
+	if t.ParentId != nil {
 		path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
 	}
 
