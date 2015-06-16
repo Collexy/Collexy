@@ -26,12 +26,12 @@ import (
 type Content struct {
 	Id            int                    `json:"id"`
 	Path          string                 `json:"path"`
-	ParentId      *int                    `json:"parent_id,omitempty"`
+	ParentId      *int                   `json:"parent_id,omitempty"`
 	Name          string                 `json:"name"`
 	CreatedBy     int                    `json:"created_by"`
 	CreatedDate   *time.Time             `json:"created_date"`
 	ContentTypeId int                    `json:"content_type_id"`
-	TemplateId    *int                    `json:"template_id,omitempty"`
+	TemplateId    *int                   `json:"template_id,omitempty"`
 	Meta          map[string]interface{} `json:"meta,omitempty"`
 	// PublicAccess         *PublicAccess          `json:"public_access,omitempty"`
 	PublicAccessMembers      map[string]interface{}     `json:"public_access_members,omitempty"`
@@ -2207,7 +2207,6 @@ func (c *Content) Post() {
 		// Channel c, is for getting the parent template
 		// We need to append the id of the newly created template to the path of the parent id to create the new path
 		c1 := make(chan Content)
-		
 
 		var wg sync.WaitGroup
 

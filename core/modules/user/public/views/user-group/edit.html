@@ -26,9 +26,36 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>Permission:</td>
-                    <td>{{data.permissions}}</td>
-                    <td></td>
+                    <td>Permissions:</td>
+                    <td>
+                        <table>
+                            <thead>
+                                <th>Available Permissions</th>
+                                <th></th>
+                                <th>Selected Permissions</th>
+                            </thead>
+                            <tr>
+                                <td>
+                                    
+                                    <select multiple="true" ng-model="available" ng-options="item as item.name for item in availablePermissions"></select>
+                                </td>
+                                <td class="align-center">
+                                    <button type="button" ng-click="moveItem(available[0], availablePermissions, selectedPermissions)">--></button><br>
+                                    <button type="button" ng-click="moveItem(selected[0], selectedPermissions, availablePermissions)"><--</button>
+                                </td>
+                                <td>
+                                    <select multiple="true" ng-model="selected" ng-options="item as item.name for item in selectedPermissions"></select>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- key as value for (key , value) in data //data.user_group_ids -->
+                        
+                        <!-- {{availableUserGroups}}<br>
+                        {{selectedUserGroups}}<br> -->
+                        
+                        {{data.permissions}}
+                    </td>
+                   
                 </tr>
             </table>
         </div>

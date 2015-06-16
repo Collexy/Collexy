@@ -30,7 +30,7 @@ import (
 type Media struct {
 	Id                       int                        `json:"id"`
 	Path                     string                     `json:"path"`
-	ParentId                 *int                        `json:"parent_id,omitempty"`
+	ParentId                 *int                       `json:"parent_id,omitempty"`
 	Name                     string                     `json:"name"`
 	CreatedBy                int                        `json:"created_by"`
 	CreatedDate              *time.Time                 `json:"created_date"`
@@ -1166,7 +1166,7 @@ WHERE media.path @>
 
 func (m *Media) Post() {
 	var meta interface{} = nil
-	
+
 	var userPermissions interface{} = nil
 	var userGroupPermissions interface{} = nil
 
@@ -1185,7 +1185,6 @@ func (m *Media) Post() {
 		userGroupPermissions = j
 	}
 
-
 	// http://godoc.org/github.com/lib/pq
 	// pq does not support the LastInsertId() method of the Result type in database/sql.
 	// To return the identifier of an INSERT (or UPDATE or DELETE),
@@ -1200,7 +1199,6 @@ func (m *Media) Post() {
 		// Channel c, is for getting the parent template
 		// We need to append the id of the newly created template to the path of the parent id to create the new path
 		c1 := make(chan Media)
-		
 
 		var wg sync.WaitGroup
 
@@ -1328,7 +1326,7 @@ func DeleteMedia(id int) {
 func (m *Media) Put() {
 
 	var meta interface{} = nil
-	
+
 	var userPermissions interface{} = nil
 	var userGroupPermissions interface{} = nil
 
@@ -1352,7 +1350,6 @@ func (m *Media) Put() {
 	if m.ParentId != nil {
 
 		c1 := make(chan Media)
-		
 
 		var wg sync.WaitGroup
 

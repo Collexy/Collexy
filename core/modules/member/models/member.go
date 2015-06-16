@@ -370,7 +370,7 @@ func SetLoggedInMember(r *http.Request, val *Member) {
 func (u *Member) Post() {
 
 	var meta interface{} = nil
-	
+
 	if u.Meta != nil {
 		j, _ := json.Marshal(u.Meta)
 		meta = j
@@ -410,7 +410,7 @@ func (u *Member) Post() {
 func (u *Member) Put() {
 
 	var meta interface{} = nil
-	
+
 	if u.Meta != nil {
 		j, _ := json.Marshal(u.Meta)
 		meta = j

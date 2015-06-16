@@ -16,6 +16,7 @@ import (
 	// "os"
 	//"labix.org/v2/mgo/bson"
 	"database/sql"
+	"database/sql/driver"
 	"encoding/base32"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/gorilla/context"
@@ -49,8 +50,18 @@ func (u *User) Post() {
 
 	db := coreglobals.Db
 
-	userGroupIds, _ := coreglobals.IntSlice(u.UserGroupIds).Value()
-	permissions, _ := coreglobals.StringSlice(u.Permissions).Value()
+	var userGroupIds driver.Value = nil
+	var permissions driver.Value = nil
+
+	if u.Permissions != nil {
+		permissions, _ = coreglobals.StringSlice(u.Permissions).Value()
+
+	}
+
+	if u.UserGroupIds != nil {
+		userGroupIds, _ = coreglobals.IntSlice(u.UserGroupIds).Value()
+
+	}
 
 	// sqlStr := `INSERT INTO data_type (name, alias, created_by, html, editor_alias, meta)
 	// VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
@@ -59,6 +70,7 @@ func (u *User) Post() {
 		user_group_ids, permissions) 
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 
+	var status int = int(u.Status)
 	// Todo:
 	// Level: not important
 	// Difficulty: easy
@@ -70,7 +82,7 @@ func (u *User) Post() {
 	u.SetPassword(string(u.Password))
 
 	_, err1 := db.Exec(sqlStr, u.Username, u.FirstName, u.LastName, u.Password, u.Email,
-		u.Status, userGroupIds, permissions)
+		status, userGroupIds, permissions)
 
 	if err1 != nil {
 		panic(err1)
@@ -81,8 +93,18 @@ func (u *User) Post() {
 
 func (u *User) Put() {
 
-	userGroupIds, _ := coreglobals.IntSlice(u.UserGroupIds).Value()
-	permissions, _ := coreglobals.StringSlice(u.Permissions).Value()
+	var userGroupIds driver.Value = nil
+	var permissions driver.Value = nil
+
+	if u.Permissions != nil {
+		permissions, _ = coreglobals.StringSlice(u.Permissions).Value()
+
+	}
+
+	if u.UserGroupIds != nil {
+		userGroupIds, _ = coreglobals.IntSlice(u.UserGroupIds).Value()
+
+	}
 
 	db := coreglobals.Db
 

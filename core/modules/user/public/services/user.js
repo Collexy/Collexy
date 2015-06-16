@@ -3,6 +3,7 @@ angular.module("myApp").service('UserGroup', ["$resource", UserGroup]);
 angular.module("myApp").service('UserContextMenu', ["$resource", UserContextMenu]);
 angular.module("myApp").service('UserGroupContextMenu', ["$resource", UserGroupContextMenu]);
 angular.module("myApp").service('Permission', ["$resource", Permission]);
+angular.module("myApp").service('PermissionContextMenu', ["$resource",PermissionContextMenu]);
 
 function User($resource) {
     return $resource('/api/user/:id', {}, {
@@ -50,14 +51,29 @@ function UserGroup($resource) {
 }
 
 function Permission($resource) {
-    return $resource('/api/permission/:name', {}, {
+    return $resource('/api/permission/:id', {}, {
         query: {
             method: 'GET',
             params: {
-                name: ''
+                id: ''
             },
             isArray: true
         },
+        update: {
+            method: 'PUT',
+            isArray: false
+        },
+        create: {
+            method: 'POST',
+            isArray: false
+        }
+        // delete: { method: 'delete', isArray: false }
+    });
+}
+
+function PermissionContextMenu($resource) {
+    return $resource('/api/permission/:id/contextmenu', {}, {
+        //query: { method: 'GET', params: { id: 'id' }, isArray: true },
         update: {
             method: 'PUT',
             isArray: false

@@ -24,7 +24,7 @@ import (
 type Template struct {
 	Id              int         `json:"id"`
 	Path            string      `json:"path"`
-	ParentId        *int         `json:"parent_id,omitempty"`
+	ParentId        *int        `json:"parent_id,omitempty"`
 	Name            string      `json:"name"`
 	Alias           string      `json:"alias"`
 	CreatedBy       int         `json:"created_by"`

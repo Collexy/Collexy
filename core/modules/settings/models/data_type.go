@@ -116,9 +116,9 @@ func (d *DataType) Post() {
 	var meta interface{} = nil
 
 	if d.Meta != nil {
-        j, _ := json.Marshal(d.Meta)
-        meta = j
-    }
+		j, _ := json.Marshal(d.Meta)
+		meta = j
+	}
 
 	db := coreglobals.Db
 
@@ -139,9 +139,9 @@ func (d *DataType) Update() {
 	var meta interface{} = nil
 
 	if d.Meta != nil {
-        j, _ := json.Marshal(d.Meta)
-        meta = j
-    }
+		j, _ := json.Marshal(d.Meta)
+		meta = j
+	}
 
 	db := coreglobals.Db
 

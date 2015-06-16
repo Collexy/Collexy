@@ -19,7 +19,7 @@ import (
 type ContentType struct {
 	Id                      int                    `json:"id"`
 	Path                    string                 `json:"path"`
-	ParentId                *int                    `json:"parent_id,omitempty"`
+	ParentId                *int                   `json:"parent_id,omitempty"`
 	Name                    string                 `json:"name"`
 	Alias                   string                 `json:"alias"`
 	CreatedBy               int                    `json:"created_by"`
@@ -449,17 +449,17 @@ func GetContentTypeById(id int) (contentType ContentType) {
 
 func (ct *ContentType) Post() {
 	var meta interface{} = nil
-    var tabs interface{} = nil
+	var tabs interface{} = nil
 
-    if ct.Meta != nil {
-        j, _ := json.Marshal(ct.Meta)
-        meta = j
-    }
+	if ct.Meta != nil {
+		j, _ := json.Marshal(ct.Meta)
+		meta = j
+	}
 
-    if ct.Tabs != nil {
-        j, _ := json.Marshal(ct.Tabs)
-        tabs = j
-    }
+	if ct.Tabs != nil {
+		j, _ := json.Marshal(ct.Tabs)
+		tabs = j
+	}
 
 	// see template commented out post function and below
 	// _pgs_format, _ := t.PartialTemplateIds.Value()
@@ -477,33 +477,32 @@ func (ct *ContentType) Post() {
 
 	db := coreglobals.Db
 
-    var parentContentType ContentType
+	var parentContentType ContentType
 
-    if ct.ParentId != nil {
+	if ct.ParentId != nil {
 
-    	// Channel c, is for getting the parent template
-    	// We need to append the id of the newly created template to the path of the parent id to create the new path
-    	c := make(chan ContentType)
-    	
+		// Channel c, is for getting the parent template
+		// We need to append the id of the newly created template to the path of the parent id to create the new path
+		c := make(chan ContentType)
 
-    	var wg sync.WaitGroup
+		var wg sync.WaitGroup
 
-    	wg.Add(1)
+		wg.Add(1)
 
-    	go func() {
-    		defer wg.Done()
-    		c <- GetContentTypeById(*ct.ParentId)
-    	}()
+		go func() {
+			defer wg.Done()
+			c <- GetContentTypeById(*ct.ParentId)
+		}()
 
-    	go func() {
-    		for i := range c {
-    			fmt.Println(i)
-    			parentContentType = i
-    		}
-    	}()
+		go func() {
+			for i := range c {
+				fmt.Println(i)
+				parentContentType = i
+			}
+		}()
 
-    	wg.Wait()
-    }
+		wg.Wait()
+	}
 
 	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
 	c1 := make(chan int)
@@ -552,17 +551,17 @@ func (ct *ContentType) Post() {
 
 func (ct *ContentType) Put() {
 	var meta interface{} = nil
-    var tabs interface{} = nil
+	var tabs interface{} = nil
 
-    if ct.Meta != nil {
-        j, _ := json.Marshal(ct.Meta)
-        meta = j
-    }
+	if ct.Meta != nil {
+		j, _ := json.Marshal(ct.Meta)
+		meta = j
+	}
 
-    if ct.Tabs != nil {
-        j, _ := json.Marshal(ct.Tabs)
-        tabs = j
-    }
+	if ct.Tabs != nil {
+		j, _ := json.Marshal(ct.Tabs)
+		tabs = j
+	}
 
 	// see template commented out post function and below
 	// _pgs_format, _ := t.PartialTemplateIds.Value()
@@ -575,33 +574,32 @@ func (ct *ContentType) Put() {
 
 	db := coreglobals.Db
 
-    var parentContentType ContentType
+	var parentContentType ContentType
 
-    if ct.ParentId != nil {
+	if ct.ParentId != nil {
 
-    	// Channel c, is for getting the parent template
-    	// We need to append the id of the newly created template to the path of the parent id to create the new path
-    	c := make(chan ContentType)
-    	
+		// Channel c, is for getting the parent template
+		// We need to append the id of the newly created template to the path of the parent id to create the new path
+		c := make(chan ContentType)
 
-    	var wg sync.WaitGroup
+		var wg sync.WaitGroup
 
-    	wg.Add(1)
+		wg.Add(1)
 
-    	go func() {
-    		defer wg.Done()
-    		c <- GetContentTypeById(*ct.ParentId)
-    	}()
+		go func() {
+			defer wg.Done()
+			c <- GetContentTypeById(*ct.ParentId)
+		}()
 
-    	go func() {
-    		for i := range c {
-    			fmt.Println(i)
-    			parentContentType = i
-    		}
-    	}()
+		go func() {
+			for i := range c {
+				fmt.Println(i)
+				parentContentType = i
+			}
+		}()
 
-    	wg.Wait()
-    }
+		wg.Wait()
+	}
 
 	sqlStr := `UPDATE content_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12, 
         is_abstract=$13, allowed_content_type_ids=$14,composite_content_type_ids=$15, template_id=$16, allowed_template_ids=$17

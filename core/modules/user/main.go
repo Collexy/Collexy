@@ -22,6 +22,7 @@ func init() {
 
 	userTreeController := coremoduleusercontrollers.UserTreeController{}
 	userGroupTreeController := coremoduleusercontrollers.UserGroupTreeController{}
+	permissionTreeController := coremoduleusercontrollers.PermissionTreeController{}
 
 	// User
 	subrPublic.HandleFunc("/api/public/user/login", http.HandlerFunc(userApiController.Login)).Methods("POST")
@@ -40,7 +41,12 @@ func init() {
 	subrPrivate.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.Put)).Methods("PUT")
 	subrPrivate.HandleFunc("/api/user-group/{id:.*}", http.HandlerFunc(userGroupApiController.Delete)).Methods("DELETE")
 
+	subrPrivate.HandleFunc("/api/permission/{id:.*}/contextmenu", http.HandlerFunc(permissionTreeController.GetMenuForPermission)).Methods("GET")
+	subrPrivate.HandleFunc("/api/permission/{id:.*}", http.HandlerFunc(permissionApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/permission", http.HandlerFunc(permissionApiController.Get)).Methods("GET")
+	subrPrivate.HandleFunc("/api/permission/{id:.*}", http.HandlerFunc(permissionApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/permission/{id:.*}", http.HandlerFunc(permissionApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/permission/{id:.*}", http.HandlerFunc(permissionApiController.Delete)).Methods("DELETE")
 
 	///
 
@@ -53,22 +59,31 @@ func init() {
 	rUserGroupTreeMethodEdit := lib.Route{"user.userGroup.edit", "/edit/:id", "core/modules/user/public/views/user-group/edit.html", false}
 	rUserGroupTreeMethodNew := lib.Route{"user.userGroup.new", "/new", "core/modules/user/public/views/user-group/new.html", false}
 
+	rPermissionSection := lib.Route{"user.permission", "/permission", "core/modules/user/public/views/permission/index.html", false}
+	rPermissionTreeMethodEdit := lib.Route{"user.permission.edit", "/edit/:id", "core/modules/user/public/views/permission/edit.html", false}
+	rPermissionTreeMethodNew := lib.Route{"user.permission.new", "/new", "core/modules/user/public/views/permission/new.html", false}
+
 	// setup trees
 	routesUserTree := []lib.Route{rUserTreeMethodEdit, rUserTreeMethodNew}
 	routesUserGroupTree := []lib.Route{rUserGroupTreeMethodEdit, rUserGroupTreeMethodNew}
+	routesPermissionTree := []lib.Route{rPermissionTreeMethodEdit, rPermissionTreeMethodNew}
 
 	tUser := lib.Tree{"Users", "users", routesUserTree}
 	tUserGroup := lib.Tree{"User Groups", "userGroups", routesUserGroupTree}
+	tPermission := lib.Tree{"Permissions", "permissions", routesPermissionTree}
 
 	treesUserSection := []*lib.Tree{&tUser}
 	treesUserGroupSection := []*lib.Tree{&tUserGroup}
+	treesPermissionSection := []*lib.Tree{&tPermission}
 
 	// params: name, alias, icon, route, trees, iscontainer, parent
 	sUsers := lib.Section{"Users Section", "usersSection", "fa fa-user fa-fw", &rUserSection, treesUserSection, false, nil, nil, []string{"user_section"}}
 
 	sUserGroup := lib.Section{"User Group Section", "userGroupSection", "fa fa-smile-o fa-fw", &rUserGroupSection, treesUserGroupSection, false, nil, nil, []string{"user_group_section"}}
 
-	lol := []lib.Section{sUserGroup}
+	sPermission := lib.Section{"Permission Section", "permissionSection", "fa fa-smile-o fa-fw", &rPermissionSection, treesPermissionSection, false, nil, nil, []string{"permission_section"}}
+
+	lol := []lib.Section{sUserGroup, sPermission}
 	sUsers.Children = lol
 	//reflect.ValueOf(&sUsers).Elem().FieldByName("Children").Set(reflect.ValueOf(lol))
 	// log.Println(sUsers.Children[0].Name + ":FDSF:SDF:DS:F:")

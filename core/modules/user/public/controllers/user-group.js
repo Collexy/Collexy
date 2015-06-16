@@ -7,13 +7,90 @@ function UserGroupListCtrl($scope, $stateParams, UserGroup) {
     $scope.tree = UserGroup.query();
 }
 
-function UserGroupEditCtrl($scope, $stateParams, UserGroup) {
+function UserGroupEditCtrl($scope, $stateParams, UserGroup, Permission) {
     $scope.currentTab = 'properties';
-    UserGroup.get({
-        id: $stateParams.id
-    }, function() {}).$promise.then(function(data) {
-        $scope.data = data;
-    });
+    if($stateParams.id){
+        UserGroup.get({
+            id: $stateParams.id
+        }, function() {}).$promise.then(function(data) {
+            $scope.data = data;
+            Permission.query().$promise.then(function(permissions) {
+                $scope.allPermissions = permissions;
+                var availablePermissions = [];
+                var selectedPermissions = [];
+                if(typeof data.permissions != 'undefined'){
+                    for (var i = 0; i < permissions.length; i++) {
+                        if(data.permissions.containsName(permissions[i].name)){
+                            selectedPermissions.push(permissions[i])
+                        } else {
+                           availablePermissions.push(permissions[i]) 
+                        }
+                    }
+                } else {
+                    availablePermissions = permissions;
+                }
+                
+                // for (var i = 0; i < data.permissions.length; i++) {
+                //     for (var j = 0; j < permissions.length; j++) {
+                //         //console.log("[i] = " + data.permissions[i] + ", [j]: " +permission[j].id)
+                //         if (data.permissions[i] != permissions[j].name) {
+                //             availablePermissions.push(permissions[j])
+                //         } else {
+                //             selectedPermissions.push(permissions[j])
+                //         }
+                //     }
+                // }
+                availablePermissions.unique();
+                selectedPermissions.unique();
+                $scope.availablePermissions = availablePermissions;
+                $scope.selectedPermissions = selectedPermissions;
+            }, function() {
+                //ERR
+            })
+        });
+    } else {
+        $scope.data = {}
+        Permission.query().$promise.then(function(permissions) {
+            $scope.allPermissions = permissions;
+            var availablePermissions = [];
+            var selectedPermissions = [];
+            
+            availablePermissions = permissions;
+            
+            
+            // for (var i = 0; i < data.permissions.length; i++) {
+            //     for (var j = 0; j < permissions.length; j++) {
+            //         //console.log("[i] = " + data.permissions[i] + ", [j]: " +permission[j].id)
+            //         if (data.permissions[i] != permissions[j].name) {
+            //             availablePermissions.push(permissions[j])
+            //         } else {
+            //             selectedPermissions.push(permissions[j])
+            //         }
+            //     }
+            // }
+            availablePermissions.unique();
+            selectedPermissions.unique();
+            $scope.availablePermissions = availablePermissions;
+            $scope.selectedPermissions = selectedPermissions;
+        }, function() {
+            //ERR
+        })
+    }
+    
+
+    $scope.moveItem = function(item, from, to) {
+        alert("moveitem")
+        var idx = from.indexOf(item);
+        if (idx != -1) {
+            from.splice(idx, 1);
+            to.push(item);
+        }
+        var permissions = [];
+        for (var i = 0; i < $scope.selectedPermissions.length; i++) {
+            permissions.push($scope.selectedPermissions[i].name);
+        }
+        $scope.data.permissions = permissions;
+    };
 
     $scope.submit = function() {
         console.log("submit")

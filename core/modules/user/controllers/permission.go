@@ -5,9 +5,9 @@ import (
 	"collexy/core/modules/user/models"
 	"encoding/json"
 	"fmt"
-	//"github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 	"net/http"
-	//"strconv"
+	"strconv"
 )
 
 type PermissionApiController struct{}
@@ -21,19 +21,92 @@ func (this *PermissionApiController) Get(w http.ResponseWriter, r *http.Request)
 	fmt.Fprintf(w, "%s", res)
 }
 
-// func (this *PermissionApiController) GetById(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
+func (this *PermissionApiController) GetById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-// 	params := mux.Vars(r)
-// 	idStr := params["id"]
-// 	id, _ := strconv.Atoi(idStr)
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"permission_browse", "permission_all"})
+		if hasPermission {
 
-// 	user := models.GetLoggedInUser(r)
+			params := mux.Vars(r)
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
 
-// 	userGroup := models.GetPermissionById(id, user)
+			permission := models.GetPermissionById(id)
 
-// 	res, err := json.Marshal(userGroup)
-// 	corehelpers.PanicIf(err)
+			res, err := json.Marshal(permission)
+			corehelpers.PanicIf(err)
+			fmt.Fprintf(w, "%s", res)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to browse permissions")
+		}
+	}
 
-// 	fmt.Fprintf(w, "%s", res)
-// }
+}
+
+func (this *PermissionApiController) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"permission_create", "permission_all"})
+		if hasPermission {
+
+			permission := models.Permission{}
+
+			err := json.NewDecoder(r.Body).Decode(&permission)
+
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+
+			permission.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create permissions")
+		}
+	}
+
+}
+
+func (this *PermissionApiController) Put(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"permission_update", "permission_all"})
+		if hasPermission {
+
+			permission := models.Permission{}
+
+			err := json.NewDecoder(r.Body).Decode(&permission)
+
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+
+			permission.Update()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to update permissions")
+		}
+	}
+}
+
+func (this *PermissionApiController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if user := models.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"permission_delete", "permission_all"})
+		if hasPermission {
+			params := mux.Vars(r)
+
+			idStr := params["id"]
+			id, _ := strconv.Atoi(idStr)
+
+			models.DeletePermission(id)
+		} else {
+			fmt.Fprintf(w, "You do not have permission to delete permissions")
+		}
+
+	}
+}

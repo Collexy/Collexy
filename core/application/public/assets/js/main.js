@@ -47,6 +47,16 @@ Array.prototype.containsId = function(id) {
     return false;
 };
 
+Array.prototype.containsName = function(name) {
+    var i = this.length;
+    while (i--) {
+        if (this[i] === name) {
+            return true;
+        }
+    }
+    return false;
+};
+
 // Array.prototype.containsTest = function(target, compareOnProp) {
 //     var i = this.length;
 //     while (i--) {
