@@ -75,12 +75,16 @@ function TemplateChildren($resource) {
 
 function Directory($resource) {
     return $resource('/api/directory/:rootdir/:name', {}, {
+        //return $resource('/api/directory', {}, {
         query: {
             method: 'GET',
             isArray: false
         },
         update: {
             method: 'PUT',
+            params: {
+                name: 'put'
+            },
             isArray: false
         },
         create: {

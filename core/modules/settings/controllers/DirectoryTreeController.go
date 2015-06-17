@@ -45,7 +45,7 @@ func (this *DirectoryTreeController) GetMenuForDirectory(w http.ResponseWriter, 
 	} else {
 		pathFile := fmt.Sprintf("settings.%s.new({type:'file', parent:%q})", rootdir1, name)
 		itemFile := ContextMenuItem{"file", pathFile, "fa fa-file-code-o fa-fw", "", false, nil, ""}
-		pathFolder := fmt.Sprintf("settings.%s.new({type:'folder', parent:null})", rootdir1)
+		pathFolder := fmt.Sprintf("settings.%s.new({type:'folder', parent:%q})", rootdir1, name)
 		itemFolder := ContextMenuItem{"folder", pathFolder, "fa fa-folder-o fa-fw", "", false, nil, ""}
 		cmiNew.Items = append(cmiNew.Items, itemFile)
 		cmiNew.Items = append(cmiNew.Items, itemFolder)

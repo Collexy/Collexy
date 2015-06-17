@@ -12,23 +12,22 @@
     </ul>
     <div ng-show="currentTab == type">
         <table>
-            <tr ng-if="type!='folder'">
-                <td>File upload</td>
+            <tr ng-if="type=='folder'">
+                <td>Files upload</td>
                 <td>
-                    <input type="text" ng-model="username"></br></br>
-                    <input type="checkbox" ng-model="multiple">upload multiple file</br></br>
-                    watching model: files: {{files}}
-                    <div class="button" ngf-select ng-model="$parent.files" ngf-multiple="multiple">Select File</div>
-                    on file change:
-                    <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="multiple">Select File</div>
-                    Drop File:
+                    <!-- <input type="checkbox" ng-model="multiple">upload multiple file</br></br> -->
+                    <!-- watching model: files: {{files}}
+                    <div class="button" ngf-select ng-model="$parent.files" ngf-multiple="multiple">Select File</div> -->
+                    <!-- on file change:
+                    <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="multiple">Select File</div> -->
+                    <!-- Drop File: -->
                     <div ngf-drop ngf-select ng-model="$parent.files" class="drop-box"
                         ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
-                    accept="image/*,application/pdf">Drop pdfs or images here or click to upload</div>
+                    accept="image/*,application/pdf">Drop file(s) here or click to upload</div>
                     <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
                     Files:
                     <ul>
-                        <li ng-repeat="f in files" style="font:smaller">{{f.name}}</li>
+                        <li ng-repeat="f in files" style="font:smaller">{{f.name}} <img ng-show="f != null" ngf-src="f" class="thumb"></li>
                     </ul>
                     Upload Log:
                     <pre>{{log}}</pre>
@@ -45,11 +44,11 @@
                         .drop-box {
                             background: #F8F8F8;
                             border: 5px dashed #DDD;
-                            width: 200px;
-                            height: 65px;
+                            /*width: 200px;
+                            height: 65px;*/
                             text-align: center;
-                            padding-top: 25px;
-                            margin: 10px;
+                            padding: 25px;
+                            margin: 10px 0;
                         }
                         .dragover {
                             border: 5px dashed blue;
@@ -57,6 +56,18 @@
                     </style>
                 </td>
                 <td>Upload file here.</td>
+            </tr>
+            <tr ng-if="type!='folder'">
+                <td>File contents</td>
+                <td>
+                    <div ui-codemirror ui-codemirror-opts="editorOptions" ng-model="data.contents" ></div>
+                    <style>
+                        .CodeMirror {
+                            height: 600px;
+                            border: 1px solid #ddd;
+                        }
+                    </style>
+                </td>
             </tr>
             <tr>
                 <td>Parent folder</td>

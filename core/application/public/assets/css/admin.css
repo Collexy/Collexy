@@ -645,3 +645,11 @@ div[class*='col-'] + div[class*='col-'] {
 }
 
 .align-center { text-align: center !important; }
+
+.thumb {
+	width: 24px;
+	height: 24px;
+	float: none;
+	position: relative;
+	top: 7px;
+}

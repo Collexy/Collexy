@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"sync"
 )
 
 // FileInfo is a struct created from os.FileInfo interface for serialization.
@@ -154,6 +155,11 @@ func GetFilesystemNodes(rootdir string) (tree *FileNode, err error) {
 	return
 }
 
+func GetFilesystemNodes1(rootdir string) (tree *FileNode) {
+	tree, _ = NewTree(rootdir) // maybe try prepending with slash /
+	return
+}
+
 func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode) {
 	filepath.Walk(rootdir, func(path string, fi os.FileInfo, err error) (e error) {
 		//if !fi.IsDir() {
@@ -171,7 +177,34 @@ func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode) {
 				fileNode = FileNode{path, path, &finfo, nil, string(bytes), true, ""}
 				return
 			} else {
-				fileNode = FileNode{path, path, &finfo, nil, "", true, ""}
+
+
+				var children []*FileNode = nil
+
+				// Channel c, is for getting the parent template
+				// We need to append the id of the newly created template to the path of the parent id to create the new path
+				c := make(chan *FileNode)
+
+				var wg sync.WaitGroup
+
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+					c <- GetFilesystemNodes1(path)
+				}()
+
+				go func() {
+					for i := range c {
+						fmt.Println(i)
+						children = append(children,i)
+					}
+				}()
+
+				wg.Wait()
+
+
+				fileNode = FileNode{path, path, &finfo, children[0].Children, "", true, ""}
 				return
 				// finod, _ := json.Marshal(fin)
 				// fmt.Fprintf(w,"%s",finod)
@@ -187,7 +220,7 @@ func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode) {
 
 func DeleteFileSystemNode(path string) (err error) {
 
-	err = os.Remove(path)
+	err = os.RemoveAll(path)
 
 	if err != nil {
 		fmt.Println(err)

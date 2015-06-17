@@ -64,7 +64,9 @@ func init() {
 	// Directory
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}/{is_dir:.*}/contextmenu", http.HandlerFunc(directoryTreeController.GetMenuForDirectory)).Methods("GET")
 	subrPrivate.HandleFunc("/api/directory/upload-file-test", http.HandlerFunc(directoryApiController.UploadFileTest)).Methods("POST")
-	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Post)).Methods("POST")
+	// subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.Post)).Methods("POST")
+	subrPrivate.HandleFunc("/api/directory/{name:.*}", http.HandlerFunc(directoryApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/directory/{name:.*}", http.HandlerFunc(directoryApiController.Post)).Methods("POST")
 	subrPrivate.HandleFunc("/api/directory/{path:.*}", http.HandlerFunc(directoryApiController.Delete)).Methods("DELETE")
 
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.GetById)).Methods("GET")

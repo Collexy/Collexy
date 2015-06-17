@@ -115,9 +115,8 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
             console.log(data)
             if (data.info.is_dir) {
                 $scope.type = 'folder'
-                $scope.currentTab = $scope.type;
+                $scope.currentTab = $scope.type
             } else {
-                
                 $scope.type = 'file'
                 $scope.currentTab = $scope.type;
 
@@ -167,9 +166,9 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
         //User.get({ userId: $stateParams.userId} , function(phone) {
     } else { 
 
+
         $scope.data = {
-            "info": {},
-            "meta": {}
+            "info": {}
         }
 
         if ($stateParams.type == 'folder') {
@@ -179,6 +178,14 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
         } else if ($stateParams.type == 'file') {
             $scope.data.info.is_dir = false;
             $scope.type = 'file';
+            $scope.editorOptions = {
+                                lineWrapping: true,
+                                lineNumbers: true,
+                                //readOnly: 'nocursor',
+                                mode: 'htmlmixed', // eg. 'css', 'javascript',
+                                indentUnit: 4,
+                                tabMode: 'spaces',
+                            };
         }
         
         if ($stateParams.parent) {
@@ -189,6 +196,24 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
         }
 
         $scope.currentTab = $scope.type;
+
+        // $scope.$watch("data", function(newValue, oldValue) {
+        //     $scope.data = newValue;
+        //     alert("data changed")
+        // }, true);
+        
+        $scope.$watch("files", function(newValue, oldValue) {
+            //$scope.data.name = newValue[0].info.name;
+            if(typeof newValue != 'undefined'){
+                if(typeof newValue[0] != 'undefined'){
+                    if(typeof newValue[0].name != 'undefined'){
+                        console.log(newValue[0].name)
+                        $scope.data["info"]["name"] = newValue[0].name;
+                    }
+                }
+            }
+            
+        }, true);
     }
     
     
@@ -276,13 +301,13 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
         alert("lol")
 
         console.log($scope.files)
-        if (files && files.length) {
+        if (files && files.length && !$stateParams.type) {
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
-                var pathIndexEnd = $scope.data.path.lastIndexOf("\\")
-                var path = $scope.data.path.substring(0,pathIndexEnd)
-                alert(path)
-                var escapedPath = replaceAll(path, '\\', '%5C');
+                // var pathIndexEnd = $scope.data.path.lastIndexOf("\\")
+                // var path = $scope.data.path.substring(0,pathIndexEnd)
+                // alert(path)
+                var escapedPath = replaceAll($scope.data.path, '\\', '%5C');
                 console.log('file is ' + JSON.stringify(file));
                 var uploadUrl = '/api/directory/upload-file-test?path=' + escapedPath;
                 Upload.upload({
@@ -296,16 +321,59 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
                 });
             }
+        } else {
+            function success(response) {
+                console.log("success", response)
+
+                if (files && files.length && $stateParams.type) {
+                    for (var i = 0; i < files.length; i++) {
+                        var file = files[i];
+                        // var pathIndexEnd = $scope.data.path.lastIndexOf("\\")
+                        // var path = $scope.data.path.substring(0,pathIndexEnd)
+                        // alert(path)
+                        var escapedPath = replaceAll($scope.data.path, '\\', '%5C');
+                        console.log('file is ' + JSON.stringify(file));
+                        var uploadUrl = '/api/directory/upload-file-test?path=' + escapedPath;
+                        Upload.upload({
+                            url: uploadUrl,
+                            fields: {'username': $scope.username},
+                            file: file
+                        }).progress(function (evt) {
+                            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                            console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                        }).success(function (data, status, headers, config) {
+                            console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+                        });
+                    }
+                }
+                //$location.path("/admin/users");
+            }
+
+            function failure(response) {
+                console.log("failure", response);
+
+            }
+            //console.log($stateParams)
+            if ($stateParams.type) {
+                console.log("create");
+                console.log($scope.data)
+                Directory.create({},
+                    $scope.data, success, failure);
+                //User.create($scope.user, success, failure);
+            } else {
+                console.log("update");
+                Directory.update({},
+                    $scope.data, success, failure);
+                console.log($scope.data)
+                //User.update($scope.user, success, failure);
+            }
         }
     };
     //$scope.persistedFiles = [pathToUrl("media\\Sample Images\\TXT\\pic04.jpg")];
     //console.log($scope.data.meta["file_upload"]["persisted_files"])
     
 
-    // $scope.$watch("myFile", function(newValue, oldValue) {
-    //     $scope.myFile = newValue;
-    //     alert("lol")
-    // }, true);
+    
 }
 /**
  * @ngdoc controller
