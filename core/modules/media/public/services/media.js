@@ -22,7 +22,10 @@ function Media($resource) {
             isArray: false
         },
         delete: {
-            method: 'DELETE'
+            method: 'DELETE',
+            params: {
+                path: '@path'
+            }
         }
     });
 }

@@ -88,8 +88,10 @@ func GetMediaTypes(queryStringParams url.Values) (mediaTypes []*MediaType) {
 		}
 
 		var parent_media_type_id int
+		var parent_media_type_id_pointer *int = nil
 		if media_type_parent_id.Valid {
 			parent_media_type_id = int(media_type_parent_id.Int64)
+			parent_media_type_id_pointer = &parent_media_type_id
 		} else {
 			// NULL value
 		}
@@ -100,7 +102,7 @@ func GetMediaTypes(queryStringParams url.Values) (mediaTypes []*MediaType) {
 		json.Unmarshal(media_type_tabs, &tabs)
 		json.Unmarshal(media_type_meta, &media_type_metaMap)
 
-		mediaType := &MediaType{media_type_id, media_type_path, &parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, media_type_allow_at_root, media_type_is_container, media_type_is_abstract, media_type_allowed_media_type_ids, nil, nil}
+		mediaType := &MediaType{media_type_id, media_type_path, parent_media_type_id_pointer, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, media_type_allow_at_root, media_type_is_container, media_type_is_abstract, media_type_allowed_media_type_ids, nil, nil}
 		mediaTypes = append(mediaTypes, mediaType)
 	}
 	if err := rows.Err(); err != nil {
@@ -148,8 +150,10 @@ func GetMediaTypesByIdChildren(id int) (mediaTypes []*MediaType) {
 		}
 
 		var parent_media_type_id int
+		var parent_media_type_id_pointer *int = nil
 		if media_type_parent_id.Valid {
 			parent_media_type_id = int(media_type_parent_id.Int64)
+			parent_media_type_id_pointer = &parent_media_type_id
 		} else {
 			// NULL value
 		}
@@ -160,7 +164,7 @@ func GetMediaTypesByIdChildren(id int) (mediaTypes []*MediaType) {
 		json.Unmarshal(media_type_tabs, &tabs)
 		json.Unmarshal(media_type_meta, &media_type_metaMap)
 
-		mediaType := &MediaType{media_type_id, media_type_path, &parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+		mediaType := &MediaType{media_type_id, media_type_path, parent_media_type_id_pointer, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
 		mediaTypes = append(mediaTypes, mediaType)
 	}
 	if err := rows.Err(); err != nil {
@@ -214,9 +218,9 @@ LATERAL
                     )
                     ) AS y(name text, properties json),
                     LATERAL (
-                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id, 'path',row.data_type_path, 'parent_id', row.data_type_parent_id,'name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
+                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id,'name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
                         FROM(
-                            SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.created_date as data_type_created_date, data_type.html AS data_type_html, help_text, description
+                            SELECT k.name, "order",data_type_id, data_type.name as data_type_name, data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.created_date as data_type_created_date, data_type.html AS data_type_html, help_text, description
                             FROM json_to_recordset(properties) 
                             AS k(name text, "order" int, data_type_id int, help_text text, description text)
                             JOIN data_type
@@ -261,9 +265,9 @@ LATERAL
                     )
                     ) AS y(name text, properties json),
                     LATERAL (
-                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id, 'path',row.data_type_path, 'parent_id', row.data_type_parent_id,'name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
+                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id, 'name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
                         FROM(
-                            SELECT k.name, "order",data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.created_date as data_type_created_date, data_type.html AS data_type_html, help_text, description
+                            SELECT k.name, "order",data_type_id, data_type.name as data_type_name, data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.created_date as data_type_created_date, data_type.html AS data_type_html, help_text, description
                             FROM json_to_recordset(properties) 
                             AS k(name text, "order" int, data_type_id int, help_text text, description text)
                             JOIN data_type
@@ -307,9 +311,9 @@ LATERAL
                         )) AS x(tabs json)
                     )) AS y(name text, properties json),
                     LATERAL (
-                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id, 'path',row.data_type_path, 'parent_id', row.data_type_parent_id,'name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
+                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id, 'name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
                         FROM(
-                            SELECT k.name, "order", data_type_id, data_type.path as data_type_path, data_type.parent_id as data_type_parent_id, data_type.name as data_type_name, data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.created_date as data_type_created_date, data_type.html AS data_type_html, help_text, description
+                            SELECT k.name, "order", data_type_id, data_type.name as data_type_name, data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.created_date as data_type_created_date, data_type.html AS data_type_html, help_text, description
                             FROM json_to_recordset(properties) 
                             AS k(name text, "order" int, data_type_id int, help_text text, description text)
                             JOIN data_type
@@ -352,8 +356,10 @@ WHERE media_type.id=$1`
 		&media_type_is_abstract, &media_type_allowed_media_type_ids, &media_type_composite_media_type_ids)
 
 	var parent_media_type_id int
+	var parent_media_type_id_pointer *int = nil
 	if media_type_parent_id.Valid {
 		parent_media_type_id = int(media_type_parent_id.Int64)
+		parent_media_type_id_pointer = &parent_media_type_id
 	} else {
 		// NULL value
 	}
@@ -373,7 +379,7 @@ WHERE media_type.id=$1`
 	case err != nil:
 		log.Fatal(err)
 	default:
-		mediaType = MediaType{media_type_id, media_type_path, &parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, parent_media_types, nil, media_type_allow_at_root, media_type_is_container, media_type_is_abstract, media_type_allowed_media_type_ids, media_type_composite_media_type_ids, composite_media_types}
+		mediaType = MediaType{media_type_id, media_type_path, parent_media_type_id_pointer, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, parent_media_types, nil, media_type_allow_at_root, media_type_is_container, media_type_is_abstract, media_type_allowed_media_type_ids, media_type_composite_media_type_ids, composite_media_types}
 	}
 
 	return
@@ -407,8 +413,10 @@ func GetMediaTypeById(id int) (mediaType MediaType) {
 		&media_type_created_by, &media_type_created_date, &media_type_description, &media_type_icon, &media_type_thumbnail, &media_type_meta, &media_type_tabs)
 
 	var parent_media_type_id int
+	var parent_media_type_id_pointer *int = nil
 	if media_type_parent_id.Valid {
 		parent_media_type_id = int(media_type_parent_id.Int64)
+		parent_media_type_id_pointer = &parent_media_type_id
 	} else {
 		// NULL value
 	}
@@ -425,7 +433,7 @@ func GetMediaTypeById(id int) (mediaType MediaType) {
 	case err != nil:
 		log.Fatal(err)
 	default:
-		mediaType = MediaType{media_type_id, media_type_path, &parent_media_type_id, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
+		mediaType = MediaType{media_type_id, media_type_path, parent_media_type_id_pointer, media_type_name, media_type_alias, media_type_created_by, media_type_created_date, media_type_description, media_type_icon, media_type_thumbnail, media_type_metaMap, tabs, nil, nil, false, false, false, nil, nil, nil}
 	}
 
 	return
@@ -580,13 +588,17 @@ func (mt *MediaType) Put() {
 	}
 
 	sqlStr := `UPDATE media_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, allow_at_root=$11, is_container=$12, 
-        is_abstract=$13, allowed_media_type_ids=$14,composite_media_type_ids=$15
+        is_abstract=$13, allowed_media_type_ids=$14,composite_media_type_ids=$15 
         WHERE id=$16`
 
 	path := strconv.Itoa(mt.Id)
 	if mt.ParentId != nil {
 		path = parentMediaType.Path + "." + strconv.Itoa(mt.Id)
 	}
+	fmt.Printf("mt.ParentId: %d", mt.ParentId)
+	fmt.Printf("&mt.ParentId: %v", &mt.ParentId)
+	fmt.Println("path")
+	fmt.Println(path)
 	_, err6 := db.Exec(sqlStr, path, mt.ParentId, mt.Name, mt.Alias, mt.CreatedBy, mt.Description, mt.Icon, mt.Thumbnail, meta, tabs, mt.AllowAtRoot, mt.IsContainer,
 		mt.IsAbstract, allowedMediaTypeIds, compositeMediaTypeIds, mt.Id)
 

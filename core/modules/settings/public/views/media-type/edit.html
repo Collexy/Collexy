@@ -150,6 +150,7 @@
                     <td>Parent Media Type</td>
                     <td>
                         <select ng-model="node.parent_id" ng-options="ct.id as aliasOrName(ct.alias,ct.name) for ct in allMediaTypes">
+                        <option value="">-- Select an option--</option>
                         </select>
                     </td>
                 </tr>

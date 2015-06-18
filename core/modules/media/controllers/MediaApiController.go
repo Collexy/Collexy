@@ -207,7 +207,9 @@ func (this *MediaApiController) Delete(w http.ResponseWriter, r *http.Request) {
 			idStr := params["id"]
 			id, _ := strconv.Atoi(idStr)
 
-			models.DeleteMedia(id)
+			queryStrParams := r.URL.Query()
+
+			models.DeleteMedia(id, queryStrParams)
 		} else {
 			fmt.Fprintf(w, "You do not have permission to delete media")
 		}

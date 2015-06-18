@@ -16,8 +16,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 	"sync"
+	"time"
 )
 
 // FileInfo is a struct created from os.FileInfo interface for serialization.
@@ -178,7 +178,6 @@ func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode) {
 				return
 			} else {
 
-
 				var children []*FileNode = nil
 
 				// Channel c, is for getting the parent template
@@ -197,12 +196,11 @@ func GetFilesystemNodeById(rootdir, filename string) (fileNode FileNode) {
 				go func() {
 					for i := range c {
 						fmt.Println(i)
-						children = append(children,i)
+						children = append(children, i)
 					}
 				}()
 
 				wg.Wait()
-
 
 				fileNode = FileNode{path, path, &finfo, children[0].Children, "", true, ""}
 				return

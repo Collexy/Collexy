@@ -25,6 +25,7 @@ function MediaTypeTreeCtrl($scope, $stateParams, MediaTypeChildren, MediaType, s
  * The controller for editing a media type
  */
 function MediaTypeEditCtrl($scope, $stateParams, MediaType, DataType) {
+    console.log($scope.node)
     $scope.currentTab = 'media-type';
     $scope.stateParams = $stateParams;
     if ($stateParams.id) {
@@ -54,9 +55,10 @@ function MediaTypeEditCtrl($scope, $stateParams, MediaType, DataType) {
             }
         }
     }
-    $scope.allMediaTypes = MediaType.query({
+    MediaType.query({
         'type-id': '2'
     }, {}, function(allMediaTypes) {
+        $scope.allMediaTypes = allMediaTypes
         var availableCompositeMediaTypes = []
         for (var i = 0; i < allMediaTypes.length; i++) {
             if (typeof $scope.node.parent_media_types !== 'undefined' && $scope.node.parent_media_types.length > 0) {

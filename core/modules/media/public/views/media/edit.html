@@ -2,7 +2,7 @@
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
-        <input type="text" ng-model="data.name">
+        <input type="text" ng-model="data.name"> <small>Path: <span style="font-style:italic;">{{data.file_path}}</span></small>
         <!-- <pre>
         {{node}}
             {{node.ctm.tabs}}
@@ -45,7 +45,7 @@
                     <td></td>
                 </tr>
                 <tr ng-if="tab.name=='Properties'">
-                    <td>Node Type:</td>
+                    <td>File path:</td>
                     <td>{{data.type_id}}</td>
                     <td></td>
                 </tr>

@@ -202,18 +202,18 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
         //     alert("data changed")
         // }, true);
         
-        $scope.$watch("files", function(newValue, oldValue) {
-            //$scope.data.name = newValue[0].info.name;
-            if(typeof newValue != 'undefined'){
-                if(typeof newValue[0] != 'undefined'){
-                    if(typeof newValue[0].name != 'undefined'){
-                        console.log(newValue[0].name)
-                        $scope.data["info"]["name"] = newValue[0].name;
-                    }
-                }
-            }
+        // $scope.$watch("files", function(newValue, oldValue) {
+        //     //$scope.data.name = newValue[0].info.name;
+        //     if(typeof newValue != 'undefined'){
+        //         if(typeof newValue[0] != 'undefined'){
+        //             if(typeof newValue[0].name != 'undefined'){
+        //                 console.log(newValue[0].name)
+        //                 $scope.data["info"]["name"] = newValue[0].name;
+        //             }
+        //         }
+        //     }
             
-        }, true);
+        // }, true);
     }
     
     

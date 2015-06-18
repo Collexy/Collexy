@@ -24,7 +24,7 @@ function MediaTreeCtrl($scope, Media) {
  * @description
  * The controller for editing media
  */
-function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, MediaParents, Member, MemberGroup, User, UserGroup, Permission) {
+function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, MediaParents, Member, MemberGroup, User, UserGroup, Permission, Upload, $q, $timeout, $interval) {
     // Tabs
     var tabs = [];
     $scope.stateParams = $stateParams;
@@ -261,12 +261,167 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
     // $scope.submit = function() {
     //     $scope.$emit("formSubmit"); 
     // }
+    $scope.lolcat = function() {
+            console.log("lolcat")
+            var escapedPath = replaceAll($scope.location, '\\', '%5C');
+            // angular.forEach( $scope.files, function(value){
+            var i = 0;
+            // (function(value){  
+            $interval(function() {
+                var value = $scope.files[i];
+                console.log("lolcat foreach " + value.name)
+                    // reCreate new Object and set File Data into it
+                var newObject = {
+                    'lastModified': value.lastModified,
+                    'lastModifiedDate': value.lastModifiedDate,
+                    'name': value.name,
+                    'size': value.size,
+                    'type': value.type
+                };
+                console.log(angular.toJson(newObject))
+                console.log(JSON.stringify(newObject))
+                console.log(newObject)
+                var myData = {
+                        "parent_id": $scope.data.id,
+                        "name": value.name,
+                        "created_by": 1,
+                        "meta": {
+                            "attached_file": newObject
+                        },
+                        "media_type_id": 2, //hardcoded for now
+                    }
+                    // instead of using 2 POST requests (json to db, and multipart form data for filesystem upload) combine json in multipart
+                    // http://shazwazza.com/post/uploading-files-and-json-data-in-the-same-request-with-angular-js/
+                Media.create(myData).$promise.then(function() {
+                    console.log("success: " + value.name)
+                    console.log($scope.files)
+                    console.log(value)
+                    var file = value;
+                    console.log('file is ' + angular.toJson(file));
+                    var uploadUrl = '/api/directory/upload-file-test?path=' + escapedPath + '%5C' + $scope.data.name;
+                    Upload.upload({
+                        url: uploadUrl,
+                        fields: {
+                            'username': $scope.username
+                        },
+                        file: file
+                    }).progress(function(evt) {
+                        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                        console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                    }).success(function(data, status, headers, config) {
+                        console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+                    });
+                })
+                i++;
+            }, 1000, $scope.files.length);
+            // })(value); 
+            // $timeout(function() {
+            // }, 3000);
+            // });
+        }
+        // $scope.lolcat = function(){
+        //     console.log("lolcat")
+        //     var defer = $q.defer();
+        //     var promises = [];
+        //     var escapedPath = replaceAll($scope.location, '\\', '%5C');
+        //     function lastTask(){
+        //         alert("lasttask completed");
+        //         defer.resolve();
+        //     }
+        //     angular.forEach( $scope.files, function(value){
+        //         console.log("lolcat foreach " + value.name)
+        //         // reCreate new Object and set File Data into it
+        //         var newObject  = {
+        //            'lastModified'     : value.lastModified,
+        //            'lastModifiedDate' : value.lastModifiedDate,
+        //            'name'             : value.name,
+        //            'size'             : value.size,
+        //            'type'             : value.type
+        //         }; 
+        //         console.log(angular.toJson(newObject))
+        //         console.log(JSON.stringify(newObject))
+        //         console.log(newObject)
+        //         var myData = {
+        //             "parent_id": $scope.data.id,
+        //             "name": value.name,
+        //             "created_by": 1,
+        //             "meta": {
+        //                 "attached_file": newObject
+        //             },
+        //             "media_type_id": 2, //hardcoded for now
+        //         }
+        //         var promise = Media.create(myData).$promise.then(function(){
+        //             console.log("success: " + value.name)
+        //             console.log($scope.files)
+        //             console.log(value)
+        //             var file = value;
+        //             console.log('file is ' + angular.toJson(file));
+        //             var uploadUrl = '/api/directory/upload-file-test?path=' + escapedPath + '%5C' + $scope.data.name;
+        //             Upload.upload({
+        //                 url: uploadUrl,
+        //                 fields: {'username': $scope.username},
+        //                 file: file
+        //             }).progress(function (evt) {
+        //                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+        //                 console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+        //             }).success(function (data, status, headers, config) {
+        //                 console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+        //             });
+        //         })
+        //         promises.push(promise);
+        //     });
+        //     $q.all(promises).then(lastTask);
+        //     return defer;
+        // }
     $scope.submit = function() {
         console.log("submit")
 
         function success(response) {
             console.log("success", response)
-            var escapedPath = replaceAll($scope.location, '\\', '%5C');
+                // var escapedPath = replaceAll($scope.location, '\\', '%5C');
+            console.log($scope.files)
+            if (typeof $scope.files != 'undefined') {
+                $scope.lolcat();
+                // alert($scope.files.length)
+                // for (var i = 0; i < $scope.files.length; i++) {
+                //     var myData = {
+                //         "parent_id": $scope.data.id,
+                //         "name": $scope.files[i].name,
+                //         "created_by": 1,
+                //         "meta": {
+                //             "attached_file": $scope.files[i]
+                //         },
+                //         "media_type_id": 1, //hardcoded for now
+                //     }
+                //     Media.create(myData, 
+                //         function(){
+                //             console.log("success: " + i)
+                //             console.log($scope.files)
+                //             console.log($scope.files[i])
+                //             // for (var i = 0; i < files.length; i++) {
+                //                 var file = $scope.files[i];
+                //                 // var pathIndexEnd = $scope.data.path.lastIndexOf("\\")
+                //                 // var path = $scope.data.path.substring(0,pathIndexEnd)
+                //                 // alert(path)
+                //                 //var escapedPath = replaceAll($scope.data.path, '\\', '%5C');
+                //                 console.log('file is ' + JSON.stringify(file));
+                //                 var uploadUrl = '/api/directory/upload-file-test?path=' + escapedPath;
+                //                 Upload.upload({
+                //                     url: uploadUrl,
+                //                     fields: {'username': $scope.username},
+                //                     file: file
+                //                 }).progress(function (evt) {
+                //                     var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                //                     console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                //                 }).success(function (data, status, headers, config) {
+                //                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+                //                 });
+                //             // }
+                //     }, function(){
+                //         alert("failure")
+                //     });
+                // }
+            }
             $scope.$broadcast("formSubmitSuccess");
             // if ($scope.files.length > 0) {
             //     $scope.upload(escapedPath);
@@ -362,13 +517,47 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
  * @description
  * The controller for deleting media
  */
-function MediaDeleteCtrl($scope, $stateParams, Media) {
-    $scope.delete = function(item) {
-        console.log(item)
-        Media.delete({
-            id: item.id
+function MediaDeleteCtrl($scope, $stateParams, Media, MediaParents) {
+    $scope.delete = function(data) {
+        console.log(data)
+        console.log("data parent id: " + data.parent_id)
+        MediaParents.query({
+            "id": data.parent_id
+        }, function() {}).$promise.then(function(mediaParents) {
+            var location = "media\\";
+            for (var i = 0; i < mediaParents.length; i++) {
+                location = location + mediaParents[i].name;
+                if (i != mediaParents.length - 1) {
+                    location = location + "\\"
+                }
+            }
+            $scope.location = location;
+            //$scope.location_url = pathToUrl(location)
+            console.log(location)
+            var escapedPath = replaceAll($scope.location + '\\' + data.name, '\\', '%5C');
+            console.log(escapedPath)
+            Media.delete({
+                id: data.id
+            }, {
+                path: escapedPath
+            }, function() {
+                console.log("media record with id: " + data.id + " deleted")
+            })
         }, function() {
-            console.log("media record with id: " + item.id + " deleted")
+            //error
+            var location = "media";
+            $scope.location = location;
+            //$scope.location_url = pathToUrl(location)
+            console.log(location)
+            var escapedPath = replaceAll($scope.location + '\\' + data.name, '\\', '%5C');
+            Media.delete({
+                id: data.id
+            }, {
+                path: escapedPath
+            }, function() {
+                console.log("media record with id: " + data.id + " deleted")
+            })
         })
+        console.log(data)
     };
 }
