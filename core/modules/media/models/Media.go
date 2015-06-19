@@ -1247,6 +1247,30 @@ func (m *Media) Post() {
 // Todo: If media is protected it should also be deleted in the XML file
 func DeleteMedia(id int, queryStringParams url.Values) {
 	// instead of sending query params with path, we could make a GetMediaById request here
+	// var media Media
+
+	// c1 := make(chan Media)
+
+	// var wg sync.WaitGroup
+
+	// wg.Add(1)
+
+	// go func() {
+	// 	defer wg.Done()
+	// 	c1 <- GetMediaById(id)
+	// }()
+
+	// go func() {
+	// 	for i := range c1 {
+	// 		fmt.Println(i)
+	// 		media = i
+	// 		// for _, child := range i {
+	// 		// 	childMediaItems = append(childMediaItems, child)
+	// 		// }
+	// 	}
+	// }()
+
+	// wg.Wait()
 	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	path := absPath
 	fmt.Println(path)
@@ -1264,65 +1288,83 @@ func DeleteMedia(id int, queryStringParams url.Values) {
 		}
 	}
 
-	var childMediaItems []Media
+	//var childMediaItems []Media
 
-	c1 := make(chan []Media)
+	// c1 := make(chan []Media)
 
-	var wg sync.WaitGroup
+	// var wg sync.WaitGroup
 
-	wg.Add(1)
+	// wg.Add(1)
 
-	go func() {
-		defer wg.Done()
-		c1 <- GetMediaByIdChildrenInternalUseOnly(id)
-	}()
+	// go func() {
+	// 	defer wg.Done()
+	// 	c1 <- GetMediaByIdChildrenInternalUseOnly(id)
+	// }()
 
-	go func() {
-		for i := range c1 {
-			fmt.Println(i)
-			for _, child := range i {
-				childMediaItems = append(childMediaItems, child)
-			}
-		}
-	}()
+	// go func() {
+	// 	for i := range c1 {
+	// 		fmt.Println(i)
+	// 		for _, child := range i {
+	// 			childMediaItems = append(childMediaItems, child)
+	// 		}
+	// 	}
+	// }()
 
-	wg.Wait()
+	// wg.Wait()
 
 	db := coreglobals.Db
 
 	sqlStr := `DELETE FROM media 
-    WHERE id=any($1)`
+    WHERE media.path <@ 
+(
+	SELECT path
+	FROM
+	media
+	WHERE
+	id = $1
+) RETURNING id`
 
-	var deleteMediaIdsSlice coreglobals.IntSlice
+	// var deleteMediaIdsSlice coreglobals.IntSlice
 
-	deleteMediaIdsSlice = append(deleteMediaIdsSlice, id)
+	// deleteMediaIdsSlice = append(deleteMediaIdsSlice, id)
 
-	for _, child := range childMediaItems {
-		deleteMediaIdsSlice = append(deleteMediaIdsSlice, child.Id)
-	}
+	// for _, child := range childMediaItems {
+	// 	deleteMediaIdsSlice = append(deleteMediaIdsSlice, child.Id)
+	// }
 
-	fmt.Println(deleteMediaIdsSlice)
+	// fmt.Println(deleteMediaIdsSlice)
 
-	// j, _ := json.Marshal(deleteMediaIdsSlice)
+	// // j, _ := json.Marshal(deleteMediaIdsSlice)
 
-	//fmt.Println(string(j))
-	j, _ := deleteMediaIdsSlice.Value()
-	fmt.Println(j)
+	// //fmt.Println(string(j))
+	// j, _ := deleteMediaIdsSlice.Value()
+	// fmt.Println(j)
 
-	_, err := db.Exec(sqlStr, j)
+	rows, err := db.Query(sqlStr, id)
 
 	corehelpers.PanicIf(err)
 
-	//DeletePublicAccessForMedia(id)
+	defer rows.Close()
 
 	var deleteMediaIds map[int]int
-
 	deleteMediaIds = make(map[int]int)
-	deleteMediaIds[id] = id
 
-	for _, child := range childMediaItems {
-		deleteMediaIds[child.Id] = child.Id
+	for rows.Next() {
+		var id int
+		err := rows.Scan(&id)
+		corehelpers.PanicIf(err)
+		deleteMediaIds[id] = id
 	}
+
+	//DeletePublicAccessForMedia(id)
+
+	// var deleteMediaIds map[int]int
+	// deleteMediaIds = make(map[int]int)
+	// deleteMediaIds[id] = id
+
+	// for _, child := range childMediaItems {
+	// 	deleteMediaIds[child.Id] = child.Id
+	// }
 
 	DeletePublicAccessForMedia(deleteMediaIds)
 
@@ -1610,14 +1652,69 @@ func UpdatePublicAccessForMedia(m *Media) {
 				}
 
 			}
+
+			subjectSlice := strings.Split(vv.Items[i].Path, ".")
+			mSlice := strings.Split(m.Path, ".")
+
+			//subjectPathLevels := len(strings.Split(vv.Items[i].Path, "."))
+			mPathLevels := len(strings.Split(m.Path, "."))
+			var fromPos int = -1
+			var toPos int = -1
+			//fmt.Println("i in range subjectSlice:")
+			for i, lol := range subjectSlice {
+				//fmt.Printf("i is: %d, mSlice[i] is: %s, lol is: %s\n", i, mSlice[i], lol)
+				if i < mPathLevels {
+					//fmt.Printf("i is: %d, mSlice[i] is: %s, lol is: %s\n", i, mSlice[i], lol)
+					if fromPos == -1 {
+						if mSlice[i] == lol {
+							fromPos = i
+						}
+					} else {
+
+						if mSlice[i] == lol {
+							toPos = i
+						}
+
+					}
+				}
+
+			}
+			fmt.Printf("fromPos: %d\n", fromPos)
+			fmt.Printf("toPos: %d\n", toPos)
+
+			if strings.Contains(vv.Items[i].Path, m.Path) {
+				targetUrl := strings.Replace(m.FilePath, "\\", "/", -1)
+				targetUrl = strings.Split(targetUrl, "media/")[1]
+				//subjectUrl := strings.Replace(vv.Items[i].Url, "\\", "/", -1)
+
+				subjectUrlSlice := strings.Split(vv.Items[i].Url, "/")
+				buildNewUrl := ""
+				for i, s := range subjectUrlSlice {
+					fmt.Printf("i is: %d, s is: %s\n", i, s)
+					if i >= fromPos+1 && i <= toPos+1 {
+						fmt.Printf("i >= fromPos && i <= toPos --- s is: %s\n", s)
+						if i == len(subjectUrlSlice)-2 || i == len(subjectUrlSlice)-1 {
+							buildNewUrl = buildNewUrl + s
+						} else {
+							buildNewUrl = buildNewUrl + s + "/"
+						}
+
+					}
+				}
+				fmt.Printf("url part to replace: %s with this: %s", buildNewUrl, targetUrl)
+				vv.Items[i].Url = strings.Replace(vv.Items[i].Url, buildNewUrl, targetUrl, -1)
+
+			} else {
+
+			}
+			// if vv.Items[i].Path (9.16.17) contains m.path (9.16)
+			// currentPathLevels = 3
+			// mLevels = 2
+			// mIsOnLevel = 1
+			// url := strings.Replace(m.FilePath, "\\", "/", -1)
+			// if vv.Items[i].Url substring until mIsOnLevel (1st dash) != url (regex, split?)
+			//replace it
 		}
-		// if vv.Items[i].Path (9.16.17) contains m.path (9.16)
-		// currentPathLevels = 3
-		// mLevels = 2
-		// mIsOnLevel = 1
-		// url := strings.Replace(m.FilePath, "\\", "/", -1)
-		// if vv.Items[i].Url substring until mIsOnLevel (1st dash) != url (regex, split?)
-		//replace it
 
 		// for i, val := range vv.Items {
 		// 	//fmt.Printf("v.Items val is: %#v\n", val)
@@ -1670,6 +1767,7 @@ func UpdatePublicAccessForMedia(m *Media) {
 				mai := coreglobals.MediaAccessItem{
 					xml.Name{Local: "item"},
 					m.Id,
+					m.Path,
 					m.Url,
 					0,
 					0,

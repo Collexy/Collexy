@@ -39,6 +39,7 @@ type MediaAccessItems struct {
 type MediaAccessItem struct {
 	XMLName xml.Name `xml:item"`
 	MediaId int      `xml:"id,attr" json:"media_id,omitempty"`
+	Path    string   `xml:"path,attr" json:"path,omitempty"`
 	//Domains     []string `json:"domains,omitempty"`
 	Url              string `xml:"url,attr" json:"url,omitempty"`
 	LoginPage        int    `xml:"loginPage,attr,omitempty" json:"login_page,omitempty"`
