@@ -444,17 +444,37 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                                 files: files
                             });
                             // $parse(attrs.fileInput).assign(scope, elm[0].files)
-                            // scope.$apply()
+                            $scope.$apply()
                         })
+                    // $scope.$on("filesSelected", function(event, args){
+                    //     var value = $scope.files[0]
+                    //     var newObject = {
+                    //         'lastModified': value.lastModified,
+                    //         'lastModifiedDate': value.lastModifiedDate,
+                    //         'name': value.name,
+                    //         'size': value.size,
+                    //         'type': value.type
+                    //     };
+                    //     $scope.data.meta.attached_file=newObject
+                    // })
+                    
                         //var propName = attrs.propName;
                         // alert(attrs.propName);
                     $scope.$on("formSubmitSuccess", function(event, args) {
-                        // alert("formSubmitSuccess event")
+                        alert("formSubmitSuccess event")
+                        console.log("formSubmitSuccess event")
                         var escapedPath = replaceAll($scope.location, '\\', '%5C');
+                        console.log(escapedPath)
                         if (typeof $scope.files != 'undefined') {
+                            console.log("$scope.files != 'undefined'")
+                                console.log($scope.files)
+                                console.log("$scope.files.length is: " + $scope.files.length)
+                                
                             if ($scope.files.length > 0) {
+                                
+                            
                                 $scope.upload(escapedPath);
-                                // if(typeof $scope.originalData.meta[propName] != 'undefined'){
+                                //if(typeof $scope.originalData.meta[propName] != 'undefined'){
                                 if (typeof $scope.originalData.meta["attached_file"] != 'undefined') {
                                     $scope.deleteFile($scope.location, $scope.originalData.meta["attached_file"])
                                         // if(typeof $scope.originalData.meta["attached_file"].persisted_files != 'undefined'){
@@ -504,21 +524,20 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                         // $scope.$apply(function () {
                         // })
                     });
-                    $scope.$on("filesSelected", function(event, args) {
-                        $scope.$apply(function() {
-                            //console.log("lol")
-                            //console.log(args.files)
-                            $scope.files = args.files;
-                            // var files = [];
-                            // for(var i = 0; i< args.files.length; i++){
-                            //     //$scope.files.push({ alias: $scope.data.alias, file: args.files[i] });
-                            //     // files.push(args.files[i].name)
-                            //     files.push(args.files[i])
-                            // }
-                            $scope.data["meta"]["attached_file"] = args.files[0];
-                            $scope.latestData = $scope.data;
-                        })
-                    });
+                    // $scope.$on("filesSelected", function(event, args) {
+                    //     alert("filesSelected event")
+                    //     $scope.$apply(function() {
+                    //         $scope.files = args.files;
+                    //         // var files = [];
+                    //         // for(var i = 0; i< args.files.length; i++){
+                    //         //     //$scope.files.push({ alias: $scope.data.alias, file: args.files[i] });
+                    //         //     // files.push(args.files[i].name)
+                    //         //     files.push(args.files[i])
+                    //         // }
+                    //         $scope.data["meta"]["attached_file"] = args.files[0];
+                    //         $scope.latestData = $scope.data;
+                    //     })
+                    // });
                 }
             }
         }

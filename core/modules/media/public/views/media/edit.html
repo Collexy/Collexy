@@ -2,7 +2,7 @@
     <form role="form" ng-submit="submit()">
         <h4>Edit</h4>
 
-        <input type="text" ng-model="data.name"> <small>Path: <span style="font-style:italic;">{{data.file_path}}</span></small>
+        <input type="text" ng-change="updateNewFilePath(data.name)" ng-model="data.name"> <small>Path: <span style="font-style:italic;">{{data.file_path}}</span></small>
         <!-- <pre>
         {{node}}
             {{node.ctm.tabs}}

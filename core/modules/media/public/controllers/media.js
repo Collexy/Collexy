@@ -261,6 +261,47 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
     // $scope.submit = function() {
     //     $scope.$emit("formSubmit"); 
     // }
+    $scope.$on("filesSelected", function(event, args) {
+        console.log("1337")
+        console.log(args)
+
+        $scope.files = args.files;
+
+        var value = $scope.files[0]
+
+        var newObject = {
+            'lastModified': value.lastModified,
+            'lastModifiedDate': value.lastModifiedDate,
+            'name': value.name,
+            'size': value.size,
+            'type': value.type
+        };
+        // var files = [];
+        // for(var i = 0; i< args.files.length; i++){
+        //     //$scope.files.push({ alias: $scope.data.alias, file: args.files[i] });
+        //     // files.push(args.files[i].name)
+        //     files.push(args.files[i])
+        // }
+        if(typeof $scope.data["meta"] == 'undefined'){
+            $scope.data["meta"] = {}
+        }
+        
+        $scope.data["meta"]["attached_file"] = newObject;
+        $scope.latestData = $scope.data;
+        $scope.$apply();
+        console.log($scope.data)
+    })
+    $scope.updateNewFilePath = function(name) {
+        var filePath = $scope.data.file_path;
+        var pathEnding = filePath.lastIndexOf('\\');
+        //var currentFileFolderName = path.substring(pathEnding + 1);
+        var currentFileFolderName = $scope.data.name;
+        var pathBeginning = filePath.substring(0, pathEnding + 1);
+        $scope.data.file_path = pathBeginning + currentFileFolderName;
+        if(typeof $scope.data.meta.attached_file != 'undefined'){
+            $scope.data.meta.attached_file.name = currentFileFolderName
+        }
+    }
     $scope.lolcat = function() {
             console.log("lolcat")
             var escapedPath = replaceAll($scope.location, '\\', '%5C');
@@ -375,54 +416,29 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
         // }
     $scope.submit = function() {
         console.log("submit")
+        $scope.$broadcast("formSubmitSuccess");
 
         function success(response) {
             console.log("success", response)
+            console.log($scope.originalData)
+            console.log($scope.data)
                 // var escapedPath = replaceAll($scope.location, '\\', '%5C');
             console.log($scope.files)
             if (typeof $scope.files != 'undefined') {
-                $scope.lolcat();
-                // alert($scope.files.length)
-                // for (var i = 0; i < $scope.files.length; i++) {
-                //     var myData = {
-                //         "parent_id": $scope.data.id,
-                //         "name": $scope.files[i].name,
-                //         "created_by": 1,
-                //         "meta": {
-                //             "attached_file": $scope.files[i]
-                //         },
-                //         "media_type_id": 1, //hardcoded for now
-                //     }
-                //     Media.create(myData, 
-                //         function(){
-                //             console.log("success: " + i)
-                //             console.log($scope.files)
-                //             console.log($scope.files[i])
-                //             // for (var i = 0; i < files.length; i++) {
-                //                 var file = $scope.files[i];
-                //                 // var pathIndexEnd = $scope.data.path.lastIndexOf("\\")
-                //                 // var path = $scope.data.path.substring(0,pathIndexEnd)
-                //                 // alert(path)
-                //                 //var escapedPath = replaceAll($scope.data.path, '\\', '%5C');
-                //                 console.log('file is ' + JSON.stringify(file));
-                //                 var uploadUrl = '/api/directory/upload-file-test?path=' + escapedPath;
-                //                 Upload.upload({
-                //                     url: uploadUrl,
-                //                     fields: {'username': $scope.username},
-                //                     file: file
-                //                 }).progress(function (evt) {
-                //                     var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                //                     console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-                //                 }).success(function (data, status, headers, config) {
-                //                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
-                //                 });
-                //             // }
-                //     }, function(){
-                //         alert("failure")
-                //     });
-                // }
+                if(typeof $scope.data["meta"] != 'undefined'){
+                    if(typeof $scope.data["meta"]["attached_file"] != 'undefined'){
+                        alert("lolda")
+                    }else{
+                        $scope.lolcat();
+                    }
+                } else {
+                    if($scope.data.media_type_id == 1){
+                        $scope.lolcat();
+                    }
+                    
+                }
             }
-            $scope.$broadcast("formSubmitSuccess");
+            
             // if ($scope.files.length > 0) {
             //     $scope.upload(escapedPath);
             // }
@@ -441,9 +457,13 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
         }
         if ($stateParams.id) {
             console.log("update");
+            var wrapObj = {
+                "new": $scope.data,
+                "old": $scope.originalData
+            }
             Media.update({
                 id: $stateParams.id
-            }, $scope.data, success, failure);
+            }, wrapObj, success, failure);
             console.log($scope.data)
                 //User.update($scope.user, success, failure);
         } else {

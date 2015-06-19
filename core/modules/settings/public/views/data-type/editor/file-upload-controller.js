@@ -2,18 +2,18 @@ angular.module("myApp").controller("Collexy.DataTypeEditor.FileUpload.Controller
 // angular.module("myApp").controller("Collexy.DataTypePropertyEditor.ContentPicker", CollexyDataTypePropertyEditorContentPicker);
 
 function CollexyDataTypeEditorFileUploadController($scope, ContentType, $http, FileService) {
-    $scope.files = [];
+    // $scope.files = [];
     //$scope.persistedFiles = [pathToUrl("media\\Sample Images\\TXT\\pic04.jpg")];
     //console.log($scope.data.meta["file_upload"]["persisted_files"])
-    $scope.$watch("files", function(newValue, oldValue) {
-        $scope.files = newValue;
-        console.log($scope.files)
-        // var lol = [];
-        // for(var i = 0; i < $scope.files.length; i++){
-        // 	lol.push($scope.files[i].name)
-        // }
-        // $scope.data.meta["file_upload"].persisted_files = lol
-    }, true);
+    // $scope.$watch("files", function(newValue, oldValue) {
+    //     $scope.files = newValue;
+    //     //console.log($scope.files)
+    //     // var lol = [];
+    //     // for(var i = 0; i < $scope.files.length; i++){
+    //     // 	lol.push($scope.files[i].name)
+    //     // }
+    //     // $scope.data.meta["file_upload"].persisted_files = lol
+    // }, true);
 
 	// $scope.$watch("data", function(newValue, oldValue) {
 	// 	$scope.data = newValue;
@@ -38,9 +38,12 @@ function CollexyDataTypeEditorFileUploadController($scope, ContentType, $http, F
         	// $scope.data.meta["attached_file"] = [];
             delete $scope.data.meta["attached_file"];
     	} else {
-            
-            if(typeof $scope.originalData["meta"]["attached_file"] != 'undefined'){
-                $scope.data["meta"]["attached_file"] = $scope.originalData["meta"]["attached_file"];
+            if(typeof $scope.originalData != 'undefined'){
+                if(typeof $scope.originalData["meta"] != 'undefined'){
+                    if(typeof $scope.originalData["meta"]["attached_file"] != 'undefined'){
+                        $scope.data["meta"]["attached_file"] = $scope.originalData["meta"]["attached_file"];
+                    }
+                }
             }
             // if(typeof $scope.data.meta["file_upload"] == 'undefined'){
             //     $scope.data.meta["file_upload"] = {};
@@ -130,11 +133,14 @@ function CollexyDataTypeEditorFileUploadController($scope, ContentType, $http, F
 	}
 
     $scope.upload = function(escapedPath) {
+        console.log("$scope.upload")
         if(typeof escapedPath == 'undefined'){
             escapedPath = replaceAll($scope.location, '\\', '%5C');
         } 
         var fd = new FormData() // put these 3 lines in a service
         angular.forEach($scope.files, function(file) {
+            console.log("angular.forEach")
+            console.log(file)
             fd.append('file', file)
         })
         $http.post('/api/directory/upload-file-test?path=' + escapedPath, fd, {

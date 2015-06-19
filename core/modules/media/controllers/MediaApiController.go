@@ -180,15 +180,21 @@ func (this *MediaApiController) Put(w http.ResponseWriter, r *http.Request) {
 		var hasPermission bool = false
 		hasPermission = user.HasPermissions([]string{"media_update", "media_all"})
 		if hasPermission {
-			media := models.Media{}
+			var mMap map[string]models.Media
+			err := json.NewDecoder(r.Body).Decode(&mMap)
+			media := mMap["new"]
+			oldMedia := mMap["old"]
+			media.Put(oldMedia)
 
-			err := json.NewDecoder(r.Body).Decode(&media)
+			// media := models.Media{}
+
+			// err := json.NewDecoder(r.Body).Decode(&media)
 
 			if err != nil {
 				http.Error(w, "Bad Request", 400)
 			}
 
-			media.Put()
+			// media.Put()
 		} else {
 			fmt.Fprintf(w, "You do not have permission to update media")
 		}
