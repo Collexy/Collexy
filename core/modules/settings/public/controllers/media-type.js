@@ -24,7 +24,7 @@ function MediaTypeTreeCtrl($scope, $stateParams, MediaTypeChildren, MediaType, s
  * @description
  * The controller for editing a media type
  */
-function MediaTypeEditCtrl($scope, $stateParams, MediaType, DataType) {
+function MediaTypeEditCtrl($scope, $stateParams, MediaType, DataType, MIMEType, $interval) {
     console.log($scope.node)
     $scope.currentTab = 'media-type';
     $scope.stateParams = $stateParams;
@@ -35,16 +35,69 @@ function MediaTypeEditCtrl($scope, $stateParams, MediaType, DataType) {
             id: $stateParams.id
         }, function(node) {
             console.log(node);
+            MIMEType.query({}, function(){}).$promise.then(function(mime_types){
+                console.log(mime_types)
+                //$scope.mime_types = mime_types;
+                $scope.allMIMETypes = mime_types;
+                var availableMIMETypes = [];
+                var selectedMIMETypes = [];
+                if (typeof node.id != 'undefined') {
+                    for (var i = 0; i < mime_types.length; i++) {
+                        //var mime_type_name = mime_types[i].name
+                        //alert(mime_type_name)
+                        if (typeof mime_types[i].media_type_id == 'undefined') {
+                            
+                                availableMIMETypes.push(mime_types[i])
+                            
+                            
+                        } else {
+                            
+                            if(mime_types[i].media_type_id == node.id){
+                                
+                                selectedMIMETypes.push(mime_types[i])
+                            }
+                            
+                        }
+                    }
+                }
+                availableMIMETypes.unique();
+                selectedMIMETypes.unique();
+                $scope.availableMIMETypes = availableMIMETypes;
+                $scope.selectedMIMETypes = selectedMIMETypes;
+                if (selectedMIMETypes.length == 0) {
+                    $scope.availableMIMETypes = mime_types;
+                }
+            })
         });
-    } else if ($stateParams.parent_id) {
-        $scope.node = {
-            "parent_id": parseInt($stateParams.parent_id),
-            "created_by": $scope.userSession.id
-        }
+
+        
     } else {
-        $scope.entity = {
-            "created_by": $scope.userSession.id
+
+        if ($stateParams.parent_id) {
+            $scope.node = {
+                "parent_id": parseInt($stateParams.parent_id),
+                "created_by": $scope.userSession.id
+            }
+        } else {
+            $scope.entity = {
+                "created_by": $scope.userSession.id
+            }
         }
+
+        MIMEType.query({}, function() {}).$promise.then(function(mime_types) {
+            $scope.allMIMETypes = mime_types;
+            var availableMIMETypes = [];
+            var selectedMIMETypes = [];
+            availableMIMETypes.unique();
+            selectedMIMETypes.unique();
+            $scope.availableMIMETypes = availableMIMETypes;
+            $scope.selectedMIMETypes = selectedMIMETypes;
+            if (selectedMIMETypes.length == 0) {
+                $scope.availableMIMETypes = mime_types;
+            }
+        }, function() {
+            // error
+        })
     }
     if ($scope.stateParams.type_id) {
         if (typeof $scope.node !== 'undefined') {
@@ -77,12 +130,82 @@ function MediaTypeEditCtrl($scope, $stateParams, MediaType, DataType) {
     });
     $scope.allDataTypes = DataType.query({}, {}, function(node) {});
     console.log($scope.allDataTypes)
+
+    $scope.moveMIMEType = function(item, from, to) {
+        //alert("moveMember")
+        var idx = from.indexOf(item);
+        if (idx != -1) {
+            from.splice(idx, 1);
+            to.push(item);
+        }
+        var mime_types = [];
+        for (var i = 0; i < $scope.selectedMIMETypes.length; i++) {
+            mime_types.push($scope.selectedMIMETypes[i]);
+        }
+        $scope.media_type_mime_types = mime_types;
+
+    };
+
+
     $scope.submit = function() {
         console.log("submit")
 
         function success(response) {
             console.log("success", response)
             //$location.path("/admin/users");
+            var initialMimeTypesForMediaType = [];
+            for (var i = 0; i < $scope.allMIMETypes.length; i++) {
+                if($scope.allMIMETypes[i].media_type_id == $scope.node.id){
+                    initialMimeTypesForMediaType.push($scope.allMIMETypes[i])
+                }
+            };
+
+            var removed = []
+            for (var i = 0; i < initialMimeTypesForMediaType.length; i++) {
+                var found = false;
+                for (var j = 0; j < $scope.media_type_mime_types.length; j++) {
+                    if(initialMimeTypesForMediaType[i].id == $scope.media_type_mime_types[j].id){
+                        found = true;
+                        break;
+                    }
+                };
+                if(!found){
+                    var obj = initialMimeTypesForMediaType[i];
+                    delete obj.media_type_id
+                    removed.push(obj)
+                }
+            };
+
+            var added = []
+            for (var i = 0; i < $scope.media_type_mime_types.length; i++) {
+                var found = false;
+                for (var j = 0; j < initialMimeTypesForMediaType.length; j++) {
+                    if($scope.media_type_mime_types[i].id == initialMimeTypesForMediaType[j].id){
+                        found = true;
+                        break;
+                    }
+                };
+                if(!found){
+                    var obj = $scope.media_type_mime_types[i];
+                    obj["media_type_id"] = $scope.node.id;
+                    added.push(obj)
+                }
+            };
+
+
+            var allMIMETypesCombined = initialMimeTypesForMediaType.concat(removed)
+            var allMIMETypesCombined = allMIMETypesCombined.concat(added)
+            // allMIMETypes.unique();
+            // MAKE PUT REQUEST TO MIMEType service
+            var i = 0;
+
+            $interval(function() {
+                MIMEType.update({
+                    id: allMIMETypesCombined[i].id
+                }, allMIMETypesCombined[i], function(){}, function(){});
+                i++;
+            }, 1000, allMIMETypesCombined.length)
+            
         }
 
         function failure(response) {

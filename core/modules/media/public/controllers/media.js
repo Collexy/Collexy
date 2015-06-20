@@ -24,7 +24,7 @@ function MediaTreeCtrl($scope, Media) {
  * @description
  * The controller for editing media
  */
-function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, MediaParents, Member, MemberGroup, User, UserGroup, Permission, Upload, $q, $timeout, $interval) {
+function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, MediaParents, Member, MemberGroup, User, UserGroup, Permission, Upload, $q, $timeout, $interval, MIMEType) {
     // Tabs
     var tabs = [];
     $scope.stateParams = $stateParams;
@@ -247,6 +247,16 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
         console.log($scope.originalData)
         $scope.latestData = angular.copy($scope.data);
     }
+
+    MIMEType.query({}, function(){}).$promise.then(function(MIMETypes){
+        var mTypes = {}
+        for (var i = 0; i < MIMETypes.length; i++) {
+            var t = MIMETypes[i].name;
+            var mId = MIMETypes[i].media_type_id;
+            mTypes[t] = mId;
+        };
+        $scope.MIMETypes = mTypes;
+    })
     // $scope.filesChanged = function(elm){
     //   $scope.files=elm.files
     //   $scope.$apply();
@@ -322,6 +332,17 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
                 console.log(angular.toJson(newObject))
                 console.log(JSON.stringify(newObject))
                 console.log(newObject)
+
+                var media_type_id = -1;
+
+                for (var k in $scope.MIMETypes) {
+                    if ($scope.MIMETypes.hasOwnProperty(k)) {
+                       if(k == newObject.type){
+                            media_type_id = $scope.MIMETypes[k];
+                            break;
+                       }
+                    }
+                }
                 var myData = {
                         "parent_id": $scope.data.id,
                         "name": value.name,
@@ -329,7 +350,7 @@ function MediaEditCtrl($scope, $http, $stateParams, Media, Template, MediaType, 
                         "meta": {
                             "attached_file": newObject
                         },
-                        "media_type_id": 2, //hardcoded for now
+                        "media_type_id": media_type_id, //hardcoded for now
                     }
                     // instead of using 2 POST requests (json to db, and multipart form data for filesystem upload) combine json in multipart
                     // http://shazwazza.com/post/uploading-files-and-json-data-in-the-same-request-with-angular-js/

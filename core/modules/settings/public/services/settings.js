@@ -8,6 +8,8 @@ angular.module("myApp").service('MediaTypeContextMenu', ["$resource", MediaTypeC
 angular.module("myApp").service('DataTypeContextMenu', ["$resource", DataTypeContextMenu]);
 angular.module("myApp").service('TemplateContextMenu', ["$resource", TemplateContextMenu]);
 angular.module("myApp").service('DirectoryContextMenu', ["$resource", DirectoryContextMenu]);
+angular.module("myApp").service('MIMEType', ["$resource", MIMEType]);
+
 
 
 function DataType($resource) {
@@ -194,3 +196,27 @@ function DirectoryContextMenu($resource) {
     });
 }
 
+
+function MIMEType($resource) {
+    return $resource('/api/mime-type/:id', {}, {
+        // query: {
+        //     method: 'GET',
+        //     params: {
+        //         id: ''
+        //     },
+        //     isArray: true
+        // },
+        update: {
+            method: 'PUT',
+            isArray: false
+        },
+        create: {
+            method: 'POST',
+            params: {
+                id: 'new'
+            },
+            isArray: false
+        }
+        // delete: { method: 'delete', isArray: false }
+    });
+}

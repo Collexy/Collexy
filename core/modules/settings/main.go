@@ -19,6 +19,7 @@ func init() {
 	dataTypeApiController := coremodulesettingscontrollers.DataTypeApiController{}
 	templateApiController := coremodulesettingscontrollers.TemplateApiController{}
 	directoryApiController := coremodulesettingscontrollers.DirectoryApiController{}
+	mimeTypeApiController := coremodulesettingscontrollers.MimeTypeApiController{}
 
 	contentTypeTreeController := coremodulesettingscontrollers.ContentTypeTreeController{}
 	mediaTypeTreeController := coremodulesettingscontrollers.MediaTypeTreeController{}
@@ -71,6 +72,10 @@ func init() {
 
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}", http.HandlerFunc(directoryApiController.Get)).Methods("GET")
+
+	subrPrivate.HandleFunc("/api/mime-type/{id:.*}", http.HandlerFunc(mimeTypeApiController.GetById)).Methods("GET")
+	subrPrivate.HandleFunc("/api/mime-type", http.HandlerFunc(mimeTypeApiController.Get)).Methods("GET")
+	subrPrivate.HandleFunc("/api/mime-type/{id:.*}", http.HandlerFunc(mimeTypeApiController.Put)).Methods("PUT")
 
 	// API END
 

@@ -154,7 +154,29 @@
                         </select>
                     </td>
                 </tr>
-                
+                <tr class="public-access">
+                    <td>MIME Types</td>
+                    <td style="width:80%;">
+                        <table>
+                            <thead>
+                                <th>Available</th>
+                                <th>Selected</th>
+                            </thead>
+                            <tr>
+                                <td>
+                                    <select multiple="true" ng-model="available" ng-options="item as item.name for item in availableMIMETypes"></select>
+                                </td>
+                                <td class="align-center">
+                                    <button type="button" ng-click="moveMIMEType(available[0], availableMIMETypes, selectedMIMETypes)">--></button><br>
+                                    <button type="button" ng-click="moveMIMEType(selected[0], selectedMIMETypes, availableMIMETypes)"><--</button>
+                                </td>
+                                <td>
+                                    <select multiple="true" ng-model="selected" ng-options="item as item.name for item in selectedMIMETypes"></select>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
                 
             </table>
         </div>
