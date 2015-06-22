@@ -95,3 +95,16 @@ func (m *MimeType) Update() {
 
 	log.Println("mime type updated successfully")
 }
+
+func (m *MimeType) Post() {
+
+	db := coreglobals.Db
+
+	sqlStr := `INSERT INTO mime_type (name, alias) 
+	VALUES ($1, $2)`
+	_, err1 := db.Exec(sqlStr, m.Name, m.MediaTypeId)
+
+	corehelpers.PanicIf(err1)
+
+	log.Println("mime type created successfully")
+}

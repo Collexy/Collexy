@@ -17,8 +17,9 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
         function($rootScope, $state, $stateParams, authenticationService, $location, $window, $q, $cookies, sessionService, Route, $timeout) {
             //console.log(JSON.parse(localStorage["lastStateParams"]));
             var routes = Route.query({}, function(routes) {
-                console.log(routes)
+                //console.log(routes)
                 angular.forEach(routes, function(value, key) {
+                    //console.log(value)
                     var templateUrl = "";
                     var abstract = false;
                     if (value.is_abstract) {
@@ -43,6 +44,8 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                         };
                         $stateProviderRef.state(value.state, state);
                     }
+                    
+                    
                 });
                 $state.go(JSON.parse(localStorage["lastState"]).name, JSON.parse(localStorage["lastStateParams"]))
                     // console.log($rootScope.$state.current.name)
@@ -622,6 +625,18 @@ angular.module('myApp', ['ui.router', 'ngCookies', 'ngResource', 'ui.utils', 'ch
                         if (element.hasClass("nosubmenu-margin-top")) {
                             element.removeClass('nosubmenu-margin-top');
                             element.addClass('submenu-margin-top');
+                        }
+                    }
+
+                    if (angular.element('#adminsubmenucontainer2').hasClass("collapse1")) {
+                        if (element.hasClass("submenu-margin-top2")) {
+                            element.removeClass('submenu-margin-top');
+                            element.addClass('submenu-margin-top');
+                        }
+                    } else {
+                        if (element.hasClass("submenu-margin-top")) {
+                            element.removeClass('nosubmenu-margin-top2');
+                            element.addClass('submenu-margin-top2');
                         }
                     }
                 });

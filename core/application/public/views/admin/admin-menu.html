@@ -45,9 +45,27 @@
 		<nav id="admin-sub-menu">
 			<ul>
 				<li ng-repeat="sub in subMenuItems">
-					<a ui-sref="{{sub.route.state}}" ui-sref-active="active"><i ng-class="sub.icon"></i><span>{{sub.name}}</span></a>
+					<a ng-click="toggleSubMenu2(sub.alias)" ui-sref="{{sub.route.state}}" ui-sref-active="active"><i ng-class="sub.icon"></i><span>{{sub.name}}</span></a>
+					<!-- <div id="adminsubmenucontainer" class="column collapse1">
+						<nav id="admin-sub-menu">
+							<ul>
+								<li ng-repeat="s in sub.children">
+									<a ui-sref="{{s.route.state}}" ui-sref-active="active"><i ng-class="s.icon"></i><span>{{s.name}}</span></a>
+								</li>
+							</ul>
+						</nav>
+					</div> -->
 				</li>
 			</ul>
 		</nav>
 	</div>
+	<div id="adminsubmenucontainer2" class="column collapse1">
+						<nav id="admin-sub-menu">
+							<ul>
+								<li ng-repeat="s in subMenuItems2">
+									<a ui-sref="{{s.route.state}}" ui-sref-active="active"><i ng-class="s.icon"></i><span>{{s.name}}</span></a>
+								</li>
+							</ul>
+						</nav>
+					</div>
 </div>

@@ -82,3 +82,27 @@ func (this *MimeTypeApiController) Put(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func (this *MimeTypeApiController) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if user := coremoduleuser.GetLoggedInUser(r); user != nil {
+		var hasPermission bool = false
+		hasPermission = user.HasPermissions([]string{"mime_type_create", "mime_type_all"})
+		if hasPermission {
+
+			mimeType := models.MimeType{}
+
+			err := json.NewDecoder(r.Body).Decode(&mimeType)
+
+			if err != nil {
+				http.Error(w, "Bad Request", 400)
+			}
+
+			mimeType.Post()
+		} else {
+			fmt.Fprintf(w, "You do not have permission to create mime types")
+		}
+	}
+
+}

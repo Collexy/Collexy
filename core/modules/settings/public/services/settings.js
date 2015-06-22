@@ -9,7 +9,7 @@ angular.module("myApp").service('DataTypeContextMenu', ["$resource", DataTypeCon
 angular.module("myApp").service('TemplateContextMenu', ["$resource", TemplateContextMenu]);
 angular.module("myApp").service('DirectoryContextMenu', ["$resource", DirectoryContextMenu]);
 angular.module("myApp").service('MIMEType', ["$resource", MIMEType]);
-
+angular.module("myApp").service('MimeTypeContextMenu', ["$resource", MimeTypeContextMenu]);
 
 
 function DataType($resource) {
@@ -215,6 +215,22 @@ function MIMEType($resource) {
             params: {
                 id: 'new'
             },
+            isArray: false
+        }
+        // delete: { method: 'delete', isArray: false }
+    });
+}
+
+
+function MimeTypeContextMenu($resource) {
+    return $resource('/api/mime-type/:id/contextmenu', {}, {
+        //query: { method: 'GET', params: { id: 'id' }, isArray: true },
+        update: {
+            method: 'PUT',
+            isArray: false
+        },
+        create: {
+            method: 'POST',
             isArray: false
         }
         // delete: { method: 'delete', isArray: false }

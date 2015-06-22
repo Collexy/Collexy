@@ -452,7 +452,17 @@ func Main() {
 				for _, t := range cs.Trees {
 					coreglobals.Routes = append(coreglobals.Routes, t.Routes...)
 				}
+				for _, cs2 := range cs.Children {
+					var r *lib.Route = cs2.Route
+					var r1 lib.Route = *r
+					coreglobals.Routes = append(coreglobals.Routes, r1)
+					// Sections = append(Sections, s)
+					for _, t := range cs2.Trees {
+						coreglobals.Routes = append(coreglobals.Routes, t.Routes...)
+					}
+				}
 			}
+
 		}
 	}
 

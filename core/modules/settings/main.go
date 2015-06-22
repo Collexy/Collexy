@@ -26,6 +26,7 @@ func init() {
 	dataTypeTreeController := coremodulesettingscontrollers.DataTypeTreeController{}
 	templateTreeController := coremodulesettingscontrollers.TemplateTreeController{}
 	directoryTreeController := coremodulesettingscontrollers.DirectoryTreeController{}
+	mimeTypeTreeController := coremodulesettingscontrollers.MimeTypeTreeController{}
 
 	privateApiRouter := coreglobals.PrivateApiRouter
 	subrPrivate := privateApiRouter.PathPrefix("/").Subrouter()
@@ -73,9 +74,11 @@ func init() {
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}/{name:.*}", http.HandlerFunc(directoryApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/directory/{rootdir:.*}", http.HandlerFunc(directoryApiController.Get)).Methods("GET")
 
+	subrPrivate.HandleFunc("/api/mime-type/{id:.*}/contextmenu", http.HandlerFunc(mimeTypeTreeController.GetMenuForMimeType)).Methods("GET")
 	subrPrivate.HandleFunc("/api/mime-type/{id:.*}", http.HandlerFunc(mimeTypeApiController.GetById)).Methods("GET")
 	subrPrivate.HandleFunc("/api/mime-type", http.HandlerFunc(mimeTypeApiController.Get)).Methods("GET")
 	subrPrivate.HandleFunc("/api/mime-type/{id:.*}", http.HandlerFunc(mimeTypeApiController.Put)).Methods("PUT")
+	subrPrivate.HandleFunc("/api/mime-type/{id:.*}", http.HandlerFunc(mimeTypeApiController.Post)).Methods("POST")
 
 	// API END
 
@@ -110,6 +113,10 @@ func init() {
 	rAssetTreeMethodEdit := lib.Route{"settings.asset.edit", "/edit/:name", "core/modules/settings/public/views/asset/edit.html", false}
 	rAssetTreeMethodNew := lib.Route{"settings.asset.new", "/new?type&parent", "core/modules/settings/public/views/asset/new.html", false}
 
+	rMimeTypeSection := lib.Route{"settings.mediaType.mimeType", "/mime-type", "core/modules/settings/public/views/media-type/mime-type/index.html", false}
+	rMimeTypeTreeMethodEdit := lib.Route{"settings.mediaType.mimeType.edit", "/edit/:id", "core/modules/settings/public/views/media-type/mime-type/edit.html", false}
+	rMimeTypeTreeMethodNew := lib.Route{"settings.mediaType.mimeType.new", "/new", "core/modules/settings/public/views/media-type/mime-type/new.html", false}
+
 	// setup trees
 	routesContentTypeTree := []lib.Route{rContentTypeTreeMethodEdit, rContentTypeTreeMethodNew}
 	routesMediaTypeTree := []lib.Route{rMediaTypeTreeMethodEdit, rMediaTypeTreeMethodNew}
@@ -118,6 +125,7 @@ func init() {
 	//routesScriptTree := []lib.Route{rScriptTreeMethodEdit, rScriptTreeMethodNew}
 	//routesStylesheetTree := []lib.Route{rStylesheetTreeMethodEdit, rStylesheetTreeMethodNew}
 	routesAssetTree := []lib.Route{rAssetTreeMethodEdit, rAssetTreeMethodNew}
+	routesMimeTypeTree := []lib.Route{rMimeTypeTreeMethodEdit, rMimeTypeTreeMethodNew}
 
 	tContentType := lib.Tree{"Content Types", "contentTypes", routesContentTypeTree}
 	tMediaType := lib.Tree{"Media Types", "mediaTypes", routesMediaTypeTree}
@@ -126,6 +134,7 @@ func init() {
 	//tScript := lib.Tree{"Scripts", "scripts", routesScriptTree}
 	//tStylesheet := lib.Tree{"Stylesheets", "stylesheets", routesStylesheetTree}
 	tAsset := lib.Tree{"Assets", "assets", routesAssetTree}
+	tMimeType := lib.Tree{"MimeTypes", "mimeTypes", routesMimeTypeTree}
 
 	treesContentTypeSection := []*lib.Tree{&tContentType}
 	treesMediaTypeSection := []*lib.Tree{&tMediaType}
@@ -134,6 +143,7 @@ func init() {
 	//treesScriptSection := []*lib.Tree{&tScript}
 	//treesStylesheetSection := []*lib.Tree{&tStylesheet}
 	treesAssetSection := []*lib.Tree{&tAsset}
+	treesMimeTypeSection := []*lib.Tree{&tMimeType}
 
 	// params: name, alias, icon, route, trees, iscontainer, parent
 	sSettings := lib.Section{"Settings Section", "settingsSection", "fa fa-gear fa-fw", &rSettingsSection, nil, true, nil, nil, []string{"settings_section"}}
@@ -145,8 +155,10 @@ func init() {
 	//sScript := lib.Section{"Script Section", "scriptSection", "fa fa-file-code-o fa-fw", &rScriptSection, treesScriptSection, false, nil, nil, []string{"script_section"}}
 	//sStylesheet := lib.Section{"Stylesheet Section", "stylesheetSection", "fa fa-desktop fa-fw", &rStylesheetSection, treesStylesheetSection, false, nil, nil, []string{"stylesheet_section"}}
 	sAsset := lib.Section{"Asset Section", "assetSection", "fa fa-file-code-o fa-fw", &rAssetSection, treesAssetSection, false, nil, nil, []string{"asset_section"}}
-
+	sMimeType := lib.Section{"Mime Type Section", "mimeTypeSection", "fa fa-files-o fa-fw", &rMimeTypeSection, treesMimeTypeSection, false, nil, nil, []string{"mime_type_section"}}
 	// lol := []lib.Section{sContentType, sMediaType, sDataType, sTemplate, sScript, sStylesheet, sAsset}
+	rofl := []lib.Section{sMimeType}
+	sMediaType.Children = rofl
 	lol := []lib.Section{sContentType, sMediaType, sDataType, sTemplate, sAsset}
 	sSettings.Children = lol
 	//reflect.ValueOf(&sSettings).Elem().FieldByName("Children").Set(reflect.ValueOf(lol))

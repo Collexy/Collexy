@@ -1,0 +1,37 @@
+<div ng-controller="MimeTypeEditCtrl" class="collexy-controller">
+    <form role="form" ng-submit="submit()">
+        <h4>Edit</h4>
+
+        <input type="text" ng-model="entity.name">
+
+        <ul class="admin-tabs">
+            <li ng-class="(currentTab=='mime-type') ? 'active' : ''"><a href="#mime-type" collexy-toggle-tab="toggleTab('mime-type')">Mime Type</a></li>
+            <!-- <li ng-repeat="tab in entity.ct.tabs  | unique: 'name'" ng-class="(currentTab==tab.name) ? 'active' : ''"><a href="#{{tab.name}}" ng-click="toggleTab(tab.name)">{{tab.name}}</a></li> -->
+        </ul>
+        <div ng-show="currentTab == 'mime-type'">
+            <table>
+                <tr>
+                    <td>Media Type Id:</td>
+                    <td style="width: 80%;">
+                    <!-- <ul><li ng-repeat="m in allMediaTypes">{{m.id}}</li></ul>
+                    <ul><li ng-repeat="m in availableMediaTypes">{{m.id}}</li></ul> -->
+                    
+                        <select ng-model="entity.media_type_id" ng-options="t.id as t.name for t in allMediaTypes"><option value="">-- Select a Media Type</option></select>
+                    
+                        <!-- key as value for (key , value) in data //data.user_group_ids -->
+                        
+                        <!-- {{availableUserGroups}}<br>
+                        {{selectedUserGroups}}<br> -->
+                        
+                        
+                    </td>
+               
+                </tr>
+            </table>
+        </div>
+        <div ui-view></div>
+        <p ng-if="userHasPermission('mime_type_update') || userHasPermission('mime_type_all')">
+            <button class="btn" type="submit">Update Mime Type &raquo;</button>
+        </p>
+    </form>
+</div>
