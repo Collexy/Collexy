@@ -193,6 +193,14 @@ function AdminMenuCtrl($scope, $state, Section) {
                     a.removeClass('submenu-margin-top');
                     a.addClass('nosubmenu-margin-top');
                 });
+
+                angular.element('#adminsubmenucontainer2').removeClass("expanded1");
+                angular.element('#adminsubmenucontainer2').addClass("collapse1");
+                angular.forEach(angular.element(".submenu-margin-top2"), function(value, key) {
+                    var a = angular.element(value);
+                    a.removeClass('submenu-margin-top2');
+                    a.addClass('nosubmenu-margin-top');
+                });
                 // var hasSubs = false;
                 // for (var i = 0; i < subMenuItems.length; i++) {
                 //     if (id == subMenuItems[i].parent_id) {
