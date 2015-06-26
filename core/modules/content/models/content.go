@@ -2203,7 +2203,7 @@ func (c *Content) Post() {
 
 	var parentContent Content
 
-	if c.ParentId != nil {
+	if c.ParentId != nil && *c.ParentId != 0{
 		// Channel c, is for getting the parent template
 		// We need to append the id of the newly created template to the path of the parent id to create the new path
 		c1 := make(chan Content)
@@ -2227,6 +2227,10 @@ func (c *Content) Post() {
 		wg.Wait()
 	}
 
+	if *c.ParentId == 0 {
+		c.ParentId = nil
+	}
+
 	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
 	c2 := make(chan int)
 	var id int64
@@ -2238,13 +2242,13 @@ func (c *Content) Post() {
 	go func() {
 		defer wg1.Done()
 		sqlStr := `INSERT INTO content ( 
-			parent_id, name, alias, created_by, content_type_id, 
+			parent_id, name, created_by, content_type_id, template_id,  
 			meta, public_access_members, public_access_member_groups, 
 			user_permissions, user_group_permissions) 
 			VALUES (
 				$1,$2,$3,$4,$5,$6,$7,$8,$9,$10
 				) RETURNING id`
-		err1 := db.QueryRow(sqlStr, c.ParentId, c.Name, c.CreatedBy, c.ContentTypeId,
+		err1 := db.QueryRow(sqlStr, c.ParentId, c.Name, c.CreatedBy, c.ContentTypeId, c.TemplateId,
 			meta, publicAccessMembers, publicAccessMemberGroups,
 			userPermissions, userGroupPermissions).Scan(&id)
 		corehelpers.PanicIf(err1)
@@ -2320,7 +2324,7 @@ func (c *Content) Put() {
 
 	var parentContent Content
 
-	if c.ParentId != nil {
+	if c.ParentId != nil && *c.ParentId != 0 {
 		c1 := make(chan Content)
 
 		var wg sync.WaitGroup
@@ -2342,18 +2346,22 @@ func (c *Content) Put() {
 		wg.Wait()
 	}
 
+	if *c.ParentId == 0 {
+		c.ParentId = nil
+	}
+
 	sqlStr := `UPDATE content 
-	SET path=$1, parent_id=$2, name=$3, created_by=$4, content_type_id=$5, 
-	meta=$6, public_access_members=$7, public_access_member_groups=$8, 
-	user_permissions=$9, user_group_permissions=$10 
- 	WHERE id=$11;`
+	SET path=$1, parent_id=$2, name=$3, created_by=$4, content_type_id=$5, template_id=$6, 
+	meta=$7, public_access_members=$8, public_access_member_groups=$9, 
+	user_permissions=$10, user_group_permissions=$11 
+ 	WHERE id=$12;`
 
 	path := strconv.Itoa(c.Id)
 	if c.ParentId != nil {
 		path = parentContent.Path + "." + strconv.Itoa(c.Id)
 	}
 
-	_, err := db.Exec(sqlStr, path, c.ParentId, c.Name, c.CreatedBy, c.ContentTypeId,
+	_, err := db.Exec(sqlStr, path, c.ParentId, c.Name, c.CreatedBy, c.ContentTypeId, c.TemplateId,
 		meta, publicAccessMembers, publicAccessMemberGroups, userPermissions, userGroupPermissions, c.Id)
 
 	corehelpers.PanicIf(err)

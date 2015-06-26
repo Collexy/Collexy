@@ -100,7 +100,7 @@ func (m *MimeType) Post() {
 
 	db := coreglobals.Db
 
-	sqlStr := `INSERT INTO mime_type (name, alias) 
+	sqlStr := `INSERT INTO mime_type (name, media_type_id) 
 	VALUES ($1, $2)`
 	_, err1 := db.Exec(sqlStr, m.Name, m.MediaTypeId)
 

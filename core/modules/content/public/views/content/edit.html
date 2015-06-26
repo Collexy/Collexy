@@ -21,7 +21,7 @@
             </li>
         </ul>
         
-        <div ng-repeat="tab in tabs  | unique: name" ng-show="currentTab == tab.name" >
+        <div ng-repeat="tab in tabs  | unique:'name'" ng-show="currentTab == tab.name" >
             <table>
                 <tr ng-if="tab.name=='Properties'">
                     <td>Id:</td>

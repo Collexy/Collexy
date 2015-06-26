@@ -59,6 +59,7 @@ function MimeTypeEditCtrl($scope, $stateParams, MIMEType, $compile, MediaType) {
         });
     } else {
         $scope.entity = {}
+        $scope.allMediaTypes = MediaType.query();
     }
 
     

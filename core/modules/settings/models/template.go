@@ -2,7 +2,7 @@ package models
 
 import (
 	//"fmt"
-	//"encoding/json"
+	"encoding/json"
 	coreglobals "collexy/core/globals"
 	corehelpers "collexy/core/helpers"
 	"database/sql"
@@ -19,6 +19,8 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"regexp"
+	"html/template"
 )
 
 type Template struct {
@@ -69,6 +71,75 @@ func GetTemplates(queryStringParams url.Values) (templates []*Template) {
 
 		template := &Template{id, path, &pid, name, alias, created_by, &created_date, is_partial, "", nil}
 		templates = append(templates, template)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return
+}
+
+func GetTemplatesExtended() (templates []*Template) {
+	db := coreglobals.Db
+
+	sqlStr := `SELECT id, path, parent_id, name, alias, created_by, created_date, is_partial, 
+    ffgd.parent_templates
+FROM template as my_template,
+LATERAL 
+(
+    SELECT array_to_json(array_agg(template)) as parent_templates
+    from template
+    where path @> subpath(my_template.path,0,nlevel(my_template.path)-1)
+    order by my_template.path asc
+) ffgd`
+
+	rows, err := db.Query(sqlStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id, created_by int
+		var path, name, alias string
+		var created_date *time.Time
+		var is_partial bool
+		var parent_templates []byte
+		var parent_id sql.NullInt64
+
+		if err := rows.Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &is_partial, &parent_templates); err != nil{
+			log.Fatal(err)
+		}
+
+		var pid int
+
+		if parent_id.Valid {
+			// use s.String
+			pid = int(parent_id.Int64)
+		} else {
+			// NULL value
+		}
+
+		tplName := name + ".tmpl"
+		//absPath, _ := filepath.Abs("/views/" + name)
+		absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + tplName)
+
+
+		fmt.Println("FILEPATH:: " + absPath)
+
+		bs, err7 := ioutil.ReadFile(absPath)
+		corehelpers.PanicIf(err7)
+		str := string(bs)
+
+		//var tplSlice []Template
+		var parentTemplatesSlice []*Template
+
+		//json.Unmarshal(template_partial_templates, &tplSlice)
+		json.Unmarshal(parent_templates, &parentTemplatesSlice)
+
+		
+		tpl := Template{id, path, &pid, name, alias, created_by, created_date, is_partial, str, parentTemplatesSlice}
+		
+		templates = append(templates, &tpl)
 	}
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
@@ -155,17 +226,19 @@ where my_template.id=$1`
 	tplName := name + ".tmpl"
 	//absPath, _ := filepath.Abs("/views/" + name)
 	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + tplName)
-	//fmt.Println("FILEPATH:: " + absPath)
+
+
+	fmt.Println("FILEPATH:: " + absPath)
 
 	bs, err7 := ioutil.ReadFile(absPath)
 	corehelpers.PanicIf(err7)
 	str := string(bs)
 
 	//var tplSlice []Template
-	//var parentTemplatesSlice []Node
+	var parentTemplatesSlice []*Template
 
 	//json.Unmarshal(template_partial_templates, &tplSlice)
-	//json.Unmarshal(parent_templates, &parentTemplatesSlice)
+	json.Unmarshal(parent_templates, &parentTemplatesSlice)
 
 	switch {
 	case err == sql.ErrNoRows:
@@ -173,7 +246,7 @@ where my_template.id=$1`
 	case err != nil:
 		log.Fatal(err)
 	default:
-		template = Template{id, path, &pid, name, alias, created_by, created_date, is_partial, str, nil}
+		template = Template{id, path, &pid, name, alias, created_by, created_date, is_partial, str, parentTemplatesSlice}
 	}
 
 	return
@@ -185,26 +258,30 @@ func (t *Template) Post() {
 
 	// Channel c, is for getting the parent template
 	// We need to append the id of the newly created template to the path of the parent id to create the new path
-	c := make(chan Template)
 	var parentTemplate Template
+	if(t.ParentId != nil && *t.ParentId != 0){
+		c := make(chan Template)
+		
 
-	var wg sync.WaitGroup
+		var wg sync.WaitGroup
 
-	wg.Add(1)
+		wg.Add(1)
 
-	go func() {
-		defer wg.Done()
-		c <- GetTemplateById(*t.ParentId)
-	}()
+		go func() {
+			defer wg.Done()
+			c <- GetTemplateById(*t.ParentId)
+		}()
 
-	go func() {
-		for i := range c {
-			fmt.Println(i)
-			parentTemplate = i
-		}
-	}()
+		go func() {
+			for i := range c {
+				fmt.Println(i)
+				parentTemplate = i
+			}
+		}()
 
-	wg.Wait()
+		wg.Wait()
+	}
+	
 
 	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
 	c1 := make(chan int)
@@ -238,7 +315,7 @@ func (t *Template) Post() {
 	WHERE id=$2`
 
 	path := strconv.FormatInt(id, 10)
-	if t.ParentId != nil {
+	if t.ParentId != nil && *t.ParentId != 0{
 		path = parentTemplate.Path + "." + strconv.FormatInt(id, 10)
 	}
 
@@ -251,6 +328,29 @@ func (t *Template) Post() {
 	corehelpers.PanicIf(err3)
 
 	log.Println("template created successfully")
+
+	var tpl Template
+
+	c2 := make(chan Template)
+
+	var wg2 sync.WaitGroup
+
+	wg2.Add(1)
+
+	go func() {
+		defer wg2.Done()
+		c2 <- GetTemplateById(int(id))
+	}()
+
+	go func() {
+		for i := range c2 {
+			fmt.Println(i)
+			tpl = i
+		}
+	}()
+
+	wg2.Wait()
+	ParseTemplate(&tpl)
 }
 
 func (t *Template) Update() {
@@ -283,48 +383,231 @@ func (t *Template) Update() {
 
 	wg.Wait()
 
+	fmt.Println("after WAIT")
+
 	oldName := oldTemplate.Name + ".tmpl"
 	newName := t.Name + ".tmpl"
 	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/")
 
-	c2 := make(chan Template)
 	var parentTemplate Template
 
-	var wg2 sync.WaitGroup
+	if t.ParentId != nil && *t.ParentId != 0 {
+		// this is not really necessary since we can just do a range loop in t.ParentTemplate and compare on Id == t.ParentId
+		
+		// c2 := make(chan Template)
 
-	wg2.Add(1)
+		// var wg2 sync.WaitGroup
+
+		// wg2.Add(1)
+
+		// go func() {
+		// 	defer wg2.Done()
+		// 	c2 <- GetTemplateById(*t.ParentId)
+		// }()
+
+		// go func() {
+		// 	for i := range c2 {
+		// 		fmt.Println(i)
+		// 		parentTemplate = i
+		// 	}
+		// }()
+
+		// wg2.Wait()
+		for _, parent := range t.ParentTemplates {
+			if parent.Id == *t.ParentId{
+				parentTemplate = *parent
+				break
+			}
+		}
+	}
+
+	if *t.ParentId == 0{
+		t.ParentId = nil
+	}
+
+		fmt.Println("after WAIT2")
+	
+
+	db := coreglobals.Db
+
+	path := strconv.Itoa(t.Id)
+	if t.ParentId != nil && *t.ParentId != 0{
+		path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
+	}
+	
+
+	_, err := db.Exec("UPDATE template SET path=$1, parent_id=$2, name=$3, alias=$4 WHERE id=$5", path, t.ParentId, t.Name, t.Alias, t.Id)
+	corehelpers.PanicIf(err)
+
+	if newName != oldName {
+		// rename filename
+		err2 := os.Rename(absPath+oldName, absPath+newName)
+		corehelpers.PanicIf(err2)
+	}
+	
+
+	// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
+	err3 := ioutil.WriteFile(absPath+newName, []byte(t.Html), 0644)
+	corehelpers.PanicIf(err3)
+
+	//ParseTemplate
+	ParseTemplate(t)
+}
+
+func ParseTemplate(tpl *Template){
+	templateName := tpl.Name + ".tmpl"
+	parentTemplates := tpl.ParentTemplates
+	// for _, par := range parentTemplates{
+	// 	fmt.Println(par.Name)
+	// }
+
+	// get all templates
+	var allTemplates []*Template
+
+	c := make(chan []*Template)
+	
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
 
 	go func() {
 		defer wg.Done()
-		c2 <- GetTemplateById(*t.ParentId)
+		c <- GetTemplatesExtended()
 	}()
 
 	go func() {
 		for i := range c {
 			fmt.Println(i)
-			parentTemplate = i
+			allTemplates = i
 		}
 	}()
 
-	wg2.Wait()
+	wg.Wait()
 
-	db := coreglobals.Db
 
-	path := strconv.Itoa(t.Id)
-	if t.ParentId != nil {
-		path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
+	if tpl.IsPartial {
+	
+		rp1, _ := regexp.Compile("template \".*\"")
+		for _, t := range allTemplates{
+			if tpl.Id != t.Id {
+				
+
+				lol := rp1.FindAllString(t.Html, -1) // ["abc", "def"]
+
+				for _, value1 := range lol {
+					//
+					concatStr := strings.Replace(value1, "\"", "", -1)
+					concatStr = strings.Replace(concatStr, "template ", "", -1)
+					//character := dirViewSlice[1]
+
+					if corehelpers.IsFirstNumber(concatStr) {
+						fmt.Println("character is numric")
+					} else {
+						if corehelpers.IsFirstUpper(concatStr) {
+							//fmt.Println("upper case true")
+							fmt.Printf("concatStr is: %s and t.Name is: %s\n", concatStr, t.Name)
+							//if concatStr != t.Name {
+								//templateSlice = append(templateSlice,"views/" + t.Name + ".tmpl")
+								//break
+							ParseTemplate(t)
+							//}
+						}
+					}
+					//
+
+				}
+			}
+			
+		}
+		coreglobals.Templates[templateName] = template.Must(template.ParseFiles("views/" + templateName))
+		// for _, t := range templateSlice{
+		// 	fmt.Println(t)
+		// }
+		//coreglobals.Templates[templateName] = template.Must(template.ParseFiles(templateSlice...))
+
+	} else {
+
+		templateArray := []string{"views/" + templateName}
+		if parentTemplates != nil {
+
+			tplFile := GetFilesystemNodeById("./views", templateName)
+			rp1, _ := regexp.Compile("template \".*\"")
+
+			lol := rp1.FindAllString(tplFile.Contents, -1) // ["abc", "def"]
+			// fmt.Println(tplFile.Contents)
+			//fmt.Println("regex return")
+			//fmt.Println(lol)
+
+			for _, value := range lol {
+				concatStr := "views/" + value + ".tmpl"
+				concatStr = strings.Replace(concatStr, "\"", "", -1)
+				concatStr = strings.Replace(concatStr, "template ", "", -1)
+				templateArray = append(templateArray, concatStr)
+			}
+
+			fmt.Println(templateArray)
+			if parentTemplates != nil {
+
+				v := make([]string, 0, len(parentTemplates))
+
+				for _, value := range parentTemplates {
+					tplName := "views/" + value.Name + ".tmpl"
+					v = append(v, tplName)
+				}
+				templateArray = append(templateArray, v...)
+
+				for _, value := range templateArray {
+					if value != "views/"+templateName {
+						dirViewSlice := strings.Split(value, "/")
+
+						tplFile := GetFilesystemNodeById(dirViewSlice[0]+"/", dirViewSlice[1])
+						rp1, _ := regexp.Compile("template \".*\"")
+
+						lol := rp1.FindAllString(tplFile.Contents, -1) // ["abc", "def"]
+						// fmt.Println(tplFile.Contents)
+						//fmt.Println("regex return")
+						//fmt.Println(lol)
+
+						for _, value1 := range lol {
+							//
+							concatStr := strings.Replace(value1, "\"", "", -1)
+							concatStr = strings.Replace(concatStr, "template ", "", -1)
+							//character := dirViewSlice[1]
+
+							if corehelpers.IsFirstNumber(concatStr) {
+								fmt.Println("character is numric")
+							} else {
+								if corehelpers.IsFirstUpper(concatStr) {
+									//fmt.Println("upper case true")
+
+									concatStr = "views/" + concatStr + ".tmpl"
+									if !corehelpers.StringInSlice(concatStr, templateArray) {
+										templateArray = append(templateArray, concatStr)
+									}
+								}
+							}
+							//
+
+						}
+					}
+				}
+			}
+
+			coreglobals.Templates[templateName] = template.Must(template.ParseFiles(templateArray...))
+			//.Delims("{@","@}")
+
+		} else {
+			for _, t := range allTemplates{
+				if tpl.Id != t.Id {
+					ParseTemplate(t)
+				}
+			}
+
+			coreglobals.Templates[templateName] = template.Must(template.ParseFiles("views/" + templateName))
+		}
+
 	}
-
-	_, err := db.Exec("UPDATE template SET path=$1, parent_id=$2, name=$3, alias=$4 WHERE id=$5", path, t.ParentId, t.Name, t.Alias, t.Id)
-	corehelpers.PanicIf(err)
-
-	// rename filename
-	err2 := os.Rename(absPath+oldName, absPath+newName)
-	corehelpers.PanicIf(err2)
-
-	// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
-	err3 := ioutil.WriteFile(absPath+newName, []byte(t.Html), 0644)
-	corehelpers.PanicIf(err3)
 }
 
 // Temporary simple delete

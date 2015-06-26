@@ -28,7 +28,7 @@ func (this *ContentTypeTreeController) GetMenuForContentType(w http.ResponseWrit
 	// Also a IsContainer field needs to be added so container content types will not appear in context menu?????
 	// Permissions should be added again
 	if id == 0 {
-		path := fmt.Sprintf("settings.contentType.new({type_id:%d, , parent_id:null})", 1)
+		path := fmt.Sprintf("settings.contentType.new({type_id:%d, parent_id:null})", 1)
 		cmiNew := ContextMenuItem{"Create", path, "", "", false, nil, "node_create"}
 		cmItems = append(cmItems, cmiNew)
 	} else {

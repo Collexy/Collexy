@@ -248,7 +248,7 @@ LATERAL
                     )
                     ) AS y(name text, properties json),
                     LATERAL (
-                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id, 'path','name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
+                        SELECT json_agg(json_build_object('name',row.name,'order',row."order",'data_type_id',row.data_type_id,'data_type', json_build_object('id',row.data_type_id,'name',row.data_type_name, 'alias',row.data_type_alias, 'created_by',row.data_type_created_by,'html', row.data_type_html), 'help_text', row.help_text, 'description', row.description)) AS properties
                         FROM(
                             SELECT k.name, "order",data_type_id, data_type.name as data_type_name, data_type.alias AS data_type_alias, data_type.created_by as data_type_created_by, data_type.created_date as data_type_created_date, data_type.html AS data_type_html, help_text, description
                             FROM json_to_recordset(properties) 
@@ -353,13 +353,14 @@ WHERE member_type.id=$1`
 	json.Unmarshal(member_type_meta, &member_type_metaMap)
 
 	switch {
-	case err == sql.ErrNoRows:
-		log.Printf("No node with that ID.")
-	case err != nil:
-		log.Fatal(err)
-	default:
-		memberType = MemberType{member_type_id, member_type_path, &parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_thumbnail, member_type_metaMap, tabs, member_type_is_abstract, member_type_composite_member_type_ids, composite_member_types, parent_member_types}
-	}
+    	case err == sql.ErrNoRows:
+    		log.Printf("No node with that ID.")
+    	case err != nil:
+    		log.Fatal(err)
+            //panic(err)
+    	default:
+    		memberType = MemberType{member_type_id, member_type_path, &parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_thumbnail, member_type_metaMap, tabs, member_type_is_abstract, member_type_composite_member_type_ids, composite_member_types, parent_member_types}
+    	}
 
 	return
 }
@@ -408,12 +409,12 @@ func GetMemberTypeById(id int) (memberType MemberType) {
 	json.Unmarshal(member_type_meta, &member_type_metaMap)
 
 	switch {
-	case err == sql.ErrNoRows:
-		log.Printf("No node with that ID.")
-	case err != nil:
-		log.Fatal(err)
-	default:
-		memberType = MemberType{member_type_id, member_type_path, &parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_thumbnail, member_type_metaMap, tabs, member_type_is_abstract, nil, nil, nil}
+    	case err == sql.ErrNoRows:
+    		log.Printf("No node with that ID.")
+    	case err != nil:
+    		log.Fatal(err)
+    	default:
+    		memberType = MemberType{member_type_id, member_type_path, &parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_thumbnail, member_type_metaMap, tabs, member_type_is_abstract, nil, nil, nil}
 	}
 
 	return
@@ -543,6 +544,10 @@ func (ct *MemberType) Put() {
 		tabs = j
 	}
 
+    compositeMemberTypeIds, err3 := coreglobals.IntSlice(ct.CompositeMemberTypeIds).Value()
+    if err3 != nil {
+        panic(err3)
+    }
 	// var parentId interface{} = nil
 
 	// if ct.ParentId != nil && ct.ParentId != 0{
@@ -562,7 +567,7 @@ func (ct *MemberType) Put() {
 
 	var parentMemberType MemberType
 
-	if ct.ParentId != nil {
+	if ct.ParentId != nil && *ct.ParentId != 0{
 		// Channel c, is for getting the parent template
 		// We need to append the id of the newly created template to the path of the parent id to create the new path
 		c := make(chan MemberType)
@@ -586,8 +591,12 @@ func (ct *MemberType) Put() {
 		wg.Wait()
 	}
 
+    if *ct.ParentId == 0 {
+        ct.ParentId = nil
+    }
+
 	path := strconv.Itoa(ct.Id)
-	if ct.ParentId != nil {
+	if ct.ParentId != nil && *ct.ParentId != 0{
 		path = parentMemberType.Path + "." + strconv.Itoa(ct.Id)
 	}
 
@@ -598,10 +607,10 @@ func (ct *MemberType) Put() {
 	// _, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.AllowAtRoot, ct.IsContainer,
 	// 	ct.IsAbstract, allowedMemberTypeIds, compositeMemberTypeIds, ct.TemplateId, allowedTemplateIds, ct.Id)
 
-	sqlStr := `UPDATE member_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, meta=$8, tabs=$9 
-        WHERE id=$11`
+	sqlStr := `UPDATE member_type SET path=$1, parent_id=$2, name=$3, alias=$4, created_by=$5, description=$6, icon=$7, thumbnail=$8, meta=$9, tabs=$10, is_abstract=$11, composite_member_type_ids=$12 
+        WHERE id=$13`
 
-	_, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, meta, tabs, ct.Id)
+	_, err6 := db.Exec(sqlStr, path, ct.ParentId, ct.Name, ct.Alias, ct.CreatedBy, ct.Description, ct.Icon, ct.Thumbnail, meta, tabs, ct.IsAbstract, compositeMemberTypeIds, ct.Id)
 
 	corehelpers.PanicIf(err6)
 

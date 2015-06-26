@@ -193,6 +193,8 @@ function AssetEditCtrl($scope, $stateParams, Directory, $state, Upload) {
             if (!$scope.data.info.name) {
                 $scope.data.path = $scope.data.parent + "\\" + $scope.data.info.name;
             }
+        } else {
+            $scope.data.parent = "assets"
         }
 
         $scope.currentTab = $scope.type;
