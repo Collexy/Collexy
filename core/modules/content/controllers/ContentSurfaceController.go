@@ -114,6 +114,14 @@ func (this *ContentController) RenderAdminTemplate(w http.ResponseWriter, name s
 }
 
 func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	url := params["url"]
+	fmt.Printf("url is : %s", url)
+
+	if strings.HasPrefix(url, "admin/install") || strings.HasPrefix(url, "favicon.ico") || strings.HasPrefix(url, "admin/test") {
+		return
+	}
+
 	defer corehelpers.Un(corehelpers.Trace("SOME_ARBITRARY_STRING_SO_YOU_CAN_KEEP_TRACK"))
 	sid := corehelpers.CheckMemberCookie(w, r)
 	m, _ := coremodulemembermodels.GetMember(sid)
@@ -124,7 +132,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
 	// idStr := r.URL.Query().Get(":nodeId")
 
-	params := mux.Vars(r)
+	//params := mux.Vars(r)
 	// idStr := params["nodeId"]
 
 	// nodeId, _ := strconv.Atoi(idStr)
@@ -132,7 +140,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
 	// content := models.GetFrontendContentById(nodeId)
 
-	url := params["url"]
+	//url := params["url"]
 
 	if strings.HasPrefix(url, "admin/") {
 		//fmt.Println("lol")

@@ -1,0 +1,37 @@
+<modules>
+	<module id="1" version="1.0.0" name="TXT starter kit" url="http://www.collexy.com">
+		<license url="http://opensource.org/licenses/MIT">MIT license</license>
+		<author url="http://www.codeish.com">Codeish</author>
+    	<readme><![CDATA[Thank you for installing the TXT starter kit.]]></readme>
+    	<dataTypes></dataTypes>
+    	<templates>
+    		<template>1</template>
+    		<template>2</template>
+    	</templates>
+    	<contentTypes>
+    		<contentType>1</contentType>
+    		<contentType>2</contentType>
+    	</contentTypes>
+    	<contentItems>
+    		<content>1</content>
+    		<content>2</content>
+    	</contentItems>
+    	<mediaTypes>
+    		<mediaType>2</mediaType>
+    	</mediaTypes>
+    	<mediaItems>
+    		<media>1</media>
+    	</mediaItems>
+    	<mimeTypes></mimeTypes>
+    	<files>
+    		<file>/assets/images/banner.jpg</file>
+    		<file>/assets/images/highlight.png</file>
+    		<file>/assets/scripts/init.js</file>
+    		<file>/assets/styles/style.css</file>
+    		<file>/media/Sample Images/TXT/pic01.jpg</file>
+    		<file>/media/Sample Images/TXT/pic02.jpg</file>
+    		<file>/views/Layout.tmpl</file>
+    		<file>/views/Page.tmpl</file>
+    	</files>
+	</module>
+</modules>

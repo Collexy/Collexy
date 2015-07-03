@@ -1,0 +1,43 @@
+{{define "base"}}
+	<head>
+		<title>Unauthorized Access</title>
+		<meta name="robots" content="noindex">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+
+		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+		
+			<link rel="stylesheet" href="/assets/styles/skel.css" />
+			<link rel="stylesheet" href="/assets/styles/style.css" />
+			<link rel="stylesheet" href="/assets/styles/style-desktop.css" />
+		
+		<!--[if lte IE 8]><link rel="stylesheet" href="/assets/styles/ie/v8.css" /><![endif]-->
+	</head>
+	<body>
+		<div id="main-wrapper">
+			<div id="main" class="container">
+				<div class="row">
+					<div class="9u important(collapse)">
+						<div class="content content-left">
+							<article class="box page-content">
+								<header>
+									<h2>Unauthorized</h2>
+								</header>
+								<section>
+									<span class="image featured"><img src="http://talks.golang.org/2013/highperf/appenginegophercolor.jpg" alt="" /></span>
+									<p>Please login to access this page</p>
+								</section>
+							</article>
+						</div>
+					</div>
+					<div class="3u">
+						<div class="sidebar">
+							{{template "Login Widget" .}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+{{end}}

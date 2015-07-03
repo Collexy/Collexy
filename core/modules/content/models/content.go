@@ -2203,7 +2203,7 @@ func (c *Content) Post() {
 
 	var parentContent Content
 
-	if c.ParentId != nil && *c.ParentId != 0{
+	if c.ParentId != nil && *c.ParentId != 0 {
 		// Channel c, is for getting the parent template
 		// We need to append the id of the newly created template to the path of the parent id to create the new path
 		c1 := make(chan Content)

@@ -31,17 +31,29 @@ import (
 	_ "collexy/core/modules/member"
 	coremodulemembermodels "collexy/core/modules/member/models"
 	_ "collexy/core/modules/settings"
+	// coremodulesettingsmodels "collexy/core/modules/settings/models"
 	_ "collexy/core/modules/user"
 	coremoduleusermodels "collexy/core/modules/user/models"
+	// "github.com/clbanning/mxj"
 	"sort"
 	"strconv"
+	//"sync"
+	//coreapplicationmodelsxmlmodels "collexy/core/application/models/xml_models"
+	coreapplicationcontrollers "collexy/core/application/controllers"
 )
 
 func executeDatabaseInstallScript(site_title, username, password, email string, privacy bool) (err error) {
 	db := coreglobals.Db
 	tx, err1 := db.Begin()
 
-	sqlStr := fmt.Sprintf(coreglobals.DbCreateScriptDML+coreglobals.DbCreateScriptDDL, site_title, username, password, email)
+	// fmt.Printf("title: %s, username: %s, password: %s, email: %s, privacy: %v\n", site_title, username, password, email, privacy)
+	// rofl := `INSERT INTO "user" (id, username, first_name, last_name, password, email, created_date, updated_date, login_date, accessed_date, status, sid, user_group_ids, permissions) VALUES (1, '%s', 'Admin', 'Demo', '%s', '%s', '2014-11-15 16:51:00.215', NULL, '2015-06-26 18:45:51.652', NULL, 1, 'Q6BZMGO6GTBLVLFW2Z2PHZSVLISDGGH6GVKNLS2V2ZS44LXT4ZZA', '{1}', NULL);`
+	// lol := fmt.Sprintf(rofl, username, password, email)
+	// fmt.Println(lol)
+
+	sqlDDL := fmt.Sprintf(coreglobals.DbCreateScriptDDL, username, password, email)
+	sqlStr := coreglobals.DbCreateScriptDML + sqlDDL
+	fmt.Println(sqlStr)
 	sqlStmtSlice := strings.Split(sqlStr, ";\r")
 
 	if err != nil {
@@ -68,6 +80,167 @@ func executeDatabaseInstallScript(site_title, username, password, email string, 
 	err = err1
 	return
 }
+
+// type ModuleItems struct {
+// 	XMLName xml.Name           `xml:modules"`
+// 	Modules   []*Module `xml:"module"`
+// 	//Items map[string]*MediaItem `xml:"Item"` //does not work - how would you do it with maps?
+// }
+
+// type ModuleXML struct {
+// 	XMLName xml.Name
+// 	Module *Module `xml:"module"`
+// }
+
+// type XMLModel interface {
+// 	func Post()
+// }
+
+// func doPost(i XMLModel){
+// 	i.Post()
+// 	if i.Children == nil {
+
+// 	} else {
+// 		if len(i.Children) == 0 {
+
+// 		} else {
+// 			for _, c := range i.Children {
+// 				doPost(i)
+// 			}
+// 		}
+// 	}
+// }
+
+// func executeModuleInstallScript(moduleDirectoryPath string) (err error) {
+// 	moduleXMLFile, err1 := os.Open(moduleDirectoryPath + "/module.xml")
+// 	defer moduleXMLFile.Close()
+// 	if err1 != nil {
+// 		log.Println("Error opening module.xml file")
+// 		//printError("opening config file", err1.Error())
+// 	}
+
+// 	XMLdata, err2 := ioutil.ReadAll(moduleXMLFile) // use bufio intead since the xml can scale big
+
+// 	// fmt.Println(string(XMLdata))
+
+// 	if err2 != nil {
+// 		log.Println("Error reading from module.xml file")
+// 		fmt.Printf("error: %v", err2)
+// 	}
+
+// 	var v coreapplicationmodelsxmlmodels.Module
+
+// 	err3 := xml.Unmarshal(XMLdata, &v)
+// 	if err3 != nil {
+// 		fmt.Printf("error: %v", err3)
+// 	}
+
+// 	// use recursive method / closures
+// 	// for _, t := range v.Templates {
+// 	// 	fmt.Println(t.Name)
+// 	// 	for _, child1 := range t.Children {
+// 	// 		fmt.Println(child1.Name)
+// 	// 	}
+// 	// }
+
+// 	//dataTypes := v.DataTypes
+
+// 	// for _, dt := range v.DataTypes {
+// 	// 	dt.Post()
+// 	// }
+
+// 	// GET ALL DATATYPES FROM DB
+// 	// use module controller
+
+// 	for _, t := range v.Templates {
+// 		t.Post(nil)
+// 	}
+
+// 	// GET ALL TEMPLATES FROM DB
+// 	// use module controller
+
+// 	var flatTemplatesSlice []*coremodulesettingsmodelsxmlmodels.Template
+
+// 	coremodulesettingsmodelsxmlmodels.Walk(v.Templates, func(t *coremodulesettingsmodelsxmlmodels.Template) bool {
+// 		flatTemplatesSlice = append(flatTemplatesSlice, t)
+// 		return true
+// 	})
+
+// 	fmt.Printf("flatTemplatesSlice length: %d\n", len(flatTemplatesSlice))
+
+// 	for _, ct := range v.ContentTypes {
+// 		//fmt.Printf("sdflksjdkfjsdklf : %s\n", ct.Alias)
+// 		ct.Post(nil, nil, flatTemplatesSlice)
+// 	}
+
+// 	// mimeTypes := v.MimeTypes
+
+// 	// for _, mt := range v.MimeTypes {
+// 	// 	mt.Post(nil, nil)
+// 	// }
+
+// 	// for _, mt := range v.MediaTypes {
+// 	// 	mt.Post(nil, nil, mimeTypes)
+// 	// }
+
+// 	// var v coreglobals.MediaAccessItems
+// 	// err := xml.Unmarshal(XMLdata, &v)
+// 	// if err != nil {
+// 	// 	fmt.Printf("error: %v", err)
+// 	// 	return
+// 	// }
+// 	return
+// }
+
+// func testPostHandler(w http.ResponseWriter, r *http.Request) {
+// 	//str := r.PostFormValue("collexy_module")
+// 	if _, err := os.Stat("./_temporary_module_library/" + r.PostFormValue("collexy_module") + "/module.xml"); err != nil {
+// 		if os.IsNotExist(err) {
+// 			log.Println("XML file does not exist")
+// 			fmt.Fprintf(w, "XML file does not exist")
+// 		} else {
+// 			// other error
+// 		}
+// 	} else {
+// 		err5 := executeModuleInstallScript("./_temporary_module_library/" + r.PostFormValue("collexy_module"))
+// 		if err5 != nil {
+// 			log.Println("ERROR INSTALLING MODULE SCRIPT")
+// 			log.Fatal(err5)
+// 		} else {
+// 			log.Println("MODULE SCRIPT INSTALLED SUCCESSFULLY")
+// 			adminHandler(w, r)
+// 		}
+// 	}
+// 	fmt.Fprintf(w, "testPostHandler")
+// }
+
+// func testHandler(w http.ResponseWriter, r *http.Request) {
+// 	htmlStr := `<html >
+//                 <head>
+//                     <title>Collexy Installation</title>
+//                 </head>
+//                 <body>
+//                     <div>
+//                         <h1 style="text-align:center;">Collexy Logo</h1>
+//                         <p>Below you should select your desired module to install.</p>
+//                         <form method="POST" action="?step=2">
+//                             <table>
+//                                 <tr>
+//                                     <td><strong>Modules</strong></td>
+//                                     <td><label><input type="radio" name="collexy_module" value="TXT Starter Kit"/> TXT Starter Kit</label></td>
+//                                 </tr>
+//                                 <tr>
+//                                     <td><input type="submit" value="Submit"></td>
+//                                     <td></td>
+//                                 </tr>
+//                             </table>
+//                             <input type="hidden" name="step" value="2"/>
+//                         </form>
+//                     </div>
+//                 </body>
+//             </html>`
+// 	fmt.Fprintf(w, htmlStr)
+// }
 
 func installPostHandler(w http.ResponseWriter, r *http.Request) {
 	if _, err := os.Stat("./config/config.json"); err != nil {
@@ -483,11 +656,15 @@ func Main() {
 
 	contentController := coremodulecontentcontrollers.ContentController{}
 
+	moduleController := coreapplicationcontrollers.ModuleApiController{}
+
 	// Entity routes
 	// m.Get("/api/entity/{nodeId:.*}") ?node-type=2&section=myplugin ???????????? l8r
 
 	m.HandleFunc("/admin/install", installPostHandler).Methods("POST")
 	m.HandleFunc("/admin/install", installHandler).Methods("GET")
+	m.HandleFunc("/admin/test", moduleController.ModuleHandler).Methods("GET")
+	m.HandleFunc("/admin/test", moduleController.ModulePostHandler).Methods("POST")
 	//m.HandleFunc("/admin/{_dummy:^((?!install).)*$}", adminHandler).Methods("GET")
 	//`BBB([^B]*)EEE`
 	//m.HandleFunc("/admin/{([^install])*}/{*}", adminHandler).Methods("GET")
@@ -679,6 +856,13 @@ func MediaProtectHandler(h http.Handler) http.Handler {
 		// }
 	})
 }
+
+/* ALL THE STRUCTS BELOW SHOULD NOT BE NECESSARY
+* A custom UnmarshalXML function should be implemented instead!!
+* For testing purposes only!
+ */
+
+
 
 // func MediaProtectHandler(h http.Handler) http.Handler {
 // 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

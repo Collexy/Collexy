@@ -2,11 +2,11 @@ package models
 
 import (
 	//"fmt"
-	"encoding/json"
 	coreglobals "collexy/core/globals"
 	corehelpers "collexy/core/helpers"
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -15,12 +15,12 @@ import (
 	//"encoding/binary"
 	// "reflect"
 	"fmt"
+	"html/template"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
-	"regexp"
-	"html/template"
 )
 
 type Template struct {
@@ -106,7 +106,7 @@ LATERAL
 		var parent_templates []byte
 		var parent_id sql.NullInt64
 
-		if err := rows.Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &is_partial, &parent_templates); err != nil{
+		if err := rows.Scan(&id, &path, &parent_id, &name, &alias, &created_by, &created_date, &is_partial, &parent_templates); err != nil {
 			log.Fatal(err)
 		}
 
@@ -123,7 +123,6 @@ LATERAL
 		//absPath, _ := filepath.Abs("/views/" + name)
 		absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + tplName)
 
-
 		fmt.Println("FILEPATH:: " + absPath)
 
 		bs, err7 := ioutil.ReadFile(absPath)
@@ -136,9 +135,8 @@ LATERAL
 		//json.Unmarshal(template_partial_templates, &tplSlice)
 		json.Unmarshal(parent_templates, &parentTemplatesSlice)
 
-		
 		tpl := Template{id, path, &pid, name, alias, created_by, created_date, is_partial, str, parentTemplatesSlice}
-		
+
 		templates = append(templates, &tpl)
 	}
 	if err := rows.Err(); err != nil {
@@ -227,7 +225,6 @@ where my_template.id=$1`
 	//absPath, _ := filepath.Abs("/views/" + name)
 	absPath, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "/views/" + tplName)
 
-
 	fmt.Println("FILEPATH:: " + absPath)
 
 	bs, err7 := ioutil.ReadFile(absPath)
@@ -259,9 +256,8 @@ func (t *Template) Post() {
 	// Channel c, is for getting the parent template
 	// We need to append the id of the newly created template to the path of the parent id to create the new path
 	var parentTemplate Template
-	if(t.ParentId != nil && *t.ParentId != 0){
+	if t.ParentId != nil && *t.ParentId != 0 {
 		c := make(chan Template)
-		
 
 		var wg sync.WaitGroup
 
@@ -281,7 +277,6 @@ func (t *Template) Post() {
 
 		wg.Wait()
 	}
-	
 
 	// This channel and WaitGroup is just to make sure the insert query is completed before we continue
 	c1 := make(chan int)
@@ -315,7 +310,7 @@ func (t *Template) Post() {
 	WHERE id=$2`
 
 	path := strconv.FormatInt(id, 10)
-	if t.ParentId != nil && *t.ParentId != 0{
+	if t.ParentId != nil && *t.ParentId != 0 {
 		path = parentTemplate.Path + "." + strconv.FormatInt(id, 10)
 	}
 
@@ -393,7 +388,7 @@ func (t *Template) Update() {
 
 	if t.ParentId != nil && *t.ParentId != 0 {
 		// this is not really necessary since we can just do a range loop in t.ParentTemplate and compare on Id == t.ParentId
-		
+
 		// c2 := make(chan Template)
 
 		// var wg2 sync.WaitGroup
@@ -414,27 +409,25 @@ func (t *Template) Update() {
 
 		// wg2.Wait()
 		for _, parent := range t.ParentTemplates {
-			if parent.Id == *t.ParentId{
+			if parent.Id == *t.ParentId {
 				parentTemplate = *parent
 				break
 			}
 		}
 	}
 
-	if *t.ParentId == 0{
+	if *t.ParentId == 0 {
 		t.ParentId = nil
 	}
 
-		fmt.Println("after WAIT2")
-	
+	fmt.Println("after WAIT2")
 
 	db := coreglobals.Db
 
 	path := strconv.Itoa(t.Id)
-	if t.ParentId != nil && *t.ParentId != 0{
+	if t.ParentId != nil && *t.ParentId != 0 {
 		path = parentTemplate.Path + "." + strconv.Itoa(t.Id)
 	}
-	
 
 	_, err := db.Exec("UPDATE template SET path=$1, parent_id=$2, name=$3, alias=$4 WHERE id=$5", path, t.ParentId, t.Name, t.Alias, t.Id)
 	corehelpers.PanicIf(err)
@@ -444,7 +437,6 @@ func (t *Template) Update() {
 		err2 := os.Rename(absPath+oldName, absPath+newName)
 		corehelpers.PanicIf(err2)
 	}
-	
 
 	// write whole the body - maybe use bufio/os/io packages for buffered read/write on big files
 	err3 := ioutil.WriteFile(absPath+newName, []byte(t.Html), 0644)
@@ -454,7 +446,7 @@ func (t *Template) Update() {
 	ParseTemplate(t)
 }
 
-func ParseTemplate(tpl *Template){
+func ParseTemplate(tpl *Template) {
 	templateName := tpl.Name + ".tmpl"
 	parentTemplates := tpl.ParentTemplates
 	// for _, par := range parentTemplates{
@@ -465,7 +457,6 @@ func ParseTemplate(tpl *Template){
 	var allTemplates []*Template
 
 	c := make(chan []*Template)
-	
 
 	var wg sync.WaitGroup
 
@@ -485,13 +476,11 @@ func ParseTemplate(tpl *Template){
 
 	wg.Wait()
 
-
 	if tpl.IsPartial {
-	
+
 		rp1, _ := regexp.Compile("template \".*\"")
-		for _, t := range allTemplates{
+		for _, t := range allTemplates {
 			if tpl.Id != t.Id {
-				
 
 				lol := rp1.FindAllString(t.Html, -1) // ["abc", "def"]
 
@@ -508,8 +497,8 @@ func ParseTemplate(tpl *Template){
 							//fmt.Println("upper case true")
 							fmt.Printf("concatStr is: %s and t.Name is: %s\n", concatStr, t.Name)
 							//if concatStr != t.Name {
-								//templateSlice = append(templateSlice,"views/" + t.Name + ".tmpl")
-								//break
+							//templateSlice = append(templateSlice,"views/" + t.Name + ".tmpl")
+							//break
 							ParseTemplate(t)
 							//}
 						}
@@ -518,7 +507,7 @@ func ParseTemplate(tpl *Template){
 
 				}
 			}
-			
+
 		}
 		coreglobals.Templates[templateName] = template.Must(template.ParseFiles("views/" + templateName))
 		// for _, t := range templateSlice{
@@ -598,7 +587,7 @@ func ParseTemplate(tpl *Template){
 			//.Delims("{@","@}")
 
 		} else {
-			for _, t := range allTemplates{
+			for _, t := range allTemplates {
 				if tpl.Id != t.Id {
 					ParseTemplate(t)
 				}

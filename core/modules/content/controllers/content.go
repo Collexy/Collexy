@@ -275,6 +275,9 @@ func (this *ContentApiController) RenderAdminTemplate(w http.ResponseWriter, nam
 
 func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.Request) {
 
+	params := mux.Vars(r)
+	url := params["url"]
+
 	sid := corehelpers.CheckMemberCookie(w, r)
 	m, _ := coremodulemembermodels.GetMember(sid)
 
@@ -284,7 +287,6 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
 
 	// idStr := r.URL.Query().Get(":id")
 
-	params := mux.Vars(r)
 	// idStr := params["id"]
 
 	// id, _ := strconv.Atoi(idStr)
@@ -292,7 +294,6 @@ func (this *ContentApiController) RenderContent(w http.ResponseWriter, r *http.R
 
 	// content := models.GetFrontendContentById(id)
 
-	url := params["url"]
 	s := strings.Split(url, "/")
 	name := strings.Replace(strings.ToLower(s[len(s)-1]), "-", " ", -1)
 	var content *models.Content

@@ -1,0 +1,45 @@
+{{define "head"}}<title>Category</title>{{end}}
+{{define "body"}}
+<!-- Main -->
+			<div id="main-wrapper">
+				<div id="main" class="container">
+					<div class="row">
+						<div class="12u">
+						
+							<div class="content">
+								<h1>Browsing Category: {{.Data.Content.Meta.title}}</h1>
+								{{range $content := .Data.Content.GetLinkedContent "categories" .Data.Content.Id}}
+								<!-- Content -->
+
+
+										<article class="box page-content">
+
+											<header>
+												<h2>{{$content.Meta.title}}</h2>
+												<!-- <p>Semper amet scelerisque metus faucibus morbi congue mattis</p> -->
+												<ul class="meta">
+													<li class="icon fa-clock-o">{{$content.TimeAgo}}</li>
+													<li class="icon fa-comments"><a href="#">1,024</a></li>
+												</ul>
+											</header>
+
+											<section>
+												{{if $content.Meta.image}}
+												<span class="image featured"><img src="{{$content.Meta.image}}" alt="" /></span>
+												{{end}}
+												<p>
+													{{$excerpt := $content.GetSubstring $content.Meta.content 0 150}}
+
+													<p>{{$content.StripHtmlTags $excerpt}}</p>
+												</p>
+												<a href="http://{{index $content.Domains 0}}/{{$content.Url}}" class="button">Continue Reading</a>
+
+
+										
+
+									</article>
+								{{end}}
+							</div>
+						</div>
+					</div>
+{{end}}

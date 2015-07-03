@@ -1,0 +1,74 @@
+
+{
+    "media/Sample Images/TXT/pic04.jpg": {
+        "media_id": 6,
+        "login_page": 22,
+        "access_denied_page": 3,
+        "member_groups": [1]
+    },
+    "media/Sample Images/TXT/pic05.jpg": {
+        "media_id": 7,
+        "login_page": 22,
+        "access_denied_page": 3,
+        "member_groups": [1]
+    }
+}
+/*
+ * Went from array (for loop iteration) lookup, to map lookup by url as string index key.
+ * In theory it should scale much better
+ * Using url instead of mediaId to be able to map/sync filesystem and database node structure,
+ * instead of being bound by limits such as having to use site-root/[mediaId]/filename.ext for filesystem
+ * Considering a dev, stage and production or a load balanced environment, using urls instead of IDs also helps avoid ID mismatches.
+ */
+ 
+/*
+ * "media/Sample Images/TXT/pic04.jpg": true,
+ * Pros: smaller file size, maybe slightly quicker to decide if non-protected items (maybe not?).
+ * Cons: db lookup will be necessary for protected items, which is slower but an okay tradeoff
+ */
+/*
+ * below is the original structure
+ */
+// {
+// 	"items": [
+// 		{
+// 			"content_id": 16,
+// 			"domains": ["localhost:8080"],
+// 			"url": "media/Sample Images/TXT/pic04.jpg",
+// 			"login_page": 22,
+// 			"access_denied_page": 3,
+// 			"member_groups": [1]
+// 		},
+// 		{
+// 			"content_id": 17,
+// 			"domains": ["localhost:8080"],
+// 			"url": "media/Sample Images/TXT/pic05.jpg",
+// 			"login_page": 22,
+// 			"access_denied_page": 3,
+// 			"member_groups": [1]
+// 		}
+// 	]
+// }
+/*
+ * experimental thoughts only
+ */
+// {
+// 	"localhost:8080": {
+// 		"media/Sample Images/TXT/pic04.jpg": {
+// 			"media_id": 16,
+// 			//"domains": ["localhost:8080"],
+// 			//"url": "media/Sample Images/TXT/pic04.jpg",
+// 			"login_page": 22,
+// 			"access_denied_page": 3,
+// 			"member_groups": [1]
+// 		},
+// 		"media/Sample Images/TXT/pic05.jpg": {
+// 			"media_id": 17,
+// 			"login_page": 22,
+// 			"access_denied_page": 3,
+// 			"member_groups": [1]
+// 		}
+// 	}
+// }
+// if data[id] == fastest, cons: directory structure eg. /media/[id]/filename.jpg
+// if(data["domain"]["url"]){} == a bit slower, cons: directory structure possible - but what about synchronization and write when domains and urls change?

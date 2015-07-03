@@ -1,0 +1,445 @@
+<module version="1.0.0" name="TXT starter kit" url="http://www.collexy.com">
+	<license url="http://opensource.org/licenses/MIT">MIT license</license>
+	<author url="http://www.codeish.com">Codeish</author>
+	<readme><![CDATA[Thank you for installing the TXT starter kit.]]></readme>
+	<dataTypes></dataTypes>
+	<templates>
+		<template>
+			<name>Layout</name>
+			<alias>tplLayout</alias>
+			<parentId>0</parentId>
+			<isPartial>false</isPartial>
+			<content>
+				<![CDATA[
+					{{define "base"}}
+					<!DOCTYPE HTML>
+					<html>
+						<head>
+							<title>title here</title>
+						</head>
+						<body>
+							<!-- Header -->
+							<header>
+								header
+							</header>
+							
+							{{template "body" .}}
+
+							<!-- Footer -->
+							<footer>
+								footer
+							</footer>
+						</body>
+					</html>
+					{{end}}
+				]]>
+			</content>
+			<children>
+				<template>
+					<name>Home</name>
+					<alias>tplHome</alias>
+					<parentId>0</parentId>
+					<content>
+						<![CDATA[
+							{{define "body"}}
+								home
+							{{end}}
+						]]>
+					</content>
+					<children></children>
+				</template>
+				<template>
+					<name>Page</name>
+					<alias>tplPage</alias>
+					<parentId>0</parentId>
+					<isPartial>false</isPartial>
+					<content>
+						<![CDATA[
+							{{define "body"}}
+								page
+							{{end}}
+						]]>
+					</content>
+					<children></children>
+				</template>
+			</children>
+		</template>
+	</templates>
+	<contentTypes>
+		<contentType>
+			<name>SEO</name>
+			<alias>cTypeSEO</alias>
+			<description>Search Engine Optimization content type</description>
+			<!-- <parent>cTypeMaster</parent> -->
+			<icon>fa fa-folder-o fa-fw</icon>
+			<thumbnail>fa fa-folder-o fa-fw</thumbnail>
+			<meta>
+				<test>lol</test>
+				<depthtest>
+					<lol>lol2</lol>
+					<rofl>kartofl</rofl>
+				</depthtest>
+			</meta>
+			<tabs>
+				<tab>
+					<name>SEO</name>
+					<properties>
+						<property>
+							<name>meta_title</name>
+							<order>1</order>
+							<helpText>help text</helpText>
+							<description>description</description>
+							<dataTypeId>1</dataTypeId>
+						</property>
+						<property>
+							<name>meta_description</name>
+							<order>2</order>
+							<helpText>help text</helpText>
+							<description>description</description>
+							<dataTypeId>3</dataTypeId>
+						</property>
+					</properties>
+				</tab>
+			</tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>true</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template></template>
+			<allowedTemplates></allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<name>Master</name>
+			<alias>cTypeMaster</alias>
+			<description>Master content type</description>
+			<!-- <parent>cTypeMaster</parent> -->
+			<icon>fa fa-folder-o fa-fw</icon>
+			<thumbnail>fa fa-folder-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs>
+				<tab>
+					<name>Content</name>
+					<properties>
+						<property>
+							<name>title</name>
+							<order>1</order>
+							<helpText>help text</helpText>
+							<description>description</description>
+							<dataTypeId>1</dataTypeId>
+						</property>
+					</properties>
+				</tab>
+				<tab>
+					<name>Properties</name>
+					<properties>
+						<property>
+							<name>hide_in_nav</name>
+							<order>1</order>
+							<helpText>help text</helpText>
+							<description>description</description>
+							<dataTypeId>18</dataTypeId>
+						</property>
+					</properties>
+				</tab>
+			</tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>true</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template></template>
+			<allowedTemplates></allowedTemplates>
+			<children>
+				<contentType>
+					<name>Page</name>
+					<alias>cTypePage</alias>
+					<description>Page content type</description>
+					<!-- <parent>cTypeMaster</parent> -->
+					<icon>fa fa-file-o fa-fw</icon>
+					<thumbnail>fa fa-file-o fa-fw</thumbnail>
+					<meta></meta>
+					<tabs>
+						<tab>
+							<name>Content</name>
+							<properties>
+								<property>
+									<name>content</name>
+									<order>2</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+							</properties>
+						</tab>
+					</tabs>
+					<allowAtRoot>false</allowAtRoot>
+					<isContainer>false</isContainer>
+					<isAbstract>false</isAbstract>
+					<allowedContentTypes>
+						<contentType>cTypePage</contentType>
+					</allowedContentTypes>
+					<compositeContentTypes>
+						<contentType>cTypeSEO</contentType>
+					</compositeContentTypes>
+					<template>tplPage</template>
+					<allowedTemplates>
+						<template>tplPage</template>
+					</allowedTemplates>
+					<children></children>
+				</contentType>
+				<contentType>
+					<name>Home</name>
+					<alias>cTypeHome</alias>
+					<description>Home page content type</description>
+					<!-- <parent>cTypeMaster</parent> -->
+					<icon>fa fa-home fa-fw</icon>
+					<thumbnail>fa fa-home fa-fw</thumbnail>
+					<meta></meta>
+					<tabs>
+						<tab>
+							<name>Content</name>
+							<properties>
+								<property>
+									<name>site_name</name>
+									<order>2</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>site_tagline</name>
+									<order>3</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>copyright</name>
+									<order>4</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>domains</name>
+									<order>5</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>17</dataTypeId>
+								</property>
+							</properties>
+						</tab>
+						<tab>
+							<name>Social</name>
+							<properties>
+								<property>
+									<name>facebook_link</name>
+									<order>1</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>twitter_link</name>
+									<order>2</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>linkedin_link</name>
+									<order>3</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>google_link</name>
+									<order>4</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>rss_link</name>
+									<order>5</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+							</properties>
+						</tab>
+						<tab>
+							<name>Banner</name>
+							<properties>
+								<property>
+									<name>hide_banner</name>
+									<order>1</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>18</dataTypeId>
+								</property>
+								<property>
+									<name>hide_banner</name>
+									<order>2</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>banner_subheader</name>
+									<order>3</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>banner_link_text</name>
+									<order>4</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>17</dataTypeId>
+								</property>
+								<property>
+									<name>banner_link</name>
+									<order>5</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>17</dataTypeId>
+								</property>
+								<property>
+									<name>banner_background_image</name>
+									<order>6</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>17</dataTypeId>
+								</property>
+							</properties>
+						</tab>
+						<tab>
+							<name>About</name>
+							<properties>
+								<property>
+									<name>about_title</name>
+									<order>1</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>about_text</name>
+									<order>2</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>19</dataTypeId>
+								</property>
+							</properties>
+						</tab>
+					</tabs>
+					<allowAtRoot>true</allowAtRoot>
+					<isContainer>false</isContainer>
+					<isAbstract>false</isAbstract>
+					<allowedContentTypes>
+						<contentType>cTypePage</contentType>
+						<!-- <contentType>Post</contentType>
+						<contentType>Post Overview</contentType> -->
+					</allowedContentTypes>
+					<compositeContentTypes>
+						<contentType>cTypeSEO</contentType>
+					</compositeContentTypes>
+					<template>tplHome</template>
+					<allowedTemplates>
+						<template>tplHome</template>
+					</allowedTemplates>
+					<children></children>
+				</contentType>
+			</children>
+		</contentType>
+	</contentTypes>
+	<contentItems>
+		<content>
+			<parent></parent>
+			<name>Home</name>
+			<!-- <alias>cHome</alias> -->
+			<contentType>cTypeHome</contentType>
+			<template>tplHome</template>
+			<meta>
+				<hideInNav>false</hideInNav>
+			</meta>
+			<children>
+				<content>
+					<parent>cHome</parent>
+					<name>Test</name>
+					<!-- <alias>cAbout</alias> -->
+					<contentType>cTypePage</contentType>
+					<template>tplPage</template>
+					<meta>
+						<hideInNav>false</hideInNav>
+						<content>This is the amazing test page</content>
+					</meta>
+				</content>
+			</children>
+		</content>
+	</contentItems>
+	<mediaTypes></mediaTypes>
+	<mediaItems>
+		<media>
+			<parent></parent>
+			<name>Sample Images</name>
+			<mediaTypeId>1</mediaTypeId>
+			<children>
+				<media>
+					<parent></parent>
+					<name>TXT</name>
+					<mediaTypeId>1</mediaTypeId>
+					<children>
+						<media>
+							<parent></parent>
+							<name>banner.jpg</name>
+							<mediaTypeId>2</mediaTypeId>
+							<meta>
+								<attachedFile>
+									<name>banner.jpg</name>
+									<size>269179</size>
+									<type>image/jpeg</type>
+									<lastModified>1427893165424</lastModified>
+									<lastModifiedDate>2015-04-01T12:59:25.424Z</lastModifiedDate>
+									<webkitRelativePath></webkitRelativePath>
+								</attachedFile>
+							</meta>
+							<children></children>
+						</media>
+						<media>
+							<parent></parent>
+							<name>pic01.jpg</name>
+							<mediaTypeId>2</mediaTypeId>
+							<meta>
+								<attachedFile>
+									<name>pic01.jpg</name>
+									<size>22026</size>
+									<type>image/jpeg</type>
+									<lastModified>1427893165424</lastModified>
+									<lastModifiedDate>2015-04-01T12:59:25.424Z</lastModifiedDate>
+									<webkitRelativePath></webkitRelativePath>
+								</attachedFile>
+							</meta>
+							<children></children>
+						</media>
+					</children>
+				</media>
+			</children>
+		</media>
+	</mediaItems>
+	<mimeTypes></mimeTypes>
+	<files>
+		<file>/assets/images/banner.jpg</file>
+		<file>/assets/images/highlight.png</file>
+		<file>/assets/scripts/init.js</file>
+		<file>/assets/styles/style.css</file>
+		<file>/media/Sample Images/TXT/pic01.jpg</file>
+		<!-- <file>/views/Layout.tmpl</file>
+		<file>/views/Page.tmpl</file> -->
+	</files>
+</module>

@@ -1,0 +1,19 @@
+<mediaItems>
+    <item id="7" path="1.2.7" url="media/Sample Images/TXT/pic05.jpg" loginPage="14">
+        <members>
+            <member>1</member>
+        </members>
+        <memberGroups>
+            <group>1</group>
+        </memberGroups>
+    </item>
+    <item id="6" path="1.2.6" url="media/Sample Images/TXT/pic04.jpg" loginPage="14">
+        <members>
+            <member>1</member>
+        </members>
+        <memberGroups>
+            <group>1</group>
+            <group>2</group>
+        </memberGroups>
+    </item>
+</mediaItems>

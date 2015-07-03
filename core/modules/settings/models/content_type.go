@@ -41,6 +41,88 @@ type ContentType struct {
 	AllowedTemplateIds      []int                  `json:"allowed_template_ids,omitempty"`
 }
 
+// func (m *ContentType) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+//     var v struct {
+//         XMLName     xml.Name `xml:"contentType"`
+//         Name        string   `xml:"name"`
+//         Alias       string   `xml:"alias"`
+//         Description string   `xml:"description"`
+//         Icon        string   `xml:"icon"`
+//         Thumbnail   string   `xml:"thumbnail"`
+//         Meta        struct {
+//             Inner []byte `xml:",innerxml"`
+//         } `xml:"meta"`
+//         Tabs                  []Tab          `xml:"tabs"`
+//         AllowAtRoot           bool           `xml:"allowAtRoot"`
+//         IsContainer           bool           `xml:"isContainer"`
+//         IsAbstract            bool           `xml:"isAbstract"`
+//         AllowedContentTypes   []string       `xml:"allowedContentTypes>contentType,omitempty"`
+//         CompositeContentTypes []string       `xml:"compositeContentTypes>contentType,omitempty"`
+//         Template              string         `xml:"template"`
+//         AllowedTemplates      []string       `xml:"allowedTemplates>template,omitempty"`
+//         Children              []*ContentType `xml:"children>contentType,omitempty"`
+//     }
+
+//     err := d.DecodeElement(&v, &start)
+//     if err != nil {
+//         return err
+//     }
+
+//     m.Id = nil
+//     m.CreatedBy = -1
+//     m.CreatedDate = nil
+
+//     m.Name = v.Name
+//     m.Alias = v.Alias
+    
+//     m.Description = v.Name
+//     m.Icon = v.Name
+//     m.Thumbnail = v.Name
+//     myMap := make(map[string]interface{})
+
+//     // ... do the mxj magic here ... -
+
+//     temp := v.Meta.Inner
+
+//     prefix := "<meta>"
+//     postfix := "</meta>"
+//     str := prefix + string(temp) + postfix
+//     //fmt.Println(str)
+//     myMxjMap, err := mxj.NewMapXml([]byte(str))
+//     myMap = myMxjMap
+
+//     // fill myMap
+//     m.Meta = myMap
+//     m.Tabs = v.Tabs
+
+//     m.AllowAtRoot = v.AllowAtRoot
+//     m.IsContainer = v.IsContainer
+//     m.IsAbstract = v.IsAbstract
+
+//     // GRAB templates from some application global location
+//     for i, t := range templates {
+//         fmt.Printf("t.Alias is: %s (i: %d)\n", t.Alias, i)
+//         if this.Template == t.Alias {
+//             this.TemplateId = t.Id
+//         }
+//         for _, at := range this.AllowedTemplates {
+//             if t.Alias == at {
+//                 this.AllowedTemplateIds = append(this.AllowedTemplateIds, *t.Id)
+//             }
+//         }
+//     }
+
+//     m.AllowedTemplateIds = nil
+//     m.CompositeContentTypeIds = nil
+//     m.CompositeContentTypes = nil
+//     m.TemplateId = nil
+//     m.AllowedTemplateIds = nil
+
+//     // allowedcontenttypes, compositecontenttypes, template, allowedtemplates, children
+
+//     return nil
+// }
+
 func GetContentTypes(queryStringParams url.Values) (contentTypes []*ContentType) {
 	db := coreglobals.Db
 	sqlStr := `SELECT content_type.id as content_type_id, content_type.path as content_type_path, 

@@ -353,14 +353,14 @@ WHERE member_type.id=$1`
 	json.Unmarshal(member_type_meta, &member_type_metaMap)
 
 	switch {
-    	case err == sql.ErrNoRows:
-    		log.Printf("No node with that ID.")
-    	case err != nil:
-    		log.Fatal(err)
-            //panic(err)
-    	default:
-    		memberType = MemberType{member_type_id, member_type_path, &parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_thumbnail, member_type_metaMap, tabs, member_type_is_abstract, member_type_composite_member_type_ids, composite_member_types, parent_member_types}
-    	}
+	case err == sql.ErrNoRows:
+		log.Printf("No node with that ID.")
+	case err != nil:
+		log.Fatal(err)
+		//panic(err)
+	default:
+		memberType = MemberType{member_type_id, member_type_path, &parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_thumbnail, member_type_metaMap, tabs, member_type_is_abstract, member_type_composite_member_type_ids, composite_member_types, parent_member_types}
+	}
 
 	return
 }
@@ -409,12 +409,12 @@ func GetMemberTypeById(id int) (memberType MemberType) {
 	json.Unmarshal(member_type_meta, &member_type_metaMap)
 
 	switch {
-    	case err == sql.ErrNoRows:
-    		log.Printf("No node with that ID.")
-    	case err != nil:
-    		log.Fatal(err)
-    	default:
-    		memberType = MemberType{member_type_id, member_type_path, &parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_thumbnail, member_type_metaMap, tabs, member_type_is_abstract, nil, nil, nil}
+	case err == sql.ErrNoRows:
+		log.Printf("No node with that ID.")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		memberType = MemberType{member_type_id, member_type_path, &parent_member_type_id, member_type_name, member_type_alias, member_type_created_by, member_type_created_date, member_type_description, member_type_icon, member_type_thumbnail, member_type_metaMap, tabs, member_type_is_abstract, nil, nil, nil}
 	}
 
 	return
@@ -544,10 +544,10 @@ func (ct *MemberType) Put() {
 		tabs = j
 	}
 
-    compositeMemberTypeIds, err3 := coreglobals.IntSlice(ct.CompositeMemberTypeIds).Value()
-    if err3 != nil {
-        panic(err3)
-    }
+	compositeMemberTypeIds, err3 := coreglobals.IntSlice(ct.CompositeMemberTypeIds).Value()
+	if err3 != nil {
+		panic(err3)
+	}
 	// var parentId interface{} = nil
 
 	// if ct.ParentId != nil && ct.ParentId != 0{
@@ -567,7 +567,7 @@ func (ct *MemberType) Put() {
 
 	var parentMemberType MemberType
 
-	if ct.ParentId != nil && *ct.ParentId != 0{
+	if ct.ParentId != nil && *ct.ParentId != 0 {
 		// Channel c, is for getting the parent template
 		// We need to append the id of the newly created template to the path of the parent id to create the new path
 		c := make(chan MemberType)
@@ -591,12 +591,12 @@ func (ct *MemberType) Put() {
 		wg.Wait()
 	}
 
-    if *ct.ParentId == 0 {
-        ct.ParentId = nil
-    }
+	if *ct.ParentId == 0 {
+		ct.ParentId = nil
+	}
 
 	path := strconv.Itoa(ct.Id)
-	if ct.ParentId != nil && *ct.ParentId != 0{
+	if ct.ParentId != nil && *ct.ParentId != 0 {
 		path = parentMemberType.Path + "." + strconv.Itoa(ct.Id)
 	}
 
