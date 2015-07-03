@@ -104,9 +104,9 @@ func (this *Template) Post(parentTemplate *Template) {
 
 	go func() {
 		defer wg1.Done()
-		sqlStr := `INSERT INTO template (name, alias, parent_id, is_partial) 
-	VALUES ($1, $2, $3, $4) RETURNING id`
-		err1 := db.QueryRow(sqlStr, this.Name, this.Alias, parentTemplate.Id, this.IsPartial).Scan(&id)
+		sqlStr := `INSERT INTO template (name, alias, parent_id, is_partial, created_by) 
+	VALUES ($1, $2, $3, $4, $5) RETURNING id`
+		err1 := db.QueryRow(sqlStr, this.Name, this.Alias, parentTemplate.Id, this.IsPartial, -1).Scan(&id)
 		corehelpers.PanicIf(err1)
 		c2 <- int(id)
 	}()

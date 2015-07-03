@@ -31,7 +31,7 @@ type ContentType struct {
 	Thumbnail               string        `xml:"thumbnail"`
 	MetaByte                *MapContainer `xml:"meta,omitempty"` //map[string]interface{} `xml:"meta,omitempty"`
 	Meta                    map[string]interface{}
-	Tabs                    []Tab    `xml:"tabs"`
+	Tabs                    []Tab    `xml:"tabs>tab,omitempty"`
 	AllowAtRoot             bool     `xml:"allowAtRoot"`
 	IsContainer             bool     `xml:"isContainer"`
 	IsAbstract              bool     `xml:"isAbstract"`
@@ -119,7 +119,7 @@ func GetContentTypeById(id int) (contentType ContentType) {
 
 var existingContentTypes []ContentType
 
-func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes []ContentType, templates []*Template) {
+func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes []ContentType, templates []*Template, dataTypes []DataType) {
 	fmt.Printf("len(templates) is: %d\n", len(templates))
 	for i, t := range templates {
 		fmt.Printf("t.Alias is: %s (i: %d)\n", t.Alias, i)
@@ -169,12 +169,14 @@ func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes
 		// for _, tab := range this.Tabs {
 		// 	for _, prop := range tab.Properties{
 		// 		for _, dt := range dataTypes {
-		// 			if dt.Id == prop.DataTypeId {
-		// 				prop.DataType = dt
+		// 			if prop.DataType != nil{
+		// 				if dt.Alias == prop.DataType {
+		// 					prop.DataTypeId = &dt.Id
+		// 				}
 		// 			}
+					
 		// 		}
-		// 	}
-			
+		// 	}	
 		// }
 		j, _ := json.Marshal(this.Tabs)
 		tabs = j
@@ -193,12 +195,12 @@ func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes
 	go func() {
 		defer wg1.Done()
 		sqlStr := `INSERT INTO content_type (parent_id, name, alias, description, icon, thumbnail, meta, tabs, allow_at_root, is_container, 
-            is_abstract, template_id, allowed_template_ids) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`
+            is_abstract, template_id, allowed_template_ids, created_by) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id`
 		err1 := db.QueryRow(sqlStr, parentContentType.Id, this.Name, this.Alias,
 			this.Description, this.Icon, this.Thumbnail, meta, tabs, this.AllowAtRoot,
 			this.IsContainer, this.IsAbstract,
-			this.TemplateId, allowedTemplateIds).Scan(&id)
+			this.TemplateId, allowedTemplateIds, -1).Scan(&id)
 		corehelpers.PanicIf(err1)
 		c2 <- int(id)
 	}()
@@ -350,7 +352,7 @@ func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes
 	if this.Children != nil {
 		if len(this.Children) > 0 {
 			for _, c := range this.Children {
-				c.Post(this, parentContentTypes, templates)
+				c.Post(this, parentContentTypes, templates, dataTypes)
 			}
 		} else {
 			//

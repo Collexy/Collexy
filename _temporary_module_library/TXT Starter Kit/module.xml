@@ -114,7 +114,6 @@
 			<name>Master</name>
 			<alias>cTypeMaster</alias>
 			<description>Master content type</description>
-			<!-- <parent>cTypeMaster</parent> -->
 			<icon>fa fa-folder-o fa-fw</icon>
 			<thumbnail>fa fa-folder-o fa-fw</thumbnail>
 			<meta></meta>
@@ -156,7 +155,6 @@
 					<name>Page</name>
 					<alias>cTypePage</alias>
 					<description>Page content type</description>
-					<!-- <parent>cTypeMaster</parent> -->
 					<icon>fa fa-file-o fa-fw</icon>
 					<thumbnail>fa fa-file-o fa-fw</thumbnail>
 					<meta></meta>
@@ -343,8 +341,6 @@
 					<isAbstract>false</isAbstract>
 					<allowedContentTypes>
 						<contentType>cTypePage</contentType>
-						<!-- <contentType>Post</contentType>
-						<contentType>Post Overview</contentType> -->
 					</allowedContentTypes>
 					<compositeContentTypes>
 						<contentType>cTypeSEO</contentType>
@@ -359,43 +355,102 @@
 		</contentType>
 	</contentTypes>
 	<contentItems>
-		<content>
-			<parent></parent>
+		<contentItem>
+			<parentId>0</parentId>
 			<name>Home</name>
-			<!-- <alias>cHome</alias> -->
+			<parent></parent>
 			<contentType>cTypeHome</contentType>
+			<contentTypeId>0</contentTypeId>
 			<template>tplHome</template>
+			<templateId>0</templateId>
 			<meta>
 				<hideInNav>false</hideInNav>
 			</meta>
 			<children>
-				<content>
-					<parent>cHome</parent>
+				<contentItem>
+					<parentId>0</parentId>
 					<name>Test</name>
-					<!-- <alias>cAbout</alias> -->
+					<parent>cHome</parent>
 					<contentType>cTypePage</contentType>
+					<contentTypeId>0</contentTypeId>
 					<template>tplPage</template>
+					<templateId>0</templateId>
 					<meta>
 						<hideInNav>false</hideInNav>
 						<content>This is the amazing test page</content>
 					</meta>
-				</content>
+				</contentItem>
 			</children>
-		</content>
+		</contentItem>
 	</contentItems>
-	<mediaTypes></mediaTypes>
+	<mediaTypes>
+		<mediaType>
+			<name>Image</name>
+			<alias>mTypeImage</alias>
+			<description>Master content type</description>
+			<icon>fa fa-image fa-fw</icon>
+			<thumbnail>fa fa-image fa-fw</thumbnail>
+			<meta></meta>
+			<tabs>
+				<tab>
+					<name>Image</name>
+					<properties>
+						<property>
+							<name>width</name>
+							<order>1</order>
+							<helpText>help text</helpText>
+							<description>description</description>
+							<dataTypeId>1</dataTypeId>
+						</property>
+						<property>
+							<name>height</name>
+							<order>1</order>
+							<helpText>help text</helpText>
+							<description>description</description>
+							<dataTypeId>1</dataTypeId>
+						</property>
+						<property>
+							<name>file_upload</name>
+							<order>1</order>
+							<helpText>help text</helpText>
+							<description>description</description>
+							<dataTypeId>16</dataTypeId>
+						</property>
+					</properties>
+				</tab>
+				<tab>
+					<name>Properties</name>
+					<properties>
+						<property>
+							<name>temp_prop</name>
+							<order>1</order>
+							<helpText>help text</helpText>
+							<description>description</description>
+							<dataTypeId>1</dataTypeId>
+						</property>
+					</properties>
+				</tab>
+			</tabs>
+			<allowAtRoot>true</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedMediaTypes></allowedMediaTypes>
+			<compositeMediaTypes></compositeMediaTypes>
+			<children></children>
+		</mediaType>
+	</mediaTypes>
 	<mediaItems>
-		<media>
+		<mediaItem>
 			<parent></parent>
 			<name>Sample Images</name>
 			<mediaTypeId>1</mediaTypeId>
 			<children>
-				<media>
+				<mediaItem>
 					<parent></parent>
 					<name>TXT</name>
 					<mediaTypeId>1</mediaTypeId>
 					<children>
-						<media>
+						<mediaItem>
 							<parent></parent>
 							<name>banner.jpg</name>
 							<mediaTypeId>2</mediaTypeId>
@@ -410,8 +465,8 @@
 								</attachedFile>
 							</meta>
 							<children></children>
-						</media>
-						<media>
+						</mediaItem>
+						<mediaItem>
 							<parent></parent>
 							<name>pic01.jpg</name>
 							<mediaTypeId>2</mediaTypeId>
@@ -426,11 +481,11 @@
 								</attachedFile>
 							</meta>
 							<children></children>
-						</media>
+						</mediaItem>
 					</children>
-				</media>
+				</mediaItem>
 			</children>
-		</media>
+		</mediaItem>
 	</mediaItems>
 	<mimeTypes></mimeTypes>
 	<files>

@@ -9,7 +9,7 @@ import
 	"collexy/core/application/models/xml_models"
 	"io/ioutil"
 	"encoding/xml"
-	//coremodulesettingsmodels "collexy/core/modules/settings/models"
+	coremodulesettingsmodels "collexy/core/modules/settings/models"
 	coremodulesettingsmodelsxmlmodels "collexy/core/modules/settings/models/xml_models"
 	//coreglobals "collexy/core/globals"
 )
@@ -96,10 +96,12 @@ func (this *ModuleApiController) ImportModuleFromXML(moduleDirectoryPath string)
 func (this *ModuleApiController) ExportModuleToDatabase(){
 	// this.Module.DataTypes.Post()
 	// make sure Post() is completed before continuing
-	//dataTypes := coremodulesettingsmodels.DataTypes.Get()
+	//dataTypes := coremodulesettingsmodels.DataType.Get()
+	dataTypes := coremodulesettingsmodelsxmlmodels.GetDataTypes()
 	// make sure Get() is completed before continuing
 
-	//templates := coremodulesettingsmodels.Templates.Get()
+	
+
 
 	for _, t := range this.Module.Templates{
 		// params: parent
@@ -114,21 +116,28 @@ func (this *ModuleApiController) ExportModuleToDatabase(){
 		return true
 	})
 	
+	templates := coremodulesettingsmodels.GetTemplates(nil)
+	
 	//templates = coremodulesettingsmodels.Templates.Get()
 	
 	for _, ct := range this.Module.ContentTypes{
 		// params: parent, parentContentTypes, dataTypes, templates
-		ct.Post(nil, nil, flatTemplatesSlice)
+		ct.Post(nil, nil, flatTemplatesSlice, dataTypes)
 		
 	}
-	//contentTypes := this.Module.ContentType.Get()
+	contentTypes := coremodulesettingsmodels.GetContentTypes(nil)
 
 	// this.Module.MediaTypes.Post(dataTypes)
 	// mediaTypes := coremodulesettingsmodels.MediaTypes.Get()
 
 	// this.Module.MimeTypes.Post(mediaTypes)
 	
-	// this.Module.Content.Post(contentTypes)
+	fmt.Printf("this.Module.ContentItems length is %d\n", len(this.Module.ContentItems))
+	for _, c := range this.Module.ContentItems{
+		fmt.Println(c.Name)
+		c.Post(nil, contentTypes, templates)
+	}
+	
 
 	// this.Module.Media.Post(mediaTypes)
 

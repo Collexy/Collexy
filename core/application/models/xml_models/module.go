@@ -26,12 +26,12 @@ type Module struct {
 	License      License                                           `xml:"license"`
 	Author       Author                                            `xml:"author"`
 	Readme       string                                            `xml:"readme"`
-	DataTypes    []*coremodulesettingsmodelsxmlmodels.DataType                                       `xml:"dataTypes>type"`
+	DataTypes    []*coremodulesettingsmodelsxmlmodels.DataType                                       `xml:"dataTypes>dataType"`
 	Templates    []*coremodulesettingsmodelsxmlmodels.Template    `xml:"templates>template"`
 	ContentTypes []*coremodulesettingsmodelsxmlmodels.ContentType `xml:"contentTypes>contentType"`
-	ContentItems []*coremodulecontentmodelsxmlmodels.Content                                        `xml:"contentItems>item"`
-	MediaTypes   []*coremodulesettingsmodelsxmlmodels.MediaType                                      `xml:"mediaTypes>type"`
-	MediaItems   []*coremodulemediamodelsxmlmodels.Media                                          `xml:"mediaItems>item"`
-	MimeTypes    []*coremodulesettingsmodelsxmlmodels.MimeType                                       `xml:"mimeTypes>type"`
+	ContentItems []*coremodulecontentmodelsxmlmodels.Content                                        `xml:"contentItems>contentItem"`
+	MediaTypes   []*coremodulesettingsmodelsxmlmodels.MediaType                                      `xml:"mediaTypes>mediaType"`
+	MediaItems   []*coremodulemediamodelsxmlmodels.Media                                          `xml:"mediaItems>mediaItem"`
+	MimeTypes    []*coremodulesettingsmodelsxmlmodels.MimeType                                       `xml:"mimeTypes>mimeType"`
 	Files        []string                                          `xml:"files>file"`
 }
