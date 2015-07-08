@@ -1,7 +1,6 @@
 package xml_models
 
-import
-(
+import (
 	coreglobals "collexy/core/globals"
 	corehelpers "collexy/core/helpers"
 	"database/sql"
@@ -21,19 +20,19 @@ type MapContainer struct {
 }
 
 type Content struct {
-	XMLName       xml.Name               `xml:"contentItem"`
-	Id      *int
-	Path 		  string 				
-	ParentId      *int                 `xml:"parentId,omitempty"`
-	Name          string                 `xml:"name"`
-	Parent        string                 `xml:"parent,omitempty"`
-	ContentType   string                 `xml:"contentType,omitempty"`
-	ContentTypeId *int                   `xml:"contentTypeId,omitempty"`
-	Template      string                 `xml:"template,omitempty"`
-	TemplateId    *int                   `xml:"templateId,omitempty"`
-	MetaByte                *MapContainer `xml:"meta,omitempty"`
-	Meta          map[string]interface{} 
-	Children      []*Content             `xml:"children>contentItem,omitempty"`
+	XMLName       xml.Name `xml:"contentItem"`
+	Id            *int
+	Path          string
+	ParentId      *int          `xml:"parentId,omitempty"`
+	Name          string        `xml:"name"`
+	Parent        string        `xml:"parent,omitempty"`
+	ContentType   string        `xml:"contentType,omitempty"`
+	ContentTypeId *int          `xml:"contentTypeId,omitempty"`
+	Template      string        `xml:"template,omitempty"`
+	TemplateId    *int          `xml:"templateId,omitempty"`
+	MetaByte      *MapContainer `xml:"meta,omitempty"`
+	Meta          map[string]interface{}
+	Children      []*Content `xml:"children>contentItem,omitempty"`
 }
 
 func (this *Content) DoCustomXMLParsing() (res map[string]interface{}) {
@@ -41,7 +40,7 @@ func (this *Content) DoCustomXMLParsing() (res map[string]interface{}) {
 	postfix := "</meta>"
 	if this.MetaByte.InnerXML != nil && len(this.MetaByte.InnerXML) > 0 {
 		str := prefix + string(this.MetaByte.InnerXML) + postfix
-		m, err := mxj.NewMapXml([]byte(str))
+		m, err := mxj.NewMapXml([]byte(str), true)
 		fmt.Println("this.MetaByte.InnerXML")
 		fmt.Println(this.MetaByte.InnerXML)
 		fmt.Println("string(this.MetaByte.InnerXML)")
@@ -50,15 +49,16 @@ func (this *Content) DoCustomXMLParsing() (res map[string]interface{}) {
 			log.Println("ERROR")
 			log.Println(err.Error())
 		}
-		this.Meta = m
-		res = m
+		//this.Meta = m
+		this.Meta = m["meta"].(map[string]interface{})
+		res = m["meta"].(map[string]interface{})
 	}
 
 	return
 }
 
 func GetContentById(id int) (content Content) {
-	fmt.Printf("is is &v: ",id)
+	fmt.Printf("is is &v: ", id)
 	db := coreglobals.Db
 	querystr := `SELECT path, parent_id, name, content_type_id, template_id, meta   
 	FROM content 
@@ -74,7 +74,6 @@ WHERE id=$1`
 	var content_type_id int
 
 	var meta []byte
-	
 
 	row := db.QueryRow(querystr, id)
 
@@ -97,19 +96,18 @@ WHERE id=$1`
 		// NULL value
 	}
 
-
 	var content_metaMap map[string]interface{}
 
 	json.Unmarshal(meta, &content_metaMap)
 
 	switch {
-		case err == sql.ErrNoRows:
-			log.Printf("No template with that ID.")
-		case err != nil:
-			log.Fatal(err)
-			//panic(err)
-		default:
-			content = Content{xml.Name{}, &id, path, &pid, name, "", "", &content_type_id, "",&tid, nil, content_metaMap, nil}
+	case err == sql.ErrNoRows:
+		log.Printf("No template with that ID.")
+	case err != nil:
+		log.Fatal(err)
+		//panic(err)
+	default:
+		content = Content{xml.Name{}, &id, path, &pid, name, "", "", &content_type_id, "", &tid, nil, content_metaMap, nil}
 	}
 
 	return
@@ -129,7 +127,7 @@ func (this *Content) Post(parentContent *Content, contentTypes []*coremodulesett
 	}
 
 	fmt.Println(this.Name)
-	
+
 	fmt.Println(parentContent.Id)
 	fmt.Println(&this.ParentId)
 
@@ -148,7 +146,6 @@ func (this *Content) Post(parentContent *Content, contentTypes []*coremodulesett
 	}
 
 	var meta interface{} = nil
-	
 
 	if this.MetaByte.InnerXML != nil {
 		mmap := this.DoCustomXMLParsing()
@@ -170,7 +167,7 @@ func (this *Content) Post(parentContent *Content, contentTypes []*coremodulesett
 		defer wg1.Done()
 		sqlStr := `INSERT INTO content (name, parent_id, content_type_id, template_id, meta, created_by) 
 	VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
-		err1 := db.QueryRow(sqlStr, this.Name, parentContent.Id, this.ContentTypeId, 
+		err1 := db.QueryRow(sqlStr, this.Name, parentContent.Id, this.ContentTypeId,
 			this.TemplateId, meta, -1).Scan(&id)
 		corehelpers.PanicIf(err1)
 		c2 <- int(id)

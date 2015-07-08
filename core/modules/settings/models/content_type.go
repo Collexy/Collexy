@@ -74,7 +74,7 @@ type ContentType struct {
 
 //     m.Name = v.Name
 //     m.Alias = v.Alias
-    
+
 //     m.Description = v.Name
 //     m.Icon = v.Name
 //     m.Thumbnail = v.Name
@@ -88,7 +88,7 @@ type ContentType struct {
 //     postfix := "</meta>"
 //     str := prefix + string(temp) + postfix
 //     //fmt.Println(str)
-//     myMxjMap, err := mxj.NewMapXml([]byte(str))
+//     myMxjMap, err := mxj.NewMapXml([]byte(str), true)
 //     myMap = myMxjMap
 
 //     // fill myMap

@@ -1,20 +1,19 @@
 package controllers
 
-import
-(
-	"net/http"
-	"fmt"
-	"os"
-	"log"
+import (
 	"collexy/core/application/models/xml_models"
-	"io/ioutil"
-	"encoding/xml"
 	coremodulesettingsmodels "collexy/core/modules/settings/models"
 	coremodulesettingsmodelsxmlmodels "collexy/core/modules/settings/models/xml_models"
+	"encoding/xml"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 	//coreglobals "collexy/core/globals"
 )
 
-type ModuleApiController struct{
+type ModuleApiController struct {
 	Module xml_models.Module
 }
 
@@ -82,8 +81,6 @@ func (this *ModuleApiController) ImportModuleFromXML(moduleDirectoryPath string)
 		fmt.Printf("error: %v", err2)
 	}
 
-	
-
 	err3 := xml.Unmarshal(XMLdata, &this.Module)
 	if err3 != nil {
 		fmt.Printf("error: %v", err3)
@@ -93,17 +90,14 @@ func (this *ModuleApiController) ImportModuleFromXML(moduleDirectoryPath string)
 	return
 }
 
-func (this *ModuleApiController) ExportModuleToDatabase(){
+func (this *ModuleApiController) ExportModuleToDatabase() {
 	// this.Module.DataTypes.Post()
 	// make sure Post() is completed before continuing
 	//dataTypes := coremodulesettingsmodels.DataType.Get()
 	dataTypes := coremodulesettingsmodelsxmlmodels.GetDataTypes()
 	// make sure Get() is completed before continuing
 
-	
-
-
-	for _, t := range this.Module.Templates{
+	for _, t := range this.Module.Templates {
 		// params: parent
 		// t.Post(nil,existingTemplatesFromDb)
 		t.Post(nil)
@@ -115,31 +109,51 @@ func (this *ModuleApiController) ExportModuleToDatabase(){
 		flatTemplatesSlice = append(flatTemplatesSlice, t)
 		return true
 	})
-	
+
 	templates := coremodulesettingsmodels.GetTemplates(nil)
-	
+
 	//templates = coremodulesettingsmodels.Templates.Get()
-	
-	for _, ct := range this.Module.ContentTypes{
+
+	for _, ct := range this.Module.ContentTypes {
 		// params: parent, parentContentTypes, dataTypes, templates
 		ct.Post(nil, nil, flatTemplatesSlice, dataTypes)
-		
+
 	}
 	contentTypes := coremodulesettingsmodels.GetContentTypes(nil)
 
-	// this.Module.MediaTypes.Post(dataTypes)
-	// mediaTypes := coremodulesettingsmodels.MediaTypes.Get()
-
-	// this.Module.MimeTypes.Post(mediaTypes)
-	
-	fmt.Printf("this.Module.ContentItems length is %d\n", len(this.Module.ContentItems))
-	for _, c := range this.Module.ContentItems{
+	// fmt.Printf("this.Module.ContentItems length is %d\n", len(this.Module.ContentItems))
+	for _, c := range this.Module.ContentItems {
 		fmt.Println(c.Name)
 		c.Post(nil, contentTypes, templates)
 	}
-	
 
-	// this.Module.Media.Post(mediaTypes)
+	for _, mt := range this.Module.MediaTypes {
+		// params: parent, parentContentTypes, dataTypes, templates
+		mt.Post(nil, nil, dataTypes)
+
+	}
+
+	mediaTypes := coremodulesettingsmodels.GetMediaTypes(nil)
+
+	for _, mt := range this.Module.MimeTypes {
+		// params: parent, parentContentTypes, dataTypes, templates
+		mt.Post(mediaTypes)
+
+	}
+
+	fmt.Printf("this.Module.MediaItems length: %d\n", len(this.Module.MediaItems))
+
+	for _, m := range this.Module.MediaItems {
+		// params: parent, parentContentTypes, dataTypes, templates
+		m.Post(nil, mediaTypes)
+
+	}
+
+	for _, f := range this.Module.Files {
+		// params: parent, parentContentTypes, dataTypes, templates
+		f.Copy()
+
+	}
 
 	// import assets
 }

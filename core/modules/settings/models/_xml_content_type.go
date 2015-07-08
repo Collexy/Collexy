@@ -53,7 +53,7 @@ func (m *ContentType) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 	postfix := "</meta>"
 	str := prefix + string(temp) + postfix
 	//fmt.Println(str)
-	myMxjMap, err := mxj.NewMapXml([]byte(str))
+	myMxjMap, err := mxj.NewMapXml([]byte(str), true)
 	myMap = myMxjMap
 
 	// fill myMap

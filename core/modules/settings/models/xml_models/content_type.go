@@ -51,7 +51,7 @@ func (this *ContentType) DoCustomXMLParsing() (res map[string]interface{}) {
 	postfix := "</meta>"
 	if this.MetaByte.InnerXML != nil && len(this.MetaByte.InnerXML) > 0 {
 		str := prefix + string(this.MetaByte.InnerXML) + postfix
-		m, err := mxj.NewMapXml([]byte(str))
+		m, err := mxj.NewMapXml([]byte(str), true)
 		fmt.Println("this.MetaByte.InnerXML")
 		fmt.Println(this.MetaByte.InnerXML)
 		fmt.Println("string(this.MetaByte.InnerXML)")
@@ -60,8 +60,8 @@ func (this *ContentType) DoCustomXMLParsing() (res map[string]interface{}) {
 			log.Println("ERROR")
 			log.Println(err.Error())
 		}
-		this.Meta = m
-		res = m
+		this.Meta = m["meta"].(map[string]interface{})
+		res = m["meta"].(map[string]interface{})
 	}
 
 	return
@@ -174,9 +174,9 @@ func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes
 		// 					prop.DataTypeId = &dt.Id
 		// 				}
 		// 			}
-					
+
 		// 		}
-		// 	}	
+		// 	}
 		// }
 		j, _ := json.Marshal(this.Tabs)
 		tabs = j

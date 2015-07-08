@@ -2,7 +2,15 @@
 	<license url="http://opensource.org/licenses/MIT">MIT license</license>
 	<author url="http://www.codeish.com">Codeish</author>
 	<readme><![CDATA[Thank you for installing the TXT starter kit.]]></readme>
-	<dataTypes></dataTypes>
+	<dataTypes>
+		<!-- <dataType>
+			<name>My custom datatype</name>
+			<alias>myCustomDataType</alias>
+			<html><![CDATA[<mycustomdatatype>mycustomdatatype</mycustomdatatype>]]></html>
+			<editorAlias>myCustomDataTypePropertyEditor</editorAlias>
+			<meta></meta>
+		</dataType> -->
+	</dataTypes>
 	<templates>
 		<template>
 			<name>Layout</name>
@@ -441,19 +449,27 @@
 	</mediaTypes>
 	<mediaItems>
 		<mediaItem>
-			<parent></parent>
+			<parentId>0</parentId>
 			<name>Sample Images</name>
+			<parent></parent>
+			<mediaType></mediaType>
 			<mediaTypeId>1</mediaTypeId>
+			<meta></meta>
 			<children>
 				<mediaItem>
-					<parent></parent>
+					<parentId>0</parentId>
 					<name>TXT</name>
+					<parent></parent>
+					<mediaType></mediaType>
 					<mediaTypeId>1</mediaTypeId>
+					<meta></meta>
 					<children>
 						<mediaItem>
-							<parent></parent>
+							<parentId>0</parentId>
 							<name>banner.jpg</name>
-							<mediaTypeId>2</mediaTypeId>
+							<parent></parent>
+							<mediaType>mTypeImage</mediaType>
+							<mediaTypeId>0</mediaTypeId>
 							<meta>
 								<attachedFile>
 									<name>banner.jpg</name>
@@ -467,9 +483,11 @@
 							<children></children>
 						</mediaItem>
 						<mediaItem>
-							<parent></parent>
+							<parentId>0</parentId>
 							<name>pic01.jpg</name>
-							<mediaTypeId>2</mediaTypeId>
+							<parent></parent>
+							<mediaType>mTypeImage</mediaType>
+							<mediaTypeId>0</mediaTypeId>
 							<meta>
 								<attachedFile>
 									<name>pic01.jpg</name>
@@ -487,14 +505,50 @@
 			</children>
 		</mediaItem>
 	</mediaItems>
-	<mimeTypes></mimeTypes>
+	<mimeTypes>
+		<mimeType>
+			<name>image/test</name>
+			<mediaType>mTypeImage</mediaType>
+			<mediaTypeId>0</mediaTypeId>
+		</mimeType>
+		<mimeType>
+			<name>image/test2</name>
+			<mediaType>mTypeImage</mediaType>
+			<mediaTypeId>0</mediaTypeId>
+		</mimeType>
+	</mimeTypes>
 	<files>
-		<file>/assets/images/banner.jpg</file>
-		<file>/assets/images/highlight.png</file>
-		<file>/assets/scripts/init.js</file>
-		<file>/assets/styles/style.css</file>
-		<file>/media/Sample Images/TXT/pic01.jpg</file>
-		<!-- <file>/views/Layout.tmpl</file>
-		<file>/views/Page.tmpl</file> -->
+		<file>
+			<name>overlay.png</name>
+			<path>assets\images</path>
+		</file>
+		<file>
+			<name>highlight.png</name>
+			<path>assets\images</path>
+		</file>
+		<file>
+			<name>init.js</name>
+			<path>assets\scripts</path>
+		</file>
+		<file>
+			<name>style.css</name>
+			<path>assets\styles</path>
+		</file>
+		<file>
+			<name>Layout.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Page.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>banner.jpg</name>
+			<path>media\Sample Images\TXT</path>
+		</file>
+		<file>
+			<name>pic01.jpg</name>
+			<path>media\Sample Images\TXT</path>
+		</file>
 	</files>
 </module>
