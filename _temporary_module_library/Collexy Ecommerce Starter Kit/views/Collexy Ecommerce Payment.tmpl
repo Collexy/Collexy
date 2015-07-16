@@ -1,0 +1,90 @@
+{{define "head"}}<title>{{.Data.Content.Name}}</title>{{end}}
+{{define "body"}}
+<!-- Main -->
+			<div id="main-wrapper">
+				<div id="main" class="container">
+					<div class="row">
+						<div class="9u important(collapse)">
+							<div class="content content-left">
+							
+								<!-- Content -->
+						
+									<article class="box page-content">
+
+										<header>
+											<h2>{{.Data.Content.Meta.title}}</h2>
+											<!-- <p>Semper amet scelerisque metus faucibus morbi congue mattis</p> -->
+											<!-- <ul class="meta">
+												<li class="icon fa-clock-o">5 days ago</li>
+												<li class="icon fa-comments"><a href="#">1,024</a></li>
+											</ul> -->
+										</header>
+
+										<section>
+											<ul>
+												<li>Sign In</li>
+												<li>Address</li>
+												<li>Shipping</li>
+												<li><strong>Payment</strong></li>
+												<li>Preview</li>
+												<li>Confirmation</li>
+											</ul>
+											<form method="POST" action="">
+												<div id="collexy-ecommerce-payment-method">
+													<h4>Payment Method</h4>
+													<p>Please select a payment method</p>
+													<table id="tblsecorderform">
+										                <tbody>
+										                    <tr>
+										                        <td colspan="2">
+										                            <select name="memberspass_payment_method_select" class="memberspass_payment_method_select">
+										                                <option selected="" value="paypalexpress">PayPal Express</option><option value="authorizenet">Authorize.net</option>                            </select>
+										                        </td>
+										                    </tr>
+										                    <tr style="display: none;" class="hide-for-3rd-party-payment-gateways">
+										                        <td>Card Number</td>
+										                        <td><input name="authorize_credit_card_number" id="authorize_credit_card_number" class="memberspass-form-input" value="" type="text"></td>
+										                    </tr>
+										                    <tr style="display: none;" class="hide-for-3rd-party-payment-gateways">
+										                        <td>Expiration</td>
+										                        <td>
+										                            <select id="authorize_card_expiry_month" name="authorize_card_expiry_month" class="memberspass_payment_method_select memberspass-payment-form-select card-expiry-month">
+										                                <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+										                            </select>
+
+										                            <select id="authorize_card_expiry_year" name="authorize_card_expiry_year" class="memberspass_payment_method_select memberspass-payment-form-select card-expiry-year">
+										                                <option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option>                            </select>
+										                        </td>
+										                    </tr>
+										                    <tr style="display: none;" class="hide-for-3rd-party-payment-gateways">
+										                        <td>Security Code</td>
+										                        <td><input name="authorize_cvv_code" id="authorize_cvv_code" class="memberspass-form-input" value="" type="text"></td>
+										                    </tr>
+										                </tbody>
+										            </table>
+												</div>
+											</form>
+										</section>
+									</article>
+
+							</div>
+						</div>
+						<div class="3u">
+							<div class="sidebar">
+							
+								<!-- Sidebar -->
+									
+
+						</div>
+					</div>
+					<div class="row 200%">
+						<div class="12u">
+
+							
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+{{end}}

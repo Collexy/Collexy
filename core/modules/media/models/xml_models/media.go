@@ -145,7 +145,7 @@ func (this *Media) Post(parentMedia *Media, mediaTypes []*coremodulesettingsmode
 		}
 	}
 
-	c2 := make(chan int)
+	c1 := make(chan int)
 	var id int64
 
 	var wg1 sync.WaitGroup
@@ -159,11 +159,11 @@ func (this *Media) Post(parentMedia *Media, mediaTypes []*coremodulesettingsmode
 		err1 := db.QueryRow(sqlStr, this.Name, parentMedia.Id, this.MediaTypeId,
 			meta, -1).Scan(&id)
 		corehelpers.PanicIf(err1)
-		c2 <- int(id)
+		c1 <- int(id)
 	}()
 
 	go func() {
-		for i := range c2 {
+		for i := range c1 {
 			fmt.Println(i)
 			this.Id = &i
 		}
@@ -208,7 +208,7 @@ func (this *Media) Post(parentMedia *Media, mediaTypes []*coremodulesettingsmode
 	if parentMedia.Id != nil && *parentMedia.Id != 0 {
 		path = parentMedia.Path + "." + strconv.FormatInt(id, 10)
 	}
-
+	this.Path = path
 	fmt.Println(path)
 	fmt.Println(id)
 

@@ -1,0 +1,96 @@
+{{define "head"}}<title>{{.Data.Content.Name}}</title>{{end}}
+{{define "body"}}
+<!-- Main -->
+			<div id="main-wrapper">
+				<div id="main" class="container">
+					<div class="row">
+						<div class="9u important(collapse)">
+							<div class="content content-left">
+							
+								<!-- Content -->
+						
+									<article class="box page-content">
+
+										<header>
+											<h2>{{.Data.Content.Meta.title}}</h2>
+											<!-- <p>Semper amet scelerisque metus faucibus morbi congue mattis</p> -->
+											<!-- <ul class="meta">
+												<li class="icon fa-clock-o">5 days ago</li>
+												<li class="icon fa-comments"><a href="#">1,024</a></li>
+											</ul> -->
+										</header>
+
+										<section>
+											<ul>
+												<li>Sign In</li>
+												<li>Address</li>
+												<li><strong>Shipping</strong></li>
+												<li>Payment</li>
+												<li>Preview</li>
+												<li>Confirmation</li>
+											</ul>
+											
+											<form class="memberspass-payment-form" method="POST" action="">
+										        <label><input class="shipping_method_select" name="shipping_method" value="1" type="radio"> Adv Method 1a (252)</label><br><label><input class="shipping_method_select" name="shipping_method" value="2" type="radio"> Free Shipping </label><br><label><input class="shipping_method_select" name="shipping_method" value="3" type="radio"> Local Pickup </label>
+										        
+										        
+										        <br class="clear">
+										        <input id="memberspass-submit-payment" class="memberspass_front_button" value="Place Order" type="submit">
+										        <img style="display:none;" src="http://localhost/wordpress_02/wp-content/plugins/memberspass/images/ajax-loader.gif" class="memberspass-loading-gif">
+
+										        <input id="payment_method" value="paypalexpress" type="hidden">
+										        <input id="billing_first_name" value="" type="hidden">
+										        <input id="shipping_first_name" value="" type="hidden">
+										        <input id="billing_last_name" value="" type="hidden">
+										        <input id="shipping_last_name" value="" type="hidden">
+										        <input id="billing_address" value="" type="hidden">
+										        <input id="shipping_address" value="" type="hidden">
+										        <input id="billing_address_line2" value="" type="hidden">
+										        <input id="shipping_address_line2" value="" type="hidden">
+										         <input id="billing_city" value="" type="hidden">
+										        <input id="shipping_city" value="" type="hidden">
+										        <input id="billing_country" value="default" type="hidden">
+										        <input id="shipping_country" value="default" type="hidden">
+										        <input id="billing_region" value="default" type="hidden">
+										        <input id="shipping_region" value="default" type="hidden">
+										        <input id="billing_zip" value="" type="hidden">
+										        <input id="shipping_zip" value="" type="hidden">
+										        <input id="billing_company" value="" type="hidden">
+										        <input id="shipping_company" value="" type="hidden">
+										        <input id="billing_vat" value="" type="hidden">
+										        <input id="shipping_vat" value="" type="hidden">
+										        <input id="billing_email" value="sorenhoyerkristensen@gmail.com" type="hidden">
+										        <input id="shipping_email" value="" type="hidden">
+										        <input id="billing_phone" value="" type="hidden">
+										        <input id="shipping_phone" value="" type="hidden">
+
+										        <input id="authorize_credit_card_number" value="" type="hidden">
+										        <input id="authorize_card_expiry_month" value="1" type="hidden">
+										        <input id="authorize_card_expiry_year" value="2015" type="hidden">
+										        <input id="authorize_cvv_code" value="" type="hidden">
+
+										    </form>
+										</section>
+									</article>
+
+							</div>
+						</div>
+						<div class="3u">
+							<div class="sidebar">
+							
+								<!-- Sidebar -->
+									
+
+						</div>
+					</div>
+					<div class="row 200%">
+						<div class="12u">
+
+							
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+{{end}}

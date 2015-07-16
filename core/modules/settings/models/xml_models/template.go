@@ -17,13 +17,13 @@ import (
 type Template struct {
 	XMLName  xml.Name `xml:"template"`
 	Id       *int     `xml:"id,omitempty"`
-	Path     string   `xml:path,omitempty`
+	Path     string   `xml:"path,omitempty"`
 	ParentId *int     `xml:"parentId,omitempty"`
 	Name     string   `xml:"name"`
 	Alias    string   `xml:"alias"`
 	// Parent string			`xml:"parent"`
 	IsPartial bool        `xml:"isPartial"`
-	Content   string      `xml:"content"`
+	Content   string      `xml:"content,omitempty"`
 	Children  []*Template `xml:"children>template,omitempty"`
 }
 
@@ -80,6 +80,7 @@ WHERE id=$1`
 func (this *Template) Post(parentTemplate *Template) {
 	// do DB POST
 	db := coreglobals.Db
+
 	if parentTemplate != nil {
 		if *parentTemplate.Id == 0 {
 			parentTemplate.Id = nil
@@ -88,14 +89,25 @@ func (this *Template) Post(parentTemplate *Template) {
 		}
 	} else {
 		parentTemplate = &Template{}
+		if this.ParentId != nil {
+			if *this.ParentId != 0 {
+				parentTemplate.Id = this.ParentId
+			}
+			
+		}
 	}
+	// if parentTemplate != nil {
+	// 	if *parentTemplate.Id == 0 {
+	// 		parentTemplate.Id = nil
+	// 	} else {
+	// 		this.ParentId = parentTemplate.Id
+	// 	}
+	// } else {
+	// 	parentTemplate = &Template{}
+	// }
 
-	fmt.Println(this.Name)
-	fmt.Println(this.Alias)
-	fmt.Println(parentTemplate.Id)
-	fmt.Println(&this.ParentId)
 
-	c2 := make(chan int)
+	c1 := make(chan int)
 	var id int64
 
 	var wg1 sync.WaitGroup
@@ -108,11 +120,11 @@ func (this *Template) Post(parentTemplate *Template) {
 	VALUES ($1, $2, $3, $4, $5) RETURNING id`
 		err1 := db.QueryRow(sqlStr, this.Name, this.Alias, parentTemplate.Id, this.IsPartial, -1).Scan(&id)
 		corehelpers.PanicIf(err1)
-		c2 <- int(id)
+		c1 <- int(id)
 	}()
 
 	go func() {
-		for i := range c2 {
+		for i := range c1 {
 			fmt.Println(i)
 			this.Id = &i
 		}

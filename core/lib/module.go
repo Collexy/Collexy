@@ -5,5 +5,6 @@ type Module struct {
 	Alias       string
 	Description string
 	Sections    []Section
+	ServerRoutes []ServerRoute
 	Order       int
 }

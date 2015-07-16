@@ -21,7 +21,7 @@ type MapContainer struct {
 type ContentType struct {
 	XMLName xml.Name `xml:"contentType"`
 	Id      *int
-	Path    string `xml:path,omitempty`
+	Path    string //`xml:"path,omitempty"`
 	Name    string `xml:"name"`
 	Alias   string `xml:"alias"`
 	// Parent string			`xml:"parent"`
@@ -39,7 +39,7 @@ type ContentType struct {
 	AllowedContentTypeIds   []int
 	CompositeContentTypes   []string `xml:"compositeContentTypes>contentType,omitempty"`
 	CompositeContentTypeIds []int
-	Template                string `xml:"template"`
+	Template                string `xml:"template,omitempty"`
 	TemplateId              *int
 	AllowedTemplates        []string `xml:"allowedTemplates>template,omitempty"`
 	AllowedTemplateIds      []int
@@ -134,6 +134,8 @@ func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes
 	}
 
 	db := coreglobals.Db
+
+
 	if parentContentType != nil {
 		if *parentContentType.Id == 0 {
 			parentContentType.Id = nil
@@ -142,7 +144,30 @@ func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes
 		}
 	} else {
 		parentContentType = &ContentType{}
+		if this.ParentId != nil {
+			if *this.ParentId != 0 {
+				parentContentType.Id = this.ParentId
+			}
+			
+		}
 	}
+	
+	// if this.ParentId == nil || *this.ParentId == 0 {
+	// 	if parentContentType != nil {
+	// 		if *parentContentType.Id == 0 {
+	// 			parentContentType.Id = nil
+	// 		} else {
+	// 			this.ParentId = parentContentType.Id
+	// 		}
+	// 	} else {
+	// 		parentContentType = &ContentType{}
+	// 	}
+	// } else {
+	// 	if parentContentType == nil {
+	// 		parentContentType = &ContentType{}
+	// 	}
+	// 	parentContentType.Id = this.ParentId
+	// }
 
 	fmt.Printf("this.Name: %s\n", this.Name)
 	fmt.Printf("this.Alias: %s\n", this.Alias)
@@ -185,7 +210,7 @@ func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes
 	allowedTemplateIds, err5 := coreglobals.IntSlice(this.AllowedTemplateIds).Value()
 	corehelpers.PanicIf(err5)
 
-	c2 := make(chan int)
+	c1 := make(chan int)
 	var id int64
 
 	var wg1 sync.WaitGroup
@@ -202,11 +227,11 @@ func (this *ContentType) Post(parentContentType *ContentType, parentContentTypes
 			this.IsContainer, this.IsAbstract,
 			this.TemplateId, allowedTemplateIds, -1).Scan(&id)
 		corehelpers.PanicIf(err1)
-		c2 <- int(id)
+		c1 <- int(id)
 	}()
 
 	go func() {
-		for i := range c2 {
+		for i := range c1 {
 			fmt.Println("lolcat")
 			fmt.Println(i)
 			this.Id = &i

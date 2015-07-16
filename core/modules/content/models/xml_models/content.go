@@ -116,6 +116,8 @@ WHERE id=$1`
 func (this *Content) Post(parentContent *Content, contentTypes []*coremodulesettingsmodels.ContentType, templates []*coremodulesettingsmodels.Template) {
 	// do DB POST
 	db := coreglobals.Db
+
+	
 	if parentContent != nil {
 		if *parentContent.Id == 0 {
 			parentContent.Id = nil
@@ -124,24 +126,48 @@ func (this *Content) Post(parentContent *Content, contentTypes []*coremodulesett
 		}
 	} else {
 		parentContent = &Content{}
-	}
-
-	fmt.Println(this.Name)
-
-	fmt.Println(parentContent.Id)
-	fmt.Println(&this.ParentId)
-
-	for i, t := range templates {
-		fmt.Printf("templates is: %s (i: %d)\n", t.Alias, i)
-		if this.Template == t.Alias {
-			this.TemplateId = &t.Id
+		if this.ParentId != nil {
+			if *this.ParentId != 0 {
+				parentContent.Id = this.ParentId
+			}
+			
 		}
 	}
+	
 
-	for i, ct := range contentTypes {
-		fmt.Printf("contenttypes is: %s (i: %d)\n", ct.Alias, i)
-		if this.ContentType == ct.Alias {
-			this.ContentTypeId = &ct.Id
+	// if this.ParentId == nil || *this.ParentId == 0 {
+	// 	if parentContent != nil {
+	// 		if *parentContent.Id == 0 {
+	// 			parentContent.Id = nil
+	// 		} else {
+	// 			this.ParentId = parentContent.Id
+	// 		}
+	// 	} else {
+	// 		parentContent = &Content{}
+	// 	}
+	// } else {
+	// 	if parentContent == nil {
+	// 		parentContent = &Content{}
+	// 	}
+	// 	parentContent.Id = this.ParentId
+	// }
+
+	if this.TemplateId == nil || *this.TemplateId == 0 {
+		for i, t := range templates {
+			fmt.Printf("templates is: %s (i: %d)\n", t.Alias, i)
+			if this.Template == t.Alias {
+				this.TemplateId = &t.Id
+				break
+			}
+		}
+	}
+	if this.ContentTypeId == nil || *this.ContentTypeId == 0 {
+		for i, ct := range contentTypes {
+			fmt.Printf("contenttypes is: %s (i: %d)\n", ct.Alias, i)
+			if this.ContentType == ct.Alias {
+				this.ContentTypeId = &ct.Id
+				break
+			}
 		}
 	}
 
@@ -156,7 +182,7 @@ func (this *Content) Post(parentContent *Content, contentTypes []*coremodulesett
 		}
 	}
 
-	c2 := make(chan int)
+	c1 := make(chan int)
 	var id int64
 
 	var wg1 sync.WaitGroup
@@ -170,11 +196,11 @@ func (this *Content) Post(parentContent *Content, contentTypes []*coremodulesett
 		err1 := db.QueryRow(sqlStr, this.Name, parentContent.Id, this.ContentTypeId,
 			this.TemplateId, meta, -1).Scan(&id)
 		corehelpers.PanicIf(err1)
-		c2 <- int(id)
+		c1 <- int(id)
 	}()
 
 	go func() {
-		for i := range c2 {
+		for i := range c1 {
 			fmt.Println(i)
 			this.Id = &i
 		}
@@ -219,7 +245,7 @@ func (this *Content) Post(parentContent *Content, contentTypes []*coremodulesett
 	if parentContent.Id != nil && *parentContent.Id != 0 {
 		path = parentContent.Path + "." + strconv.FormatInt(id, 10)
 	}
-
+	this.Path = path
 	fmt.Println(path)
 	fmt.Println(id)
 

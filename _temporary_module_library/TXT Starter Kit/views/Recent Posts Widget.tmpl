@@ -5,8 +5,8 @@
 	<h2 class="major"><span>Recent Posts</span></h2>
 	<ul class="divided">
 		{{range $content := .Data.Content.GetAncestors 0 1}}
-			{{if $content.Eq $content.ContentTypeId 3}}
-				{{if $content.Meta.is_featured}}
+			{{if $content.Eq $content.ContentTypeId 5}}
+				{{if $content.Meta.isFeatured}}
 				<li>
 					<article class="box post-summary">
 						<h3><a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a></h3>

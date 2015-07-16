@@ -1,0 +1,210 @@
+{{define "head"}}<title>{{.Data.Content.Name}}</title>{{end}}
+{{define "body"}}
+<!-- Main -->
+			<div id="main-wrapper">
+				<div id="main" class="container">
+					<div class="row">
+						<div class="9u important(collapse)">
+							<div class="content content-left">
+							
+								<!-- Content -->
+						
+									<article class="box page-content">
+
+										<header>
+											<h2>{{.Data.Content.Meta.title}}</h2>
+											<!-- <p>Semper amet scelerisque metus faucibus morbi congue mattis</p> -->
+											<!-- <ul class="meta">
+												<li class="icon fa-clock-o">5 days ago</li>
+												<li class="icon fa-comments"><a href="#">1,024</a></li>
+											</ul> -->
+										</header>
+
+										<section>
+											<ul>
+												<li>Sign In</li>
+												<li>Address</li>
+												<li>Shipping</li>
+												<li>Payment</li>
+												<li><strong>Preview</strong></li>
+												<li>Confirmation</li>
+											</ul>
+											
+											<form class="memberspass-payment-form" method="POST" action="">
+										        <div id="memberspass-order-review">
+
+										            <h3>Your Order</h3>
+										            <table class="memberspass-shopping-cart">
+										                <thead>
+										                    <tr>
+
+										                        <th>Product</th>
+										                        <th>Total</th>
+										                    </tr>
+										                </thead>
+										                <tbody>
+										                    <tr><td>Times Magazine Subscription <span class="quantity">x 1</span> <ul><li>delivery: both</li></ul></td><td>19</td></tr><tr><td>Heavy Bag <span class="quantity">x 1</span> <ul><li>length: 120</li><li>weight: 34</li></ul></td><td>93</td></tr>                </tbody>
+										                <tfoot>
+										                                        <tr>
+										                        <th>Cart Subtotal</th>
+										                        <td>112</td>
+										                    </tr>
+										                    <tr>
+										                        <th>Tax</th>        
+										                        <td>0</td>
+										                    </tr>
+										                    <tr>
+										                        <th>Order Total</th>
+										                        <td id="order-total">112</td>
+										                    </tr>
+										                </tfoot>
+										            </table>
+
+										        </div>
+										        <div id="memberspass-review-personal-details">
+										            <!--
+										            people whose billing address is a PO Box 
+										· people traveling on business -- (need another gig of ram shipped overnight to their hotel...) 
+										· people using a Corporate credit card 
+										· people who manage finances for their parents 
+										· people whose accounting/financial matters are done by a business manager or a CPA. 
+										· ... and much, much more :-p'
+										            -->
+										            
+										            
+										            <table>
+										                <tbody>
+										                    <tr>
+										                        <th>Payment method:</th>
+										                        <td>paypalexpress</td>
+										                    </tr>
+										                    <tr>
+										                        <th>Address:</th>
+										                        <th>Billing</th>
+										                        <th>Shipping</th>
+										                    </tr>
+										                    <tr>
+										                        <td></td>
+										                        <td> </td>
+										                        <td> </td>
+										                    </tr>
+										                    <tr>
+										                        <td></td>
+										                        <td></td>
+										                        <td></td>
+										                    </tr>
+										                    <tr>
+										                        <td></td>
+										                        <td></td>
+										                        <td></td>
+										                    </tr>
+										                    <tr>
+										                        <td></td>
+										                        <td>default</td>
+										                        <td>default</td>
+										                    </tr>
+										                    <tr>
+										                        <td></td>
+										                        <td>default</td>
+										                        <td>default</td>
+										                    </tr>
+										                    <tr>
+										                        <td></td>
+										                        <td></td>
+										                        <td></td>
+										                    </tr>
+										                    <tr>
+										                        <td></td>
+										                        <td></td>
+										                        <td></td>
+										                    </tr>
+
+										                    <tr>
+										                        <th>Company</th>
+										                        <td></td>
+										                        <td></td>
+										                    </tr>
+										                    <tr>
+										                        <th>VAT number</th>
+										                        <td></td>
+										                        <td></td>
+										                    </tr>
+										                    <tr>
+										                        <th>Phone</th>
+										                        <td></td>
+										                        <td></td>
+										                    </tr>
+										                    <tr>
+										                        <th>Email</th>
+										                        <td>sorenhoyerkristensen@gmail.com</td>
+										                        <td></td>
+										                    </tr>
+										                </tbody>
+										            </table>
+										        </div>
+										        <div>
+										            <p>
+										                <label class="accept-order-terms-label"><input id="accept-order-terms-checkbox" name="accept_order_terms_checkbox" type="checkbox"> I agree to the terms of blabla bla (last updated 4th july 2013)</label>
+										            </p>
+										            <p><small>By clicking "Purchase" you agree that *** provides you immediate access to this digital content and that therefore any possibility of a withdrawal from this purchase ends - the purchase is final.</small></p>
+										        </div>
+										        <br class="clear">
+										        <input id="memberspass-submit-payment" class="memberspass_front_button" value="Place Order" type="submit">
+										        <img style="display:none;" src="http://localhost/wordpress_02/wp-content/plugins/memberspass/images/ajax-loader.gif" class="memberspass-loading-gif">
+
+										        <input id="payment_method" value="paypalexpress" type="hidden">
+										        <input id="billing_first_name" value="" type="hidden">
+										        <input id="shipping_first_name" value="" type="hidden">
+										        <input id="billing_last_name" value="" type="hidden">
+										        <input id="shipping_last_name" value="" type="hidden">
+										        <input id="billing_address" value="" type="hidden">
+										        <input id="shipping_address" value="" type="hidden">
+										        <input id="billing_address_line2" value="" type="hidden">
+										        <input id="shipping_address_line2" value="" type="hidden">
+										         <input id="billing_city" value="" type="hidden">
+										        <input id="shipping_city" value="" type="hidden">
+										        <input id="billing_country" value="default" type="hidden">
+										        <input id="shipping_country" value="default" type="hidden">
+										        <input id="billing_region" value="default" type="hidden">
+										        <input id="shipping_region" value="default" type="hidden">
+										        <input id="billing_zip" value="" type="hidden">
+										        <input id="shipping_zip" value="" type="hidden">
+										        <input id="billing_company" value="" type="hidden">
+										        <input id="shipping_company" value="" type="hidden">
+										        <input id="billing_vat" value="" type="hidden">
+										        <input id="shipping_vat" value="" type="hidden">
+										        <input id="billing_email" value="sorenhoyerkristensen@gmail.com" type="hidden">
+										        <input id="shipping_email" value="" type="hidden">
+										        <input id="billing_phone" value="" type="hidden">
+										        <input id="shipping_phone" value="" type="hidden">
+
+										        <input id="authorize_credit_card_number" value="" type="hidden">
+										        <input id="authorize_card_expiry_month" value="1" type="hidden">
+										        <input id="authorize_card_expiry_year" value="2015" type="hidden">
+										        <input id="authorize_cvv_code" value="" type="hidden">
+
+										    </form>
+										</section>
+									</article>
+
+							</div>
+						</div>
+						<div class="3u">
+							<div class="sidebar">
+							
+								<!-- Sidebar -->
+									
+
+						</div>
+					</div>
+					<div class="row 200%">
+						<div class="12u">
+
+							
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+{{end}}

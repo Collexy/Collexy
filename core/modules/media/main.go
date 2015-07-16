@@ -69,7 +69,7 @@ func init() {
 	// setup module
 	sections := []lib.Section{sMedia}
 	// params: name, alias, description, sections
-	moduleSettings := lib.Module{"Media Module", "mediaModule", "Just a media module", sections, 200}
+	moduleSettings := lib.Module{"Media Module", "mediaModule", "Just a media module", sections, nil, 200}
 
 	// register module
 	lib.RegisterModule(moduleSettings)

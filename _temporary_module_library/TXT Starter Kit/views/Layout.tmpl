@@ -30,8 +30,8 @@
 		<header id="header">
 			<div class="logo container">
 				<div>
-					<h1><a href="/{{$homePage.Url}}" id="logo">{{.Data.Content.GetProperty "site_name" 0 2}}</a></h1>
-					<p>{{.Data.Content.GetProperty "site_tagline" 0 2}}</p>
+					<h1><a href="/{{$homePage.Url}}" id="logo">{{.Data.Content.GetProperty "siteName" 0 1}}</a></h1>
+					<p>{{.Data.Content.GetProperty "siteTagline" 0 1}}</p>
 				</div>
 			</div>
 		</header>
@@ -70,7 +70,7 @@
 				{{end}}
 				{{range $content := .Data.Content.GetContentByDepth 0 1 1 }}
 					{{$is_not_home := ne $content.Id $homePage.Id}}
-					{{$hide_in_nav := eq $content.Meta.hide_in_nav false}}
+					{{$hide_in_nav := eq $content.Meta.hideInNav false}}
 					{{if and $hide_in_nav $is_not_home}}
 						{{$classes := ""}}
 						{{$is_current_url := eq $content.Url $currentPage.Url}}

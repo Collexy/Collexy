@@ -1,0 +1,672 @@
+<module version="1.0.0" name="Collexy Ecommerce Starter Kit" url="http://www.collexy.com">
+	<license url="http://opensource.org/licenses/MIT">MIT license</license>
+	<author url="http://www.codeish.com">Codeish</author>
+	<readme><![CDATA[Thank you for installing the Collexy Ecommerce starter kit.]]></readme>
+	<dataTypes>
+		<!-- <dataType>
+			<name>My custom datatype</name>
+			<alias>myCustomDataType</alias>
+			<html><![CDATA[<mycustomdatatype>mycustomdatatype</mycustomdatatype>]]></html>
+			<editorAlias>myCustomDataTypePropertyEditor</editorAlias>
+			<meta></meta>
+		</dataType> -->
+	</dataTypes>
+	<templates>
+		<template>
+			<name>Collexy Ecommerce Store Front</name>
+			<alias>tplColecomStoreFront</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content>
+				<![CDATA[
+					{{define "body"}}
+						home
+					{{end}}
+				]]>
+			</content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Product Category</name>
+			<alias>tplColecomProductCategory</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content>
+				<![CDATA[
+					{{define "body"}}
+						home
+					{{end}}
+				]]>
+			</content>
+			<children></children>
+		</template>
+		<!-- <template>
+			<name>Collexy Ecommerce Product Categories</name>
+			<alias>tplColecomProductCategories</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content>
+				<![CDATA[
+					{{define "body"}}
+						home
+					{{end}}
+				]]>
+			</content>
+			<children></children>
+		</template> -->
+		<template>
+			<name>Collexy Ecommerce Product Categories Widget</name>
+			<alias>tplColecomProductCategoriesWidget</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content>
+				<![CDATA[
+					{{define "body"}}
+						home
+					{{end}}
+				]]>
+			</content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Product</name>
+			<alias>tplColecomProduct</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content>
+				<![CDATA[
+					{{define "body"}}
+						home
+					{{end}}
+				]]>
+			</content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Cart</name>
+			<alias>tplColecomCart</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content>
+				<![CDATA[
+					{{define "body"}}
+						home
+					{{end}}
+				]]>
+			</content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Sign In</name>
+			<alias>tplColecomSignIn</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content>
+				<![CDATA[
+					{{define "body"}}
+						page
+					{{end}}
+				]]>
+			</content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Address</name>
+			<alias>tplColecomAddress</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Shipping</name>
+			<alias>tplColecomShipping</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Payment</name>
+			<alias>tplColecomPayment</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Preview</name>
+			<alias>tplColecomPreview</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Collexy Ecommerce Confirmation</name>
+			<alias>tplColecomConfirmation</alias>
+			<parentId>1</parentId>
+			<isPartial>false</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+	</templates>
+	<contentTypes>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Product</name>
+			<alias>cTypeColecomProduct</alias>
+			<description>Collexy Ecommerce Product content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomProduct</template>
+			<allowedTemplates>
+				<template>tplColecomProduct</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Product Category</name>
+			<alias>cTypeColecomProductCategory</alias>
+			<description>Collexy Ecommerce Product Category content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes>
+				<contentType>cTypeColecomProduct</contentType>
+				<contentType>cTypeColecomProductCategory</contentType>
+			</allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomProductCategory</template>
+			<allowedTemplates>
+				<template>tplColecomProductCategory</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<!-- <contentType>
+			<name>Collexy Ecommerce Product Categories</name>
+			<alias>cTypeColecomProductCategories</alias>
+			<description>Collexy Ecommerce Product Categories content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>true</isAbstract>
+			<allowedContentTypes>
+				<contentType>cTypeColecomProductCategory</contentType>
+				<contentType>cTypeColecomProductCategories</contentType>
+			</allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template></template>
+			<allowedTemplates></allowedTemplates>
+			<children></children>
+		</contentType> -->
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Sign In</name>
+			<alias>cTypeColecomSignIn</alias>
+			<description>Collexy Ecommerce Sign In content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomSignIn</template>
+			<allowedTemplates>
+				<template>tplColecomSignIn</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Address</name>
+			<alias>cTypeColecomAddress</alias>
+			<description>Collexy Ecommerce Address content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomAddress</template>
+			<allowedTemplates>
+				<template>tplColecomAddress</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Shipping</name>
+			<alias>cTypeColecomShipping</alias>
+			<description>Collexy Ecommerce Shipping content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomShipping</template>
+			<allowedTemplates>
+				<template>tplColecomShipping</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Payment</name>
+			<alias>cTypeColecomPayment</alias>
+			<description>Collexy Ecommerce Payment content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomPayment</template>
+			<allowedTemplates>
+				<template>tplColecomPayment</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Preview</name>
+			<alias>cTypeColecomPreview</alias>
+			<description>Collexy Ecommerce Preview content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomPreview</template>
+			<allowedTemplates>
+				<template>tplColecomPreview</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Confirmation</name>
+			<alias>cTypeColecomConfirmation</alias>
+			<description>Collexy Ecommerce Confirmation content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes></allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomConfirmation</template>
+			<allowedTemplates>
+				<template>tplColecomConfirmation</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Cart</name>
+			<alias>cTypeColecomCart</alias>
+			<description>Collexy Ecommerce Cart content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes>
+				<contentType>cTypeColecomSignIn</contentType>
+				<contentType>cTypeColecomAddress</contentType>
+				<contentType>cTypeColecomShipping</contentType>
+				<contentType>cTypeColecomPayment</contentType>
+				<contentType>cTypeColecomPreview</contentType>
+				<contentType>cTypeColecomConfirmation</contentType>
+			</allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomCart</template>
+			<allowedTemplates>
+				<template>tplColecomCart</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+		<contentType>
+			<parentId>2</parentId>
+			<name>Collexy Ecommerce Store</name>
+			<alias>cTypeColecomStore</alias>
+			<description>Collexy Ecommerce Store content type</description>
+			<icon>fa fa-newspaper-o fa-fw</icon>
+			<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+			<meta></meta>
+			<tabs></tabs>
+			<allowAtRoot>false</allowAtRoot>
+			<isContainer>false</isContainer>
+			<isAbstract>false</isAbstract>
+			<allowedContentTypes>
+				<contentType>cTypeColecomProductCategory</contentType>
+				<contentType>cTypeColecomCart</contentType>
+			</allowedContentTypes>
+			<compositeContentTypes></compositeContentTypes>
+			<template>tplColecomStoreFront</template>
+			<allowedTemplates>
+				<template>tplColecomStoreFront</template>
+			</allowedTemplates>
+			<children></children>
+		</contentType>
+	</contentTypes>
+	<contentItems>
+		<contentItem>
+			<parentId>1</parentId>
+			<name>Collexy Ecommerce Test Store</name>
+			<parent></parent>
+			<contentType>cTypeColecomStore</contentType>
+			<contentTypeId>0</contentTypeId>
+			<template>tplColecomStoreFront</template>
+			<templateId>0</templateId>
+			<meta>
+				<title>Collexy Ecommerce Test Store</title>
+				<hideInNav>false</hideInNav>
+			</meta>
+			<children>
+				<!-- <contentItem>
+					<parentId>0</parentId>
+					<name>Products</name>
+					<parent></parent>
+					<contentType>cTypeColecomProductCategories</contentType>
+					<contentTypeId>0</contentTypeId>
+					<template>tplColecomProductCategories</template>
+					<templateId>0</templateId>
+					<meta></meta>
+					<children>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Product Category 1</name>
+							<parent></parent>
+							<contentType>cTypeColecomProductCategory</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomProductCategory</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Product Category 1</title>
+							</meta>
+							<children>
+								<contentItem>
+									<parentId>0</parentId>
+									<name>Product 1</name>
+									<parent></parent>
+									<contentType>cTypeColecomProduct</contentType>
+									<contentTypeId>0</contentTypeId>
+									<template>tplColecomProduct</template>
+									<templateId>0</templateId>
+									<meta>
+										<title>Product 1</title>
+									</meta>
+									<children></children>
+								</contentItem>
+							</children>
+						</contentItem>
+					</children>
+				</contentItem> -->
+				<contentItem>
+					<parentId>0</parentId>
+					<name>Product Category 1</name>
+					<parent></parent>
+					<contentType>cTypeColecomProductCategory</contentType>
+					<contentTypeId>0</contentTypeId>
+					<template>tplColecomProductCategory</template>
+					<templateId>0</templateId>
+					<meta>
+						<title>Product Category 1</title>
+						<hideInNav>false</hideInNav>
+					</meta>
+					<children>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Product 1</name>
+							<parent></parent>
+							<contentType>cTypeColecomProduct</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomProduct</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Product 1</title>
+							</meta>
+							<children></children>
+						</contentItem>
+					</children>
+				</contentItem>
+				<contentItem>
+					<parentId>0</parentId>
+					<name>Product Category 2</name>
+					<parent></parent>
+					<contentType>cTypeColecomProductCategory</contentType>
+					<contentTypeId>0</contentTypeId>
+					<template>tplColecomProductCategory</template>
+					<templateId>0</templateId>
+					<meta>
+						<title>Product Category 2</title>
+						<hideInNav>false</hideInNav>
+					</meta>
+					<children>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Sub Product Category 1</name>
+							<parent></parent>
+							<contentType>cTypeColecomProductCategory</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomProductCategory</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Sub Product Category 1</title>
+								<hideInNav>false</hideInNav>
+							</meta>
+							<children>
+								<contentItem>
+									<parentId>0</parentId>
+									<name>Product 2</name>
+									<parent></parent>
+									<contentType>cTypeColecomProduct</contentType>
+									<contentTypeId>0</contentTypeId>
+									<template>tplColecomProduct</template>
+									<templateId>0</templateId>
+									<meta>
+										<title>Product 2</title>
+										<hideInNav>false</hideInNav>
+									</meta>
+									<children></children>
+								</contentItem>
+							</children>
+						</contentItem>
+					</children>
+				</contentItem>
+				<contentItem>
+					<parentId>0</parentId>
+					<name>Cart</name>
+					<parent></parent>
+					<contentType>cTypeColecomCart</contentType>
+					<contentTypeId>0</contentTypeId>
+					<template>tplColecomCart</template>
+					<templateId>0</templateId>
+					<meta>
+						<title>Cart</title>
+						<hideInNav>false</hideInNav>
+					</meta>
+					<children>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Sign In</name>
+							<parent></parent>
+							<contentType>cTypeColecomSignIn</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomSignIn</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Sign In</title>
+								<hideInNav>true</hideInNav>
+							</meta>
+							<children></children>
+						</contentItem>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Address</name>
+							<parent></parent>
+							<contentType>cTypeColecomAddress</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomAddress</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Address</title>
+								<hideInNav>true</hideInNav>
+							</meta>
+							<children></children>
+						</contentItem>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Shipping</name>
+							<parent></parent>
+							<contentType>cTypeColecomShipping</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomShipping</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Shipping</title>
+								<hideInNav>true</hideInNav>
+							</meta>
+							<children></children>
+						</contentItem>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Payment</name>
+							<parent></parent>
+							<contentType>cTypeColecomPayment</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomPayment</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Payment</title>
+								<hideInNav>true</hideInNav>
+							</meta>
+							<children></children>
+						</contentItem>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Preview</name>
+							<parent></parent>
+							<contentType>cTypeColecomPreview</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomPreview</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Preview</title>
+								<hideInNav>true</hideInNav>
+							</meta>
+							<children></children>
+						</contentItem>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Confirmation</name>
+							<parent></parent>
+							<contentType>cTypeColecomConfirmation</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplColecomConfirmation</template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Confirmation</title>
+								<hideInNav>true</hideInNav>
+							</meta>
+							<children></children>
+						</contentItem>
+					</children>
+				</contentItem>
+			</children>
+		</contentItem>
+	</contentItems>
+	<mediaTypes>
+	</mediaTypes>
+	<mediaItems>
+	</mediaItems>
+	<mimeTypes>
+	</mimeTypes>
+	<files>
+		<file>
+			<name>Collexy Ecommerce Store Front.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Product Category.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Product Categories.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Product Categories Widget.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Product.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Cart.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Sign In.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Address.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Shipping.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Payment.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Preview.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Collexy Ecommerce Confirmation.tmpl</name>
+			<path>views</path>
+		</file>
+	</files>
+</module>

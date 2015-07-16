@@ -24,6 +24,7 @@ import (
 	"collexy/core/lib"
 	"strings"
 	// _ "collexy/core/modules/mytest"
+	_ "collexy/modules/collexyecommerce"
 	_ "collexy/core/modules/content"
 	coremodulecontentcontrollers "collexy/core/modules/content/controllers"
 	coremodulecontentmodels "collexy/core/modules/content/models"
@@ -40,6 +41,7 @@ import (
 	//"sync"
 	//coreapplicationmodelsxmlmodels "collexy/core/application/models/xml_models"
 	coreapplicationcontrollers "collexy/core/application/controllers"
+
 )
 
 func executeDatabaseInstallScript(site_title, username, password, email string, privacy bool) (err error) {
@@ -605,11 +607,14 @@ func Main() {
 	// for _, m := range lib.Modules {
 
 	// }
+	
 
 	sort.Sort(lib.Modules)
+	m := mux.NewRouter()
+	n := mux.NewRouter()
 
-	for _, m := range lib.Modules {
-		for _, s := range m.Sections {
+	for _, module := range lib.Modules {
+		for _, s := range module.Sections {
 			var r *lib.Route = s.Route
 			var r1 lib.Route = *r
 			coreglobals.Routes = append(coreglobals.Routes, r1)
@@ -637,6 +642,11 @@ func Main() {
 			}
 
 		}
+		if module.ServerRoutes != nil && len(module.ServerRoutes) > 0{
+			for _, sr := range module.ServerRoutes {
+				m.HandleFunc(sr.Path, sr.HandlerFunc).Methods(sr.Methods...)
+			}
+		}
 	}
 
 	// fmt.Println("Routes:")
@@ -648,8 +658,7 @@ func Main() {
 
 	coreglobals.Templates["admin.tmpl"] = template.Must(template.ParseFiles("core/application/views/includes/admin.tmpl", "core/application/views/layouts/base.tmpl"))
 
-	m := mux.NewRouter()
-	n := mux.NewRouter()
+	
 
 	n.HandleFunc("/test/section", GetSections).Methods("GET")
 	n.HandleFunc("/test/routes", GetRoutes).Methods("GET")
@@ -673,6 +682,7 @@ func Main() {
 	m.HandleFunc("/admin", adminHandler).Methods("GET")
 
 	// or use "/url:.*" for all
+	
 	m.HandleFunc("/{url:.*}", http.HandlerFunc(contentController.RenderContent)).Methods("GET")
 
 	http.Handle("/stylesheets/", http.StripPrefix("/", http.FileServer(http.Dir("./"))))
@@ -686,6 +696,7 @@ func Main() {
 	http.Handle("/test/", n)
 	http.Handle("/", m)
 }
+
 
 func buildMap(mySlice ...*coreglobals.MediaAccessItem) (myMap map[string]*coreglobals.MediaAccessItem) {
 	myMap = make(map[string]*coreglobals.MediaAccessItem)

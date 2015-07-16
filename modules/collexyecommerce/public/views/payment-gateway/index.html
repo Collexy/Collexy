@@ -1,0 +1,234 @@
+<div ui-view></div>
+<div class="nosubmenu-margin-top outer-list-container collexy-controller" style="width:100%; padding: 0 1em" ng-controller="MimeTypeTreeCtrl">
+	<div perfect-scroll >
+		<h2>Payment Gateways <a href="" class="add-new-h2">Add New</a></h2>
+		<table class="wp-list-table widefat fixed striped posts">
+			
+			<thead>
+				<tr>
+					<th scope="col" id="cb" class="manage-column column-cb check-column" style="">
+						<input id="cb-select-all-1" type="checkbox">
+					</th>
+					<th scope="col" id="id" class="manage-column column-title sortable desc" style="">
+						<a href="http://localhost/wordpress/wp-admin/edit.php?post_type=subscription&amp;orderby=title&amp;order=asc">
+							<span>Label</span><span class="sorting-indicator"></span>
+						</a>
+					</th>
+					<th scope="col" id="title" class="manage-column column-title sortable desc" style="">
+						<a href="http://localhost/wordpress/wp-admin/edit.php?post_type=subscription&amp;orderby=title&amp;order=asc">
+							<span>Name</span><span class="sorting-indicator"></span>
+						</a>
+					</th>
+					
+					<th scope="col" id="title" class="manage-column column-title sortable desc" style="">
+						<a href="http://localhost/wordpress/wp-admin/edit.php?post_type=subscription&amp;orderby=title&amp;order=asc">
+							<span>Status</span><span class="sorting-indicator"></span>
+						</a>
+					</th>
+				
+				</tr>
+			</thead>
+
+			<tbody id="the-list">
+				<tr ng-repeat="data in tree" id="post-1941" class="iedit author-self level-0 post-1941 type-subscription status-publish hentry">
+					<th scope="row" class="check-column">
+						
+						<input id="cb-select-1941" name="post[]" value="1941" type="checkbox">
+						
+					</th>
+					<td class="post-title page-title column-title">
+						<strong><a class="row-title" ui-sref="settings.mediaType.mimeType.edit({id:data.id})" title="Edit {{data.name}}">{{data.name}}</a></strong>
+						<div class="locked-info">
+							<span class="locked-avatar"></span> 
+							<span class="locked-text"></span>
+						</div>
+						<div class="row-actions">
+							<span class="edit"><a ui-sref="settings.mediaType.mimeType.edit({id:data.id})" title="Edit this item">Edit</a> | </span>
+							<!-- <span class="inline hide-if-no-js"><a href="#" class="editinline" title="Edit this item inline">Quick&nbsp;Edit</a> | </span> -->
+							<span class="trash"><a class="submitdelete" title="Move this item to the Trash" href="http://localhost/wordpress/wp-admin/post.php?post=1941&amp;action=trash&amp;_wpnonce=22d784e3c0">Trash</a><!--  |  --></span>
+							<!-- <span class="view"><a href="http://localhost/wordpress/register/variable-subscription/" title="View “Variable Subscription”" rel="permalink">View</a></span> -->
+						</div>
+						<!-- <div class="hidden" id="inline_1941">
+							<div class="post_title">Variable Subscription</div>
+							<div class="post_name">variable-subscription</div>
+							<div class="post_author">1</div>
+							<div class="comment_status">closed</div>
+							<div class="ping_status">closed</div>
+							<div class="_status">publish</div>
+							<div class="jj">11</div>
+							<div class="mm">03</div>
+							<div class="aa">2014</div>
+							<div class="hh">16</div>
+							<div class="mn">49</div>
+							<div class="ss">17</div>
+							<div class="post_password"></div>
+							<div class="sticky"></div>
+						</div> -->
+					</td>
+					<td class="">
+						{{data.name}}
+					</td>
+					
+					<td class="">
+						Active
+					</td>
+				</tr>
+				
+				
+			</tbody>
+
+			<tfoot>
+				<tr>
+					<th scope="col" class="manage-column column-cb check-column" style="">
+						<input id="cb-select-all-2" type="checkbox">
+					</th>
+					<th scope="col" class="manage-column column-title sortable desc" style="">
+						<a href="http://localhost/wordpress/wp-admin/edit.php?post_type=subscription&amp;orderby=title&amp;order=asc">
+							<span>Label</span>
+							<span class="sorting-indicator"></span>
+						</a>
+					</th>
+					<th scope="col" class="manage-column sortable asc" style="">
+						<a href="http://localhost/wordpress/wp-admin/edit.php?post_type=subscription&amp;orderby=date&amp;order=desc">
+							<span>Name</span><span class="sorting-indicator"></span>
+						</a>
+					</th>
+					<th scope="col" class="manage-column column-title sortable desc" style="">
+						<a href="http://localhost/wordpress/wp-admin/edit.php?post_type=subscription&amp;orderby=title&amp;order=asc">
+							<span>Status</span>
+							<span class="sorting-indicator"></span>
+						</a>
+					</th>
+					
+				</tr>
+			</tfoot>
+
+
+		</table>
+	</div>
+</div>
+
+<style>
+	/* QUICK WP PROTOTYPE TEST STYLES */
+
+	table.fixed {
+	    table-layout: fixed;
+	}
+
+
+	#menu-management .menu-edit, #menu-settings-column .accordion-container, .comment-ays, .feature-filter, .imgedit-group, .manage-menus, .menu-item-handle, .popular-tags, .stuffbox, .widget-inside, .widget-top, .widgets-holder-wrap, .wp-editor-container, p.popular-tags, table.widefat {
+	    border: 1px solid #E5E5E5;
+	    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.04);
+	}
+	.widefat {
+	    border-spacing: 0px;
+	    width: 100%;
+	    clear: both;
+	    margin: 0px;
+	}
+
+	.comment-ays, .feature-filter, .imgedit-group, .popular-tags, .stuffbox, .widgets-holder-wrap, .wp-editor-container, p.popular-tags, table.widefat {
+	    background: #FFF none repeat scroll 0% 0%;
+	}
+
+	.widefat {
+	    border-spacing: 0px;
+	    width: 100%;
+	    clear: both;
+	    margin: 0px;
+	}
+
+	.widefat * {
+	    word-wrap: break-word;
+	}
+
+	.widefat thead th.check-column {
+	    padding-top: 10px;
+	}
+	.widefat tbody th.check-column, .widefat tfoot th.check-column, .widefat thead th.check-column {
+	    padding: 11px 0px 0px 3px;
+	}
+	.widefat .check-column {
+	    width: 2.2em;
+	    padding: 6px 0px 25px;
+	    vertical-align: top;
+	}
+	.widefat tfoot tr th, .widefat thead tr th {
+	    color: #32373C;
+	}
+	#nav-menu-footer, #nav-menu-header, #your-profile #rich_editing, .checkbox, .control-section .accordion-section-title, .menu-item-handle, .postbox .hndle, .side-info, .sidebar-name, .stuffbox .hndle, .widefat tfoot th, .widefat thead th, .widget .widget-top {
+	    line-height: 1.4em;
+	}
+	.widefat thead th {
+	    border-bottom: 1px solid #E1E1E1;
+	}
+	.widefat th {
+	    font-weight: 400;
+	}
+	.widefat td, .widefat th {
+	    color: #555;
+	}
+	.widefat th {
+	    text-align: left;
+	    line-height: 1.3em;
+	    font-size: 14px;
+	}
+	.widefat td, .widefat th {
+	    padding: 8px 10px;
+	}
+
+	.alternate, .striped > tbody > :nth-child(2n+1) {
+	    background-color: #F9F9F9;
+	}
+
+	.widefat tbody th.check-column, .widefat tfoot th.check-column, .widefat thead th.check-column {
+	    padding: 11px 0px 0px 3px;
+	}
+	.widefat .check-column {
+	    width: 2.2em;
+	    padding: 6px 0px 25px;
+	    vertical-align: top;
+	}
+	.widefat th {
+	    font-weight: 400;
+	}
+	.widefat td, .widefat th {
+	    color: #555;
+	}
+	.widefat th {
+	    text-align: left;
+	    line-height: 1.3em;
+	    font-size: 14px;
+	}
+	.widefat td, .widefat th {
+	    padding: 8px 10px;
+	}
+	.widefat * {
+	    word-wrap: break-word;
+	}
+
+	.widefat td, .widefat th {
+	    color: #555;
+	}
+	.widefat td, .widefat td ol, .widefat td p, .widefat td ul {
+	    font-size: 13px;
+	    line-height: 1.5em;
+	}
+	.widefat td {
+	    vertical-align: top;
+	}
+	.widefat td, .widefat th {
+	    padding: 8px 10px;
+	}
+	.widefat * {
+	    word-wrap: break-word;
+	}
+
+	.fixed .column-author, .fixed .column-date, .fixed .column-format, .fixed .column-links, .fixed .column-parent, .fixed .column-posts {
+	    width: 10%;
+	}
+
+
+
+
+</style>

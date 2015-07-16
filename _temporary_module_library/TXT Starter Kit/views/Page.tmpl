@@ -21,10 +21,11 @@
 										</header>
 
 										<section>
-											<span class="image featured"><img src="{{.Data.Content.Meta.image}}" alt="" /></span>
-											<p>
-												{{.Data.Content.Meta.content}}
-											</p>
+											{{if .Data.Content.Meta.image}}
+												<span class="image featured"><img src="{{.Data.Content.Meta.image}}" alt="" /></span>
+											{{end}}
+											{{$post_content := .Data.Content.Meta.content}}
+											{{.Data.Content.HTML $post_content}}
 										</section>
 
 									</article>

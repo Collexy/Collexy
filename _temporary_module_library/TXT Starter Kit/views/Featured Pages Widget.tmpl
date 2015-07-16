@@ -7,8 +7,8 @@
 		<div class="row">
 		{{range $content := .Data.Content.GetAncestors 0 1}}
 
-			{{if $content.Eq $content.ContentTypeId 5}}
-				{{if $content.Meta.is_featured}}
+			{{if $content.Eq $content.ContentTypeId 7}}
+				{{if $content.Meta.isFeatured}}
 				<div class="3u">
 					<!-- Feature -->
 						<section class="box feature">

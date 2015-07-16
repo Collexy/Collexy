@@ -3149,6 +3149,7 @@ WHERE content.id = $1;`
 }
 
 func GetFrontendContentByUrl(name, url string) (content *Content) {
+
 	db := coreglobals.Db
 
 	//   queryStr := `SELECT cn.id AS node_id, cn.path AS node_path, cn.created_by AS node_created_by, cn.name AS node_name, cn.node_type AS node_type,

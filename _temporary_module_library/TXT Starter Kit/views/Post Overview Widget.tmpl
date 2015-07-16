@@ -2,7 +2,7 @@
 
 {{$homePage := .Data.Content.GetHomeContentItem}}
 
-{{$posts := $homePage.GetByContentTypeId 3}}
+{{$posts := $homePage.GetByContentTypeId 5}}
 {{$firstPost := index $posts 0}}
 
 
@@ -17,8 +17,8 @@
 											<article class="box post">
 												<header>
 													<h3><a href="#">{{$firstPost.Meta.title}}</a></h3>
-													{{if $firstPost.Meta.sub_header}}
-														<p>{{$firstPost.Meta.sub_header}}</p>
+													{{if $firstPost.Meta.subHeader}}
+														<p>{{$firstPost.Meta.subHeader}}</p>
 													{{end}}
 													<ul class="meta">
 														<!-- <li class="icon fa-clock-o">15 minutes ago</li> -->
@@ -50,7 +50,7 @@
 												{{range $content := $posts}}
 													
 														{{$is_not_first := ne $content.Id $firstPost.Id}}
-														{{if and $content.Meta.is_featured $is_not_first}}
+														{{if and $content.Meta.isFeatured $is_not_first}}
 															<li>
 																<article class="box post-summary">
 																	<h3><a href="http://{{index $content.Domains 0}}/{{$content.Url}}">{{$content.Meta.title}}</a></h3>

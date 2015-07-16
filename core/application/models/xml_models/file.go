@@ -24,7 +24,7 @@ type File struct {
 	// Children  []*Template `xml:"children>template,omitempty"`
 }
 
-func (this *File) Copy() {
+func (this *File) Copy(module string) {
 	// check if dir exists
 	// if true
 	// copy file
@@ -46,7 +46,7 @@ func (this *File) Copy() {
 	} else {
 
 	}
-	src, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "\\_temporary_module_library\\TXT Starter Kit\\" + this.Path + "\\" + this.Name)
+	src, _ := filepath.Abs(filepath.Dir(os.Args[0]) + "\\_temporary_module_library\\" + module + "\\" + this.Path + "\\" + this.Name)
 	dst := absPath + "\\" + this.Name
 	CopyFile(src, dst)
 	// // module path = reader path

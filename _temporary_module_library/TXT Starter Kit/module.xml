@@ -47,6 +47,7 @@
 					<name>Home</name>
 					<alias>tplHome</alias>
 					<parentId>0</parentId>
+					<isPartial>false</isPartial>
 					<content>
 						<![CDATA[
 							{{define "body"}}
@@ -70,7 +71,127 @@
 					</content>
 					<children></children>
 				</template>
+				<template>
+					<name>Post Overview</name>
+					<alias>tplPostOverview</alias>
+					<parentId>0</parentId>
+					<isPartial>false</isPartial>
+					<content></content>
+					<children></children>
+				</template>
+				<template>
+					<name>Post</name>
+					<alias>tplPost</alias>
+					<parentId>0</parentId>
+					<isPartial>false</isPartial>
+					<content></content>
+					<children></children>
+				</template>
+				<template>
+					<name>Category</name>
+					<alias>tplCategory</alias>
+					<parentId>0</parentId>
+					<isPartial>false</isPartial>
+					<content></content>
+					<children></children>
+				</template>
+				<template>
+					<name>Login</name>
+					<alias>tplLogin</alias>
+					<parentId>0</parentId>
+					<isPartial>false</isPartial>
+					<content></content>
+					<children></children>
+				</template>
+				<template>
+					<name>Register</name>
+					<alias>tplRegister</alias>
+					<parentId>0</parentId>
+					<isPartial>false</isPartial>
+					<content></content>
+					<children></children>
+				</template>
+				<template>
+					<name>404</name>
+					<alias>tpl404</alias>
+					<parentId>0</parentId>
+					<isPartial>false</isPartial>
+					<content></content>
+					<children></children>
+				</template>
+				<template>
+					<name>Unauthorized</name>
+					<alias>tplUnauthorized</alias>
+					<parentId>0</parentId>
+					<isPartial>false</isPartial>
+					<content></content>
+					<children></children>
+				</template>
 			</children>
+		</template>
+		<template>
+			<name>Top Navigation</name>
+			<alias>tplTopNavigation</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Featured Pages Widget</name>
+			<alias>tplFeaturedPagesWidget</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Recent Posts Widget</name>
+			<alias>tplRecentPostsWidget</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Post Overview Widget</name>
+			<alias>tplPostOverviewWidget</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Category List Widget</name>
+			<alias>tplCategoryListWidget</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Social</name>
+			<alias>tplSocialWidget</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>About Widget</name>
+			<alias>tplAboutWidget</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content></content>
+			<children></children>
+		</template>
+		<template>
+			<name>Login Widget</name>
+			<alias>tplLoginWidget</alias>
+			<parentId>0</parentId>
+			<isPartial>true</isPartial>
+			<content></content>
+			<children></children>
 		</template>
 	</templates>
 	<contentTypes>
@@ -93,14 +214,14 @@
 					<name>SEO</name>
 					<properties>
 						<property>
-							<name>meta_title</name>
+							<name>metaTitle</name>
 							<order>1</order>
 							<helpText>help text</helpText>
 							<description>description</description>
 							<dataTypeId>1</dataTypeId>
 						</property>
 						<property>
-							<name>meta_description</name>
+							<name>metaDescription</name>
 							<order>2</order>
 							<helpText>help text</helpText>
 							<description>description</description>
@@ -142,7 +263,7 @@
 					<name>Properties</name>
 					<properties>
 						<property>
-							<name>hide_in_nav</name>
+							<name>hideInNav</name>
 							<order>1</order>
 							<helpText>help text</helpText>
 							<description>description</description>
@@ -160,6 +281,169 @@
 			<allowedTemplates></allowedTemplates>
 			<children>
 				<contentType>
+					<name>Category</name>
+					<alias>cTypeCategory</alias>
+					<description>Category content type</description>
+					<icon>fa fa-folder-o fa-fw</icon>
+					<thumbnail>fa fa-folder-o fa-fw</thumbnail>
+					<meta></meta>
+					<tabs>
+						<tab>
+							<name>Content</name>
+							<properties>
+								<property>
+									<name>content</name>
+									<order>2</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>19</dataTypeId>
+								</property>
+							</properties>
+						</tab>
+					</tabs>
+					<allowAtRoot>false</allowAtRoot>
+					<isContainer>false</isContainer>
+					<isAbstract>false</isAbstract>
+					<allowedContentTypes>
+						<contentType>cTypeCategory</contentType>
+					</allowedContentTypes>
+					<compositeContentTypes>
+						<contentType>cTypeSEO</contentType>
+					</compositeContentTypes>
+					<template>tplCategory</template>
+					<allowedTemplates>
+						<template>tplCategory</template>
+					</allowedTemplates>
+					<children></children>
+				</contentType>
+				<contentType>
+					<name>Categories</name>
+					<alias>cTypeCategories</alias>
+					<description>Categories content type</description>
+					<icon>fa fa-folder-open-o fa-fw</icon>
+					<thumbnail>fa fa-folder-open-o fa-fw</thumbnail>
+					<meta></meta>
+					<tabs>
+						<tab>
+							<name>Content</name>
+							<properties>
+								<property>
+									<name>content</name>
+									<order>2</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>19</dataTypeId>
+								</property>
+							</properties>
+						</tab>
+					</tabs>
+					<allowAtRoot>false</allowAtRoot>
+					<isContainer>false</isContainer>
+					<isAbstract>false</isAbstract>
+					<allowedContentTypes>
+						<contentType>cTypeCategory</contentType>
+					</allowedContentTypes>
+					<compositeContentTypes></compositeContentTypes>
+					<template></template>
+					<allowedTemplates></allowedTemplates>
+					<children></children>
+				</contentType>
+				<contentType>
+					<name>Post</name>
+					<alias>cTypePost</alias>
+					<description>Post content type</description>
+					<icon>fa fa-file-text-o fa-fw</icon>
+					<thumbnail>fa fa-file-text-o fa-fw</thumbnail>
+					<meta></meta>
+					<tabs>
+						<tab>
+							<name>Content</name>
+							<properties>
+								<property>
+									<name>isFeatured</name>
+									<order>2</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>18</dataTypeId>
+								</property>
+								<property>
+									<name>image</name>
+									<order>3</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>subHeader</name>
+									<order>4</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>1</dataTypeId>
+								</property>
+								<property>
+									<name>content</name>
+									<order>5</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>19</dataTypeId>
+								</property>
+								<property>
+									<name>categories</name>
+									<order>6</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>12</dataTypeId>
+								</property>
+								<property>
+									<name>datePublished</name>
+									<order>7</order>
+									<helpText>help text</helpText>
+									<description>descr</description>
+									<dataTypeId>11</dataTypeId>
+								</property>
+							</properties>
+						</tab>
+					</tabs>
+					<allowAtRoot>false</allowAtRoot>
+					<isContainer>false</isContainer>
+					<isAbstract>false</isAbstract>
+					<allowedContentTypes>
+						<contentType>cTypePost</contentType>
+					</allowedContentTypes>
+					<compositeContentTypes>
+						<contentType>cTypeSEO</contentType>
+					</compositeContentTypes>
+					<template>tplPost</template>
+					<allowedTemplates>
+						<template>tplPost</template>
+					</allowedTemplates>
+					<children></children>
+				</contentType>
+				<contentType>
+					<name>Post Overview</name>
+					<alias>cTypePostOverview</alias>
+					<description>Post Overview content type</description>
+					<icon>fa fa-newspaper-o fa-fw</icon>
+					<thumbnail>fa fa-newspaper-o fa-fw</thumbnail>
+					<meta></meta>
+					<tabs></tabs>
+					<allowAtRoot>false</allowAtRoot>
+					<isContainer>false</isContainer>
+					<isAbstract>false</isAbstract>
+					<allowedContentTypes>
+						<contentType>cTypePost</contentType>
+						<contentType>cTypeCategories</contentType>
+					</allowedContentTypes>
+					<compositeContentTypes>
+						<contentType>cTypeSEO</contentType>
+					</compositeContentTypes>
+					<template>tplPostOverview</template>
+					<allowedTemplates>
+						<template>tplPostOverview</template>
+					</allowedTemplates>
+					<children></children>
+				</contentType>
+				<contentType>
 					<name>Page</name>
 					<alias>cTypePage</alias>
 					<description>Page content type</description>
@@ -175,7 +459,7 @@
 									<order>2</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
-									<dataTypeId>1</dataTypeId>
+									<dataTypeId>19</dataTypeId>
 								</property>
 							</properties>
 						</tab>
@@ -208,14 +492,14 @@
 							<name>Content</name>
 							<properties>
 								<property>
-									<name>site_name</name>
+									<name>siteName</name>
 									<order>2</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>1</dataTypeId>
 								</property>
 								<property>
-									<name>site_tagline</name>
+									<name>siteTagline</name>
 									<order>3</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
@@ -241,35 +525,35 @@
 							<name>Social</name>
 							<properties>
 								<property>
-									<name>facebook_link</name>
+									<name>facebookLink</name>
 									<order>1</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>1</dataTypeId>
 								</property>
 								<property>
-									<name>twitter_link</name>
+									<name>twitterLink</name>
 									<order>2</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>1</dataTypeId>
 								</property>
 								<property>
-									<name>linkedin_link</name>
+									<name>linkedinLink</name>
 									<order>3</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>1</dataTypeId>
 								</property>
 								<property>
-									<name>google_link</name>
+									<name>googleLink</name>
 									<order>4</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>1</dataTypeId>
 								</property>
 								<property>
-									<name>rss_link</name>
+									<name>rssLink</name>
 									<order>5</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
@@ -281,42 +565,42 @@
 							<name>Banner</name>
 							<properties>
 								<property>
-									<name>hide_banner</name>
+									<name>hideBanner</name>
 									<order>1</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>18</dataTypeId>
 								</property>
 								<property>
-									<name>hide_banner</name>
+									<name>hideBanner</name>
 									<order>2</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>1</dataTypeId>
 								</property>
 								<property>
-									<name>banner_subheader</name>
+									<name>bannerSubheader</name>
 									<order>3</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>1</dataTypeId>
 								</property>
 								<property>
-									<name>banner_link_text</name>
+									<name>bannerLinkText</name>
 									<order>4</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>17</dataTypeId>
 								</property>
 								<property>
-									<name>banner_link</name>
+									<name>bannerLink</name>
 									<order>5</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>17</dataTypeId>
 								</property>
 								<property>
-									<name>banner_background_image</name>
+									<name>bannerBackgroundImage</name>
 									<order>6</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
@@ -328,14 +612,14 @@
 							<name>About</name>
 							<properties>
 								<property>
-									<name>about_title</name>
+									<name>aboutTitle</name>
 									<order>1</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
 									<dataTypeId>1</dataTypeId>
 								</property>
 								<property>
-									<name>about_text</name>
+									<name>aboutText</name>
 									<order>2</order>
 									<helpText>help text</helpText>
 									<description>descr</description>
@@ -349,6 +633,7 @@
 					<isAbstract>false</isAbstract>
 					<allowedContentTypes>
 						<contentType>cTypePage</contentType>
+						<contentType>cTypePostOverview</contentType>
 					</allowedContentTypes>
 					<compositeContentTypes>
 						<contentType>cTypeSEO</contentType>
@@ -372,21 +657,198 @@
 			<template>tplHome</template>
 			<templateId>0</templateId>
 			<meta>
+				<title>Home</title>
+				<!-- <domains>["localhost:8080", "localhost:8080/test"]</domains> -->
+				<copyright><![CDATA[&copy; 2014 codeish.com]]></copyright>
+				<siteName>Collexy Test Site</siteName>
+				<aboutText>
+					<![CDATA[
+						<p>This is <strong>TXT</strong>, yet another free responsive site template designed by <a href=\"http://n33.co\">AJ</a> for <a href=\"http://html5up.net\">HTML5 UP</a>. It is released under the <a href=\"http://html5up.net/license/\">Creative Commons Attribution</a> license so feel free to use it for whatever you are working on (personal or commercial), just be sure to give us credit for the design. That is basically it :)</p>
+					]]>
+				</aboutText>
+				<aboutTitle>About title here</aboutTitle>
+				<bannerLink>http://somelink.test</bannerLink>
+				<hideBanner>false</hideBanner>
 				<hideInNav>false</hideInNav>
+				<isFeatured>false</isFeatured>
+				<siteTagline>Test site tagline</siteTagline>
+				<bannerHeader>Banner header goes here</bannerHeader>
+				<facebookLink>http://facebook.com</facebookLink>
+				<bannerLinkText>Click here!</bannerLinkText>
+				<bannerSubHeader>Banner subheader goes here</bannerSubHeader>
+				<bannerBackgroundImage>/media/Sample Images/TXT/banner.jpg</bannerBackgroundImage>
 			</meta>
 			<children>
 				<contentItem>
 					<parentId>0</parentId>
-					<name>Test</name>
-					<parent>cHome</parent>
+					<name>Welcome</name>
+					<parent></parent>
 					<contentType>cTypePage</contentType>
 					<contentTypeId>0</contentTypeId>
 					<template>tplPage</template>
 					<templateId>0</templateId>
 					<meta>
+						<image>/media/Sample Images/TXT/pic01.jpg</image>
+						<title>Welcome</title>
+						<content>Welcome content goes here</content>
 						<hideInNav>false</hideInNav>
-						<content>This is the amazing test page</content>
+						<isFeatured>true</isFeatured>
 					</meta>
+					<children></children>
+				</contentItem>
+				<contentItem>
+					<parentId>0</parentId>
+					<name>Getting Started</name>
+					<parent></parent>
+					<contentType>cTypePage</contentType>
+					<contentTypeId>0</contentTypeId>
+					<template>tplPage</template>
+					<templateId>0</templateId>
+					<meta>
+						<image>/media/Sample Images/TXT/pic02.jpg</image>
+						<title>Getting Started</title>
+						<content><![CDATA[<p>Getting Started content goes here1</p>]]></content>
+						<hideInNav>false</hideInNav>
+						<isFeatured>true</isFeatured>
+					</meta>
+					<children></children>
+				</contentItem>
+				<contentItem>
+					<parentId>0</parentId>
+					<name>Documentation</name>
+					<parent></parent>
+					<contentType>cTypePage</contentType>
+					<contentTypeId>0</contentTypeId>
+					<template>tplPage</template>
+					<templateId>0</templateId>
+					<meta>
+						<image>/media/Sample Images/TXT/pic03.jpg</image>
+						<title>Documentation</title>
+						<content><![CDATA[<p>Documentation content goes here1</p>]]></content>
+						<hideInNav>false</hideInNav>
+						<isFeatured>true</isFeatured>
+					</meta>
+					<children></children>
+				</contentItem>
+				<contentItem>
+					<parentId>0</parentId>
+					<name>Get Involved</name>
+					<parent></parent>
+					<contentType>cTypePage</contentType>
+					<contentTypeId>0</contentTypeId>
+					<template>tplPage</template>
+					<templateId>0</templateId>
+					<meta>
+						<image>/media/Sample Images/TXT/pic04.jpg</image>
+						<title>Getting Started</title>
+						<content><![CDATA[<p>Get Involved content goes here1</p>]]></content>
+						<hideInNav>false</hideInNav>
+						<isFeatured>true</isFeatured>
+					</meta>
+					<children></children>
+				</contentItem>
+				<contentItem>
+					<parentId>0</parentId>
+					<name>Posts</name>
+					<parent></parent>
+					<contentType>cTypePostOverview</contentType>
+					<contentTypeId>0</contentTypeId>
+					<template>tplPostOverview</template>
+					<templateId>0</templateId>
+					<meta>
+						<title>Posts</title>
+						<hideInNav>false</hideInNav>
+						<isFeatured>true</isFeatured>
+					</meta>
+					<children>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Hello World</name>
+							<parent></parent>
+							<contentType>cTypePost</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplPost</template>
+							<templateId>0</templateId>
+							<meta>
+								<image>/media/Sample Images/TXT/pic05.jpg</image>
+								<title>Hello World</title>
+								<content>
+									<![CDATA[
+										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel tellus venenatis, iaculis eros eu, pellentesque felis. Mauris eleifend venenatis maximus. Fusce condimentum nulla augue, sed elementum nisl dictum ut. Sed ex arcu, efficitur eu finibus ac, convallis ut eros. Ut faucibus elit erat, ac venenatis velit cursus quis. Phasellus sapien elit, ullamcorper ac placerat at, consectetur eget ex. Integer augue sem, tempor nec hendrerit et, ullamcorper ut arcu.</p>\n\n<p>Pellentesque auctor et arcu at tristique. Suspendisse ipsum sapien, vulputate quis cursus eu, rhoncus sed nisi. Nulla euismod mauris vitae tellus iaculis convallis. Sed sodales, risus id sollicitudin aliquet, purus justo convallis dui, sit amet imperdiet elit mauris accumsan velit. Suspendisse dapibus sit amet quam in porta. Nam eleifend sodales dolor eget tempor. Sed pharetra aliquam dui, ultricies scelerisque orci luctus at. Proin eleifend neque quis dolor facilisis sollicitudin. Integer vel ligula nec metus sagittis lacinia at quis arcu. Sed in sem ut mauris laoreet euismod. Integer eu tincidunt lectus, nec varius libero. Proin nec interdum ex. Quisque non lacinia lectus, luctus molestie mi. Fusce lacus est, rhoncus sed nunc at, fermentum luctus ipsum.</p>\n\n<h3>Nunc pulvinar metus a erat fermentum bibendum</h3>\n\n<p>Phasellus mattis tempor dolor vitae feugiat. Sed aliquet massa nisi, in imperdiet mauris auctor in. Nam consectetur ut erat at suscipit. Integer faucibus eleifend rhoncus. Praesent vel bibendum elit, ut molestie metus. Maecenas efficitur, magna vel scelerisque pretium, magna elit vehicula massa, dignissim posuere felis enim a lectus. Donec eget semper urna. Praesent vel nisi id lacus tincidunt pretium vitae eu sapien. Duis varius nisi velit, nec maximus arcu blandit sit amet. Proin dapibus dui et elit dapibus, sit amet rhoncus nisl lobortis. Nunc pretium, lorem eu dignissim mollis, ex nisi mollis lectus, eu blandit arcu nisl vel elit. Mauris risus ipsum, elementum quis eleifend ut, venenatis sit amet orci. Donec ac orci aliquam, vulputate odio eget, pulvinar elit. Cras molestie urna eget justo hendrerit aliquam.</p>
+									]]>
+								</content>
+								<hideInNav>false</hideInNav>
+								<isFeatured>true</isFeatured>
+								<subHeader>Subheader for Hello World</subHeader>
+								<datePublished>2015-16-03 20:55:38</datePublished>
+								<!-- <categories>[12]</categories> -->
+							</meta>
+							<children></children>
+						</contentItem>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Txt Starter Kit For Collexy Released</name>
+							<parent></parent>
+							<contentType>cTypePost</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template>tplPost</template>
+							<templateId>0</templateId>
+							<meta>
+								<image>/media/Sample Images/TXT/pic05.jpg</image>
+								<title>Txt Starter Kit For Collexy Released</title>
+								<content>
+									<![CDATA[
+										<p>The collexy TXT starter kit is just awesome!</p>
+									]]>
+								</content>
+								<hideInNav>false</hideInNav>
+								<isFeatured>true</isFeatured>
+								<!-- <categories>[12]</categories> -->
+							</meta>
+							<children></children>
+						</contentItem>
+						<contentItem>
+							<parentId>0</parentId>
+							<name>Categories</name>
+							<parent></parent>
+							<contentType>cTypeCategories</contentType>
+							<contentTypeId>0</contentTypeId>
+							<template></template>
+							<templateId>0</templateId>
+							<meta>
+								<title>Txt Starter Kit For Collexy Released</title>
+								<content>
+									<![CDATA[
+										<p>Categories</p>
+									]]>
+								</content>
+								<hideInNav>false</hideInNav>
+								<isFeatured>true</isFeatured>
+							</meta>
+							<children>
+								<contentItem>
+									<parentId>0</parentId>
+									<name>Category 1</name>
+									<parent></parent>
+									<contentType>cTypeCategory</contentType>
+									<contentTypeId>0</contentTypeId>
+									<template>tplCategory</template>
+									<templateId>0</templateId>
+									<meta>
+										<title>Category 1</title>
+										<content>
+											<![CDATA[
+												<p>Category 1</p>
+											]]>
+										</content>
+										<hideInNav>false</hideInNav>
+										<isFeatured>true</isFeatured>
+									</meta>
+									<children></children>
+								</contentItem>
+							</children>
+						</contentItem>
+					</children>
 				</contentItem>
 			</children>
 		</contentItem>
@@ -418,7 +880,7 @@
 							<dataTypeId>1</dataTypeId>
 						</property>
 						<property>
-							<name>file_upload</name>
+							<name>fileUpload</name>
 							<order>1</order>
 							<helpText>help text</helpText>
 							<description>description</description>
@@ -430,7 +892,7 @@
 					<name>Properties</name>
 					<properties>
 						<property>
-							<name>temp_prop</name>
+							<name>tempProp</name>
 							<order>1</order>
 							<helpText>help text</helpText>
 							<description>description</description>
@@ -500,6 +962,78 @@
 							</meta>
 							<children></children>
 						</mediaItem>
+						<mediaItem>
+							<parentId>0</parentId>
+							<name>pic02.jpg</name>
+							<parent></parent>
+							<mediaType>mTypeImage</mediaType>
+							<mediaTypeId>0</mediaTypeId>
+							<meta>
+								<attachedFile>
+									<name>pic02.jpg</name>
+									<size>22026</size>
+									<type>image/jpeg</type>
+									<lastModified>1427893165424</lastModified>
+									<lastModifiedDate>2015-04-01T12:59:25.424Z</lastModifiedDate>
+									<webkitRelativePath></webkitRelativePath>
+								</attachedFile>
+							</meta>
+							<children></children>
+						</mediaItem>
+						<mediaItem>
+							<parentId>0</parentId>
+							<name>pic03.jpg</name>
+							<parent></parent>
+							<mediaType>mTypeImage</mediaType>
+							<mediaTypeId>0</mediaTypeId>
+							<meta>
+								<attachedFile>
+									<name>pic03.jpg</name>
+									<size>22026</size>
+									<type>image/jpeg</type>
+									<lastModified>1427893165424</lastModified>
+									<lastModifiedDate>2015-04-01T12:59:25.424Z</lastModifiedDate>
+									<webkitRelativePath></webkitRelativePath>
+								</attachedFile>
+							</meta>
+							<children></children>
+						</mediaItem>
+						<mediaItem>
+							<parentId>0</parentId>
+							<name>pic04.jpg</name>
+							<parent></parent>
+							<mediaType>mTypeImage</mediaType>
+							<mediaTypeId>0</mediaTypeId>
+							<meta>
+								<attachedFile>
+									<name>pic04.jpg</name>
+									<size>22026</size>
+									<type>image/jpeg</type>
+									<lastModified>1427893165424</lastModified>
+									<lastModifiedDate>2015-04-01T12:59:25.424Z</lastModifiedDate>
+									<webkitRelativePath></webkitRelativePath>
+								</attachedFile>
+							</meta>
+							<children></children>
+						</mediaItem>
+						<mediaItem>
+							<parentId>0</parentId>
+							<name>pic05.jpg</name>
+							<parent></parent>
+							<mediaType>mTypeImage</mediaType>
+							<mediaTypeId>0</mediaTypeId>
+							<meta>
+								<attachedFile>
+									<name>pic05.jpg</name>
+									<size>22026</size>
+									<type>image/jpeg</type>
+									<lastModified>1427893165424</lastModified>
+									<lastModifiedDate>2015-04-01T12:59:25.424Z</lastModifiedDate>
+									<webkitRelativePath></webkitRelativePath>
+								</attachedFile>
+							</meta>
+							<children></children>
+						</mediaItem>
 					</children>
 				</mediaItem>
 			</children>
@@ -531,15 +1065,123 @@
 			<path>assets\scripts</path>
 		</file>
 		<file>
+			<name>jquery.dropotron.min.js</name>
+			<path>assets\scripts</path>
+		</file>
+		<file>
+			<name>jquery.min.js</name>
+			<path>assets\scripts</path>
+		</file>
+		<file>
+			<name>skel.min.js</name>
+			<path>assets\scripts</path>
+		</file>
+		<file>
+			<name>skel-layers.min.js</name>
+			<path>assets\scripts</path>
+		</file>
+		<file>
+			<name>testttt.js</name>
+			<path>assets\scripts</path>
+		</file>
+		<file>
+			<name>font-awesome.min.css</name>
+			<path>assets\styles</path>
+		</file>
+		<file>
+			<name>skel.css</name>
+			<path>assets\styles</path>
+		</file>
+		<file>
 			<name>style.css</name>
 			<path>assets\styles</path>
+		</file>
+		<file>
+			<name>style-1000px.css</name>
+			<path>assets\styles</path>
+		</file>
+		<file>
+			<name>style-desktop.css</name>
+			<path>assets\styles</path>
+		</file>
+		<file>
+			<name>style-mobile.css</name>
+			<path>assets\styles</path>
+		</file>
+		<file>
+			<name>v8.css</name>
+			<path>assets\styles\ie</path>
+		</file>
+		<file>
+			<name>404.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>About Widget.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Category List Widget.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Category.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Featured Pages Widget.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Home.tmpl</name>
+			<path>views</path>
 		</file>
 		<file>
 			<name>Layout.tmpl</name>
 			<path>views</path>
 		</file>
 		<file>
+			<name>Login Widget.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Login.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Register.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
 			<name>Page.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Post Overview Widget.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Post Overview.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Post.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Recent Posts Widget.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Social.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Top Navigation.tmpl</name>
+			<path>views</path>
+		</file>
+		<file>
+			<name>Unauthorized.tmpl</name>
 			<path>views</path>
 		</file>
 		<file>
@@ -548,6 +1190,22 @@
 		</file>
 		<file>
 			<name>pic01.jpg</name>
+			<path>media\Sample Images\TXT</path>
+		</file>
+		<file>
+			<name>pic02.jpg</name>
+			<path>media\Sample Images\TXT</path>
+		</file>
+		<file>
+			<name>pic03.jpg</name>
+			<path>media\Sample Images\TXT</path>
+		</file>
+		<file>
+			<name>pic04.jpg</name>
+			<path>media\Sample Images\TXT</path>
+		</file>
+		<file>
+			<name>pic05.jpg</name>
 			<path>media\Sample Images\TXT</path>
 		</file>
 	</files>

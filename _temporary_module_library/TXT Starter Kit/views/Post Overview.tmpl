@@ -8,8 +8,8 @@
 							<div class="content">
 								{{range $content := .Data.Content.GetAncestors 0 1}}
 								<!-- Content -->
-									{{if $content.Eq $content.ContentTypeId 3}}
-										{{if $content.Meta.is_featured}}
+									{{if $content.Eq $content.ContentTypeId 5}}
+										{{if $content.Meta.isFeatured}}
 										<article class="box page-content">
 
 											<header>
@@ -23,7 +23,7 @@
 
 											<section>
 												{{if $content.Meta.image}}
-												<span class="image featured"><img src="{{$content.Meta.image}}" alt="" /></span>
+												<span class="image featured"><img src="{{$content.Meta.image}}" alt=""/></span>
 												{{end}}
 												<p>
 													{{$excerpt := $content.GetSubstring $content.Meta.content 0 150}}
@@ -36,9 +36,11 @@
 										{{end}}
 										
 
-									</article>
+										</article>
 									{{end}}
 							</div>
 						</div>
 					</div>
+</div>
+</div>
 					{{end}}

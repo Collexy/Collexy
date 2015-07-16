@@ -162,7 +162,7 @@ func (this *MediaType) Post(parentMediaType *MediaType, parentMediaTypes []Media
 		tabs = j
 	}
 
-	c2 := make(chan int)
+	c1 := make(chan int)
 	var id int64
 
 	var wg1 sync.WaitGroup
@@ -178,11 +178,11 @@ func (this *MediaType) Post(parentMediaType *MediaType, parentMediaTypes []Media
 			this.Description, this.Icon, this.Thumbnail, meta, tabs, this.AllowAtRoot,
 			this.IsContainer, this.IsAbstract, -1).Scan(&id)
 		corehelpers.PanicIf(err1)
-		c2 <- int(id)
+		c1 <- int(id)
 	}()
 
 	go func() {
-		for i := range c2 {
+		for i := range c1 {
 			fmt.Println("lolcat")
 			fmt.Println(i)
 			this.Id = &i

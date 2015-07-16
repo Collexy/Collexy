@@ -52,6 +52,7 @@ type ContentController struct{}
 //var Templates map[string]*template.Template
 
 func (this *ContentController) RenderTemplate(w http.ResponseWriter, name string, content *models.Content, member *coremodulemembermodels.Member) error {
+
 	defer fmt.Println("RenderTemplate finished!")
 	// Ensure the template exists in the map.
 
@@ -64,9 +65,12 @@ func (this *ContentController) RenderTemplate(w http.ResponseWriter, name string
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if member == nil {
 		fmt.Println("controller.content.RenderTemplate(): user is nil")
+
 		//tmpl.ExecuteTemplate(w, "base", content)
 		test := &TestStructMember{nil, content}
+		
 		err := tmpl.ExecuteTemplate(w, "base", TestDataMember{test, false})
+
 		corehelpers.PanicIf(err)
 
 	} else {
@@ -274,6 +278,7 @@ func (this *ContentController) RenderContent(w http.ResponseWriter, r *http.Requ
 
 		} else {
 			var templateName string = content.Template.Name + ".tmpl"
+
 			//templateName := strings.Replace(content["template_name"].(string), " ", "-", -1) + ".tmpl"
 			if templateName != ".tmpl" {
 				if coreglobals.Templates[templateName] != nil {

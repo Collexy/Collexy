@@ -31,6 +31,7 @@ func (this *ModuleApiController) ModuleHandler(w http.ResponseWriter, r *http.Re
                                 <tr>
                                     <td><strong>Modules</strong></td>
                                     <td><label><input type="radio" name="collexy_module" value="TXT Starter Kit"/> TXT Starter Kit</label></td>
+                                    <td><label><input type="radio" name="collexy_module" value="Collexy Ecommerce Starter Kit"/> Collexy Ecommerce Starter Kit</label></td>
                                 </tr>
                                 <tr>
                                     <td><input type="submit" value="Submit"></td>
@@ -151,7 +152,7 @@ func (this *ModuleApiController) ExportModuleToDatabase() {
 
 	for _, f := range this.Module.Files {
 		// params: parent, parentContentTypes, dataTypes, templates
-		f.Copy()
+		f.Copy(this.Module.Name)
 
 	}
 
